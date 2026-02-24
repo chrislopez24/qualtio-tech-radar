@@ -7,85 +7,75 @@ from pydantic import BaseModel, Field
 
 class GitHubTrendingSource(BaseModel):
     enabled: bool = True
-    min_stars: int = 100
-    max_repos: int = 50
+    language: str = "all"
     time_range: str = "daily"
-    language: Optional[str] = None
 
 
 class HackerNewsSource(BaseModel):
     enabled: bool = True
     min_points: int = 10
-    max_posts: int = 100
+    days_back: int = 7
 
 
 class GoogleTrendsSource(BaseModel):
     enabled: bool = True
-    country: str = "US"
-    category: str = "tech"
-    max_results: int = 50
+    seed_topics: list[str] = Field(default_factory=list)
 
 
-class Sources(BaseModel):
+class SourcesConfig(BaseModel):
     github_trending: GitHubTrendingSource = Field(default_factory=GitHubTrendingSource)
     hackernews: HackerNewsSource = Field(default_factory=HackerNewsSource)
     google_trends: GoogleTrendsSource = Field(default_factory=GoogleTrendsSource)
 
 
-class Classification(BaseModel):
-    model: str = "llama-3.3-70b"
-    temperature: float = 0.3
-    max_retries: int = 3
-    batch_size: int = 10
+class ClassificationConfig(BaseModel):
+    model: str = "gpt-4"
+    temperature: float = 0.2
+    json_mode: bool = True
 
 
-class Filtering(BaseModel):
-    min_confidence: float = 0.3
-    min_mentions: int = 2
-    exclude_keywords: list[str] = Field(default_factory=list)
-    required_keywords: list[str] = Field(default_factory=list)
+class FilteringConfig(BaseModel):
+    auto_ignore: list[str] = Field(default_factory=list)
+    include_only: list[str] = Field(default_factory=list)
+    min_confidence: float = 0.5
 
 
-class RadarOutput(BaseModel):
-    max_technologies: int = 50
+class OutputConfig(BaseModel):
+    public_file: str = "src/data/data.ai.json"
+    internal_file: str = "src/data/data.ai.full.json"
 
 
-class Output(BaseModel):
-    ai_data_file: str = "src/data/data.ai.json"
-    manual_data_file: str = "src/data/data.json"
-    radar: RadarOutput = Field(default_factory=RadarOutput)
-
-
-class RateLimit(BaseModel):
+class RateLimitConfig(BaseModel):
     requests_per_minute: int = 30
-    retry_after: int = 60
+    max_retries: int = 3
 
 
-class Checkpoint(BaseModel):
+class CheckpointConfig(BaseModel):
     enabled: bool = True
-    file: str = ".checkpoint.json"
+    interval: int = 100
 
 
-class DeepScan(BaseModel):
+class DeepScanConfig(BaseModel):
     enabled: bool = False
-    max_depth: int = 3
-    include_readme: bool = True
+    repos: list[str] = Field(default_factory=list)
 
 
 class ETLConfig(BaseModel):
-    sources: Sources = Field(default_factory=Sources)
-    classification: Classification = Field(default_factory=Classification)
-    filtering: Filtering = Field(default_factory=Filtering)
-    output: Output = Field(default_factory=Output)
-    rate_limit: RateLimit = Field(default_factory=RateLimit)
-    checkpoint: Checkpoint = Field(default_factory=Checkpoint)
-    deep_scan: DeepScan = Field(default_factory=DeepScan)
+    sources: SourcesConfig = Field(default_factory=SourcesConfig)
+    classification: ClassificationConfig = Field(default_factory=ClassificationConfig)
+    filtering: FilteringConfig = Field(default_factory=FilteringConfig)
+    output: OutputConfig = Field(default_factory=OutputConfig)
+    rate_limit: RateLimitConfig = Field(default_factory=RateLimitConfig)
+    checkpoint: CheckpointConfig = Field(default_factory=CheckpointConfig)
+    deep_scan: DeepScanConfig = Field(default_factory=DeepScanConfig)
 
 
 def load_etl_config(config_path: str) -> ETLConfig:
     path = Path(config_path)
-    if path.exists():
-        with open(path) as f:
-            data = yaml.safe_load(f) or {}
-        return ETLConfig(**data)
-    return ETLConfig()
+    if not path.exists():
+        return ETLConfig()
+
+    with open(path) as f:
+        data = yaml.safe_load(f) or {}
+
+    return ETLConfig(**data)
