@@ -1,20 +1,27 @@
 from pathlib import Path
-from typing import Optional
+from typing import Literal
 
 import yaml
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class GitHubTrendingSource(BaseModel):
     enabled: bool = True
-    language: str = "all"
-    time_range: str = "daily"
+    language: Literal["all", "python", "javascript", "typescript", "java", "go", "rust", "c++", "c#", "php", "ruby", "swift", "kotlin"] = "all"
+    time_range: Literal["daily", "weekly", "monthly"] = "daily"
+
+    @field_validator("language", "time_range", mode="before")
+    @classmethod
+    def string_to_lowercase(cls, v):
+        if isinstance(v, str):
+            return v.lower()
+        return v
 
 
 class HackerNewsSource(BaseModel):
     enabled: bool = True
-    min_points: int = 10
-    days_back: int = 7
+    min_points: int = Field(ge=1, default=10)
+    days_back: int = Field(ge=1, default=7)
 
 
 class GoogleTrendsSource(BaseModel):
@@ -30,14 +37,14 @@ class SourcesConfig(BaseModel):
 
 class ClassificationConfig(BaseModel):
     model: str = "gpt-4"
-    temperature: float = 0.2
+    temperature: float = Field(ge=0.0, le=2.0, default=0.2)
     json_mode: bool = True
 
 
 class FilteringConfig(BaseModel):
     auto_ignore: list[str] = Field(default_factory=list)
     include_only: list[str] = Field(default_factory=list)
-    min_confidence: float = 0.5
+    min_confidence: float = Field(ge=0.0, le=1.0, default=0.5)
 
 
 class OutputConfig(BaseModel):
@@ -46,13 +53,13 @@ class OutputConfig(BaseModel):
 
 
 class RateLimitConfig(BaseModel):
-    requests_per_minute: int = 30
-    max_retries: int = 3
+    requests_per_minute: int = Field(ge=1, default=30)
+    max_retries: int = Field(ge=1, default=3)
 
 
 class CheckpointConfig(BaseModel):
     enabled: bool = True
-    interval: int = 100
+    interval: int = Field(ge=1, default=100)
 
 
 class DeepScanConfig(BaseModel):
