@@ -13,11 +13,12 @@ This module orchestrates the complete pipeline:
 import logging
 from datetime import datetime
 from typing import Dict, Any, List, Optional, Set
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from etl.config import ETLConfig, SourcesConfig, ClassificationConfig, FilteringConfig, DeepScanConfig
 from etl.ai_filter import AITechnologyFilter, FilteredItem, StrategicValue
 from etl.deep_scanner import DeepScanner
+from etl.checkpoint import CheckpointStore
 from scraper.github_scraper import GitHubScraper
 from scraper.hackernews import HackerNewsScraper
 from ai.classifier import TechnologyClassifier, ClassificationResult
@@ -45,8 +46,16 @@ class NormalizedTech:
 class RadarPipeline:
     """Main pipeline orchestrator for Tech Radar ETL"""
 
-    def __init__(self, config: Optional[ETLConfig] = None):
+    def __init__(self, config: Optional[ETLConfig] = None,
+                 checkpoint_path: Optional[str] = None,
+                 save_interval: int = 100,
+                 resume: bool = False):
         self.config = config or ETLConfig()
+        self.save_interval = save_interval
+        self.resume = resume
+        self.checkpoint: Optional[CheckpointStore] = None
+        if checkpoint_path:
+            self.checkpoint = CheckpointStore(checkpoint_path)
         self._init_components()
 
     def _init_components(self):
@@ -288,42 +297,69 @@ class RadarPipeline:
             'technologies': technologies
         }
 
+    def _save_checkpoint(self, phase: str, cursor: int = 0, **kwargs) -> None:
+        """Save checkpoint at current phase."""
+        if self.checkpoint:
+            data = {"phase": phase, "cursor": cursor, **kwargs}
+            self.checkpoint.save(data)
+
+    def _load_checkpoint(self) -> Optional[Dict[str, Any]]:
+        """Load checkpoint if resume is enabled."""
+        if self.resume and self.checkpoint:
+            return self.checkpoint.load()
+        return None
+
     def run(self) -> Dict[str, Any]:
         """Run the complete pipeline"""
         logger.info("Starting Tech Radar Pipeline")
 
+        checkpoint_data = self._load_checkpoint()
+        if checkpoint_data:
+            logger.info(f"Resuming from checkpoint: {checkpoint_data.get('phase')}")
+
         technologies = self._collect_sources()
         logger.info(f"Phase 1 - Collected {len(technologies)} technologies from sources")
+        self._save_checkpoint("collect", cursor=len(technologies))
 
         technologies = self._normalize_and_dedupe(technologies)
         logger.info(f"Phase 2 - Normalized and deduplicated to {len(technologies)} technologies")
+        self._save_checkpoint("dedupe", cursor=len(technologies))
 
         technologies = self._temporal_enrichment(technologies)
         logger.info("Phase 3 - Temporal/domain enrichment complete")
+        self._save_checkpoint("enrich")
 
         classifications = self._classify_ai(technologies)
         logger.info(f"Phase 4 - AI classification complete for {len(classifications)} items")
+        self._save_checkpoint("classify", cursor=len(classifications))
 
         filtered_items = self._strategic_filter(technologies, classifications)
         logger.info(f"Phase 5 - Strategic filtering complete, {len(filtered_items or [])} items remain")
+        self._save_checkpoint("filter", cursor=len(filtered_items or []))
 
         enriched_items = self._deep_scan_enrich(filtered_items)
         logger.info(f"Phase 6 - Deep scan enrichment complete")
+        self._save_checkpoint("deep_scan")
 
         output = self._generate_output(enriched_items or [])
         logger.info(f"Phase 7 - Output generated with {len(output['technologies'])} technologies")
 
+        self._save_checkpoint("complete", cursor=len(output['technologies']))
+
         return output
 
 
-def run(config_path: Optional[str] = None) -> Dict[str, Any]:
-    """Run pipeline with optional config path"""
+def run(config_path: Optional[str] = None,
+        checkpoint_path: Optional[str] = None,
+        save_interval: int = 100,
+        resume: bool = False) -> Dict[str, Any]:
+    """Run pipeline with optional config path and checkpoint support"""
     if config_path:
         config = load_etl_config(config_path)
     else:
         config = ETLConfig()
 
-    pipeline = RadarPipeline(config)
+    pipeline = RadarPipeline(config, checkpoint_path, save_interval, resume)
     return pipeline.run()
 
 
