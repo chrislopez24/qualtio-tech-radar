@@ -1,9 +1,12 @@
 from datetime import datetime, timedelta
 from typing import Iterator, Optional
 from dataclasses import dataclass
+import logging
 import requests
 
 from etl.config import HackerNewsSource as HackerNewsConfig
+
+logger = logging.getLogger(__name__)
 
 
 TECH_KEYWORDS = [
@@ -12,7 +15,7 @@ TECH_KEYWORDS = [
     'docker', 'kubernetes', 'terraform', 'ansible', 'aws', 'gcp', 'azure',
     'postgresql', 'mysql', 'mongodb', 'redis', 'elasticsearch', 'graphql', 'rest',
     'ai', 'ml', 'machine learning', 'deep learning', 'llm', 'gpt', 'openai',
-    'webassembly', 'wasm', 'deno', 'bun', 'node', 'deno',
+    'webassembly', 'wasm', 'deno', 'bun', 'node',
     'tailwind', 'css', 'html', 'vite', 'webpack', 'rollup', 'esbuild',
     'd3', 'threejs', 'canvas', 'webgl', 'flutter', 'react native', 'ionic',
     'github', 'gitlab', 'bitbucket', 'ci', 'cd', 'jenkins', 'github actions',
@@ -21,14 +24,14 @@ TECH_KEYWORDS = [
     'api', 'backend', 'frontend', 'fullstack', 'devops', 'sre',
     'linux', 'windows', 'macos', 'serverless', 'edge computing',
     'neural', 'transformer', 'bert', 'gpt-4', 'claude', 'gemini',
-    'supabase', 'prisma', 'drizzle', 'trpc', 'tRPC',
-    'rust', 'cargo', 'actix', 'tokio',
+    'supabase', 'prisma', 'drizzle', 'trpc',
+    'cargo', 'actix', 'tokio',
     'golang', 'fiber', 'gin',
-    'django', 'flask', 'fastapi', ' Tornado',
+    'django', 'flask', 'fastapi', 'Tornado',
     'spring', 'nestjs', 'express', 'koa', 'hapi',
     'rabbitmq', 'kafka', 'nats', 'sqs',
     's3', 'cloudfront', 'route53', 'lambda', 'ec2', 'rds',
-    'terraform', 'cloudformation', 'pulumi', 'cdk',
+    'cloudformation', 'pulumi', 'cdk',
     'prometheus', 'grafana', 'elk', 'splunk',
     'grpc', 'protobuf', 'thrift', 'avro',
     'maven', 'gradle', 'npm', 'yarn', 'pnpm',
@@ -82,7 +85,7 @@ class HackerNewsAPI:
                     items.append(item)
                     
         except Exception as e:
-            print(f"Error fetching stories: {e}")
+            logger.error(f"Error fetching stories: {e}")
             
         return items
 
