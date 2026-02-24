@@ -124,3 +124,27 @@
     @apply bg-background text-foreground;
   }
 }
+
+@theme inline {
+  --color-radar-purple: #8b5cf6;
+  --color-radar-blue: #3b82f6;
+  --color-radar-cyan: #06b6d4;
+  --color-radar-emerald: #10b981;
+  --color-radar-amber: #f59e0b;
+  --color-radar-rose: #f43f5e;
+  --color-radar-ring-1: #22c55e;
+  --color-radar-ring-2: #3b82f6;
+  --color-radar-ring-3: #8b5cf6;
+  --color-radar-ring-4: #f43f5e;
+}
+
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glassmorphism {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
