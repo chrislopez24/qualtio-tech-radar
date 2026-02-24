@@ -47,6 +47,49 @@ DEFAULT_AUTO_IGNORE = [
     "moment",
 ]
 
+DUPLICATE_MERGE_GROUPS = {
+    "eslint": ["ESLint", "eslint", "ESLint-config", "@eslint/js"],
+    "prettier": ["Prettier", "prettier", "prettierrc"],
+    "tslint": ["TSLint", "tslint"],
+    "redux": ["Redux", "redux", "@reduxjs/toolkit"],
+    "jest": ["Jest", "jest", "jest-runner"],
+    "mocha": ["Mocha", "mocha"],
+    "cypress": ["Cypress", "cypress"],
+    "storybook": ["Storybook", "storybook"],
+}
+
+CANONICAL_DISPLAY_NAMES = {
+    "eslint": "ESLint",
+    "prettier": "Prettier",
+    "tslint": "TSLint",
+    "redux": "Redux",
+    "jest": "Jest",
+    "mocha": "Mocha",
+    "cypress": "Cypress",
+    "storybook": "Storybook",
+}
+
+PARENT_CHILD_HIERARCHY = {
+    "firebase": ["@firebase/firestore", "@firebase/auth", "@firebase/database", "@firebase/functions", "@firebase/storage"],
+    "aws-sdk": ["@aws-sdk/client-s3", "@aws-sdk/client-ec2", "@aws-sdk/lib-dynamodb"],
+    "angular": ["@angular/core", "@angular/common", "@angular/compiler", "@angular/platform-browser"],
+    "react": ["react-dom", "react-native", "react-router", "@types/react", "@types/react-dom"],
+    "vue": ["vue-router", "vuex", "@vue/core", "@vue/reactivity"],
+    "node": ["@types/node"],
+}
+
+DEPRECATED_MAP = {
+    "tslint": {"replacement": "ESLint", "reason": "TSLint is deprecated in favor of ESLint with TypeScript support"},
+    "moment.js": {"replacement": "date-fns or dayjs", "reason": "Moment.js is in maintenance mode"},
+    "moment": {"replacement": "date-fns or dayjs", "reason": "Moment.js is in maintenance mode"},
+    "request": {"replacement": "axios or fetch", "reason": "Request is deprecated"},
+    "node-uuid": {"replacement": "uuid", "reason": "node-uuid is deprecated"},
+    "joi": {"replacement": "zod or yup", "reason": "Joi is in maintenance mode"},
+    "lodash": {"replacement": "native JS or date-fns", "reason": "Consider native alternatives for tree-shaking"},
+    "underscore": {"replacement": "lodash or native JS", "reason": "Underscore is largely superseded by lodash"},
+    "graphql": {"replacement": "@graphql-tools or nexus", "reason": "GraphQL ecosystem has evolved"},
+}
+
 
 class FilterConfig(Protocol):
     auto_ignore: List[str]
@@ -64,6 +107,13 @@ class FilteredItem:
     confidence: float
     trend: str
     strategic_value: StrategicValue
+    is_deprecated: bool = False
+    replacement: Optional[str] = None
+    merged_names: List[str] = None
+    
+    def __post_init__(self):
+        if self.merged_names is None:
+            self.merged_names = []
 
 
 class AITechnologyFilter:
@@ -87,7 +137,7 @@ Respond with JSON only: {"strategic_value": "high|medium|low", "reason": "brief 
 
     def __init__(self, config: FilterConfig):
         self.config = config
-        self.auto_ignore = set(config.auto_ignore) if config.auto_ignore else set(DEFAULT_AUTO_IGNORE)
+        self.auto_ignore = set(config.auto_ignore) if config.auto_ignore is not None else set(DEFAULT_AUTO_IGNORE)
         self.include_only = set(config.include_only) if config.include_only else None
         self.min_confidence = config.min_confidence
 
@@ -194,11 +244,75 @@ Consider the strategic value for a tech radar."""
 
         return False
 
-    def filter(self, items: List[Any]) -> List[FilteredItem]:
-        """Filter items based on strategic value and config"""
-        filtered = []
+    def _get_canonical_name(self, name: str) -> str:
+        """Get canonical name for deduplication"""
+        name_lower = name.lower()
+        for canonical, aliases in DUPLICATE_MERGE_GROUPS.items():
+            if name_lower in [a.lower() for a in aliases]:
+                return canonical
+        return name_lower
+
+    def _is_parent_of(self, parent: str, child: str) -> bool:
+        """Check if parent is parent of child in hierarchy"""
+        parent_lower = parent.lower()
+        child_lower = child.lower()
+        if parent_lower in PARENT_CHILD_HIERARCHY:
+            return child_lower in [c.lower() for c in PARENT_CHILD_HIERARCHY[parent_lower]]
+        return False
+
+    def _get_deprecated_info(self, name: str) -> Optional[dict]:
+        """Get deprecation info if item is deprecated"""
+        name_lower = name.lower()
+        return DEPRECATED_MAP.get(name_lower)
+
+    def _dedupe_and_consolidate(self, items: List[Any]) -> List[Any]:
+        """Deduplicate items and consolidate hierarchies"""
+        seen_canonical: dict = {}
+        result = []
 
         for item in items:
+            canonical = self._get_canonical_name(item.name)
+            
+            is_parent_item = False
+            is_child_item = False
+            parent_name = None
+            
+            for parent, children in PARENT_CHILD_HIERARCHY.items():
+                if item.name.lower() == parent:
+                    is_parent_item = True
+                if any(item.name.lower() == c.lower() for c in children):
+                    is_child_item = True
+                    parent_name = parent
+            
+            if canonical in seen_canonical:
+                existing = seen_canonical[canonical]
+                if item.stars > existing.stars:
+                    existing.stars = max(existing.stars, item.stars)
+                    if item.name not in getattr(existing, 'merged_names', []):
+                        existing.merged_names.append(item.name)
+                continue
+            
+            if is_child_item and parent_name:
+                parent_canonical = self._get_canonical_name(parent_name)
+                if parent_canonical in seen_canonical:
+                    parent_item = seen_canonical[parent_canonical]
+                    parent_item.stars = max(parent_item.stars, item.stars)
+                    if item.name not in parent_item.merged_names:
+                        parent_item.merged_names.append(item.name)
+                    continue
+            
+            item.merged_names = [item.name]
+            seen_canonical[canonical] = item
+            result.append(item)
+
+        return result
+
+    def filter(self, items: List[Any]) -> List[FilteredItem]:
+        """Filter items based on strategic value and config"""
+        deduplicated = self._dedupe_and_consolidate(items)
+        filtered = []
+
+        for item in deduplicated:
             if self._should_ignore(item):
                 continue
 
@@ -217,15 +331,24 @@ Consider the strategic value for a tech radar."""
             if item.confidence < self.min_confidence:
                 continue
 
+            deprecated_info = self._get_deprecated_info(item.name)
+            is_deprecated = deprecated_info is not None
+            replacement = deprecated_info.get("replacement") if deprecated_info else None
+            canonical_name = self._get_canonical_name(item.name)
+            final_name = CANONICAL_DISPLAY_NAMES.get(canonical_name, canonical_name.title() if canonical_name else item.name)
+
             filtered_item = FilteredItem(
-                name=item.name,
+                name=final_name,
                 description=item.description,
                 stars=item.stars,
                 quadrant=item.quadrant,
                 ring=item.ring,
                 confidence=item.confidence,
                 trend=item.trend,
-                strategic_value=strategic_value
+                strategic_value=strategic_value,
+                is_deprecated=is_deprecated,
+                replacement=replacement,
+                merged_names=getattr(item, 'merged_names', [])
             )
             filtered.append(filtered_item)
 
