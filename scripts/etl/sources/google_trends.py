@@ -49,7 +49,8 @@ class GoogleTrendsSource:
     def _fetch_related_queries(self, topic: str) -> List[dict]:
         self.pytrends.build_payload([topic], timeframe="now 7-d")
         related = self.pytrends.related_queries()
-        return related.get(topic, [])
+        related = related.get(topic, {})
+        return related.get("rising", [])
 
     def _normalize_name(self, name: str) -> str:
         name = name.strip().lower()

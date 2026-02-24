@@ -26,7 +26,7 @@ def test_google_trends_source_with_mocked_data():
 
     with patch("etl.sources.google_trends.TrendReq") as mock_trend_req:
         mock_trend = Mock()
-        mock_trend.related_queries.return_value = {"python": mock_related}
+        mock_trend.related_queries.return_value = {"python": {"rising": mock_related}}
         mock_trend_req.return_value = mock_trend
 
         config = GoogleTrendsConfig(
