@@ -3,6 +3,7 @@
 from unittest.mock import Mock, patch
 from etl.config import GitHubTrendingSource as GitHubTrendingConfig
 from etl.sources.github_trending import GitHubTrendingSource
+from github.GithubException import RateLimitExceededException
 
 
 class MockRepo:
@@ -112,3 +113,103 @@ def test_github_source_disabled():
     source = GitHubTrendingSource(config=config)
     items = source.fetch()
     assert items == []
+
+
+class TestRateLimiter:
+    """Tests for GitHubRateLimiter features"""
+
+    from etl.rate_limiter import GitHubRateLimiter, RateLimitStatus
+
+    def test_ttl_caching(self):
+        """Test that rate limit check uses cache and doesn't hit API repeatedly"""
+        limiter = self.GitHubRateLimiter(cache_ttl=60)
+        
+        mock_status = self.RateLimitStatus(
+            remaining=100,
+            limit=5000,
+            reset_timestamp=int(1000000000),
+            used=10
+        )
+        
+        with patch.object(limiter, 'get_rate_limit_status', return_value=mock_status) as mock_get:
+            with patch.object(limiter, '_is_cache_valid', return_value=True):
+                result1 = limiter.get_rate_limit_status()
+                result2 = limiter.get_rate_limit_status()
+                
+                assert result1 == mock_status
+                assert result2 == mock_status
+
+    def test_ttl_cache_expiration(self):
+        """Test that cache expires after TTL"""
+        limiter = self.GitHubRateLimiter(cache_ttl=60)
+        
+        mock_status = self.RateLimitStatus(
+            remaining=100,
+            limit=5000,
+            reset_timestamp=int(1000000000),
+            used=10
+        )
+        
+        with patch.object(limiter, 'get_rate_limit_status', return_value=mock_status) as mock_get:
+            with patch('time.time', side_effect=[1000, 1000, 1065]) as mock_time:
+                result1 = limiter.get_rate_limit_status()
+                result2 = limiter.get_rate_limit_status()
+                
+                assert mock_get.call_count == 2
+
+    def test_per_minute_throttle(self):
+        """Test that throttle prevents excessive requests"""
+        limiter = self.GitHubRateLimiter(requests_per_minute=60)
+        
+        with patch('time.sleep') as mock_sleep:
+            limiter.throttle_per_minute()
+            limiter.throttle_per_minute()
+            
+            assert mock_sleep.call_count >= 1
+
+    def test_exponential_backoff_increases_delay(self):
+        """Test that backoff increases delay on failures (2^retry_count)"""
+        call_count = 0
+        expected_delays = [2, 4, 8]  # 2^1, 2^2, 2^3
+        
+        def failing_func():
+            nonlocal call_count
+            call_count += 1
+            if call_count <= 3:
+                raise RateLimitExceededException(403, "Rate limit exceeded", {})
+            return "success"
+        
+        limiter = self.GitHubRateLimiter(max_retries=3)
+        
+        with patch('time.sleep') as mock_sleep:
+            with patch.object(limiter, 'throttle_per_minute'):
+                with patch.object(limiter, 'wait_if_needed'):
+                    result = limiter.execute_with_backoff(failing_func)
+            
+            assert result == "success"
+            assert call_count == 4
+            
+            sleep_calls = mock_sleep.call_args_list
+            assert len(sleep_calls) == 3
+            
+            actual_delays = [call[0][0] for call in sleep_calls]
+            assert actual_delays == expected_delays
+
+    def test_exponential_backoff_first_retry_delay(self):
+        """Test that first retry uses 2^1 = 2 seconds"""
+        call_count = 0
+        
+        def failing_func():
+            nonlocal call_count
+            call_count += 1
+            if call_count == 1:
+                raise RateLimitExceededException(403, "Rate limit", {})
+            return "success"
+        
+        limiter = self.GitHubRateLimiter(max_retries=3)
+        
+        with patch('time.sleep') as mock_sleep:
+            limiter.execute_with_backoff(failing_func)
+            
+            first_delay = mock_sleep.call_args_list[0][0][0]
+            assert first_delay == 2
