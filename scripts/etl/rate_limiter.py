@@ -15,6 +15,62 @@ from github.GithubException import RateLimitExceededException, GithubException
 logger = logging.getLogger(__name__)
 
 
+class CircuitBreaker:
+    CLOSED = "CLOSED"
+    OPEN = "OPEN"
+    HALF_OPEN = "HALF_OPEN"
+
+    def __init__(
+        self,
+        failure_threshold: int = 5,
+        timeout: float = 60.0,
+        recovery_timeout: float = 30.0,
+    ):
+        self.failure_threshold = failure_threshold
+        self.timeout = timeout
+        self.recovery_timeout = recovery_timeout
+
+        self._failure_count = 0
+        self._last_failure_time: Optional[float] = None
+        self._state = self.CLOSED
+
+    @property
+    def state(self) -> str:
+        if self._state == self.OPEN:
+            if self._last_failure_time and (time.time() - self._last_failure_time) >= self.timeout:
+                self._state = self.HALF_OPEN
+        return self._state
+
+    def call(self, func: Callable[[], Any], *args, **kwargs) -> Any:
+        if self.state == self.OPEN:
+            raise Exception("Circuit breaker is OPEN")
+
+        try:
+            result = func(*args, **kwargs)
+            self._reset()
+            return result
+        except Exception as e:
+            self._record_failure()
+            raise
+
+    def _record_failure(self) -> None:
+        self._failure_count += 1
+        
+        if self._state == self.CLOSED:
+            self._last_failure_time = time.time()
+
+        if self._state == self.CLOSED and self._failure_count >= self.failure_threshold:
+            self._state = self.OPEN
+        
+        if self._state == self.HALF_OPEN:
+            self._state = self.OPEN
+
+    def _reset(self) -> None:
+        self._failure_count = 0
+        self._last_failure_time = None
+        self._state = self.CLOSED
+
+
 @dataclass
 class RateLimitStatus:
     remaining: int
