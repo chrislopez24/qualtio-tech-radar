@@ -21,9 +21,6 @@ ALIAS_MAP = {
     "angularjs": "angular",
     "node.js": "node",
     "nodejs": "node",
-    "typescript": "typescript",
-    "javascript": "javascript",
-    "python": "python",
     "machine-learning": "machine learning",
     "machine_learning": "machine learning",
     "deep-learning": "deep learning",
@@ -35,9 +32,6 @@ ALIAS_MAP = {
     "golang": "go",
     "gcp": "google cloud",
     "aws": "amazon web services",
-    "postgresql": "postgresql",
-    "mongodb": "mongodb",
-    "redis": "redis",
 }
 
 
@@ -70,6 +64,7 @@ def normalize_signals(signals: List[TechnologySignal]) -> List[TechnologySignal]
     canonical_signals: Dict[str, Dict] = defaultdict(lambda: {
         "signals": [],
         "weighted_score": 0.0,
+        "total_weight": 0.0,
     })
 
     for signal in signals:
@@ -82,6 +77,7 @@ def normalize_signals(signals: List[TechnologySignal]) -> List[TechnologySignal]
 
         canonical_signals[normalized_name]["signals"].append(signal)
         canonical_signals[normalized_name]["weighted_score"] += signal.score * weight
+        canonical_signals[normalized_name]["total_weight"] += weight
 
     result = []
     for name, data in canonical_signals.items():
@@ -90,12 +86,14 @@ def normalize_signals(signals: List[TechnologySignal]) -> List[TechnologySignal]
             continue
 
         first_signal = original_signals[0]
+        total_weight = data.get("total_weight", 1)
+        score = data["weighted_score"] / total_weight
 
         merged_signal = TechnologySignal(
             name=name,
             source="merged",
             signal_type="merged",
-            score=data["weighted_score"],
+            score=score,
             raw_data={
                 "sources": [s.source for s in original_signals],
                 "original_scores": [s.score for s in original_signals],

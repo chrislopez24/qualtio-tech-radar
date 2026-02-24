@@ -106,7 +106,7 @@ def test_normalizer_weighted_source_score():
     merged = normalize_signals(signals)
 
     assert len(merged) == 1
-    assert merged[0].score > 10.0
+    assert merged[0].score == 10.0
 
 
 def test_normalizer_preserves_different_technologies():
