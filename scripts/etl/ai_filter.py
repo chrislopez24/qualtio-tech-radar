@@ -6,11 +6,14 @@ by filtering out low-value items like utility libraries.
 
 import os
 import json
+import logging
 from enum import Enum
 from typing import List, Optional, Any, Protocol
 from dataclasses import dataclass
 
 from openai import OpenAI
+
+logger = logging.getLogger(__name__)
 
 
 class StrategicValue(Enum):
@@ -100,8 +103,8 @@ Respond with JSON only: {"strategic_value": "high|medium|low", "reason": "brief 
         if self._client:
             try:
                 return self._ai_evaluate(name, stars, description)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(f"AI evaluation failed for {name}, falling back to heuristic: {e}")
 
         return self._heuristic_evaluate(name, stars)
 
@@ -135,8 +138,12 @@ Consider the strategic value for a tech radar."""
                 lines = lines[:-1]
             json_str = "\n".join(lines).strip()
 
-        data = json.loads(json_str)
-        value = data.get("strategic_value", "medium").lower()
+        try:
+            data = json.loads(json_str)
+            value = data.get("strategic_value", "medium").lower()
+        except json.JSONDecodeError as e:
+            logger.warning(f"Failed to parse AI response as JSON for {name}: {e}")
+            return self._heuristic_evaluate(name, stars)
 
         if value == "high":
             return StrategicValue.HIGH
