@@ -68,9 +68,13 @@ class HackerNewsScraper:
             
         return items
 
-    def search_tech_posts(self, min_points: int = 10, limit: int = 100) -> List[HNItem]:
-        """Search for technology-related posts"""
+    def search_tech_posts(self, min_points: int = 10, limit: int = 100, days_back: int = 7) -> List[HNItem]:
+        """Search for technology-related posts filtered by points and date"""
         all_items = []
+        
+        # Calculate cutoff timestamp for date filtering
+        cutoff_date = datetime.now() - timedelta(days=days_back)
+        cutoff_timestamp = cutoff_date.timestamp()
         
         try:
             response = self.session.get(f"{self.BASE_URL}/topstories.json")
@@ -80,6 +84,24 @@ class HackerNewsScraper:
             for story_id in story_ids[:500]:
                 item = self._get_item(story_id)
                 if item and item.type == 'story':
+                    # Filter by points
+                    if item.points < min_points:
+                        continue
+                    
+                    # Filter by date (check if post is within the specified days)
+                    try:
+                        if isinstance(item.created_at, (int, float)):
+                            post_timestamp = item.created_at
+                        else:
+                            post_timestamp = datetime.fromisoformat(str(item.created_at)).timestamp()
+                        
+                        if post_timestamp < cutoff_timestamp:
+                            continue
+                    except (ValueError, TypeError):
+                        # If we can't parse the date, include the item anyway
+                        pass
+                    
+                    # Check if it's tech-related
                     if self._is_tech_related(item.title, item.url):
                         all_items.append(item)
                         
@@ -151,9 +173,9 @@ class HackerNewsScraper:
             
         return sorted(items, key=lambda x: x.points, reverse=True)
 
-    def get_tech_summary(self, min_points: int = 10) -> Dict[str, List[Dict[str, Any]]]:
+    def get_tech_summary(self, min_points: int = 10, days_back: int = 7) -> Dict[str, List[Dict[str, Any]]]:
         """Get a summary of technology mentions by category"""
-        posts = self.search_tech_posts(min_points=min_points, limit=200)
+        posts = self.search_tech_posts(min_points=min_points, limit=200, days_back=days_back)
         
         categories = {
             'frontend': [],
@@ -196,7 +218,7 @@ class HackerNewsScraper:
 def main():
     """Test the scraper"""
     scraper = HackerNewsScraper()
-    posts = scraper.get_tech_summary(min_points=10)
+    posts = scraper.get_tech_summary(min_points=10, days_back=7)
     
     for category, items in posts.items():
         print(f"\n{category.upper()}: {len(items)} posts")
