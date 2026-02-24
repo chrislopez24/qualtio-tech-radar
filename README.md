@@ -1,36 +1,154 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Qualtio Tech Radar
 
-## Getting Started
+AI-powered Technology Radar with automated weekly updates from GitHub Trends, Hacker News, and Google Trends using Synthetic API for classification.
 
-First, run the development server:
+![Tech Radar Preview](./docs/preview.png)
+
+## Features
+
+- **Interactive Radar Visualization**: Custom D3.js-based radar with 4 quadrants and 4 rings
+- **Dual Mode**: Manual curation mode + AI-powered auto-classification mode
+- **Glassmorphism UI**: Modern, responsive design with dark theme support
+- **Automated Data Pipeline**: Weekly updates via GitHub Actions
+- **Search & Filter**: Real-time search across all technologies
+
+## Tech Stack
+
+- **Frontend**: Next.js 16 + TypeScript + Tailwind CSS + Framer Motion
+- **Visualization**: D3.js
+- **UI Components**: shadcn/ui
+- **Data Pipeline**: Python 3.12 + Synthetic API
+
+## Local Development
+
+### Prerequisites
+
+- Node.js 20+ 
+- Python 3.11+
+- Git
+
+### 1. Clone & Install
+
+```bash
+git clone https://github.com/chrislopez24/qualtio-tech-radar.git
+cd qualtio-tech-radar
+
+# Install Node.js dependencies
+npm install
+
+# (Optional) Install Python dependencies for data pipeline
+pip install -r scripts/requirements.txt
+```
+
+### 2. Environment Setup
+
+Copy the example environment file and configure:
+
+```bash
+cp .env.example .env.local
+```
+
+Edit `.env.local` with your API keys (only needed if running the data pipeline locally):
+
+```env
+# Optional - only for running data pipeline locally
+GITHUB_TOKEN=your_github_token_here
+SYNTHETIC_API_KEY=your_synthetic_api_key_here
+SYNTHETIC_API_URL=https://api.synthetic.new/v1
+```
+
+### 3. Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Build for Production (Local Test)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+The static site will be generated in the `dist/` folder.
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+├── src/
+│   ├── app/              # Next.js app router
+│   ├── components/       # React components (Radar, Blip, etc.)
+│   ├── hooks/            # Custom React hooks
+│   ├── lib/              # Utilities & configuration
+│   └── data/             # Technology data (JSON)
+├── scripts/              # Python data pipeline
+│   ├── scraper/          # GitHub & HN scrapers
+│   ├── ai/               # AI classifier
+│   └── main.py           # Pipeline entry point
+├── .github/workflows/    # CI/CD automation
+└── docs/                 # Documentation
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Available Scripts
 
-## Deploy on Vercel
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build static export for production |
+| `npm run lint` | Run ESLint |
+| `npm start` | Start production server (after build) |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Data Pipeline (Optional)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+To run the data collection pipeline locally:
+
+```bash
+# Ensure you have .env.local configured with API keys
+python scripts/main.py
+```
+
+This will:
+1. Fetch trending repos from GitHub
+2. Collect tech posts from Hacker News
+3. Classify technologies using Synthetic API
+4. Generate `src/data/data.ai.json`
+
+## Deployment
+
+### GitHub Pages (Recommended)
+
+1. Fork this repository
+2. Go to Settings → Pages
+3. Source: Deploy from a branch → Branch: `master`, Folder: `/ (root)`
+4. The workflow will automatically build and deploy on every push
+
+### Manual Deploy
+
+```bash
+npm run build
+# Upload dist/ folder to your hosting provider
+```
+
+## Configuration
+
+Edit `scripts/config.yaml` to customize:
+
+- `github.min_stars`: Minimum stars for GitHub repos (default: 100)
+- `hackernews.min_points`: Minimum HN points (default: 10)
+- `radar.max_technologies`: Max technologies to track (default: 50)
+
+## Contributing
+
+1. Create a new branch: `git checkout -b feature/my-feature`
+2. Make your changes
+3. Run tests: `npm run lint && npm run build`
+4. Push and create a PR
+
+## License
+
+MIT License - see LICENSE file for details.
+
+---
+
+**Made with ❤️ by Qualtio**

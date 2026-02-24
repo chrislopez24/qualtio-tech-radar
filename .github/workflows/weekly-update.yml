@@ -26,7 +26,7 @@ jobs:
           
       - name: Run data pipeline
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
           SYNTHETIC_API_KEY: ${{ secrets.SYNTHETIC_API_KEY }}
         run: |
           python scripts/main.py

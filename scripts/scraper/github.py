@@ -27,7 +27,7 @@ class GitHubScraper:
     """Scraper for GitHub trending repositories"""
 
     def __init__(self, token: Optional[str] = None):
-        self.token = token or os.environ.get('GITHUB_TOKEN')
+        self.token = token or os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN')
         self.client = Github(self.token) if self.token else None
         self.session = requests.Session()
         self.session.headers.update({
