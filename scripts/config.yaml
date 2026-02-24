@@ -9,7 +9,12 @@ sources:
     days_back: 7
   google_trends:
     enabled: true
-    seed_topics: []
+    seed_topics:
+      - python
+      - javascript
+      - react
+      - machine learning
+      - docker
 
 classification:
   model: gpt-4
