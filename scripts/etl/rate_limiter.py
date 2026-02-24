@@ -24,22 +24,22 @@ class CircuitBreaker:
         self,
         failure_threshold: int = 5,
         timeout: float = 60.0,
-        recovery_timeout: float = 30.0,
     ):
         self.failure_threshold = failure_threshold
         self.timeout = timeout
-        self.recovery_timeout = recovery_timeout
 
         self._failure_count = 0
         self._last_failure_time: Optional[float] = None
         self._state = self.CLOSED
+        self._lock = Lock()
 
     @property
     def state(self) -> str:
-        if self._state == self.OPEN:
-            if self._last_failure_time and (time.time() - self._last_failure_time) >= self.timeout:
-                self._state = self.HALF_OPEN
-        return self._state
+        with self._lock:
+            if self._state == self.OPEN:
+                if self._last_failure_time and (time.time() - self._last_failure_time) >= self.timeout:
+                    self._state = self.HALF_OPEN
+            return self._state
 
     def call(self, func: Callable[[], Any], *args, **kwargs) -> Any:
         if self.state == self.OPEN:
@@ -54,21 +54,23 @@ class CircuitBreaker:
             raise
 
     def _record_failure(self) -> None:
-        self._failure_count += 1
-        
-        if self._state == self.CLOSED:
-            self._last_failure_time = time.time()
+        with self._lock:
+            self._failure_count += 1
+            
+            if self._state == self.CLOSED:
+                self._last_failure_time = time.time()
 
-        if self._state == self.CLOSED and self._failure_count >= self.failure_threshold:
-            self._state = self.OPEN
-        
-        if self._state == self.HALF_OPEN:
-            self._state = self.OPEN
+            if self._state == self.CLOSED and self._failure_count >= self.failure_threshold:
+                self._state = self.OPEN
+            
+            if self._state == self.HALF_OPEN:
+                self._state = self.OPEN
 
     def _reset(self) -> None:
-        self._failure_count = 0
-        self._last_failure_time = None
-        self._state = self.CLOSED
+        with self._lock:
+            self._failure_count = 0
+            self._last_failure_time = None
+            self._state = self.CLOSED
 
 
 @dataclass
@@ -104,8 +106,9 @@ class GitHubRateLimiter:
         return (time.time() - self._cache_timestamp) < self.cache_ttl
 
     def get_rate_limit_status(self) -> Optional[RateLimitStatus]:
-        if self._is_cache_valid():
-            return self._rate_limit_cache
+        with self._lock:
+            if self._is_cache_valid():
+                return self._rate_limit_cache
 
         try:
             if self.client:
@@ -136,8 +139,9 @@ class GitHubRateLimiter:
                     used=core["used"],
                 )
 
-            self._rate_limit_cache = status
-            self._cache_timestamp = time.time()
+            with self._lock:
+                self._rate_limit_cache = status
+                self._cache_timestamp = time.time()
             return status
 
         except Exception as e:
