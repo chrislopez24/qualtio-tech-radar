@@ -1,0 +1,10 @@
+README.md
+src/
+  main.go
+charts/
+  argocd/
+    values.yaml
+terraform/
+  main.tf
+kubernetes/
+  deployment.yaml

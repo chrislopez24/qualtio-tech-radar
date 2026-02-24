@@ -1,0 +1,23 @@
+README.md
+infrastructure/
+  terraform/
+    modules/
+      compute/
+        main.tf
+        variables.tf
+      networking/
+        main.tf
+  kubernetes/
+    manifests/
+      deployment.yaml
+      service.yaml
+    helm/
+      nginx/
+        values.yaml
+  ansible/
+    playbooks/
+      deploy.yml
+  docker/
+    Dockerfile
+  pulumi/
+    index.ts
