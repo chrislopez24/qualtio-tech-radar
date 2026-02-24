@@ -1,19 +1,49 @@
-github:
-  min_stars: 100
-  max_repos: 50
-  
-hackernews:
-  min_points: 10
-  max_posts: 100
+sources:
+  github_trending:
+    enabled: true
+    min_stars: 100
+    max_repos: 50
+    time_range: "daily"
+    language: null
+    
+  hackernews:
+    enabled: true
+    min_points: 10
+    max_posts: 100
+    
+  google_trends:
+    enabled: true
+    country: "US"
+    category: "tech"
+    max_results: 50
 
-classifier:
+classification:
   model: "llama-3.3-70b"
   temperature: 0.3
+  max_retries: 3
+  batch_size: 10
+
+filtering:
+  min_confidence: 0.3
+  min_mentions: 2
+  exclude_keywords: []
+  required_keywords: []
 
 output:
   ai_data_file: "src/data/data.ai.json"
   manual_data_file: "src/data/data.json"
-  
-radar:
-  max_technologies: 50
-  min_confidence: 0.3
+  radar:
+    max_technologies: 50
+
+rate_limit:
+  requests_per_minute: 30
+  retry_after: 60
+
+checkpoint:
+  enabled: true
+  file: ".checkpoint.json"
+
+deep_scan:
+  enabled: false
+  max_depth: 3
+  include_readme: true
