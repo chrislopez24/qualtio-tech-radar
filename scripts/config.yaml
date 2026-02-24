@@ -1,0 +1,19 @@
+github:
+  min_stars: 100
+  max_repos: 50
+  
+hackernews:
+  min_points: 10
+  max_posts: 100
+
+classifier:
+  model: "llama-3.3-70b"
+  temperature: 0.3
+
+output:
+  ai_data_file: "src/data/data.ai.json"
+  manual_data_file: "src/data/data.json"
+  
+radar:
+  max_technologies: 50
+  min_confidence: 0.3
