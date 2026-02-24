@@ -3,6 +3,7 @@
 import os
 import time
 import logging
+import requests
 from dataclasses import dataclass, field
 from typing import Callable, Any, Optional
 from functools import wraps
@@ -61,7 +62,6 @@ class GitHubRateLimiter:
                     used=core.used,
                 )
             else:
-                import requests
                 session = requests.Session()
                 headers = {"Accept": "application/vnd.github.v3+json"}
                 if self.token:
@@ -109,6 +109,17 @@ class GitHubRateLimiter:
 
             self._last_request_time = time.time()
 
+    def _handle_retry(self, retry_count: int, error: Exception, error_type: str) -> None:
+        if retry_count > self.max_retries:
+            raise
+
+        wait_time = 2**retry_count
+        logger.warning(
+            f"{error_type}. Retry {retry_count}/{self.max_retries} "
+            f"in {wait_time}s..."
+        )
+        time.sleep(wait_time)
+
     def execute_with_backoff(
         self, func: Callable[[], Any], *args, **kwargs
     ) -> Any:
@@ -125,51 +136,23 @@ class GitHubRateLimiter:
 
             except RateLimitExceededException as e:
                 retry_count += 1
-                if retry_count > self.max_retries:
-                    raise
-
-                wait_time = 2**retry_count
-                logger.warning(
-                    f"Rate limit exceeded. Retry {retry_count}/{self.max_retries} "
-                    f"in {wait_time}s..."
-                )
-                time.sleep(wait_time)
+                last_exception = e
+                self._handle_retry(retry_count, e, "Rate limit exceeded")
 
             except GithubException as e:
                 retry_count += 1
                 last_exception = e
-                if retry_count > self.max_retries:
-                    raise
-
-                wait_time = 2**retry_count
-                logger.warning(
-                    f"GitHub API error. Retry {retry_count}/{self.max_retries} "
-                    f"in {wait_time}s..."
-                )
-                time.sleep(wait_time)
+                self._handle_retry(retry_count, e, "GitHub API error")
 
             except Exception as e:
                 if "403" in str(e) or "Rate Limit Exceeded" in str(e):
                     retry_count += 1
-                    if retry_count > self.max_retries:
-                        raise
-
-                    wait_time = 2**retry_count
-                    logger.warning(
-                        f"HTTP 403 rate limit. Retry {retry_count}/{self.max_retries} "
-                        f"in {wait_time}s..."
-                    )
-                    time.sleep(wait_time)
+                    last_exception = e
+                    self._handle_retry(retry_count, e, "HTTP 403 rate limit")
                 else:
                     raise
 
         raise last_exception or Exception("Max retries exceeded")
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
 
 
 def with_rate_limiter(rate_limiter: GitHubRateLimiter):

@@ -2,7 +2,7 @@
 
 import os
 import logging
-from typing import List, Optional
+from typing import List, Optional, Any
 
 from etl.config import GitHubTrendingSource as GitHubTrendingConfig
 from etl.models import TechnologySignal
@@ -20,12 +20,8 @@ class GitHubTrendingSource:
     ):
         self.config = config
         self.rate_limiter = rate_limiter or GitHubRateLimiter(
-            requests_per_minute=config.rate_limit.requests_per_minute
-            if hasattr(config, "rate_limit")
-            else 30,
-            max_retries=config.rate_limit.max_retries
-            if hasattr(config, "rate_limit")
-            else 3,
+            requests_per_minute=getattr(config, "rate_limit", None) and config.rate_limit.requests_per_minute or 30,
+            max_retries=getattr(config, "rate_limit", None) and config.rate_limit.max_retries or 3,
         )
         self.scraper = GitHubScraper(token=self.rate_limiter.token)
 
@@ -59,27 +55,27 @@ class GitHubTrendingSource:
             logger.error(f"Error fetching trending repos: {e}")
             return []
 
+    def _get_repo_attr(self, repo, attr: str, default: Any = None) -> Any:
+        if isinstance(repo, dict):
+            return repo.get(attr, default)
+        return getattr(repo, attr, default)
+
     def _filter_by_language(self, repos: List[dict], language: Optional[str]) -> List[dict]:
         if not language:
             return repos
         return [
             repo
             for repo in repos
-            if (hasattr(repo, "language") and repo.language and repo.language.lower() == language.lower())
-            or (isinstance(repo, dict) and repo.get("language") and repo.get("language", "").lower() == language.lower())
+            if self._get_repo_attr(repo, "language") and self._get_repo_attr(repo, "language", "").lower() == language.lower()
         ]
 
     def _normalize_to_signal(self, repo) -> TechnologySignal:
-        name = repo.name if hasattr(repo, "name") else repo.get("name", "")
-        stars = repo.stars if hasattr(repo, "stars") else repo.get("stars", 0)
-        description = (
-            repo.description if hasattr(repo, "description") else repo.get("description", "")
-        )
-        url = repo.url if hasattr(repo, "url") else repo.get("url", "")
-        language = (
-            repo.language if hasattr(repo, "language") else repo.get("language")
-        )
-        topics = repo.topics if hasattr(repo, "topics") else repo.get("topics", [])
+        name = self._get_repo_attr(repo, "name", "")
+        stars = self._get_repo_attr(repo, "stars", 0)
+        description = self._get_repo_attr(repo, "description", "")
+        url = self._get_repo_attr(repo, "url", "")
+        language = self._get_repo_attr(repo, "language")
+        topics = self._get_repo_attr(repo, "topics", [])
 
         max_stars = 100000
         normalized_stars = min(stars / max_stars, 1.0)
@@ -87,15 +83,15 @@ class GitHubTrendingSource:
 
         raw_data = {
             "name": name,
-            "full_name": repo.full_name if hasattr(repo, "full_name") else repo.get("full_name", ""),
+            "full_name": self._get_repo_attr(repo, "full_name", ""),
             "description": description,
             "stars": stars,
-            "forks": repo.forks if hasattr(repo, "forks") else repo.get("forks", 0),
+            "forks": self._get_repo_attr(repo, "forks", 0),
             "language": language,
             "topics": topics,
             "url": url,
-            "created_at": repo.created_at if hasattr(repo, "created_at") else repo.get("created_at", ""),
-            "updated_at": repo.updated_at if hasattr(repo, "updated_at") else repo.get("updated_at", ""),
+            "created_at": self._get_repo_attr(repo, "created_at", ""),
+            "updated_at": self._get_repo_attr(repo, "updated_at", ""),
         }
 
         return TechnologySignal(
