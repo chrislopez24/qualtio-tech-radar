@@ -20,22 +20,23 @@ jobs:
         with:
           python-version: '3.12'
           
-      - name: Install dependencies
+      - name: Create venv and install dependencies
         run: |
-          pip install -r scripts/requirements.txt
+          python -m venv .venv
+          .venv/bin/pip install -r scripts/requirements.txt
           
       - name: Run data pipeline
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           SYNTHETIC_API_KEY: ${{ secrets.SYNTHETIC_API_KEY }}
         run: |
-          python scripts/main.py
+          .venv/bin/python scripts/main.py --resume
           
-      - name: Commit data.ai.json
+      - name: Commit sanitized data
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add src/data/data.ai.json
+          git add data.ai.json
           git diff --staged --quiet || git commit -m "chore: update AI radar data"
           
       - name: Push changes

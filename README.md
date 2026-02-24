@@ -99,20 +99,95 @@ The static site will be generated in the `dist/` folder.
 | `npm run lint` | Run ESLint |
 | `npm start` | Start production server (after build) |
 
-## Data Pipeline (Optional)
+## Data Pipeline (ETL)
 
-To run the data collection pipeline locally:
+The ETL pipeline collects technology data from multiple sources, classifies them using AI, and generates the radar data files.
+
+### Quick Start
 
 ```bash
 # Ensure you have .env.local configured with API keys
+source .venv/bin/activate
 python scripts/main.py
 ```
 
 This will:
 1. Fetch trending repos from GitHub
 2. Collect tech posts from Hacker News
-3. Classify technologies using Synthetic API
-4. Generate `src/data/data.ai.json`
+3. Query Google Trends for seed topics
+4. Classify technologies using Synthetic API
+5. Generate `src/data/data.ai.json`
+
+### Environment Variables
+
+Required for running the pipeline:
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `GH_TOKEN` | GitHub personal access token for API rate limits | Yes |
+| `SYNTHETIC_API_KEY` | API key for Synthetic (LLM) classification | Yes |
+| `SYNTHETIC_MODEL` | Model to use (default: `llama-3.3-70b`) | No |
+| `SYNTHETIC_API_URL` | Synthetic API endpoint (default: `https://api.synthetic.new/v1`) | No |
+
+### Source Toggles
+
+Enable/disable data sources in `scripts/config.yaml`:
+
+```yaml
+sources:
+  github_trending:
+    enabled: true   # Set to false to skip
+  hackernews:
+    enabled: true   # Set to false to skip
+  google_trends:
+    enabled: true   # Set to false to skip
+```
+
+Or via CLI:
+```bash
+python scripts/main.py --sources github_trending,hackernews
+```
+
+### Pipeline Options
+
+```bash
+# Dry run (simulate without collecting data)
+python scripts/main.py --dry-run
+
+# Resume from checkpoint (after interruption)
+python scripts/main.py --resume
+
+# Limit technologies processed
+python scripts/main.py --max-technologies 25
+```
+
+### Checkpoint & Resume
+
+The pipeline saves checkpoints automatically (every 100 items by default). If interrupted:
+- Use `--resume` to continue from where it left off
+- Checkpoint file: `.checkpoint/radar.json`
+- Delete checkpoint to start fresh
+
+### Quality Guardrails
+
+The pipeline includes:
+- **Confidence threshold**: `min_confidence: 0.5` (config.yaml)
+- **Rate limiting**: 30 requests/minute to prevent API throttling
+- **Circuit breaker**: Automatically skips failing sources
+- **Retry logic**: 3 retries with exponential backoff
+
+### Testing
+
+```bash
+# Run ETL tests
+cd scripts && source ../.venv/bin/activate && python -m pytest tests -q
+
+# Verify dry-run
+python scripts/main.py --dry-run
+
+# Build frontend
+npm run build
+```
 
 ## Deployment
 

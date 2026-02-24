@@ -1,159 +1,82 @@
 """Main Pipeline for Tech Radar Data Collection and Processing"""
 
-import os
-import sys
+import argparse
 import json
-import yaml
+import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, List, Set
+
 from dotenv import load_dotenv
 
 load_dotenv()
 
-from scraper.github import GitHubScraper
-from scraper.hackernews import HackerNewsScraper
-from ai.classifier import TechnologyClassifier
+from etl.pipeline import RadarPipeline
+from etl.config import ETLConfig, load_etl_config
 
 
-def load_config(config_path: str = "scripts/config.yaml") -> Dict[str, Any]:
-    """Load configuration from YAML file"""
-    with open(config_path, 'r') as f:
-        return yaml.safe_load(f)
-
-
-def deduplicate_technologies(github_techs: List[Dict], hn_techs: List[Dict]) -> List[Dict]:
-    """Deduplicate technologies from multiple sources"""
-    seen: Set[str] = set()
-    unique_techs: List[Dict] = []
-    
-    for tech in github_techs + hn_techs:
-        name = tech.get('name', '').lower().strip()
-        if name and name not in seen:
-            seen.add(name)
-            unique_techs.append(tech)
-            
-    return unique_techs
-
-
-def normalize_technologies(repos: List[Any], hn_posts: List[Any]) -> List[Dict]:
-    """Normalize technology data from different sources"""
-    tech_map: Dict[str, Dict] = {}
-    
-    for repo in repos:
-        name = repo.name
-        if name not in tech_map:
-            tech_map[name] = {
-                'name': name,
-                'description': repo.description,
-                'stars': repo.stars,
-                'forks': repo.forks,
-                'language': repo.language,
-                'topics': repo.topics,
-                'url': repo.url,
-                'hn_mentions': 0
-            }
-        else:
-            tech_map[name]['stars'] = max(tech_map[name]['stars'], repo.stars)
-            
-    for post in hn_posts:
-        title = post.title.lower()
-        
-        for name, tech in tech_map.items():
-            if name.lower() in title:
-                tech['hn_mentions'] += 1
-                
-    return list(tech_map.values())
-
-
-def run_pipeline(config: Dict[str, Any]) -> Dict[str, Any]:
-    """Run the complete data pipeline"""
-    print("=" * 60)
-    print("Tech Radar Data Pipeline")
-    print("=" * 60)
-    
-    print("\n[1/5] Loading configuration...")
-    min_stars = config['github']['min_stars']
-    max_repos = config['github']['max_repos']
-    hn_min_points = config['hackernews']['min_points']
-    hn_max_posts = config['hackernews']['max_posts']
-    max_technologies = config['radar']['max_technologies']
-    
-    print(f"\n[2/5] Fetching GitHub trending repositories...")
-    github_scraper = GitHubScraper()
-    repos = github_scraper.get_trending_repos(min_stars=min_stars, limit=max_repos)
-    print(f"  Found {len(repos)} repositories")
-    
-    print(f"\n[3/5] Fetching Hacker News tech posts...")
-    hn_scraper = HackerNewsScraper()
-    hn_posts = hn_scraper.search_tech_posts(min_points=hn_min_points, limit=hn_max_posts)
-    print(f"  Found {len(hn_posts)} tech posts")
-    
-    print(f"\n[4/5] Normalizing and deduplicating technologies...")
-    technologies = normalize_technologies(repos, hn_posts)
-    technologies = deduplicate_technologies(technologies, [])
-    technologies = technologies[:max_technologies]
-    print(f"  {len(technologies)} unique technologies")
-    
-    print(f"\n[5/5] Classifying technologies with AI...")
-    classifier = TechnologyClassifier()
-    results = classifier.classify_batch(technologies)
-    
-    ai_technologies = []
-    for result in results:
-        tech = next((t for t in technologies if t['name'].lower() == result.name.lower()), None)
-        
-        ai_technologies.append({
-            'id': result.name.lower().replace(' ', '-'),
-            'name': result.name,
-            'quadrant': result.quadrant,
-            'ring': result.ring,
-            'description': result.description,
-            'moved': 0,
-            'trend': result.trend,
-            'githubStars': tech['stars'] if tech else 0,
-            'hnMentions': tech['hn_mentions'] if tech else 0,
-            'confidence': result.confidence,
-            'updatedAt': datetime.now().isoformat()
-        })
-    
-    output = {
-        'updatedAt': datetime.now().isoformat(),
-        'technologies': ai_technologies
-    }
-    
-    return output
-
-
-def save_output(output: Dict[str, Any], output_path: str):
-    """Save output to JSON file"""
-    output_file = Path(output_path)
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-    
-    with open(output_file, 'w') as f:
-        json.dump(output, f, indent=2)
-        
-    print(f"\nOutput saved to: {output_path}")
+def run_main_for_test():
+    """Entry point for testing - returns exit code"""
+    return main()
 
 
 def main():
-    """Main entry point"""
+    """Main entry point with backward-compatible CLI"""
+    parser = argparse.ArgumentParser(description="Tech Radar Data Pipeline")
+    parser.add_argument("--resume", action="store_true", help="Resume from checkpoint")
+    parser.add_argument("--dry-run", action="store_true", help="Run without making changes")
+    parser.add_argument("--max-technologies", type=int, help="Maximum technologies to process")
+    parser.add_argument("--sources", type=str, help="Comma-separated list of sources (github_trending,hackernews,google_trends)")
+
+    args = parser.parse_args()
+
     try:
-        config = load_config()
-        
-        output = run_pipeline(config)
-        
-        output_path = config['output']['ai_data_file']
-        save_output(output, output_path)
-        
+        config = load_etl_config("scripts/config.yaml")
+
+        if args.max_technologies:
+            config.deep_scan.repos = args.max_technologies * [""][:1] or []
+
+        if args.sources:
+            source_names = [s.strip() for s in args.sources.split(",")]
+            config.sources.github_trending.enabled = "github_trending" in source_names
+            config.sources.hackernews.enabled = "hackernews" in source_names
+            config.sources.google_trends.enabled = "google_trends" in source_names
+
+        if args.dry_run:
+            print("[DRY RUN] Pipeline execution simulated (no data will be collected)")
+            return 0
+
+        pipeline = RadarPipeline(
+            config=config,
+            checkpoint_path=".checkpoint/radar.json",
+            save_interval=config.checkpoint.interval,
+            resume=args.resume,
+        )
+
+        result = pipeline.run()
+
+        output_path = config.output.public_file
+        output_file = Path(output_path)
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+
+        output_data = {
+            "updatedAt": datetime.now().isoformat(),
+            "technologies": result.get("technologies", []) if isinstance(result, dict) else []
+        }
+
+        with open(output_file, "w") as f:
+            json.dump(output_data, f, indent=2)
+
+        print(f"\nOutput saved to: {output_path}")
         print("\n" + "=" * 60)
         print("Pipeline completed successfully!")
         print("=" * 60)
-        
+
+        return 0
+
     except Exception as e:
         print(f"\nError: {e}")
         sys.exit(1)
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main() if hasattr(main, "__code__") and main.__code__.co_argcount == 0 else main())
