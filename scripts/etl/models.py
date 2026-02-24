@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Dict
 
 
 @dataclass
@@ -29,3 +29,13 @@ class TechnologyClassification:
     ring: str
     description: str
     is_new: bool = False
+
+
+@dataclass
+class TemporalAnalysis:
+    trend: str
+    activity_score: float
+    recent_count: int = 0
+    new_count: int = 0
+    legacy_count: int = 0
+    domain_breakdown: Optional[Dict[str, float]] = None
