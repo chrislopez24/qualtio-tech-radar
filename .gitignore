@@ -44,3 +44,6 @@ next-env.d.ts
 # worktrees
 .worktrees
 worktrees
+
+# internal data files
+src/data/data.ai.full.json
