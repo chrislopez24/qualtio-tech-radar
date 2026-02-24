@@ -20,6 +20,8 @@ classification:
   model: gpt-4
   temperature: 0.2
   json_mode: true
+  timeout: 30
+  max_retries: 3
 
 filtering:
   auto_ignore: []
