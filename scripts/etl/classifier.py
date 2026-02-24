@@ -4,11 +4,15 @@ import os
 import json
 import re
 import time
+import logging
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
-from openai import OpenAI
+from openai import OpenAI, RateLimitError, APITimeoutError, APIConnectionError
 from openai.types.responses import ResponseFunctionToolCall
 from pydantic import BaseModel, Field, field_validator
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class ClassificationSchema(BaseModel):
@@ -106,13 +110,15 @@ Provide a JSON response with:
         base_url: Optional[str] = None,
         model: Optional[str] = None,
         max_retries: int = 3,
-        timeout: int = 30
+        timeout: int = 30,
+        batch_size: int = 50
     ):
         self.api_key = api_key or os.environ.get('SYNTHETIC_API_KEY')
         self.base_url = base_url or os.environ.get('SYNTHETIC_API_URL', 'https://api.synthetic.new/v1')
         self.model = model or os.environ.get('SYNTHETIC_MODEL', 'llama-3.3-70b')
         self.max_retries = max_retries
         self.timeout = timeout
+        self.batch_size = batch_size
         
         if not self.api_key:
             raise ValueError("SYNTHETIC_API_KEY is required")
@@ -163,13 +169,36 @@ Respond with JSON only."""
                 content = response.choices[0].message.content
                 return self._parse_response(content, name)
                 
-            except Exception as e:
+            except RateLimitError as e:
+                logger.warning(f"Rate limit exceeded for {name}, attempt {attempt + 1}/{self.max_retries}")
                 if attempt < self.max_retries - 1:
-                    wait_time = (2 ** attempt) * 0.5
+                    wait_time = (2 ** attempt) * 2
                     time.sleep(wait_time)
                 else:
-                    print(f"Error classifying {name} after {self.max_retries} attempts: {e}")
+                    logger.error(f"Rate limit error classifying {name} after {self.max_retries} attempts: {e}")
                     return self._fallback_classification(name, stars, hn_mentions, description)
+                    
+            except APITimeoutError as e:
+                logger.warning(f"API timeout for {name}, attempt {attempt + 1}/{self.max_retries}")
+                if attempt < self.max_retries - 1:
+                    wait_time = (2 ** attempt) * 1
+                    time.sleep(wait_time)
+                else:
+                    logger.error(f"Timeout error classifying {name} after {self.max_retries} attempts: {e}")
+                    return self._fallback_classification(name, stars, hn_mentions, description)
+                    
+            except APIConnectionError as e:
+                logger.warning(f"Connection error for {name}, attempt {attempt + 1}/{self.max_retries}")
+                if attempt < self.max_retries - 1:
+                    wait_time = (2 ** attempt) * 1
+                    time.sleep(wait_time)
+                else:
+                    logger.error(f"Connection error classifying {name} after {self.max_retries} attempts: {e}")
+                    return self._fallback_classification(name, stars, hn_mentions, description)
+                    
+            except Exception as e:
+                logger.error(f"Unexpected error classifying {name}: {e}")
+                return self._fallback_classification(name, stars, hn_mentions, description)
         
         return self._fallback_classification(name, stars, hn_mentions, description)
 
@@ -177,17 +206,21 @@ Respond with JSON only."""
         self,
         technologies: List[Dict[str, Any]]
     ) -> List[ClassificationResult]:
-        """Classify multiple technologies"""
+        """Classify multiple technologies with configurable batch size"""
         results = []
         
-        for tech in technologies:
-            result = self.classify_one(
-                name=tech.get('name', ''),
-                stars=tech.get('stars', 0),
-                hn_mentions=tech.get('hn_mentions', 0),
-                description=tech.get('description', '')
-            )
-            results.append(result)
+        for i in range(0, len(technologies), self.batch_size):
+            batch = technologies[i:i + self.batch_size]
+            logger.info(f"Processing batch {i // self.batch_size + 1}: {len(batch)} technologies")
+            
+            for tech in batch:
+                result = self.classify_one(
+                    name=tech.get('name', ''),
+                    stars=tech.get('stars', 0),
+                    hn_mentions=tech.get('hn_mentions', 0),
+                    description=tech.get('description', '')
+                )
+                results.append(result)
             
         return results
 
@@ -222,7 +255,7 @@ Respond with JSON only."""
             )
             
         except Exception as e:
-            print(f"Schema validation error: {e}")
+            logger.warning(f"Schema validation error for {name}: {e}")
             return self._fallback_classification(name, 0, 0, "")
 
     def _extract_json(self, content: str) -> Optional[Dict[str, Any]]:
@@ -242,10 +275,12 @@ Respond with JSON only."""
             except json.JSONDecodeError:
                 pass
         
-        json_match = re.search(r'\{[^{}]*"name"[^{}]*\}', content, re.DOTALL)
+        json_match = re.search(r'\{[^{}]*\}', content)
         if json_match:
             try:
-                return json.loads(json_match.group(0))
+                data = json.loads(json_match.group(0))
+                if isinstance(data, dict) and 'name' in data:
+                    return data
             except json.JSONDecodeError:
                 pass
         
@@ -293,12 +328,12 @@ def main():
     results = classifier.classify_batch(test_techs)
     
     for result in results:
-        print(f"\n{result.name}:")
-        print(f"  Quadrant: {result.quadrant}")
-        print(f"  Ring: {result.ring}")
-        print(f"  Trend: {result.trend}")
-        print(f"  Confidence: {result.confidence:.2f}")
-        print(f"  Rationale: {result.rationale}")
+        logger.info(f"\n{result.name}:")
+        logger.info(f"  Quadrant: {result.quadrant}")
+        logger.info(f"  Ring: {result.ring}")
+        logger.info(f"  Trend: {result.trend}")
+        logger.info(f"  Confidence: {result.confidence:.2f}")
+        logger.info(f"  Rationale: {result.rationale}")
 
 
 if __name__ == "__main__":
