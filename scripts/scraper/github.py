@@ -6,7 +6,7 @@ from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 import requests
 from github import Github
-from github.GithubException import RateLimitException
+from github.GithubException import RateLimitExceededException
 
 
 @dataclass
@@ -107,7 +107,7 @@ class GitHubScraper:
                             created_at=repo.created_at.isoformat(),
                             updated_at=repo.updated_at.isoformat()
                         ))
-                    except RateLimitException:
+                    except RateLimitExceededException:
                         retry_count = self._handle_rate_limit_error(retry_count, max_retries)
                         continue
                     except Exception as e:
@@ -116,7 +116,7 @@ class GitHubScraper:
                 
                 return repos
                 
-            except RateLimitException:
+            except RateLimitExceededException:
                 retry_count = self._handle_rate_limit_error(retry_count, max_retries)
             except Exception as e:
                 print(f"Error fetching trending repos: {e}")

@@ -5,10 +5,16 @@ import yaml
 from pydantic import BaseModel, Field, field_validator
 
 
+class RateLimitConfig(BaseModel):
+    requests_per_minute: int = Field(ge=1, default=30)
+    max_retries: int = Field(ge=1, default=3)
+
+
 class GitHubTrendingSource(BaseModel):
     enabled: bool = True
     language: Literal["all", "python", "javascript", "typescript", "java", "go", "rust", "c++", "c#", "php", "ruby", "swift", "kotlin"] = "all"
     time_range: Literal["daily", "weekly", "monthly"] = "daily"
+    rate_limit: RateLimitConfig = Field(default_factory=RateLimitConfig)
 
     @field_validator("language", "time_range", mode="before")
     @classmethod
@@ -50,11 +56,6 @@ class FilteringConfig(BaseModel):
 class OutputConfig(BaseModel):
     public_file: str = "src/data/data.ai.json"
     internal_file: str = "src/data/data.ai.full.json"
-
-
-class RateLimitConfig(BaseModel):
-    requests_per_minute: int = Field(ge=1, default=30)
-    max_retries: int = Field(ge=1, default=3)
 
 
 class CheckpointConfig(BaseModel):
