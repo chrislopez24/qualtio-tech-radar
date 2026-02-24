@@ -1,19 +1,60 @@
-github:
-  min_stars: 100
-  max_repos: 50
-  
-hackernews:
-  min_points: 10
-  max_posts: 100
+sources:
+  github_trending:
+    enabled: true
+    language: all
+    time_range: daily
+  hackernews:
+    enabled: true
+    min_points: 10
+    days_back: 7
+  google_trends:
+    enabled: true
+    seed_topics: []
 
-classifier:
-  model: "llama-3.3-70b"
-  temperature: 0.3
+classification:
+  model: gpt-4
+  temperature: 0.2
+  json_mode: true
+
+filtering:
+  auto_ignore:
+    - rimraf
+    - chalk
+    - ansi-styles
+    - debug
+    - is-odd
+    - is-even
+    - left-pad
+    - right-pad
+    - tiny-invariant
+    - clsx
+    - cond
+    - wrapt
+    - prettier
+    - eslint
+    - prettierrc
+    - ts-node
+    - "@types/node"
+    - "@types/react"
+    - "@types/lodash"
+    - lodash
+    - underscore
+    - moment
+  include_only: []
+  min_confidence: 0.5
 
 output:
-  ai_data_file: "src/data/data.ai.json"
-  manual_data_file: "src/data/data.json"
-  
-radar:
-  max_technologies: 50
-  min_confidence: 0.3
+  public_file: src/data/data.ai.json
+  internal_file: src/data/data.ai.full.json
+
+rate_limit:
+  requests_per_minute: 30
+  max_retries: 3
+
+checkpoint:
+  enabled: true
+  interval: 100
+
+deep_scan:
+  enabled: false
+  repos: []
