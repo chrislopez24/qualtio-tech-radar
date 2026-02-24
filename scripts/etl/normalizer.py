@@ -25,7 +25,7 @@ ALIAS_MAP = {
     "machine_learning": "machine learning",
     "deep-learning": "deep learning",
     "deep_learning": "deep learning",
-    "nextjs": "nextjs",
+    "nextjs": "next",
     "nuxtjs": "nuxt",
     "sveltejs": "svelte",
     "denojs": "deno",
