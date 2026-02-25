@@ -17,8 +17,8 @@ export interface Technology {
 
 export interface AITechnology extends Technology {
   trend: Trend;
-  githubStars?: number;
-  hnMentions?: number;
+  githubStars: number;
+  hnMentions: number;
   confidence: number;
   updatedAt: string;
   marketScore?: number;

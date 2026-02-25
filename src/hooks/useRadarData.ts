@@ -20,7 +20,7 @@ export function useRadarData(mode: Mode) {
           setData(manualData as RadarData);
         } else {
           if (aiData) {
-            setData(aiData as AIRadarData);
+            setData(aiData as unknown as AIRadarData);
           } else {
             setData(manualData as RadarData);
           }
