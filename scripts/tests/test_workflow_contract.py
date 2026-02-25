@@ -12,3 +12,85 @@ def test_workflow_persists_history_file_and_public_ai_data():
     text = Path(".github/workflows/weekly-update.yml").read_text()
     assert "src/data/data.ai.history.json" in text
     assert "src/data/data.ai.json" in text
+
+
+def test_docs_reference_llm_optimization_controls():
+    """Documentation should reference llm_optimization configuration"""
+    runbook_path = Path("docs/etl-ops-runbook.md")
+    assert runbook_path.exists(), "etl-ops-runbook.md must exist"
+
+    text = runbook_path.read_text()
+    assert "llm_optimization" in text, "Documentation must reference llm_optimization"
+    assert "selective" in text.lower() and "llm" in text.lower(), \
+        "Documentation must describe selective LLM policy"
+
+
+def test_docs_reference_shadow_mode():
+    """Documentation should reference shadow mode"""
+    runbook_path = Path("docs/etl-ops-runbook.md")
+    assert runbook_path.exists(), "etl-ops-runbook.md must exist"
+
+    text = runbook_path.read_text()
+    assert "shadow" in text.lower(), "Documentation must reference shadow mode"
+    assert "shadow-baseline" in text or "shadow_baseline" in text, \
+        "Documentation must describe shadow baseline parameter"
+
+
+def test_docs_reference_cache_config():
+    """Documentation should reference cache configuration"""
+    runbook_path = Path("docs/etl-ops-runbook.md")
+    assert runbook_path.exists(), "etl-ops-runbook.md must exist"
+
+    text = runbook_path.read_text()
+    assert "cache_enabled" in text or "cache-enabled" in text, \
+        "Documentation must reference cache_enabled configuration"
+    assert "cache_drift" in text.lower(), \
+        "Documentation must reference cache drift threshold"
+
+
+def test_architecture_docs_reference_selective_llm():
+    """Architecture documentation should describe selective LLM"""
+    arch_path = Path("docs/etl-architecture.md")
+    assert arch_path.exists(), "etl-architecture.md must exist"
+
+    text = arch_path.read_text()
+    assert "selective" in text.lower(), "Architecture must describe selective LLM"
+    assert "borderline" in text.lower(), "Architecture must describe borderline candidates"
+    assert "core" in text.lower() and "watchlist" in text.lower(), \
+        "Architecture must describe core and watchlist candidates"
+
+
+def test_architecture_docs_reference_shadow_eval():
+    """Architecture documentation should describe shadow evaluation"""
+    arch_path = Path("docs/etl-architecture.md")
+    assert arch_path.exists(), "etl-architecture.md must exist"
+
+    text = arch_path.read_text()
+    assert "shadow" in text.lower(), "Architecture must reference shadow mode"
+    assert "core_overlap" in text or "core overlap" in text.lower(), \
+        "Architecture must describe core_overlap metric"
+    assert "leader_coverage" in text or "leader coverage" in text.lower(), \
+        "Architecture must describe leader_coverage metric"
+
+
+def test_readme_references_selective_llm():
+    """README should mention selective LLM optimization"""
+    readme_path = Path("README.md")
+    assert readme_path.exists(), "README.md must exist"
+
+    text = readme_path.read_text()
+    assert "selective" in text.lower(), "README must reference selective LLM"
+    assert "70" in text or "reduction" in text.lower(), \
+        "README should mention LLM call reduction"
+
+
+def test_readme_references_quality_evaluation():
+    """README should mention quality evaluation features"""
+    readme_path = Path("README.md")
+    assert readme_path.exists(), "README.md must exist"
+
+    text = readme_path.read_text()
+    assert "shadow" in text.lower() or "quality" in text.lower(), \
+        "README must reference quality evaluation"
+    assert "go/no-go" in text.lower() or "quality gate" in text.lower(), \
+        "README should mention quality gates"

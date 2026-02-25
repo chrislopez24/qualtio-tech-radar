@@ -36,6 +36,18 @@ source .venv/bin/activate
 python scripts/main.py
 ```
 
+### Selective LLM Mode (Optimized)
+
+```bash
+# Run with selective LLM (reduces API calls by ~70%)
+python scripts/main.py
+```
+
+The selective LLM policy is **enabled by default** and classifies:
+- **Core candidates** (high market score): Deterministic (no LLM)
+- **Watchlist candidates** (trending): Deterministic (no LLM)
+- **Borderline candidates** only: LLM classification
+
 ### Dry Run (No Data Collection)
 
 ```bash
@@ -67,6 +79,42 @@ Use after:
 - Interrupted run
 - API failure mid-pipeline
 - Testing changes mid-execution
+
+### Shadow Mode (Quality Validation)
+
+Run pipeline in shadow mode to validate optimized output against baseline:
+
+```bash
+# Basic shadow mode (uses default thresholds)
+python scripts/main.py --shadow --shadow-baseline src/data/baseline.json
+
+# Custom thresholds
+python scripts/main.py \
+  --shadow \
+  --shadow-baseline src/data/baseline.json \
+  --shadow-threshold-core-overlap 0.90 \
+  --shadow-threshold-leader-coverage 0.98 \
+  --shadow-threshold-watchlist-recall 0.85 \
+  --shadow-threshold-llm-reduction 0.65 \
+  --shadow-output artifacts/shadow_eval.json
+```
+
+**Quality Thresholds** (default):
+- Core Overlap: ≥85% (Jaccard similarity of technology IDs)
+- Leader Coverage: ≥95% (adopt ring technologies preserved)
+- Watchlist Recall: ≥80% (trending technologies preserved)
+- LLM Reduction: ≥60% (API call reduction achieved)
+
+**Output**: Report written to `artifacts/shadow_eval.json` with detailed metrics.
+
+**Go/No-Go**: Pipeline exits with code 1 if any threshold not met, blocking automatic rollout.
+
+**Generate Baseline**:
+```bash
+# First, generate baseline with full LLM mode (if needed)
+# Then copy to baseline file
+cp src/data/data.ai.json src/data/baseline.json
+```
 
 ### Limit Processing
 
@@ -169,14 +217,72 @@ The pipeline runs automatically via `.github/workflows/weekly-update.yml`:
 - Uses secrets: `GH_TOKEN`, `SYNTHETIC_API_KEY`
 - Outputs to `src/data/data.ai.json` and `src/data/data.ai.history.json`
 
+### Shadow Mode in CI/CD
+
+Add shadow mode validation to workflows before rollout:
+
+```yaml
+- name: Run Shadow Evaluation
+  run: |
+    source .venv/bin/activate
+    python scripts/main.py \
+      --shadow \
+      --shadow-baseline src/data/baseline.json \
+      --shadow-output artifacts/shadow_eval.json
+    
+- name: Upload Shadow Report
+  uses: actions/upload-artifact@v4
+  with:
+    name: shadow-eval-report
+    path: artifacts/shadow_eval.json
+```
+
+### Cache Monitoring
+
+Monitor LLM cache performance:
+
+```bash
+# Check cache hit rate
+ls -lh src/data/llm_cache.json
+
+# Clear cache if needed
+rm src/data/llm_cache.json
+```
+
+**When to Clear Cache**:
+- After major config changes
+- When prompt version changes
+- If cache corruption suspected
+- Quarterly cleanup
+
 ### Manual Verification
 
 After automated run:
 1. Check workflow run status
 2. Verify `data.ai.json` and `data.ai.history.json` were updated
 3. Check radar displays new data
+4. Review shadow eval report (if shadow mode enabled)
 
 ## Configuration Reference
+
+### LLM Optimization Config
+
+```yaml
+llm_optimization:
+  enabled: true              # Enable selective LLM (default: true)
+  max_calls_per_run: 40      # Budget limit per pipeline run
+  borderline_band: 5.0       # Score band around thresholds for borderline classification
+  watchlist_ratio: 0.25      # % of target_total for watchlist bucket
+  cache_enabled: true        # Enable drift-aware LLM cache
+  cache_file: "src/data/llm_cache.json"
+  cache_drift_threshold: 3.0  # Max signal drift before cache invalidation
+```
+
+**Tuning Guide**:
+- `max_calls_per_run`: Lower = fewer API calls, may miss some borderline candidates
+- `borderline_band`: Higher = more borderline candidates get LLM classification
+- `watchlist_ratio`: Higher = more slots for trending technologies
+- `cache_drift_threshold`: Lower = more cache hits, but may use stale decisions
 
 ### Source Config
 
@@ -243,6 +349,70 @@ checkpoint:
 1. Adjust `min_confidence` in config.yaml
 2. Add to `auto_ignore` list
 3. Re-run with `--resume` or fresh start
+
+### Issue: Selective LLM Not Reducing Calls
+
+**Symptoms**: API calls still high despite selective LLM enabled
+
+**Diagnosis**:
+```bash
+# Check how many borderline candidates
+# Look for log line: "Phase 4 - Candidate selection: X core, Y watchlist, Z borderline"
+```
+
+**Solutions**:
+1. Increase `borderline_band` to reduce borderline candidates
+2. Increase `max_calls_per_run` if hitting budget
+3. Tune `watchlist_ratio` to balance buckets
+4. Verify `llm_optimization.enabled: true` in config
+
+### Issue: Cache Not Working
+
+**Symptoms**: Same technologies being classified repeatedly
+
+**Diagnosis**:
+```bash
+# Check if cache file exists and is readable
+cat src/data/llm_cache.json | head -5
+
+# Check logs for "Cache hit" or "Cache miss"
+grep -i "cache" scripts/main.py.log 2>/dev/null || echo "Check console output"
+```
+
+**Solutions**:
+1. Verify `llm_optimization.cache_enabled: true`
+2. Check cache file permissions
+3. Clear cache: `rm src/data/llm_cache.json`
+4. Lower `cache_drift_threshold` for more hits
+
+### Issue: Shadow Mode Fails Quality Gates
+
+**Symptoms**: Pipeline exits with code 1, "Quality thresholds not met"
+
+**Diagnosis**:
+```bash
+# Review shadow eval report
+cat artifacts/shadow_eval.json | python -m json.tool
+
+# Check specific metrics
+cat artifacts/shadow_eval.json | jq '.core_overlap, .leader_coverage, .watchlist_recall'
+```
+
+**Solutions**:
+1. **Core Overlap Low**: Adjust `borderline_band` to include more technologies
+2. **Leader Coverage Low**: Lower threshold or increase `max_calls_per_run`
+3. **Watchlist Recall Low**: Increase `watchlist_ratio`
+4. **LLM Reduction Low**: Verify selective LLM is enabled
+
+**Emergency Override** (use with caution):
+```bash
+# Temporarily lower thresholds
+python scripts/main.py \
+  --shadow \
+  --shadow-baseline src/data/baseline.json \
+  --shadow-threshold-core-overlap 0.70 \
+  --shadow-threshold-llm-reduction 0.40
+```
 
 ## Testing
 

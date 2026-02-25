@@ -8,6 +8,9 @@ AI-powered Technology Radar with automated weekly updates from GitHub, Hacker Ne
 
 - **Interactive Radar Visualization**: Custom D3.js-based radar with 4 quadrants and 4 rings
 - **Dual Mode**: Manual curation mode + AI-powered auto-classification mode
+- **Selective LLM Optimization**: 70%+ reduction in LLM calls via intelligent candidate selection (core/watchlist/borderline)
+- **Drift-Aware Caching**: Reuse LLM decisions across runs with automatic invalidation
+- **Shadow Quality Evaluation**: Validate optimized pipeline against baseline with go/no-go gates
 - **Glassmorphism UI**: Modern, responsive design with dark theme support
 - **Automated Data Pipeline**: Weekly updates via GitHub Actions
 - **Market-Signal Ringing**: External momentum scoring (GitHub + HN + Google Trends) with anti-collapse guardrails
@@ -19,6 +22,10 @@ AI-powered Technology Radar with automated weekly updates from GitHub, Hacker Ne
 - **Visualization**: D3.js
 - **UI Components**: shadcn/ui
 - **Data Pipeline**: Python 3.12 + Synthetic API
+  - Selective LLM classification (70%+ call reduction)
+  - Drift-aware decision caching
+  - Shadow quality evaluation
+  - Candidate selection (core/watchlist/borderline)
 
 ## Local Development
 
