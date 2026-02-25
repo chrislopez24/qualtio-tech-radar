@@ -13,7 +13,7 @@ class RateLimitConfig(BaseModel):
 class GitHubTrendingSource(BaseModel):
     enabled: bool = True
     language: Literal["all", "python", "javascript", "typescript", "java", "go", "rust", "c++", "c#", "php", "ruby", "swift", "kotlin"] = "all"
-    time_range: Literal["daily", "weekly", "monthly"] = "daily"
+    time_range: Literal["daily", "weekly", "monthly"] = "monthly"
     rate_limit: RateLimitConfig = Field(default_factory=RateLimitConfig)
 
     @field_validator("language", "time_range", mode="before")
@@ -26,8 +26,8 @@ class GitHubTrendingSource(BaseModel):
 
 class HackerNewsSource(BaseModel):
     enabled: bool = True
-    min_points: int = Field(ge=1, default=10)
-    days_back: int = Field(ge=1, default=7)
+    min_points: int = Field(ge=1, default=25)
+    days_back: int = Field(ge=1, default=90)
 
 
 class GoogleTrendsSource(BaseModel):
@@ -43,14 +43,16 @@ class SourcesConfig(BaseModel):
 
 class ClassificationConfig(BaseModel):
     model: str = "hf:MiniMaxAI/MiniMax-M2.5"
-    temperature: float = Field(ge=0.0, le=2.0, default=0.2)
+    temperature: float = Field(ge=0.0, le=2.0, default=0.1)
     json_mode: bool = True
 
 
 class FilteringConfig(BaseModel):
     auto_ignore: list[str] = Field(default_factory=list)
     include_only: list[str] = Field(default_factory=list)
-    min_confidence: float = Field(ge=0.0, le=1.0, default=0.5)
+    min_confidence: float = Field(ge=0.0, le=1.0, default=0.6)
+    min_sources: int = Field(ge=1, default=2)
+    min_consistency_days: int = Field(ge=1, default=14)
 
 
 class OutputConfig(BaseModel):
@@ -68,22 +70,23 @@ class DeepScanConfig(BaseModel):
 
 
 class ScoringWeightsConfig(BaseModel):
-    github_momentum: float = Field(ge=0.0, default=0.3)
+    # GitHub is our primary source (real adoption)
+    github_momentum: float = Field(ge=0.0, default=0.60)
     github_popularity: float = Field(ge=0.0, default=0.25)
-    hn_heat: float = Field(ge=0.0, default=0.2)
-    google_momentum: float = Field(ge=0.0, default=0.25)
+    # HN is secondary (early buzz)
+    hn_heat: float = Field(ge=0.0, default=0.15)
 
 
 class ScoringThresholdsConfig(BaseModel):
-    adopt: float = Field(ge=0.0, le=100.0, default=75.0)
-    trial: float = Field(ge=0.0, le=100.0, default=55.0)
-    assess: float = Field(ge=0.0, le=100.0, default=35.0)
+    adopt: float = Field(ge=0.0, le=100.0, default=80.0)
+    trial: float = Field(ge=0.0, le=100.0, default=60.0)
+    assess: float = Field(ge=0.0, le=100.0, default=40.0)
 
 
 class HysteresisConfig(BaseModel):
-    promote_delta: float = Field(ge=0.0, default=5.0)
-    demote_delta: float = Field(ge=0.0, default=5.0)
-    cooldown_weeks: int = Field(ge=0, default=1)
+    promote_delta: float = Field(ge=0.0, default=15.0)
+    demote_delta: float = Field(ge=0.0, default=15.0)
+    cooldown_weeks: int = Field(ge=0, default=12)
 
 
 class ScoringConfig(BaseModel):
@@ -92,15 +95,47 @@ class ScoringConfig(BaseModel):
     hysteresis: HysteresisConfig = Field(default_factory=HysteresisConfig)
 
 
+class DistributionConfig(BaseModel):
+    target_total: int = Field(ge=5, default=15)
+    min_per_quadrant: int = Field(ge=1, default=2)
+    max_per_quadrant: int = Field(ge=1, default=5)
+
+
+class MinStarsConfig(BaseModel):
+    assess: int = Field(ge=0, default=500)
+    trial: int = Field(ge=0, default=2000)
+    adopt: int = Field(ge=0, default=10000)
+
+
+class MinHNMentionsConfig(BaseModel):
+    assess: int = Field(ge=0, default=3)
+    trial: int = Field(ge=0, default=10)
+    adopt: int = Field(ge=0, default=25)
+
+
+class QualityGatesConfig(BaseModel):
+    min_stars: MinStarsConfig = Field(default_factory=MinStarsConfig)
+    min_hn_mentions: MinHNMentionsConfig = Field(default_factory=MinHNMentionsConfig)
+    require_production_evidence: bool = True
+
+
 class HistoryConfig(BaseModel):
     enabled: bool = True
     file: str = "src/data/data.ai.history.json"
-    max_weeks: int = Field(ge=1, default=12)
+    max_weeks: int = Field(ge=1, default=24)
 
 
 class DistributionGuardrailConfig(BaseModel):
     enabled: bool = True
-    max_ring_ratio: float = Field(gt=0.0, le=1.0, default=0.6)
+    max_ring_ratio: float = Field(gt=0.0, le=1.0, default=0.5)
+
+
+class LLMOptimizationConfig(BaseModel):
+    enabled: bool = True
+    max_calls_per_run: int = Field(ge=1, default=40)
+    borderline_band: float = Field(ge=0.0, le=20.0, default=5.0)
+    watchlist_ratio: float = Field(gt=0.0, lt=1.0, default=0.25)
+    cache_enabled: bool = True
 
 
 class ETLConfig(BaseModel):
@@ -112,8 +147,11 @@ class ETLConfig(BaseModel):
     checkpoint: CheckpointConfig = Field(default_factory=CheckpointConfig)
     deep_scan: DeepScanConfig = Field(default_factory=DeepScanConfig)
     scoring: ScoringConfig = Field(default_factory=ScoringConfig)
+    distribution: DistributionConfig = Field(default_factory=DistributionConfig)
+    quality_gates: QualityGatesConfig = Field(default_factory=QualityGatesConfig)
     history: HistoryConfig = Field(default_factory=HistoryConfig)
     distribution_guardrail: DistributionGuardrailConfig = Field(default_factory=DistributionGuardrailConfig)
+    llm_optimization: LLMOptimizationConfig = Field(default_factory=LLMOptimizationConfig)
 
 
 def load_etl_config(config_path: str) -> ETLConfig:

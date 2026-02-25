@@ -1,53 +1,58 @@
+# Qualtio Tech Radar - Configuration
+# Inspired by Zalando's approach: quarterly updates with data-driven decisions
+
 sources:
   github_trending:
     enabled: true
     language: all
-    time_range: daily
+    time_range: monthly  # Changed from daily to monthly for quarterly perspective
+    rate_limit:
+      requests_per_minute: 30
+      max_retries: 3
+  
   hackernews:
     enabled: true
-    min_points: 10
-    days_back: 7
+    min_points: 25  # Increased from 10 to filter hype
+    days_back: 90   # Changed from 7 to 90 days for quarterly view
+  
+  # Google Trends disabled - pytrends is unreliable and blocked by Google
+  # We rely on GitHub (primary) and HackerNews (secondary) for quality signals
   google_trends:
-    enabled: true
-    seed_topics:
-      - ai
-      - devops
-      - qa
-      - kubernetes
-      - rust
-      - postgresql
+    enabled: false
+    seed_topics: []
 
 classification:
   model: hf:MiniMaxAI/MiniMax-M2.5
-  temperature: 0.2
+  temperature: 0.1  # Lower temperature for more consistent results
   json_mode: true
 
 filtering:
+  # Auto-ignore common noise and utility packages
   auto_ignore:
     - rimraf
     - chalk
-    - ansi-styles
     - debug
     - is-odd
     - is-even
     - left-pad
     - right-pad
-    - tiny-invariant
-    - clsx
-    - cond
-    - wrapt
     - prettier
     - eslint
-    - prettierrc
-    - ts-node
-    - "@types/node"
-    - "@types/react"
-    - "@types/lodash"
     - lodash
     - underscore
     - moment
+  
   include_only: []
-  min_confidence: 0.5
+  
+  # Minimum requirements for entry (Zalando-style)
+  min_confidence: 0.6
+  
+  # Temporal consistency: must appear in at least 1 reliable source
+  # (GitHub is considered reliable; HN and Google Trends are supplementary)
+  min_sources: 1
+  
+  # Temporal consistency: must have data for at least 14 days
+  min_consistency_days: 14
 
 output:
   public_file: src/data/data.ai.json
@@ -66,24 +71,62 @@ deep_scan:
 
 scoring:
   weights:
-    github_momentum: 0.30
+    # GitHub is our primary and most reliable source
+    # Represents real adoption through stars, forks, and activity
+    github_momentum: 0.60
     github_popularity: 0.25
-    hn_heat: 0.20
-    google_momentum: 0.25
+    # HN represents early buzz and developer interest
+    # Secondary validation, used when available
+    hn_heat: 0.15
+  
   thresholds:
-    adopt: 75
-    trial: 55
-    assess: 35
+    # Conservative thresholds (Zalando-style)
+    adopt: 80    # High bar for adopt
+    trial: 60    # Must have proven traction
+    assess: 40   # Showing promise
+  
   hysteresis:
-    promote_delta: 5
-    demote_delta: 5
-    cooldown_weeks: 1
+    # Strong hysteresis to prevent flip-flopping
+    promote_delta: 15       # Must improve significantly to move up
+    demote_delta: 15        # Must degrade significantly to move down
+    cooldown_weeks: 12      # Quarterly cooldown (3 months)
+
+# Target: 12-15 technologies for a focused radar
+distribution:
+  target_total: 15
+  min_per_quadrant: 2
+  max_per_quadrant: 5
 
 history:
   enabled: true
   file: src/data/data.ai.history.json
-  max_weeks: 12
+  max_weeks: 24  # Keep 6 months of history for trend analysis
 
 distribution_guardrail:
   enabled: true
-  max_ring_ratio: 0.6
+  max_ring_ratio: 0.5  # No ring should have more than 50% of items
+
+# Quality gates (Zalando-style)
+quality_gates:
+  # Minimum stars for GitHub projects by ring
+  min_stars:
+    assess: 500
+    trial: 2000
+    adopt: 10000
+  
+  # Minimum HN mentions
+  min_hn_mentions:
+    assess: 3
+    trial: 10
+    adopt: 25
+  
+  # Require production evidence for Trial and Adopt
+  require_production_evidence: true
+
+# LLM Optimization settings
+llm_optimization:
+  enabled: true
+  max_calls_per_run: 40
+  borderline_band: 5.0
+  watchlist_ratio: 0.25
+  cache_enabled: true
