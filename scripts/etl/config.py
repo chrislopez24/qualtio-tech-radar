@@ -132,7 +132,7 @@ class DistributionGuardrailConfig(BaseModel):
 
 class LLMOptimizationConfig(BaseModel):
     enabled: bool = True
-    max_calls_per_run: int = Field(ge=1, default=40)
+    max_calls_per_run: int = Field(ge=1, le=500, default=40)
     borderline_band: float = Field(ge=0.0, le=20.0, default=5.0)
     watchlist_ratio: float = Field(gt=0.0, lt=1.0, default=0.25)
     cache_enabled: bool = True
