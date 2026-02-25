@@ -4,11 +4,11 @@ import os
 import json
 import re
 import time
+import numbers
 import logging
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
 from openai import OpenAI, RateLimitError, APITimeoutError, APIConnectionError
-from openai.types.responses import ResponseFunctionToolCall
 from pydantic import BaseModel, Field, field_validator
 
 logging.basicConfig(level=logging.INFO)
@@ -23,6 +23,7 @@ class ClassificationSchema(BaseModel):
     confidence: float = Field(ge=0.0, le=1.0)
     trend: str
     rationale: Optional[str] = None
+    strategic_value: str = "medium"
 
     @field_validator('quadrant')
     @classmethod
@@ -54,6 +55,16 @@ class ClassificationSchema(BaseModel):
                 return t
         return 'stable'
 
+    @field_validator('strategic_value')
+    @classmethod
+    def validate_strategic_value(cls, v):
+        valid = {'high', 'medium', 'low'}
+        v_lower = v.lower().strip()
+        for sv in valid:
+            if sv in v_lower:
+                return sv
+        return 'medium'
+
 
 @dataclass
 class ClassificationResult:
@@ -64,6 +75,7 @@ class ClassificationResult:
     confidence: float
     trend: str
     rationale: str = ""
+    strategic_value: str = "medium"
     raw_response: str = ""
 
 
@@ -115,7 +127,7 @@ Provide a JSON response with:
     ):
         self.api_key = api_key or os.environ.get('SYNTHETIC_API_KEY')
         self.base_url = base_url or os.environ.get('SYNTHETIC_API_URL', 'https://api.synthetic.new/v1')
-        self.model = model or os.environ.get('SYNTHETIC_MODEL', 'llama-3.3-70b')
+        self.model = model or os.environ.get('SYNTHETIC_MODEL', 'hf:MiniMaxAI/MiniMax-M2.5')
         self.max_retries = max_retries
         self.timeout = timeout
         self.batch_size = batch_size
@@ -127,6 +139,74 @@ Provide a JSON response with:
             api_key=self.api_key,
             base_url=self.base_url,
             timeout=self.timeout
+        )
+        self.metrics: Dict[str, int] = {
+            "calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0,
+            "small_requests": 0,
+            "tool_calls": 0,
+        }
+
+    def _estimate_tokens(self, text: str) -> int:
+        if not text:
+            return 0
+        return max(1, (len(text) + 3) // 4)
+
+    def _normalize_token_value(self, value: Any, fallback: int) -> int:
+        if isinstance(value, numbers.Integral):
+            return int(value)
+        return fallback
+
+    def _log_request_metrics(self, name: str, prompt: str, response: Any, content: str) -> None:
+        usage = getattr(response, "usage", None)
+        prompt_tokens = getattr(usage, "prompt_tokens", None)
+        completion_tokens = getattr(usage, "completion_tokens", None)
+        total_tokens = getattr(usage, "total_tokens", None)
+
+        prompt_fallback = self._estimate_tokens(self.SYSTEM_PROMPT) + self._estimate_tokens(prompt)
+        completion_fallback = self._estimate_tokens(content)
+
+        prompt_tokens = self._normalize_token_value(prompt_tokens, prompt_fallback)
+        completion_tokens = self._normalize_token_value(completion_tokens, completion_fallback)
+        total_tokens = self._normalize_token_value(total_tokens, prompt_tokens + completion_tokens)
+
+        choice = response.choices[0]
+        message = choice.message
+        raw_tool_calls = getattr(message, "tool_calls", None)
+        if isinstance(raw_tool_calls, list):
+            tool_calls = len(raw_tool_calls)
+        elif raw_tool_calls is None:
+            tool_calls = 0
+        else:
+            try:
+                tool_calls = len(raw_tool_calls)
+            except TypeError:
+                tool_calls = 0
+        finish_reason = getattr(choice, "finish_reason", None)
+        small_request = prompt_tokens <= 2048 and completion_tokens <= 2048
+
+        self.metrics["calls"] += 1
+        self.metrics["prompt_tokens"] += int(prompt_tokens)
+        self.metrics["completion_tokens"] += int(completion_tokens)
+        self.metrics["total_tokens"] += int(total_tokens)
+        self.metrics["tool_calls"] += tool_calls
+        if small_request:
+            self.metrics["small_requests"] += 1
+
+        logger.info(
+            "LLM classify request metrics | name=%s model=%s prompt_tokens=%s completion_tokens=%s total_tokens=%s prompt_chars=%s completion_chars=%s tool_calls=%s finish_reason=%s small_request=%s",
+            name,
+            self.model,
+            prompt_tokens,
+            completion_tokens,
+            total_tokens,
+            len(self.SYSTEM_PROMPT) + len(prompt),
+            len(content),
+            tool_calls,
+            finish_reason,
+            small_request,
         )
 
     def classify_one(
@@ -167,6 +247,7 @@ Respond with JSON only."""
                 )
                 
                 content = response.choices[0].message.content
+                self._log_request_metrics(name, prompt, response, content or "")
                 return self._parse_response(content, name)
                 
             except RateLimitError as e:
@@ -221,10 +302,21 @@ Respond with JSON only."""
                     description=tech.get('description', '')
                 )
                 results.append(result)
-            
+
+        if self.metrics["calls"]:
+            logger.info(
+                "LLM classify summary | calls=%s prompt_tokens=%s completion_tokens=%s total_tokens=%s small_requests=%s tool_calls=%s",
+                self.metrics["calls"],
+                self.metrics["prompt_tokens"],
+                self.metrics["completion_tokens"],
+                self.metrics["total_tokens"],
+                self.metrics["small_requests"],
+                self.metrics["tool_calls"],
+            )
+             
         return results
 
-    def _parse_response(self, content: str, name: str) -> ClassificationResult:
+    def _parse_response(self, content: Optional[str], name: str) -> ClassificationResult:
         """Parse AI response into ClassificationResult with schema validation"""
         
         data = self._extract_json(content)
@@ -240,7 +332,8 @@ Respond with JSON only."""
                 description=data.get('description', ''),
                 confidence=float(data.get('confidence', 0.5)),
                 trend=data.get('trend', 'stable'),
-                rationale=data.get('rationale', '')
+                rationale=data.get('rationale', ''),
+                strategic_value=data.get('strategic_value', 'medium')
             )
             
             return ClassificationResult(
@@ -251,15 +344,19 @@ Respond with JSON only."""
                 confidence=validated.confidence,
                 trend=validated.trend,
                 rationale=validated.rationale or "",
-                raw_response=content
+                strategic_value=validated.strategic_value,
+                raw_response=content or ""
             )
             
         except Exception as e:
             logger.warning(f"Schema validation error for {name}: {e}")
             return self._fallback_classification(name, 0, 0, "")
 
-    def _extract_json(self, content: str) -> Optional[Dict[str, Any]]:
+    def _extract_json(self, content: Optional[str]) -> Optional[Dict[str, Any]]:
         """Extract JSON from response, supporting both raw JSON and markdown fenced blocks"""
+
+        if not content:
+            return None
         
         content = content.strip()
         
@@ -297,12 +394,16 @@ Respond with JSON only."""
         
         if stars > 10000 or hn_mentions > 50:
             ring = 'adopt'
+            strategic_value = 'high'
         elif stars > 1000 or hn_mentions > 10:
             ring = 'trial'
+            strategic_value = 'medium'
         elif stars > 100 or hn_mentions > 5:
             ring = 'assess'
+            strategic_value = 'medium'
         else:
             ring = 'hold'
+            strategic_value = 'low'
             
         return ClassificationResult(
             name=name,
@@ -312,6 +413,7 @@ Respond with JSON only."""
             confidence=0.5,
             trend='stable',
             rationale="Fallback classification based on heuristics",
+            strategic_value=strategic_value,
             raw_response=""
         )
 

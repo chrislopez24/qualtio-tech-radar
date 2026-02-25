@@ -449,6 +449,23 @@ Consider the strategic value for a tech radar."""
 
         return result
 
+    def _get_strategic_value_from_item(self, item: Any) -> Optional[StrategicValue]:
+        """Extract strategic value from item if already present (from classifier)"""
+        # Check if item has strategic_value attribute and it's not None
+        sv = getattr(item, 'strategic_value', None)
+        if sv is not None:
+            # Handle both string and StrategicValue enum types
+            if isinstance(sv, StrategicValue):
+                return sv
+            sv_str = str(sv).lower().strip()
+            if sv_str == 'high':
+                return StrategicValue.HIGH
+            elif sv_str == 'low':
+                return StrategicValue.LOW
+            else:
+                return StrategicValue.MEDIUM
+        return None
+
     def filter(self, items: List[Any]) -> List[FilteredItem]:
         """Filter items based on strategic value and config"""
         deduplicated = self._dedupe_and_consolidate(items)
@@ -461,11 +478,16 @@ Consider the strategic value for a tech radar."""
             if not self._should_include(item):
                 continue
 
-            strategic_value = self._evaluate_strategic_value(
-                item.name,
-                item.stars,
-                item.description
-            )
+            # Try to get strategic value from classifier first (single-pass optimization)
+            strategic_value = self._get_strategic_value_from_item(item)
+            
+            # Only fall back to AI evaluation if not already present
+            if strategic_value is None:
+                strategic_value = self._evaluate_strategic_value(
+                    item.name,
+                    item.stars,
+                    item.description
+                )
 
             if strategic_value == StrategicValue.LOW:
                 continue

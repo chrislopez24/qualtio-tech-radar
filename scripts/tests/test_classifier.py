@@ -111,3 +111,63 @@ def test_classifier_trend_normalization():
     result = classifier._parse_response(response, "Test")
     
     assert result.trend in {"up", "down", "stable", "new"}
+
+
+def test_classifier_handles_none_content_from_llm():
+    """Classifier should gracefully fallback when LLM content is None"""
+    classifier = TechnologyClassifier()
+
+    result = classifier._parse_response(None, "React")  # type: ignore[arg-type]
+
+    assert result.name == "React"
+    assert result.ring in {"adopt", "trial", "assess", "hold"}
+
+
+def test_classifier_logs_request_metrics():
+    """Classifier should log token and size metrics for each request"""
+    classifier = TechnologyClassifier(api_key="test-key")
+    classifier.client = MagicMock()
+
+    mock_message = MagicMock()
+    mock_message.content = '{"name":"React","quadrant":"tools","ring":"adopt","description":"UI library","confidence":0.9,"trend":"up"}'
+    mock_message.tool_calls = []
+
+    mock_choice = MagicMock()
+    mock_choice.message = mock_message
+    mock_choice.finish_reason = "stop"
+
+    mock_usage = MagicMock()
+    mock_usage.prompt_tokens = 120
+    mock_usage.completion_tokens = 80
+    mock_usage.total_tokens = 200
+
+    mock_response = MagicMock()
+    mock_response.choices = [mock_choice]
+    mock_response.usage = mock_usage
+
+    classifier.client.chat.completions.create.return_value = mock_response
+
+    with patch("etl.classifier.logger.info") as mock_logger_info:
+        classifier.classify_one("React", 220000, 10, "UI library")
+
+    metric_logs = [
+        call for call in mock_logger_info.call_args_list
+        if call.args and isinstance(call.args[0], str) and "LLM classify request metrics" in call.args[0]
+    ]
+    assert metric_logs
+
+
+def test_classifier_returns_semantic_decision_with_strategic_value():
+    """Test that classifier returns strategic_value and rationale in a single LLM call"""
+    from etl.classifier import TechnologyClassifier
+
+    classifier = TechnologyClassifier(api_key="test-key")
+    result = classifier._parse_response(
+        '{"name":"React","quadrant":"tools","ring":"adopt","description":"UI","confidence":0.9,"trend":"up","strategic_value":"high","rationale":"Widely adopted UI library with strong community"}',
+        "React",
+    )
+    assert hasattr(result, "rationale")
+    assert hasattr(result, "confidence")
+    assert hasattr(result, "strategic_value")
+    assert result.strategic_value == "high"
+    assert result.rationale == "Widely adopted UI library with strong community"
