@@ -336,6 +336,8 @@ class RadarPipeline:
         self.filter = AITechnologyFilter(
             self.config.filtering,
             model=self.config.classification.model,
+            llm_cache=self.llm_cache,
+            max_drift=self.config.llm_optimization.cache_drift_threshold,
         )
 
         self.deep_scanner = DeepScanner(

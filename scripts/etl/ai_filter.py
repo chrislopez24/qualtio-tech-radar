@@ -6,6 +6,7 @@ by filtering out low-value items like utility libraries.
 
 import os
 import json
+import numbers
 import logging
 from enum import Enum
 from typing import List, Optional, Any, Protocol
@@ -109,7 +110,7 @@ class FilteredItem:
     strategic_value: StrategicValue
     is_deprecated: bool = False
     replacement: Optional[str] = None
-    merged_names: List[str] = None
+    merged_names: Optional[List[str]] = None
     
     def __post_init__(self):
         if self.merged_names is None:
@@ -119,27 +120,38 @@ class FilteredItem:
 class AITechnologyFilter:
     """AI-powered filter for technology radar items based on strategic value"""
 
-    SYSTEM_PROMPT = """You are a technology strategic analyst. Your task is to evaluate
-technologies for their strategic value to a tech radar.
+    SYSTEM_PROMPT = """You are a technology analyst evaluating open-source projects for a tech radar.
 
-Evaluate based on:
-- Business impact and adoption
-- Strategic importance to the organization
-- Long-term viability and maintenance
-- Developer experience and ecosystem
+Context:
+- Tech radar tracks interesting technologies worth monitoring
+- We want technologies with real adoption (GitHub stars), not just hype
+- Focus on developer tools, frameworks, languages, and platforms
 
-Categorize into:
-- HIGH: Core technologies with significant business impact, widely adopted
-- MEDIUM: Useful tools but not critical, moderate adoption
-- LOW: Utility libraries, small packages, or niche technologies
+Evaluation Criteria:
+1. ADOPTION: Does it have significant GitHub stars (>1000)? Active community?
+2. UTILITY: Is it a broadly useful technology, not just a utility library?
+3. MATURITY: Is it past early experimental phase?
+4. RELEVANCE: Would developers care about this technology?
+
+Categorization:
+- HIGH: Major frameworks, languages, platforms (React, Kubernetes, PostgreSQL, etc.)
+- MEDIUM: Solid tools with real adoption (testing frameworks, dev tools, libraries with >5000 stars)
+- LOW: Tiny utilities, personal projects, abandoned repos, highly niche tools
+
+Balanced approach: If a technology has >5000 GitHub stars and active development, it deserves MEDIUM or HIGH.
 
 Respond with JSON only: {"strategic_value": "high|medium|low", "reason": "brief explanation"}"""
 
-    def __init__(self, config: FilterConfig):
+    PROMPT_VERSION = "v1"
+
+    def __init__(self, config: FilterConfig, model: Optional[str] = None, llm_cache=None, max_drift: float = 3.0):
         self.config = config
         self.auto_ignore = set(config.auto_ignore) if config.auto_ignore is not None else set(DEFAULT_AUTO_IGNORE)
         self.include_only = set(config.include_only) if config.include_only else None
         self.min_confidence = config.min_confidence
+        self.model = model or os.environ.get("SYNTHETIC_MODEL", "hf:MiniMaxAI/MiniMax-M2.5")
+        self.llm_cache = llm_cache
+        self.max_drift = max_drift
 
         self._client: Optional[OpenAI] = None
         if os.environ.get("SYNTHETIC_API_KEY"):
@@ -147,6 +159,75 @@ Respond with JSON only: {"strategic_value": "high|medium|low", "reason": "brief 
                 api_key=os.environ.get("SYNTHETIC_API_KEY"),
                 base_url=os.environ.get("SYNTHETIC_API_URL", "https://api.synthetic.new/v1")
             )
+
+        self.metrics = {
+            "calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0,
+            "small_requests": 0,
+            "tool_calls": 0,
+        }
+
+    def _estimate_tokens(self, text: str) -> int:
+        if not text:
+            return 0
+        return max(1, (len(text) + 3) // 4)
+
+    def _normalize_token_value(self, value: Any, fallback: int) -> int:
+        if isinstance(value, numbers.Integral):
+            return int(value)
+        return fallback
+
+    def _log_request_metrics(self, name: str, prompt: str, response: Any, content: str) -> None:
+        usage = getattr(response, "usage", None)
+        prompt_tokens = getattr(usage, "prompt_tokens", None)
+        completion_tokens = getattr(usage, "completion_tokens", None)
+        total_tokens = getattr(usage, "total_tokens", None)
+
+        prompt_fallback = self._estimate_tokens(self.SYSTEM_PROMPT) + self._estimate_tokens(prompt)
+        completion_fallback = self._estimate_tokens(content)
+
+        prompt_tokens = self._normalize_token_value(prompt_tokens, prompt_fallback)
+        completion_tokens = self._normalize_token_value(completion_tokens, completion_fallback)
+        total_tokens = self._normalize_token_value(total_tokens, prompt_tokens + completion_tokens)
+
+        choice = response.choices[0]
+        message = choice.message
+        raw_tool_calls = getattr(message, "tool_calls", None)
+        if isinstance(raw_tool_calls, list):
+            tool_calls = len(raw_tool_calls)
+        elif raw_tool_calls is None:
+            tool_calls = 0
+        else:
+            try:
+                tool_calls = len(raw_tool_calls)
+            except TypeError:
+                tool_calls = 0
+        finish_reason = getattr(choice, "finish_reason", None)
+        small_request = prompt_tokens <= 2048 and completion_tokens <= 2048
+
+        self.metrics["calls"] += 1
+        self.metrics["prompt_tokens"] += int(prompt_tokens)
+        self.metrics["completion_tokens"] += int(completion_tokens)
+        self.metrics["total_tokens"] += int(total_tokens)
+        self.metrics["tool_calls"] += tool_calls
+        if small_request:
+            self.metrics["small_requests"] += 1
+
+        logger.info(
+            "LLM filter request metrics | name=%s model=%s prompt_tokens=%s completion_tokens=%s total_tokens=%s prompt_chars=%s completion_chars=%s tool_calls=%s finish_reason=%s small_request=%s",
+            name,
+            self.model,
+            prompt_tokens,
+            completion_tokens,
+            total_tokens,
+            len(self.SYSTEM_PROMPT) + len(prompt),
+            len(content),
+            tool_calls,
+            finish_reason,
+            small_request,
+        )
 
     def _evaluate_strategic_value(self, name: str, stars: int, description: str) -> StrategicValue:
         """Evaluate strategic value using AI or heuristics"""
@@ -159,7 +240,38 @@ Respond with JSON only: {"strategic_value": "high|medium|low", "reason": "brief 
         return self._heuristic_evaluate(name, stars)
 
     def _ai_evaluate(self, name: str, stars: int, description: str) -> StrategicValue:
-        """Use AI to evaluate strategic value"""
+        """Use AI to evaluate strategic value with caching"""
+        if self._client is None:
+            return self._heuristic_evaluate(name, stars)
+
+        # Build features for cache key
+        features = {
+            "stars": float(stars),
+        }
+
+        # Check cache first (cache errors should not block pipeline)
+        cached_value = None
+        if self.llm_cache is not None:
+            try:
+                cached_value = self.llm_cache.get_if_fresh(
+                    name=name,
+                    model=self.model,
+                    prompt_version=self.PROMPT_VERSION,
+                    features=features,
+                    max_drift=self.max_drift,
+                )
+            except Exception as e:
+                logger.warning(f"Cache lookup failed for {name}: {e}")
+
+        if cached_value is not None:
+            logger.debug(f"Cache hit for {name}: {cached_value}")
+            strategic_value = cached_value.get("strategic_value", "medium").lower()
+            if strategic_value == "high":
+                return StrategicValue.HIGH
+            elif strategic_value == "low":
+                return StrategicValue.LOW
+            return StrategicValue.MEDIUM
+
         prompt = f"""Evaluate this technology:
 
 Name: {name}
@@ -169,16 +281,23 @@ GitHub Stars: {stars}
 Consider the strategic value for a tech radar."""
 
         response = self._client.chat.completions.create(
-            model=os.environ.get("SYNTHETIC_MODEL", "llama-3.3-70b"),
+            model=self.model,
             messages=[
                 {"role": "system", "content": self.SYSTEM_PROMPT},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.2,
-            max_tokens=200
+            max_tokens=8000,
+            response_format={"type": "json_object"},
         )
 
         content = response.choices[0].message.content
+        if not content:
+            self._log_request_metrics(name, prompt, response, "")
+            return self._heuristic_evaluate(name, stars)
+
+        self._log_request_metrics(name, prompt, response, content)
+
         json_str = content.strip()
         if json_str.startswith("```"):
             lines = json_str.split("\n")
@@ -195,6 +314,19 @@ Consider the strategic value for a tech radar."""
             logger.warning(f"Failed to parse AI response as JSON for {name}: {e}")
             return self._heuristic_evaluate(name, stars)
 
+        # Store result in cache (cache errors should not block pipeline)
+        if self.llm_cache is not None:
+            try:
+                cache_key = self.llm_cache.make_key(
+                    name=name,
+                    model=self.model,
+                    prompt_version=self.PROMPT_VERSION,
+                    features=features,
+                )
+                self.llm_cache.put(cache_key, data)
+            except Exception as e:
+                logger.warning(f"Cache store failed for {name}: {e}")
+
         if value == "high":
             return StrategicValue.HIGH
         elif value == "low":
@@ -202,18 +334,28 @@ Consider the strategic value for a tech radar."""
         return StrategicValue.MEDIUM
 
     def _heuristic_evaluate(self, name: str, stars: int) -> StrategicValue:
-        """Heuristic evaluation when AI is not available"""
+        """Heuristic evaluation when AI is not available - Conservative (Zalando-style)"""
         name_lower = name.lower()
-
+        
+        # Very high bar for HIGH - must be industry standard
         if stars > 50000:
-            return StrategicValue.HIGH
-        elif stars > 5000:
-            if any(x in name_lower for x in ["react", "vue", "angular", "node", "python", "rust", "go", "java"]):
+            if any(x in name_lower for x in ["react", "vue", "angular", "node", "python", "kubernetes", "docker", "postgresql"]):
+                return StrategicValue.HIGH
+            # Even with high stars, check if it's a framework/language vs utility
+            if any(x in name_lower for x in ["framework", "platform", "runtime", "database"]):
                 return StrategicValue.HIGH
             return StrategicValue.MEDIUM
-        elif stars > 500:
-            return StrategicValue.MEDIUM
-
+        
+        # MEDIUM - solid adoption but not dominant
+        elif stars > 10000:
+            if any(x in name_lower for x in ["typescript", "rust", "go", "kotlin", "swift"]):
+                return StrategicValue.MEDIUM
+            # Tools with strong adoption
+            if any(x in name_lower for x in ["webpack", "vite", "nextjs", "fastapi", "terraform"]):
+                return StrategicValue.MEDIUM
+            return StrategicValue.LOW  # Stars alone aren't enough
+        
+        # LOW - everything else
         return StrategicValue.LOW
 
     def _should_ignore(self, item: Any) -> bool:
@@ -351,5 +493,16 @@ Consider the strategic value for a tech radar."""
                 merged_names=getattr(item, 'merged_names', [])
             )
             filtered.append(filtered_item)
+
+        if self.metrics["calls"]:
+            logger.info(
+                "LLM filter summary | calls=%s prompt_tokens=%s completion_tokens=%s total_tokens=%s small_requests=%s tool_calls=%s",
+                self.metrics["calls"],
+                self.metrics["prompt_tokens"],
+                self.metrics["completion_tokens"],
+                self.metrics["total_tokens"],
+                self.metrics["small_requests"],
+                self.metrics["tool_calls"],
+            )
 
         return filtered
