@@ -665,6 +665,7 @@ class RadarPipeline:
                 'ring': classification.ring,
                 'confidence': classification.confidence,
                 'trend': classification.trend,
+                'strategic_value': classification.strategic_value,
                 'market_score': tech.market_score,
                 'signals': tech.signals,
                 'moved': tech.moved,

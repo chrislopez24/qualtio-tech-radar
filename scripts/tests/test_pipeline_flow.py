@@ -263,6 +263,58 @@ class TestPipelineFlow:
         assert isinstance(technologies, list)
         mock_google_source.return_value.fetch.assert_called_once()
 
+    def test_strategic_filter_passes_classifier_strategic_value_to_filter_items(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+
+        config = ETLConfig()
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter, \
+             patch('etl.pipeline.DeepScanner'):
+
+            captured = {}
+
+            def capture_items(items):
+                captured['items'] = items
+                return []
+
+            mock_filter.return_value.filter.side_effect = capture_items
+
+            pipeline = RadarPipeline(config=config)
+
+            tech = NormalizedTech(
+                name='React',
+                description='UI library',
+                stars=220000,
+                forks=56000,
+                language='JavaScript',
+                topics=['ui', 'framework'],
+                url='https://github.com/facebook/react',
+                hn_mentions=100,
+                sources=['github', 'hackernews'],
+                signals={'gh_popularity': 100.0, 'gh_momentum': 100.0, 'hn_heat': 80.0},
+                market_score=92.0,
+            )
+
+            classification = ClassificationResult(
+                name='React',
+                quadrant='tools',
+                ring='adopt',
+                description='UI library',
+                confidence=0.9,
+                trend='up',
+                strategic_value='high',
+            )
+
+            pipeline._strategic_filter([tech], [classification])
+
+            assert 'items' in captured
+            assert len(captured['items']) == 1
+            assert getattr(captured['items'][0], 'strategic_value') == 'high'
+
 
 @dataclass
 class MockClassificationResult:
@@ -272,6 +324,7 @@ class MockClassificationResult:
     description: str
     confidence: float
     trend: str
+    strategic_value: str = "medium"
 
 
 class MockStrategicValue:
