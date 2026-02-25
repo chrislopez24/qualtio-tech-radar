@@ -9,10 +9,16 @@ sources:
     days_back: 7
   google_trends:
     enabled: true
-    seed_topics: []
+    seed_topics:
+      - ai
+      - devops
+      - qa
+      - kubernetes
+      - rust
+      - postgresql
 
 classification:
-  model: gpt-4
+  model: hf:MiniMaxAI/MiniMax-M2.5
   temperature: 0.2
   json_mode: true
 
@@ -45,7 +51,6 @@ filtering:
 
 output:
   public_file: src/data/data.ai.json
-  internal_file: src/data/data.ai.full.json
 
 rate_limit:
   requests_per_minute: 30
@@ -58,3 +63,27 @@ checkpoint:
 deep_scan:
   enabled: false
   repos: []
+
+scoring:
+  weights:
+    github_momentum: 0.30
+    github_popularity: 0.25
+    hn_heat: 0.20
+    google_momentum: 0.25
+  thresholds:
+    adopt: 75
+    trial: 55
+    assess: 35
+  hysteresis:
+    promote_delta: 5
+    demote_delta: 5
+    cooldown_weeks: 1
+
+history:
+  enabled: true
+  file: src/data/data.ai.history.json
+  max_weeks: 12
+
+distribution_guardrail:
+  enabled: true
+  max_ring_ratio: 0.6

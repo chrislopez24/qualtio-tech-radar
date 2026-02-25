@@ -11,7 +11,10 @@ This module orchestrates the complete pipeline:
 """
 
 import logging
+import re
+from statistics import pvariance
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, Any, List, Optional, Set
 from dataclasses import dataclass, field
 
@@ -19,11 +22,73 @@ from etl.config import ETLConfig, SourcesConfig, ClassificationConfig, Filtering
 from etl.ai_filter import AITechnologyFilter, FilteredItem, StrategicValue
 from etl.deep_scanner import DeepScanner
 from etl.checkpoint import CheckpointStore
-from scraper.github_scraper import GitHubScraper
-from scraper.hackernews import HackerNewsScraper
-from ai.classifier import TechnologyClassifier, ClassificationResult
+from etl.history_store import HistoryStore
+from etl.description_quality import is_valid_description
+from etl.classifier import TechnologyClassifier, ClassificationResult
+from etl.market_scoring import score_technology, calculate_confidence
+from etl.ring_assignment import assign_rings
+from etl.sources.github_trending import GitHubTrendingSource
+from etl.sources.hackernews import HackerNewsSource
+from etl.sources.google_trends import GoogleTrendsSource
 
 logger = logging.getLogger(__name__)
+
+TECH_ALIASES = {
+    "postgres": "postgresql",
+    "postgresql": "postgresql",
+    "postgre": "postgresql",
+    "rust": "rust",
+    "react": "react",
+    "vue": "vue",
+    "angular": "angular",
+    "svelte": "svelte",
+    "python": "python",
+    "typescript": "typescript",
+    "javascript": "javascript",
+    "node": "nodejs",
+    "nodejs": "nodejs",
+    "node.js": "nodejs",
+    "docker": "docker",
+    "kubernetes": "kubernetes",
+    "k8s": "kubernetes",
+    "aws": "aws",
+    "gcp": "gcp",
+    "azure": "azure",
+    "redis": "redis",
+    "mongodb": "mongodb",
+    "mysql": "mysql",
+    "graphql": "graphql",
+    "fastapi": "fastapi",
+    "django": "django",
+    "flask": "flask",
+    "golang": "go",
+    "go": "go",
+    "terraform": "terraform",
+    "ansible": "ansible",
+    "devops": "devops",
+    "qa": "qa",
+}
+
+NON_TECH_STOPWORDS = {
+    "show",
+    "hn",
+    "building",
+    "with",
+    "from",
+    "using",
+    "built",
+    "new",
+    "this",
+    "that",
+    "and",
+}
+
+RING_INDEX = {
+    "hold": 0,
+    "assess": 1,
+    "trial": 2,
+    "adopt": 3,
+}
 
 
 @dataclass
@@ -36,11 +101,14 @@ class NormalizedTech:
     topics: List[str]
     url: str
     hn_mentions: int = 0
-    sources: List[str] = None
-
-    def __post_init__(self):
-        if self.sources is None:
-            self.sources = []
+    sources: List[str] = field(default_factory=list)
+    signals: Dict[str, float] = field(default_factory=dict)
+    market_score: float = 0.0
+    trend_delta: float = 0.0
+    previous_ring: Optional[str] = None
+    moved: int = 0
+    last_updated: Optional[str] = None
+    domain: Optional[str] = None
 
 
 class RadarPipeline:
@@ -55,24 +123,36 @@ class RadarPipeline:
         self.resume = resume
         self.checkpoint: Optional[CheckpointStore] = None
         if checkpoint_path:
-            self.checkpoint = CheckpointStore(checkpoint_path)
+            self.checkpoint = CheckpointStore(Path(checkpoint_path))
+        self.history_store: Optional[HistoryStore] = None
+        self.previous_snapshot: Optional[Dict[str, Any]] = None
+        if self.config.history.enabled:
+            self.history_store = HistoryStore(
+                Path(self.config.history.file),
+                max_weeks=self.config.history.max_weeks,
+            )
+            self.previous_snapshot = self.history_store.get_latest_snapshot()
         self._init_components()
 
     def _init_components(self):
         """Initialize pipeline components"""
-        self.github_scraper = GitHubScraper()
-        self.hn_scraper = HackerNewsScraper()
+        self.github_source = GitHubTrendingSource(self.config.sources.github_trending)
+        self.hn_source = HackerNewsSource(self.config.sources.hackernews)
+        self.google_trends_source = GoogleTrendsSource(self.config.sources.google_trends)
 
         if self.config.classification:
             try:
-                self.classifier = TechnologyClassifier()
+                self.classifier = TechnologyClassifier(model=self.config.classification.model)
             except ValueError:
                 logger.warning("AI classifier not available, using fallback")
                 self.classifier = None
         else:
             self.classifier = None
 
-        self.filter = AITechnologyFilter(self.config.filtering)
+        self.filter = AITechnologyFilter(
+            self.config.filtering,
+            model=self.config.classification.model,
+        )
 
         self.deep_scanner = DeepScanner(
             allowed_repos=self.config.deep_scan.repos if self.config.deep_scan else None,
@@ -84,35 +164,61 @@ class RadarPipeline:
         technologies: Dict[str, NormalizedTech] = {}
 
         if self.config.sources.github_trending.enabled:
-            repos = self.github_scraper.get_trending_repos(
-                min_stars=100,
-                limit=50
-            )
-            for repo in repos:
-                technologies[repo.name] = NormalizedTech(
-                    name=repo.name,
-                    description=repo.description,
-                    stars=repo.stars,
-                    forks=repo.forks,
-                    language=repo.language,
-                    topics=repo.topics,
-                    url=repo.url,
-                    sources=["github"]
-                )
+            signals = self.github_source.fetch()
+            for signal in signals:
+                raw = signal.raw_data or {}
+                name = raw.get("name", signal.name)
+                if not name:
+                    continue
+                key = name.lower().strip()
+
+                existing = technologies.get(key)
+                gh_popularity = min(100.0, float(raw.get("stars", 0)) / 1000.0)
+                gh_momentum = float(raw.get("gh_momentum", 0.0))
+
+                if existing is None:
+                    technologies[key] = NormalizedTech(
+                        name=name,
+                        description=raw.get("description", ""),
+                        stars=raw.get("stars", 0),
+                        forks=raw.get("forks", 0),
+                        language=raw.get("language"),
+                        topics=raw.get("topics", []),
+                        url=raw.get("url", ""),
+                        sources=["github"],
+                        signals={
+                            "gh_popularity": gh_popularity,
+                            "gh_momentum": gh_momentum,
+                        },
+                    )
+                else:
+                    existing.stars = max(existing.stars, raw.get("stars", 0))
+                    existing.forks = max(existing.forks, raw.get("forks", 0))
+                    existing.description = existing.description or raw.get("description", "")
+                    existing.language = existing.language or raw.get("language")
+                    existing.topics = list(set(existing.topics + (raw.get("topics", []) or [])))
+                    existing.url = existing.url or raw.get("url", "")
+                    if "github" not in existing.sources:
+                        existing.sources.append("github")
+                    existing.signals["gh_popularity"] = max(existing.signals.get("gh_popularity", 0.0), gh_popularity)
+                    existing.signals["gh_momentum"] = max(existing.signals.get("gh_momentum", 0.0), gh_momentum)
 
         if self.config.sources.hackernews.enabled:
-            hn_posts = self.hn_scraper.search_tech_posts(
-                min_points=self.config.sources.hackernews.min_points,
-                limit=50
-            )
+            hn_posts = list(self.hn_source.fetch())
             for post in hn_posts:
                 tech_name = self._extract_tech_name(post.title)
                 if tech_name:
-                    if tech_name in technologies:
-                        technologies[tech_name].hn_mentions += 1
-                        technologies[tech_name].sources.append("hackernews")
+                    key = tech_name.lower().strip()
+                    if key in technologies:
+                        technologies[key].hn_mentions += 1
+                        if "hackernews" not in technologies[key].sources:
+                            technologies[key].sources.append("hackernews")
+                        technologies[key].signals["hn_heat"] = min(
+                            100.0,
+                            technologies[key].signals.get("hn_heat", 0.0) + float(getattr(post, "points", 0)) / 2.0,
+                        )
                     else:
-                        technologies[tech_name] = NormalizedTech(
+                        technologies[key] = NormalizedTech(
                             name=tech_name,
                             description=post.title,
                             stars=0,
@@ -121,18 +227,57 @@ class RadarPipeline:
                             topics=[],
                             url=post.url,
                             hn_mentions=1,
-                            sources=["hackernews"]
+                            sources=["hackernews"],
+                            signals={
+                                "hn_heat": min(100.0, float(getattr(post, "points", 0)) / 2.0),
+                            },
                         )
+
+        if self.config.sources.google_trends.enabled:
+            google_signals = self.google_trends_source.fetch()
+            for signal in google_signals:
+                name = (signal.name or "").strip().lower()
+                if not name:
+                    continue
+
+                raw = signal.raw_data or {}
+                google_momentum = min(100.0, float(signal.score) * 10.0)
+
+                if name in technologies:
+                    tech = technologies[name]
+                    if "google_trends" not in tech.sources:
+                        tech.sources.append("google_trends")
+                    tech.signals["google_momentum"] = max(
+                        tech.signals.get("google_momentum", 0.0),
+                        google_momentum,
+                    )
+                else:
+                    technologies[name] = NormalizedTech(
+                        name=name,
+                        description=raw.get("query", name),
+                        stars=0,
+                        forks=0,
+                        language=None,
+                        topics=[],
+                        url="",
+                        hn_mentions=0,
+                        sources=["google_trends"],
+                        signals={"google_momentum": google_momentum},
+                    )
 
         return list(technologies.values())
 
     def _extract_tech_name(self, title: str) -> Optional[str]:
         """Extract technology name from HN post title"""
-        title_lower = title.lower()
-        words = title_lower.split()
-        for word in words:
-            if len(word) > 3 and word not in ["this", "that", "with", "from", "new", "use", "using"]:
-                return word
+        cleaned_title = re.sub(r"[^a-zA-Z0-9+#.\-\s]", " ", title.lower())
+        tokens = [token.strip(".-") for token in cleaned_title.split() if token.strip(".-")]
+
+        for token in tokens:
+            if token in NON_TECH_STOPWORDS:
+                continue
+            if token in TECH_ALIASES:
+                return TECH_ALIASES[token]
+
         return None
 
     def _normalize_and_dedupe(self, technologies: List[NormalizedTech]) -> List[NormalizedTech]:
@@ -159,10 +304,38 @@ class RadarPipeline:
         """Phase 3: Temporal and domain enrichment"""
         now = datetime.now().isoformat()
         for tech in technologies:
-            if not hasattr(tech, 'last_updated'):
+            if tech.last_updated is None:
                 tech.last_updated = now
-            if not hasattr(tech, 'domain'):
+            if tech.domain is None:
                 tech.domain = self._infer_domain(tech)
+        return technologies
+
+    def _apply_market_scoring(self, technologies: List[NormalizedTech]) -> List[NormalizedTech]:
+        weights = {
+            "gh_momentum": self.config.scoring.weights.github_momentum,
+            "gh_popularity": self.config.scoring.weights.github_popularity,
+            "hn_heat": self.config.scoring.weights.hn_heat,
+            "google_momentum": self.config.scoring.weights.google_momentum,
+        }
+
+        for tech in technologies:
+            tech.signals.setdefault("gh_popularity", min(100.0, tech.stars / 1000.0))
+            tech.signals.setdefault("hn_heat", min(100.0, float(tech.hn_mentions) * 10.0))
+            tech.signals.setdefault("gh_momentum", tech.signals.get("gh_momentum", 0.0))
+            tech.signals.setdefault("google_momentum", tech.signals.get("google_momentum", 0.0))
+
+            tech.market_score = score_technology(tech.signals, weights=weights)
+
+            signal_values = [
+                float(tech.signals.get("gh_momentum", 0.0)),
+                float(tech.signals.get("gh_popularity", 0.0)),
+                float(tech.signals.get("hn_heat", 0.0)),
+                float(tech.signals.get("google_momentum", 0.0)),
+            ]
+            variance = pvariance(signal_values) if len(signal_values) > 1 else 0.0
+            source_count = len(set(tech.sources))
+            tech.signals["score_confidence"] = calculate_confidence(source_count, variance)
+
         return technologies
 
     def _infer_domain(self, tech: NormalizedTech) -> str:
@@ -258,10 +431,111 @@ class RadarPipeline:
                 'quadrant': classification.quadrant,
                 'ring': classification.ring,
                 'confidence': classification.confidence,
-                'trend': classification.trend
+                'trend': classification.trend,
+                'market_score': tech.market_score,
+                'signals': tech.signals,
+                'moved': tech.moved,
             })())
 
-        return self.filter.filter(items)
+        filtered = self.filter.filter(items) or []
+        if len(filtered) >= 2:
+            return filtered
+
+        existing_names = {item.name.lower() for item in filtered}
+        fallback_candidates = []
+        for tech, classification in zip(technologies, classifications):
+            if classification.name.lower() in existing_names:
+                continue
+            fallback_candidates.append((tech, classification))
+
+        fallback_candidates.sort(key=lambda pair: pair[0].market_score, reverse=True)
+        while len(filtered) < min(4, len(items)) and fallback_candidates:
+            tech, classification = fallback_candidates.pop(0)
+            fallback_item = FilteredItem(
+                name=classification.name,
+                description=classification.description,
+                stars=tech.stars,
+                quadrant=classification.quadrant,
+                ring=classification.ring,
+                confidence=max(0.35, classification.confidence),
+                trend=classification.trend,
+                strategic_value=StrategicValue.MEDIUM,
+            )
+            setattr(fallback_item, "market_score", tech.market_score)
+            setattr(fallback_item, "signals", tech.signals)
+            setattr(fallback_item, "moved", tech.moved)
+            filtered.append(fallback_item)
+
+        return filtered
+
+    def _assign_market_rings(self, items: List[FilteredItem]) -> List[FilteredItem]:
+        if not items:
+            return items
+
+        previous_map: Dict[str, Dict[str, Any]] = {}
+        if self.previous_snapshot:
+            for tech in self.previous_snapshot.get("technologies", []):
+                tech_id = tech.get("id")
+                if tech_id:
+                    previous_map[str(tech_id)] = tech
+
+        ring_inputs: List[Dict[str, Any]] = []
+        for item in items:
+            tech_id = item.name.lower().replace(" ", "-")
+            previous_market_score = float(previous_map.get(tech_id, {}).get("marketScore", 0.0))
+            market_score = float(getattr(item, "market_score", 0.0))
+            ring_inputs.append(
+                {
+                    "id": tech_id,
+                    "market_score": market_score,
+                    "trend_delta": market_score - previous_market_score,
+                }
+            )
+
+        thresholds = {
+            "adopt": self.config.scoring.thresholds.adopt,
+            "trial": self.config.scoring.thresholds.trial,
+            "assess": self.config.scoring.thresholds.assess,
+        }
+        hysteresis = {
+            "promote_delta": self.config.scoring.hysteresis.promote_delta,
+            "demote_delta": self.config.scoring.hysteresis.demote_delta,
+            "cooldown_weeks": self.config.scoring.hysteresis.cooldown_weeks,
+        }
+        guardrail = {
+            "enabled": self.config.distribution_guardrail.enabled,
+            "max_ring_ratio": self.config.distribution_guardrail.max_ring_ratio,
+        }
+
+        assigned = assign_rings(
+            ring_inputs,
+            previous=previous_map,
+            thresholds=thresholds,
+            hysteresis=hysteresis,
+            guardrail=guardrail,
+        )
+        assigned_by_id = {entry["id"]: entry for entry in assigned}
+
+        for item in items:
+            tech_id = item.name.lower().replace(" ", "-")
+            assignment = assigned_by_id.get(tech_id, {})
+            ring = assignment.get("ring", item.ring)
+            trend_delta = float(assignment.get("trend_delta", 0.0))
+            prev_ring = assignment.get("previous_ring")
+
+            item.ring = ring
+            setattr(item, "moved", 0)
+            if isinstance(prev_ring, str) and prev_ring in RING_INDEX and ring in RING_INDEX:
+                setattr(item, "moved", RING_INDEX[ring] - RING_INDEX[prev_ring])
+
+            if trend_delta > 5:
+                item.trend = "up"
+            elif trend_delta < -5:
+                item.trend = "down"
+            else:
+                item.trend = "stable"
+
+        return items
 
     def _deep_scan_enrich(self, filtered_items: List[FilteredItem]) -> List[FilteredItem]:
         """Phase 6: Optional deep scan enrichment"""
@@ -276,21 +550,48 @@ class RadarPipeline:
     def _generate_output(self, items: List[FilteredItem]) -> Dict[str, Any]:
         """Phase 7: Generate output"""
         technologies = []
+        dropped_bad_description = 0
         for item in items:
+            description = item.description if isinstance(item.description, str) else ""
+            if not description.strip():
+                description = f"{item.name} technology with external market momentum signals."
+            elif not is_valid_description(description):
+                dropped_bad_description += 1
+                continue
+
+            raw_signals = getattr(item, "signals", {}) or {}
+            if not isinstance(raw_signals, dict):
+                raw_signals = {}
+
+            signals = {
+                "ghMomentum": round(float(raw_signals.get("gh_momentum", 0.0)), 2),
+                "ghPopularity": round(float(raw_signals.get("gh_popularity", 0.0)), 2),
+                "hnHeat": round(float(raw_signals.get("hn_heat", 0.0)), 2),
+                "googleMomentum": round(float(raw_signals.get("google_momentum", 0.0)), 2),
+            }
+
             technologies.append({
                 'id': item.name.lower().replace(' ', '-'),
                 'name': item.name,
                 'quadrant': item.quadrant,
                 'ring': item.ring,
-                'description': item.description,
-                'moved': 0,
+                'description': description,
+                'moved': int(getattr(item, 'moved', 0)),
                 'trend': item.trend,
+                'marketScore': round(float(getattr(item, 'market_score', 0.0)), 2),
+                'signals': signals,
                 'stars': item.stars,
                 'confidence': item.confidence,
                 'isDeprecated': item.is_deprecated,
                 'replacement': item.replacement,
                 'updatedAt': datetime.now().isoformat()
             })
+
+        if dropped_bad_description:
+            logger.info(
+                "Phase 7 - Dropped %s items due to invalid descriptions",
+                dropped_bad_description,
+            )
 
         return {
             'updatedAt': datetime.now().isoformat(),
@@ -329,11 +630,16 @@ class RadarPipeline:
         logger.info("Phase 3 - Temporal/domain enrichment complete")
         self._save_checkpoint("enrich")
 
+        technologies = self._apply_market_scoring(technologies)
+        logger.info("Phase 3b - Deterministic market scoring complete")
+        self._save_checkpoint("market_score", cursor=len(technologies))
+
         classifications = self._classify_ai(technologies)
         logger.info(f"Phase 4 - AI classification complete for {len(classifications)} items")
         self._save_checkpoint("classify", cursor=len(classifications))
 
         filtered_items = self._strategic_filter(technologies, classifications)
+        filtered_items = self._assign_market_rings(filtered_items)
         logger.info(f"Phase 5 - Strategic filtering complete, {len(filtered_items or [])} items remain")
         self._save_checkpoint("filter", cursor=len(filtered_items or []))
 
@@ -343,6 +649,9 @@ class RadarPipeline:
 
         output = self._generate_output(enriched_items or [])
         logger.info(f"Phase 7 - Output generated with {len(output['technologies'])} technologies")
+
+        if self.history_store:
+            self.history_store.append_snapshot(output)
 
         self._save_checkpoint("complete", cursor=len(output['technologies']))
 

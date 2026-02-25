@@ -8,7 +8,7 @@ System architecture for the Tech Radar data pipeline.
 ┌─────────────────────────────────────────────────────────────────┐
 │                     RadarPipeline                                │
 ├─────────────────────────────────────────────────────────────────┤
-│  Sources ──► Normalize ──► Classify ──► Filter ──► Output      │
+│  Sources ─► Normalize ─► Market Score ─► Ring Engine ─► AI/Filter ─► Output │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -48,18 +48,33 @@ Classification prompt includes:
 - Quadrant/ring definitions
 - Examples for few-shot learning
 
-### 4. Filter (`scripts/etl/pipeline.py`)
+### 4. Market Scoring + Ring Engine (`scripts/etl/market_scoring.py`, `scripts/etl/ring_assignment.py`)
+
+Deterministic ring assignment based on external momentum:
+- Weighted external signals: GitHub momentum/popularity, Hacker News heat, Google momentum
+- Threshold-based initial ring assignment
+- Hysteresis on promote/demote transitions
+- Distribution guardrail (`max_ring_ratio`) to prevent ring collapse (for example, all-`adopt`)
+
+### 5. History Store (`scripts/etl/history_store.py`)
+
+JSON rolling store for temporal trend/movement:
+- Persists `src/data/data.ai.history.json`
+- Keeps last `max_weeks` snapshots
+- Enables `trend` and `moved` relative to previous snapshot
+
+### 6. Filter (`scripts/etl/pipeline.py`)
 
 Quality gates applied post-classification:
 - Minimum confidence threshold (default: 0.5)
 - Auto-ignore list (configurable)
 - Include-only list (optional override)
 
-### 5. Output Generator (`scripts/etl/output_generator.py`)
+### 7. Output Generator (`scripts/etl/output_generator.py`)
 
 Generates radar data files:
 - `src/data/data.ai.json` - Public, sanitized
-- `src/data/data.ai.full.json` - Internal, full metadata
+- `src/data/data.ai.history.json` - Rolling temporal history
 
 Sanitization removes:
 - Internal URLs
@@ -100,10 +115,11 @@ Failure detection for external APIs:
    a. Fetch raw data
    b. Normalize to TechnologySignal
 3. Deduplicate by name
-4. Classify each signal (batch API calls)
-5. Apply filters (confidence, lists)
-6. Generate output files
-7. Save checkpoint
+4. Compute deterministic market score from external signals
+5. Assign rings with hysteresis + guardrails
+6. Classify quadrants/descriptions and apply strategic filtering
+7. Generate output files (public + rolling history)
+8. Save checkpoint
 ```
 
 ## Configuration
@@ -118,7 +134,7 @@ sources:
     time_range: daily
 
 classification:
-  model: gpt-4
+  model: hf:MiniMaxAI/MiniMax-M2.5
   temperature: 0.2
   timeout: 30
   max_retries: 3
@@ -152,8 +168,6 @@ scripts/
 │   ├── rate_limiter.py   # Rate limiting + circuit breaker
 │   ├── temporal_analyzer.py
 │   └── sources/          # Source implementations
-├── scraper/              # Legacy scrapers
-├── ai/                   # Legacy classifier
 ├── main.py              # CLI entry point
 └── config.yaml          # Configuration
 ```

@@ -8,6 +8,7 @@ on:
 jobs:
   update-data:
     runs-on: ubuntu-latest
+    timeout-minutes: 120
     permissions:
       contents: write
     
@@ -29,14 +30,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           SYNTHETIC_API_KEY: ${{ secrets.SYNTHETIC_API_KEY }}
+          PYTHONUNBUFFERED: "1"
         run: |
-          .venv/bin/python scripts/main.py --resume
+          .venv/bin/python -u scripts/main.py --resume
           
       - name: Commit sanitized data
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data.ai.json
+          git add src/data/data.ai.json src/data/data.ai.history.json
           git diff --staged --quiet || git commit -m "chore: update AI radar data"
           
       - name: Push changes

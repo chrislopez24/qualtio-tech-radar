@@ -1,6 +1,6 @@
 # Qualtio Tech Radar
 
-AI-powered Technology Radar with automated weekly updates from GitHub Trends, Hacker News, and Google Trends using Synthetic API for classification.
+AI-powered Technology Radar with automated weekly updates from GitHub, Hacker News, and Google Trends. Rings are assigned by deterministic market momentum (with hysteresis and guardrails) to avoid collapse into a single ring.
 
 ![Tech Radar Preview](./docs/preview.png)
 
@@ -10,6 +10,7 @@ AI-powered Technology Radar with automated weekly updates from GitHub Trends, Ha
 - **Dual Mode**: Manual curation mode + AI-powered auto-classification mode
 - **Glassmorphism UI**: Modern, responsive design with dark theme support
 - **Automated Data Pipeline**: Weekly updates via GitHub Actions
+- **Market-Signal Ringing**: External momentum scoring (GitHub + HN + Google Trends) with anti-collapse guardrails
 - **Search & Filter**: Real-time search across all technologies
 
 ## Tech Stack
@@ -112,11 +113,11 @@ python scripts/main.py
 ```
 
 This will:
-1. Fetch trending repos from GitHub
-2. Collect tech posts from Hacker News
-3. Query Google Trends for seed topics
-4. Classify technologies using Synthetic API
-5. Generate `src/data/data.ai.json`
+1. Fetch external signals from GitHub, Hacker News, and Google Trends
+2. Compute deterministic market scores per technology
+3. Assign rings using thresholds + hysteresis + distribution guardrails
+4. Classify quadrants/descriptions with Synthetic API support
+5. Generate `src/data/data.ai.json` and `src/data/data.ai.history.json`
 
 ### Environment Variables
 
@@ -175,6 +176,7 @@ The pipeline includes:
 - **Rate limiting**: 30 requests/minute to prevent API throttling
 - **Circuit breaker**: Automatically skips failing sources
 - **Retry logic**: 3 retries with exponential backoff
+- **Ring guardrails**: Hysteresis and max-ring-ratio fallback rebalance to avoid all-`adopt`
 
 ### Testing
 

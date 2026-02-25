@@ -52,6 +52,7 @@ def test_github_source_with_mocked_repos():
     with patch("etl.sources.github_trending.GitHubScraper") as mock_scraper_class:
         mock_scraper = Mock()
         mock_scraper.get_trending_repos.return_value = mock_repos
+        mock_scraper.search_repositories.return_value = mock_repos
         mock_scraper_class.return_value = mock_scraper
 
         config = GitHubTrendingConfig(enabled=True, language="python")
@@ -97,6 +98,7 @@ def test_github_source_respects_language_filter():
     with patch("etl.sources.github_trending.GitHubScraper") as mock_scraper_class:
         mock_scraper = Mock()
         mock_scraper.get_trending_repos.return_value = mock_repos
+        mock_scraper.search_repositories.return_value = mock_repos
         mock_scraper_class.return_value = mock_scraper
 
         config = GitHubTrendingConfig(enabled=True, language="rust")
@@ -113,6 +115,49 @@ def test_github_source_disabled():
     source = GitHubTrendingSource(config=config)
     items = source.fetch()
     assert items == []
+
+
+def test_github_source_combines_recent_created_and_recent_pushed_queries():
+    config = GitHubTrendingConfig(enabled=True, language="all", time_range="weekly")
+    source = GitHubTrendingSource(config=config)
+
+    created_repo = {
+        "name": "new-hot-project",
+        "full_name": "org/new-hot-project",
+        "description": "new project",
+        "stars": 500,
+        "forks": 40,
+        "language": "Python",
+        "topics": ["ai"],
+        "url": "https://github.com/org/new-hot-project",
+        "created_at": "2026-02-15T00:00:00Z",
+        "updated_at": "2026-02-20T00:00:00Z",
+    }
+    pushed_repo = {
+        "name": "existing-fast-moving",
+        "full_name": "org/existing-fast-moving",
+        "description": "updated project",
+        "stars": 1000,
+        "forks": 90,
+        "language": "Python",
+        "topics": ["devops"],
+        "url": "https://github.com/org/existing-fast-moving",
+        "created_at": "2020-01-01T00:00:00Z",
+        "updated_at": "2026-02-20T00:00:00Z",
+    }
+
+    with patch.object(source.rate_limiter, "execute_with_backoff") as mock_exec:
+        mock_exec.side_effect = [[created_repo], [pushed_repo]]
+
+        repos = source._fetch_trending_repos(language=None, time_range="weekly")
+
+        assert len(repos) == 2
+        assert mock_exec.call_count == 2
+
+        queries = [call.kwargs.get("query", "") for call in mock_exec.call_args_list]
+        assert any("created:>=" in query for query in queries)
+        assert any("pushed:>=" in query for query in queries)
+        assert all("stars:>" not in query for query in queries)
 
 
 class TestRateLimiter:

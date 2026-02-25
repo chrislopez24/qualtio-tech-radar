@@ -133,3 +133,19 @@ def test_hn_source_filters_non_tech(config):
         items = list(source.fetch())
         
         assert len(items) == 0
+
+
+def test_hn_source_scores_known_tech_tokens_with_punctuation(config):
+    source = HNSource(config=config)
+    item = HackerNewsItem(
+        id=77,
+        title="Show HN: Building with PostgreSQL, Rust, and Kubernetes!",
+        url="https://example.com/engineering",
+        points=42,
+        author="qa-engineer",
+        created_at=int(datetime.now().timestamp()),
+        comment_count=3,
+    )
+
+    score = source._calculate_tech_score(item)
+    assert score >= 2.0

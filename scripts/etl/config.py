@@ -42,7 +42,7 @@ class SourcesConfig(BaseModel):
 
 
 class ClassificationConfig(BaseModel):
-    model: str = "gpt-4"
+    model: str = "hf:MiniMaxAI/MiniMax-M2.5"
     temperature: float = Field(ge=0.0, le=2.0, default=0.2)
     json_mode: bool = True
 
@@ -55,7 +55,6 @@ class FilteringConfig(BaseModel):
 
 class OutputConfig(BaseModel):
     public_file: str = "src/data/data.ai.json"
-    internal_file: str = "src/data/data.ai.full.json"
 
 
 class CheckpointConfig(BaseModel):
@@ -68,6 +67,42 @@ class DeepScanConfig(BaseModel):
     repos: list[str] = Field(default_factory=list)
 
 
+class ScoringWeightsConfig(BaseModel):
+    github_momentum: float = Field(ge=0.0, default=0.3)
+    github_popularity: float = Field(ge=0.0, default=0.25)
+    hn_heat: float = Field(ge=0.0, default=0.2)
+    google_momentum: float = Field(ge=0.0, default=0.25)
+
+
+class ScoringThresholdsConfig(BaseModel):
+    adopt: float = Field(ge=0.0, le=100.0, default=75.0)
+    trial: float = Field(ge=0.0, le=100.0, default=55.0)
+    assess: float = Field(ge=0.0, le=100.0, default=35.0)
+
+
+class HysteresisConfig(BaseModel):
+    promote_delta: float = Field(ge=0.0, default=5.0)
+    demote_delta: float = Field(ge=0.0, default=5.0)
+    cooldown_weeks: int = Field(ge=0, default=1)
+
+
+class ScoringConfig(BaseModel):
+    weights: ScoringWeightsConfig = Field(default_factory=ScoringWeightsConfig)
+    thresholds: ScoringThresholdsConfig = Field(default_factory=ScoringThresholdsConfig)
+    hysteresis: HysteresisConfig = Field(default_factory=HysteresisConfig)
+
+
+class HistoryConfig(BaseModel):
+    enabled: bool = True
+    file: str = "src/data/data.ai.history.json"
+    max_weeks: int = Field(ge=1, default=12)
+
+
+class DistributionGuardrailConfig(BaseModel):
+    enabled: bool = True
+    max_ring_ratio: float = Field(gt=0.0, le=1.0, default=0.6)
+
+
 class ETLConfig(BaseModel):
     sources: SourcesConfig = Field(default_factory=SourcesConfig)
     classification: ClassificationConfig = Field(default_factory=ClassificationConfig)
@@ -76,6 +111,9 @@ class ETLConfig(BaseModel):
     rate_limit: RateLimitConfig = Field(default_factory=RateLimitConfig)
     checkpoint: CheckpointConfig = Field(default_factory=CheckpointConfig)
     deep_scan: DeepScanConfig = Field(default_factory=DeepScanConfig)
+    scoring: ScoringConfig = Field(default_factory=ScoringConfig)
+    history: HistoryConfig = Field(default_factory=HistoryConfig)
+    distribution_guardrail: DistributionGuardrailConfig = Field(default_factory=DistributionGuardrailConfig)
 
 
 def load_etl_config(config_path: str) -> ETLConfig:

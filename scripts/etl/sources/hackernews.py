@@ -35,6 +35,8 @@ TECH_KEYWORDS = [
     'vim', 'emacs', 'vscode', 'intellij', 'pycharm',
 ]
 
+NORMALIZED_TECH_KEYWORDS = [keyword.strip().lower() for keyword in TECH_KEYWORDS]
+
 
 TECH_DOMAINS = [
     'github.com', 'gitlab.com', 'bitbucket.org',
@@ -151,8 +153,8 @@ class HackerNewsSource:
         score = 0.0
         text = f"{item.title} {item.url}".lower()
         
-        for keyword in TECH_KEYWORDS:
-            if keyword.lower() in text:
+        for keyword in NORMALIZED_TECH_KEYWORDS:
+            if keyword and keyword in text:
                 score += 1.0
                 
         url_lower = item.url.lower()

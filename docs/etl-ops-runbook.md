@@ -10,7 +10,7 @@ Operational guide for running and maintaining the Tech Radar ETL pipeline.
 |----------|-------------|------------|
 | `GH_TOKEN` | GitHub PAT with `repo` scope | [GitHub Settings](https://github.com/settings/tokens) |
 | `SYNTHETIC_API_KEY` | Synthetic API key | Sign up at [synthetic.new](https://synthetic.new) |
-| `SYNTHETIC_MODEL` | Model identifier (optional) | Default: `llama-3.3-70b` |
+| `SYNTHETIC_MODEL` | Model identifier (optional) | Default: `hf:MiniMaxAI/MiniMax-M2.5` |
 
 ### Setup
 
@@ -114,6 +114,13 @@ python scripts/main.py
 2. Check API keys are valid
 3. Run with `--dry-run` to see configuration
 
+### Issue: Ring Collapse (for example, almost all `adopt`)
+
+1. Verify `distribution_guardrail.enabled` is `true`
+2. Check `distribution_guardrail.max_ring_ratio` in `scripts/config.yaml`
+3. Confirm `scoring.weights` are not skewed to one source
+4. Inspect `src/data/data.ai.history.json` for temporal drift
+
 ## Validation Checklist
 
 Run these checks after any pipeline changes:
@@ -150,6 +157,7 @@ cat src/data/data.ai.json | python -m json.tool | less
 ```bash
 # Validate JSON
 python -c "import json; json.load(open('src/data/data.ai.json'))"
+python -c "import json; json.load(open('src/data/data.ai.history.json'))"
 ```
 
 ## Monitoring
@@ -157,15 +165,15 @@ python -c "import json; json.load(open('src/data/data.ai.json'))"
 ### GitHub Actions (Weekly)
 
 The pipeline runs automatically via `.github/workflows/weekly-update.yml`:
-- Triggers every Sunday at 2 AM UTC
+- Triggers every Monday at 9 AM UTC
 - Uses secrets: `GH_TOKEN`, `SYNTHETIC_API_KEY`
-- Outputs to `src/data/data.ai.json`
+- Outputs to `src/data/data.ai.json` and `src/data/data.ai.history.json`
 
 ### Manual Verification
 
 After automated run:
 1. Check workflow run status
-2. Verify `data.ai.json` was updated
+2. Verify `data.ai.json` and `data.ai.history.json` were updated
 3. Check radar displays new data
 
 ## Configuration Reference
@@ -193,7 +201,7 @@ sources:
 
 ```yaml
 classification:
-  model: gpt-4           # or other models
+  model: hf:MiniMaxAI/MiniMax-M2.5
   temperature: 0.2       # lower = more deterministic
   json_mode: true        # always use JSON
   timeout: 30            # seconds per request
