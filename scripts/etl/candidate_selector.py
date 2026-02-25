@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List, Dict, Any
 
 
 @dataclass
@@ -8,7 +9,21 @@ class CandidateSelection:
     borderline_ids: list[str]
 
 
-def select_candidates(items, target_total, watchlist_ratio, borderline_band):
+# Module constants for thresholds (Issue #5)
+DEFAULT_CORE_THRESHOLD = 70
+DEFAULT_CORE_CONFIDENCE_THRESHOLD = 0.7
+DEFAULT_WATCHLIST_THRESHOLD = 10
+DEFAULT_WATCHLIST_CONFIDENCE_THRESHOLD = 0.5
+
+REQUIRED_FIELDS = {"id", "market_score", "trend_delta", "confidence"}
+
+
+def select_candidates(
+    items: List[Dict[str, Any]],
+    target_total: int,
+    watchlist_ratio: float,
+    borderline_band: float,
+) -> CandidateSelection:
     """
     Partition items into Core, Watchlist, and Borderline buckets.
 
@@ -24,16 +39,21 @@ def select_candidates(items, target_total, watchlist_ratio, borderline_band):
 
     Returns:
         CandidateSelection with core_ids, watchlist_ids, borderline_ids
-    """
-    # Calculate dynamic thresholds based on borderline_band
-    core_threshold = 70
-    core_confidence_threshold = 0.7
-    watchlist_threshold = 10
-    watchlist_confidence_threshold = 0.5
 
-    # Apply borderline_band to create flexible thresholds
-    core_low = core_threshold - borderline_band
-    watchlist_low = watchlist_threshold - borderline_band
+    Raises:
+        ValueError: If any item is missing required fields
+    """
+    # Validate required fields (Issue #2)
+    for item in items:
+        missing = REQUIRED_FIELDS - set(item.keys())
+        if missing:
+            raise ValueError(f"Item {item.get('id', '<unknown>')} missing required fields: {missing}")
+
+    # Calculate dynamic thresholds based on borderline_band
+    core_threshold = DEFAULT_CORE_THRESHOLD
+    core_confidence_threshold = DEFAULT_CORE_CONFIDENCE_THRESHOLD
+    watchlist_threshold = DEFAULT_WATCHLIST_THRESHOLD
+    watchlist_confidence_threshold = DEFAULT_WATCHLIST_CONFIDENCE_THRESHOLD
 
     core_candidates = []
     watchlist_candidates = []
@@ -41,22 +61,32 @@ def select_candidates(items, target_total, watchlist_ratio, borderline_band):
 
     for item in items:
         item_id = item["id"]
-        market_score = item.get("market_score", 0)
-        trend_delta = item.get("trend_delta", 0)
-        confidence = item.get("confidence", 0.5)
+        market_score = item["market_score"]
+        trend_delta = item["trend_delta"]
+        confidence = item["confidence"]
 
         # Core criteria: high market score + high confidence
         is_core = market_score >= core_threshold and confidence >= core_confidence_threshold
 
         # Watchlist criteria: high trend delta (momentum) + moderate confidence
-        is_watchlist = trend_delta >= watchlist_threshold and confidence >= watchlist_confidence_threshold and not is_core
+        is_watchlist = (
+            trend_delta >= watchlist_threshold
+            and confidence >= watchlist_confidence_threshold
+            and not is_core
+        )
 
-        # Borderline: items in the borderline_band around thresholds, or low confidence
+        # Borderline: items near thresholds or with contradictory signals (Issue #1)
+        # Proximity check: items within borderline_band of thresholds
+        is_near_core_threshold = abs(market_score - core_threshold) <= borderline_band
+        is_near_watchlist_threshold = abs(trend_delta - watchlist_threshold) <= borderline_band
+        is_near_confidence_threshold = abs(confidence - core_confidence_threshold) <= (borderline_band / 100)
+
         is_borderline = (
-            confidence < watchlist_confidence_threshold or
-            (not is_core and not is_watchlist) or
-            (core_low <= market_score < core_threshold and confidence >= core_confidence_threshold) or
-            (watchlist_low <= trend_delta < watchlist_threshold and confidence >= watchlist_confidence_threshold)
+            confidence < watchlist_confidence_threshold
+            or (not is_core and not is_watchlist)
+            or (is_near_core_threshold and confidence >= core_confidence_threshold)
+            or (is_near_watchlist_threshold and confidence >= watchlist_confidence_threshold)
+            or is_near_confidence_threshold
         )
 
         if is_core:

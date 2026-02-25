@@ -915,14 +915,15 @@ class RadarPipeline:
         self._save_checkpoint("filter", cursor=len(filtered_items or []))
 
         # Phase 5b: Candidate selection - partition into Core/Watchlist/Borderline
-        # Build lookup for market scores from the original technologies
+        # Build lookup for market scores and trend_delta from the original technologies
         tech_scores = {t.name.lower(): t.market_score for t in technologies}
-        
+        tech_trend_deltas = {t.name.lower(): t.trend_delta for t in technologies}
+
         candidate_items = [
             {
                 "id": item.name.lower().replace(" ", "-"),
                 "market_score": tech_scores.get(item.name.lower(), 0),
-                "trend_delta": 0,  # FilteredItem doesn't carry trend_delta, use market_score instead
+                "trend_delta": tech_trend_deltas.get(item.name.lower(), 0),
                 "confidence": item.confidence,
             }
             for item in (filtered_items or [])
@@ -930,8 +931,8 @@ class RadarPipeline:
         candidate_selection = select_candidates(
             candidate_items,
             target_total=getattr(self.config.distribution, 'target_total', 15),
-            watchlist_ratio=0.3,
-            borderline_band=5.0,
+            watchlist_ratio=self.config.llm_optimization.watchlist_ratio,
+            borderline_band=self.config.llm_optimization.borderline_band,
         )
         logger.info(f"Phase 5b - Candidate selection: {len(candidate_selection.core_ids)} core, "
                    f"{len(candidate_selection.watchlist_ids)} watchlist, "
