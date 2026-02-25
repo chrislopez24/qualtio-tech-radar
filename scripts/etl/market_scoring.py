@@ -5,11 +5,12 @@ from __future__ import annotations
 from typing import Mapping
 
 
+# Default weights without Google Trends
+# GitHub is primary source (real adoption), HN is secondary (early buzz)
 DEFAULT_WEIGHTS = {
-    "gh_momentum": 0.3,
+    "gh_momentum": 0.60,
     "gh_popularity": 0.25,
-    "hn_heat": 0.2,
-    "google_momentum": 0.25,
+    "hn_heat": 0.15,
 }
 
 

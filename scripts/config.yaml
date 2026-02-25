@@ -91,11 +91,12 @@ scoring:
     demote_delta: 15        # Must degrade significantly to move down
     cooldown_weeks: 12      # Quarterly cooldown (3 months)
 
-# Target: 12-15 technologies for a focused radar
+# Target: compact but richer radar coverage
 distribution:
-  target_total: 15
-  min_per_quadrant: 2
-  max_per_quadrant: 5
+  target_total: 44
+  min_per_quadrant: 10
+  max_per_quadrant: 15
+  min_per_ring: 4
 
 history:
   enabled: true
@@ -126,7 +127,7 @@ quality_gates:
 # LLM Optimization settings
 llm_optimization:
   enabled: true
-  max_calls_per_run: 40
+  max_calls_per_run: 7
   borderline_band: 5.0
-  watchlist_ratio: 0.25
+  watchlist_ratio: 0.18
   cache_enabled: true

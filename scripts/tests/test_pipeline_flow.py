@@ -51,7 +51,12 @@ class TestPipelineFlow:
         """Pipeline should execute all phases in correct order and produce output"""
         from etl.pipeline import RadarPipeline
 
-        config = ETLConfig()
+        config = ETLConfig(filtering=FilteringConfig(min_sources=1))
+        config.distribution.min_per_quadrant = 1
+        config.distribution.max_per_quadrant = 8
+        config.quality_gates.min_hn_mentions.assess = 0
+        config.quality_gates.min_hn_mentions.trial = 0
+        config.quality_gates.min_hn_mentions.adopt = 0
 
         with patch('etl.pipeline.GitHubTrendingSource') as mock_github_source, \
              patch('etl.pipeline.HackerNewsSource') as mock_hn_source, \
@@ -134,10 +139,13 @@ class TestPipelineFlow:
 
             assert "technologies" in output
             assert len(output["technologies"]) == 2
+            assert "llmCalls" in output["meta"]["pipeline"]
 
             mock_github_source.return_value.fetch.assert_called_once()
             mock_hn_source.return_value.fetch.assert_called_once()
-            mock_classifier.return_value.classify_batch.assert_called_once()
+            # Selective LLM may call classify_batch 0 or 1 times depending on
+            # whether candidate selection yields borderline items.
+            assert mock_classifier.return_value.classify_batch.call_count <= 1
             mock_filter.return_value.filter.assert_called_once()
 
     def test_pipeline_phases_execute_in_order(self):
@@ -234,10 +242,15 @@ class TestPipelineFlow:
             pipeline.run()
 
             mock_classifier.assert_called_once_with(model="hf:MiniMaxAI/MiniMax-M2.5")
-            mock_filter.assert_called_once_with(config.filtering, model="hf:MiniMaxAI/MiniMax-M2.5")
+            mock_filter.assert_called_once()
+            args, kwargs = mock_filter.call_args
+            assert args[0] == config.filtering
+            assert kwargs["model"] == "hf:MiniMaxAI/MiniMax-M2.5"
+            assert kwargs["max_drift"] == config.llm_optimization.cache_drift_threshold
+            assert kwargs["llm_cache"] is not None
 
-    def test_pipeline_drops_items_with_placeholder_descriptions(self):
-        """Output should exclude placeholder descriptions"""
+    def test_pipeline_repairs_items_with_placeholder_descriptions(self):
+        """Output should repair placeholder descriptions instead of dropping items."""
         from etl.pipeline import RadarPipeline
 
         config = ETLConfig()
@@ -274,8 +287,11 @@ class TestPipelineFlow:
         ])
 
         names = [tech["name"] for tech in output["technologies"]]
-        assert "Awesome-Python" not in names
+        assert "Awesome-Python" in names
         assert "React" in names
+        repaired = next(tech for tech in output["technologies"] if tech["name"] == "Awesome-Python")
+        assert "with 0 stars" not in repaired["description"]
+        assert repaired["description"].strip() != ""
 
     def test_extract_tech_name_prefers_known_tech_tokens_over_first_word(self):
         from etl.pipeline import RadarPipeline
@@ -283,6 +299,295 @@ class TestPipelineFlow:
         pipeline = RadarPipeline()
         name = pipeline._extract_tech_name("Show HN: Building with PostgreSQL and Rust")
         assert name in {"postgresql", "rust"}
+
+    def test_strategic_filter_enforces_at_least_one_per_quadrant(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+
+        config = ETLConfig(filtering=FilteringConfig(min_sources=1))
+        config.distribution.min_per_quadrant = 1
+        config.distribution.max_per_quadrant = 8
+        config.quality_gates.min_hn_mentions.assess = 0
+        config.quality_gates.min_hn_mentions.trial = 0
+        config.quality_gates.min_hn_mentions.adopt = 0
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter, \
+             patch('etl.pipeline.DeepScanner'):
+
+            # Simulate aggressive filter that only keeps one quadrant
+            mock_filter.return_value.filter.return_value = [
+                MockFilteredItem(
+                    name="React",
+                    description="UI library",
+                    stars=220000,
+                    quadrant="tools",
+                    ring="adopt",
+                    confidence=0.9,
+                    trend="up",
+                    strategic_value=MockStrategicValue.HIGH,
+                )
+            ]
+
+            pipeline = RadarPipeline(config=config)
+
+            technologies = [
+                NormalizedTech("React", "UI", 220000, 56000, "JavaScript", ["ui"], "", 25, ["github"], {}, 90.0),
+                NormalizedTech("Kubernetes", "Platform", 110000, 38000, "Go", ["platform"], "", 20, ["github"], {}, 88.0),
+                NormalizedTech("Rust", "Language", 95000, 12000, "Rust", ["language"], "", 15, ["github"], {}, 85.0),
+                NormalizedTech("DDD", "Technique", 15000, 900, None, ["architecture"], "", 5, ["github"], {}, 70.0),
+            ]
+
+            classifications = [
+                ClassificationResult("React", "tools", "adopt", "UI", 0.9, "up", strategic_value="high"),
+                ClassificationResult("Kubernetes", "platforms", "trial", "Platform", 0.85, "up", strategic_value="high"),
+                ClassificationResult("Rust", "languages", "trial", "Language", 0.85, "up", strategic_value="medium"),
+                ClassificationResult("DDD", "techniques", "assess", "Technique", 0.75, "stable", strategic_value="medium"),
+            ]
+
+            filtered = pipeline._strategic_filter(technologies, classifications)
+            quadrants = {item.quadrant for item in filtered}
+            assert {"tools", "platforms", "languages", "techniques"}.issubset(quadrants)
+
+    def test_generate_output_includes_separate_watchlist(self):
+        from etl.pipeline import RadarPipeline
+
+        pipeline = RadarPipeline()
+        main_item = MockFilteredItem(
+            name="React",
+            description="UI library for interfaces",
+            stars=220000,
+            quadrant="tools",
+            ring="adopt",
+            confidence=0.95,
+            trend="up",
+            strategic_value=MockStrategicValue.HIGH,
+        )
+        watch_item = MockFilteredItem(
+            name="Bun",
+            description="JavaScript runtime",
+            stars=78000,
+            quadrant="platforms",
+            ring="assess",
+            confidence=0.8,
+            trend="up",
+            strategic_value=MockStrategicValue.MEDIUM,
+        )
+
+        output = pipeline._generate_output([main_item], [watch_item])  # type: ignore[arg-type]
+
+        assert "watchlist" in output
+        assert len(output["watchlist"]) == 1
+        assert output["watchlist"][0]["name"] == "Bun"
+
+    def test_build_watchlist_prefers_previous_snapshot_ids(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+        from etl.candidate_selector import CandidateSelection
+
+        config = ETLConfig(filtering=FilteringConfig(min_sources=1))
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'), \
+             patch('etl.pipeline.DeepScanner'):
+            pipeline = RadarPipeline(config=config)
+
+        pipeline.previous_snapshot = {
+            "watchlist": [{"id": "keep-me"}],
+        }
+
+        technologies = [
+            NormalizedTech("Keep Me", "Persist", 1000, 10, None, ["tool"], "", 2, ["github"], {}, 55.0, 2.0),
+            NormalizedTech("New Item", "New", 1000, 10, None, ["tool"], "", 2, ["github"], {}, 50.0, 5.0),
+        ]
+        classifications = [
+            ClassificationResult("Keep Me", "tools", "assess", "Persist", 0.8, "up", strategic_value="medium"),
+            ClassificationResult("New Item", "tools", "assess", "New", 0.8, "up", strategic_value="medium"),
+        ]
+        selection = CandidateSelection(core_ids=[], watchlist_ids=[], borderline_ids=["new-item"])
+
+        watchlist = pipeline._build_watchlist_items(technologies, classifications, selection)
+
+        assert watchlist
+        assert watchlist[0].name == "Keep Me"
+
+    def test_build_watchlist_keeps_previous_items_even_when_absent_from_current_sources(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.candidate_selector import CandidateSelection
+
+        config = ETLConfig(filtering=FilteringConfig(min_sources=1))
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'), \
+             patch('etl.pipeline.DeepScanner'):
+            pipeline = RadarPipeline(config=config)
+
+        pipeline.previous_snapshot = {
+            "watchlist": [
+                {
+                    "id": "legacy-watch",
+                    "name": "Legacy Watch",
+                    "quadrant": "platforms",
+                    "ring": "assess",
+                    "description": "Legacy watch item",
+                    "confidence": 0.7,
+                }
+            ]
+        }
+
+        selection = CandidateSelection(core_ids=[], watchlist_ids=[], borderline_ids=[])
+        watchlist = pipeline._build_watchlist_items([], [], selection)
+
+        assert len(watchlist) == 0
+
+        watchlist = pipeline._build_watchlist_items(
+            technologies=[
+                NormalizedTech("Current", "Current", 1000, 10, None, ["tool"], "", 2, ["github"], {}, 40.0)
+            ],
+            classifications=[],
+            candidate_selection=selection,
+        )
+
+        assert watchlist
+        assert "Legacy Watch" in {item.name for item in watchlist}
+
+    def test_strategic_filter_backfills_to_target_min_when_quadrant_caps_block(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+
+        config = ETLConfig(filtering=FilteringConfig(min_sources=1))
+        config.distribution.target_total = 6
+        config.distribution.min_per_quadrant = 1
+        config.distribution.max_per_quadrant = 1
+        config.quality_gates.min_hn_mentions.assess = 0
+        config.quality_gates.min_hn_mentions.trial = 0
+        config.quality_gates.min_hn_mentions.adopt = 0
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter, \
+             patch('etl.pipeline.DeepScanner'):
+
+            mock_filter.return_value.filter.return_value = []
+            pipeline = RadarPipeline(config=config)
+
+            technologies = [
+                NormalizedTech(
+                    name=f"Tool-{i}",
+                    description="Tool",
+                    stars=10000 - i,
+                    forks=100,
+                    language=None,
+                    topics=["tool"],
+                    url="",
+                    hn_mentions=5,
+                    sources=["github"],
+                    signals={},
+                    market_score=90.0 - i,
+                )
+                for i in range(6)
+            ]
+            classifications = [
+                ClassificationResult(
+                    name=f"Tool-{i}",
+                    quadrant="tools",
+                    ring="trial",
+                    description="Tool",
+                    confidence=0.8,
+                    trend="stable",
+                    strategic_value="medium",
+                )
+                for i in range(6)
+            ]
+
+            filtered = pipeline._strategic_filter(technologies, classifications)
+
+            target_min = max(4, config.distribution.target_total - 3)
+            assert len(filtered) == target_min
+
+    def test_strategic_filter_prefers_previous_main_ids_for_stability(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+
+        config = ETLConfig(filtering=FilteringConfig(min_sources=1))
+        config.distribution.target_total = 1
+        config.distribution.min_per_quadrant = 1
+        config.distribution.max_per_quadrant = 1
+        config.quality_gates.min_hn_mentions.assess = 0
+        config.quality_gates.min_hn_mentions.trial = 0
+        config.quality_gates.min_hn_mentions.adopt = 0
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter, \
+             patch('etl.pipeline.DeepScanner'):
+
+            mock_filter.return_value.filter.return_value = []
+            pipeline = RadarPipeline(config=config)
+            pipeline.previous_snapshot = {
+                "technologies": [{"id": "legacy-tech"}],
+            }
+
+            technologies = [
+                NormalizedTech("Legacy Tech", "Legacy", 1000, 10, None, ["tool"], "", 2, ["github"], {}, 40.0),
+                NormalizedTech("New Hot", "New", 1000, 10, None, ["tool"], "", 2, ["github"], {}, 95.0),
+            ]
+            classifications = [
+                ClassificationResult("Legacy Tech", "tools", "assess", "Legacy", 0.8, "stable", strategic_value="medium"),
+                ClassificationResult("New Hot", "tools", "assess", "New", 0.8, "stable", strategic_value="medium"),
+            ]
+
+            filtered = pipeline._strategic_filter(technologies, classifications)
+
+            assert len(filtered) == 1
+            assert filtered[0].name == "Legacy Tech"
+
+    def test_strategic_filter_can_fill_underrepresented_quadrants_with_affinity(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+
+        config = ETLConfig(filtering=FilteringConfig(min_sources=1))
+        config.distribution.target_total = 4
+        config.distribution.min_per_quadrant = 1
+        config.distribution.max_per_quadrant = 4
+        config.quality_gates.min_hn_mentions.assess = 0
+        config.quality_gates.min_hn_mentions.trial = 0
+        config.quality_gates.min_hn_mentions.adopt = 0
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter, \
+             patch('etl.pipeline.DeepScanner'):
+
+            mock_filter.return_value.filter.return_value = []
+            pipeline = RadarPipeline(config=config)
+
+            technologies = [
+                NormalizedTech("Rust", "Systems language", 1000, 10, "Rust", [], "", 2, ["github"], {}, 95.0),
+                NormalizedTech("Kubernetes", "Container orchestration platform", 1000, 10, "Go", ["infrastructure"], "", 2, ["github"], {}, 94.0),
+                NormalizedTech("Playwright", "Testing framework tool", 1000, 10, "TypeScript", ["testing", "tool"], "", 2, ["github"], {}, 93.0),
+                NormalizedTech("Awesome-Architecture", "Architecture patterns and guides", 1000, 10, None, [], "", 2, ["github"], {}, 92.0),
+            ]
+            classifications = [
+                ClassificationResult("Rust", "tools", "trial", "Systems language", 0.8, "stable", strategic_value="medium"),
+                ClassificationResult("Kubernetes", "tools", "trial", "Container platform", 0.8, "stable", strategic_value="medium"),
+                ClassificationResult("Playwright", "tools", "trial", "Testing tool", 0.8, "stable", strategic_value="medium"),
+                ClassificationResult("Awesome-Architecture", "tools", "trial", "Architecture guide", 0.8, "stable", strategic_value="medium"),
+            ]
+
+            filtered = pipeline._strategic_filter(technologies, classifications)
+            quadrants = {item.quadrant for item in filtered}
+
+            assert {"tools", "platforms", "languages", "techniques"}.issubset(quadrants)
 
     def test_pipeline_collects_google_trends_when_enabled(self):
         from etl.pipeline import RadarPipeline

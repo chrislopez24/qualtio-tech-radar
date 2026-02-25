@@ -90,11 +90,11 @@ def select_candidates(
         )
 
         if is_core:
-            core_candidates.append((item_id, market_score))
+            core_candidates.append((item_id, market_score, trend_delta))
         elif is_watchlist:
-            watchlist_candidates.append((item_id, market_score))
+            watchlist_candidates.append((item_id, market_score, trend_delta))
         elif is_borderline:
-            borderline_candidates.append((item_id, market_score))
+            borderline_candidates.append((item_id, market_score, trend_delta))
 
     # Calculate sizes based on ratios and target_total
     watchlist_size = int(target_total * watchlist_ratio)
@@ -102,14 +102,40 @@ def select_candidates(
     borderline_size = int(remaining * 0.3)  # 30% of remaining for borderline
     core_size = remaining - borderline_size  # Rest for core
 
-    # Sort by market_score (descending) and limit to calculated sizes
+    # Sort by relevance per bucket and apply initial size limits
     core_candidates.sort(key=lambda x: x[1], reverse=True)
-    watchlist_candidates.sort(key=lambda x: x[1], reverse=True)
+    watchlist_candidates.sort(key=lambda x: (x[2], x[1]), reverse=True)
     borderline_candidates.sort(key=lambda x: x[1], reverse=True)
 
-    core_ids = [item_id for item_id, _ in core_candidates[:core_size]]
-    watchlist_ids = [item_id for item_id, _ in watchlist_candidates[:watchlist_size]]
-    borderline_ids = [item_id for item_id, _ in borderline_candidates[:borderline_size]]
+    # Stabilize core set: if strict confidence rules produce too few core items,
+    # promote top borderline candidates by market score into core.
+    if len(items) >= target_total and len(core_candidates) == 0 and borderline_candidates:
+        needed = min(core_size, max(1, core_size // 2), len(borderline_candidates))
+        promoted = borderline_candidates[:needed]
+        core_candidates.extend(promoted)
+        borderline_candidates = borderline_candidates[needed:]
+        core_candidates.sort(key=lambda x: x[1], reverse=True)
+
+    core_ids = [item_id for item_id, _, _ in core_candidates[:core_size]]
+    watchlist_ids = [item_id for item_id, _, _ in watchlist_candidates[:watchlist_size]]
+    borderline_ids = [item_id for item_id, _, _ in borderline_candidates[:borderline_size]]
+
+    # Backfill to target_total when any bucket is smaller than expected.
+    selected_ids = set(core_ids + watchlist_ids + borderline_ids)
+    if len(selected_ids) < target_total:
+        remainder = []
+        remainder.extend(core_candidates[core_size:])
+        remainder.extend(watchlist_candidates[watchlist_size:])
+        remainder.extend(borderline_candidates[borderline_size:])
+        remainder.sort(key=lambda x: (x[2], x[1]), reverse=True)
+
+        for item_id, _, _ in remainder:
+            if len(selected_ids) >= target_total:
+                break
+            if item_id in selected_ids:
+                continue
+            borderline_ids.append(item_id)
+            selected_ids.add(item_id)
 
     return CandidateSelection(
         core_ids=core_ids,

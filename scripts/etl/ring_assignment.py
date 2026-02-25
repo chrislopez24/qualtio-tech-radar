@@ -23,6 +23,7 @@ DEFAULT_HYSTERESIS = {
 DEFAULT_GUARDRAIL = {
     "enabled": True,
     "max_ring_ratio": 0.6,
+    "min_ring_count": 1,
 }
 
 
@@ -106,6 +107,46 @@ def _rebalance_if_needed(items: List[Dict[str, Any]], max_ring_ratio: float) -> 
                 break
 
 
+def _score_for_item(item: Mapping[str, Any]) -> float:
+    return float(item.get("market_score", 0.0)) + float(item.get("trend_delta", 0.0))
+
+
+def _target_anchor(target_ring: str, thresholds: Mapping[str, float]) -> float:
+    if target_ring == "adopt":
+        return _get_threshold("adopt", thresholds)
+    if target_ring == "trial":
+        return _get_threshold("trial", thresholds)
+    if target_ring == "assess":
+        return _get_threshold("assess", thresholds)
+    return max(0.0, _get_threshold("assess", thresholds) - 10.0)
+
+
+def _ensure_min_ring_presence(
+    items: List[Dict[str, Any]],
+    thresholds: Mapping[str, float],
+    min_ring_count: int,
+) -> None:
+    if not items or min_ring_count <= 0:
+        return
+
+    def ring_count(ring: str) -> int:
+        return sum(1 for item in items if item.get("ring") == ring)
+
+    for target_ring in ["adopt", "trial", "assess", "hold"]:
+        while ring_count(target_ring) < min_ring_count:
+            donors = [
+                item
+                for item in items
+                if item.get("ring") != target_ring and ring_count(str(item.get("ring"))) > min_ring_count
+            ]
+            if not donors:
+                break
+
+            anchor = _target_anchor(target_ring, thresholds)
+            donors.sort(key=lambda item: abs(_score_for_item(item) - anchor))
+            donors[0]["ring"] = target_ring
+
+
 def assign_rings(
     items: List[Dict[str, Any]],
     previous: Optional[Mapping[str, Any]] = None,
@@ -138,5 +179,7 @@ def assign_rings(
     if bool(guardrail.get("enabled", True)):
         max_ratio = float(guardrail.get("max_ring_ratio", DEFAULT_GUARDRAIL["max_ring_ratio"]))
         _rebalance_if_needed(assigned, _clamp(max_ratio, 0.05, 1.0))
+        min_ring_count = int(guardrail.get("min_ring_count", DEFAULT_GUARDRAIL["min_ring_count"]))
+        _ensure_min_ring_presence(assigned, thresholds, max(0, min_ring_count))
 
     return assigned

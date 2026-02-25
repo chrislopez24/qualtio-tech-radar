@@ -32,6 +32,8 @@ from etl.sources.hackernews import HackerNewsSource
 from etl.sources.google_trends import GoogleTrendsSource
 from etl.candidate_selector import select_candidates, CandidateSelection
 from etl.llm_cache import LLMDecisionCache
+from etl.quadrant_logic import infer_quadrant, quadrant_affinity
+from etl.selection_logic import strategic_filter, build_watchlist_items
 
 logger = logging.getLogger(__name__)
 
@@ -267,6 +269,8 @@ RING_INDEX = {
     "adopt": 3,
 }
 
+RADAR_QUADRANTS = ("techniques", "platforms", "tools", "languages")
+
 
 @dataclass
 class NormalizedTech:
@@ -315,6 +319,13 @@ class RadarPipeline:
         if self.config.llm_optimization.cache_enabled:
             cache_path = Path(self.config.llm_optimization.cache_file)
             self.llm_cache = LLMDecisionCache(cache_path)
+
+        self._last_filter_stats: Dict[str, int] = {
+            "classified": 0,
+            "qualified": 0,
+            "ai_accepted": 0,
+        }
+        self._last_llm_calls: int = 0
         
         self._init_components()
 
@@ -525,6 +536,16 @@ class RadarPipeline:
             "hn_heat": self.config.scoring.weights.hn_heat,
         }
 
+        previous_scores: Dict[str, float] = {}
+        if self.previous_snapshot:
+            for entry in self.previous_snapshot.get("technologies", []):
+                if not isinstance(entry, dict):
+                    continue
+                tech_id = str(entry.get("id", "")).strip().lower()
+                if not tech_id:
+                    continue
+                previous_scores[tech_id] = float(entry.get("marketScore", 0.0))
+
         for tech in technologies:
             tech.signals.setdefault("gh_popularity", min(100.0, tech.stars / 1000.0))
             tech.signals.setdefault("hn_heat", min(100.0, float(tech.hn_mentions) * 10.0))
@@ -540,6 +561,10 @@ class RadarPipeline:
             variance = pvariance(signal_values) if len(signal_values) > 1 else 0.0
             source_count = len(set(tech.sources))
             tech.signals["score_confidence"] = calculate_confidence(source_count, variance)
+
+            tech_id = tech.name.lower().replace(" ", "-")
+            prev_score = previous_scores.get(tech_id)
+            tech.trend_delta = tech.market_score - prev_score if prev_score is not None else 0.0
 
         return technologies
 
@@ -579,6 +604,7 @@ class RadarPipeline:
 
         # Initialize results
         all_classifications: List[ClassificationResult] = []
+        self._last_llm_calls = 0
 
         # Process core candidates with deterministic classification (no LLM)
         core_techs = [tech_by_id[tid] for tid in candidate_selection.core_ids if tid in tech_by_id]
@@ -648,6 +674,7 @@ class RadarPipeline:
         ]
 
         try:
+            self._last_llm_calls += len(to_classify)
             llm_classifications = self.classifier.classify_batch(tech_dicts)
 
             # For items that exceeded budget, use fallback
@@ -678,6 +705,7 @@ class RadarPipeline:
         ]
 
         try:
+            self._last_llm_calls = len(technologies)
             return self.classifier.classify_batch(tech_dicts)
         except Exception as e:
             logger.warning(f"AI classification failed: {e}, using fallback")
@@ -702,7 +730,7 @@ class RadarPipeline:
                 name=tech.name,
                 quadrant=quadrant,
                 ring=ring,
-                description=tech.description or f"{tech.name} - technology with {tech.stars} stars",
+                description=tech.description or f"{tech.name} technology with measurable adoption and market momentum signals.",
                 confidence=0.5,
                 trend='stable'
             ))
@@ -711,140 +739,87 @@ class RadarPipeline:
 
     def _infer_quadrant(self, tech: NormalizedTech) -> str:
         """Infer quadrant from tech characteristics"""
-        lang = (tech.language or "").lower()
-        topics = [t.lower() for t in tech.topics]
+        return infer_quadrant(tech)
 
-        if lang in ["python", "javascript", "typescript", "rust", "go", "java", "c#"]:
-            return "languages"
-        if any(t in topics for t in ["devops", "cloud", "infrastructure", "kubernetes"]):
-            return "platforms"
-        if any(t in topics for t in ["testing", "tool", "framework", "library"]):
-            return "tools"
-        return "techniques"
+    def _quadrant_affinity(self, tech: NormalizedTech, target_quadrant: str) -> float:
+        """Score how naturally a technology fits a target quadrant."""
+        return quadrant_affinity(tech, target_quadrant, self._infer_domain)
+
+    def _normalize_id(self, name: str) -> str:
+        return str(name).lower().replace(" ", "-").strip()
+
+    def _to_strategic_value(self, value: Any) -> StrategicValue:
+        if isinstance(value, StrategicValue):
+            return value
+        normalized = str(value or "medium").lower().strip()
+        if normalized == "high":
+            return StrategicValue.HIGH
+        if normalized == "low":
+            return StrategicValue.LOW
+        return StrategicValue.MEDIUM
+
+    def _build_filtered_item(
+        self,
+        tech: NormalizedTech,
+        classification: ClassificationResult,
+        confidence_floor: float = 0.5,
+    ) -> FilteredItem:
+        item = FilteredItem(
+            name=classification.name,
+            description=classification.description,
+            stars=tech.stars,
+            quadrant=classification.quadrant,
+            ring=classification.ring,
+            confidence=max(confidence_floor, classification.confidence),
+            trend=classification.trend,
+            strategic_value=self._to_strategic_value(getattr(classification, "strategic_value", "medium")),
+            is_deprecated=False,
+            replacement=None,
+        )
+        setattr(item, "market_score", tech.market_score)
+        setattr(item, "signals", tech.signals)
+        setattr(item, "moved", tech.moved)
+        setattr(item, "sources", tech.sources)
+        return item
 
     def _strategic_filter(self, technologies: List[NormalizedTech],
                           classifications: List[ClassificationResult]) -> List[FilteredItem]:
-        """Phase 5: Strategic filtering with Zalando-style quality gates
-        
-        Filters applied:
-        1. Minimum sources: Must appear in at least N sources (default: 2)
-        2. Quality gates: Must meet minimum stars/HN mentions for its ring
-        3. Temporal consistency: Must have been around for minimum days
-        4. AI filtering: Strategic value assessment
-        5. Distribution: Target 12-15 technologies balanced across quadrants
-        """
-        
-        # Apply quality gates first (Zalando-style)
-        qualified_techs = []
-        for tech, classification in zip(technologies, classifications):
-            # Gate 1: Minimum number of sources
-            min_sources = getattr(self.config.filtering, 'min_sources', 2)
-            if len(tech.sources) < min_sources:
-                logger.debug(f"Filtering out {tech.name}: only {len(tech.sources)} sources (min: {min_sources})")
-                continue
-            
-            # Gate 2: Quality gates based on ring
-            if not self._passes_quality_gate(tech, classification.ring):
-                logger.debug(f"Filtering out {tech.name}: doesn't pass quality gate for ring {classification.ring}")
-                continue
-            
-            qualified_techs.append((tech, classification))
-        
-        logger.info(f"Phase 5 - {len(qualified_techs)} technologies passed quality gates out of {len(technologies)}")
-        
-        # Create items for AI filtering
-        items = []
-        for tech, classification in qualified_techs:
-            items.append(type('TechItem', (), {
-                'name': classification.name,
-                'description': classification.description,
-                'stars': tech.stars,
-                'quadrant': classification.quadrant,
-                'ring': classification.ring,
-                'confidence': classification.confidence,
-                'trend': classification.trend,
-                'strategic_value': classification.strategic_value,
-                'market_score': tech.market_score,
-                'signals': tech.signals,
-                'moved': tech.moved,
-                'sources': tech.sources,
-            })())
+        """Phase 5: Quality-gated filtering and balanced selection."""
+        return strategic_filter(self, technologies, classifications, RADAR_QUADRANTS)
 
-        # Use AI filter for strategic assessment
-        filtered = self.filter.filter(items) or []
-        
-        # Target: 12-15 technologies (Zalando-style focused radar)
-        target_min = getattr(self.config.distribution, 'target_total', 15) - 3
-        target_max = getattr(self.config.distribution, 'target_total', 15)
-        
-        # Fallback: if AI filter is too aggressive, use top items by market score
-        if len(filtered) < target_min:
-            logger.warning(f"AI filter too aggressive: only {len(filtered)} items. Using fallback.")
-            # Sort all items by market score * confidence
-            items.sort(key=lambda x: (getattr(x, 'market_score', 0) * x.confidence), reverse=True)
-            # Take top target_max items
-            filtered = items[:target_max]
-            logger.info(f"Fallback selected {len(filtered)} top items by market score")
-        else:
-            # Sort by market score and confidence
-            filtered.sort(key=lambda x: (getattr(x, 'market_score', 0) * x.confidence), reverse=True)
-            filtered = filtered[:target_max]
-
-        # Fill with fallback candidates if needed
-        existing_names = {item.name.lower() for item in filtered}
-        fallback_candidates = []
-        for tech, classification in qualified_techs:
-            if classification.name.lower() in existing_names:
-                continue
-            fallback_candidates.append((tech, classification))
-
-        # Sort by composite score (market score * confidence)
-        fallback_candidates.sort(
-            key=lambda pair: pair[0].market_score * pair[1].confidence, 
-            reverse=True
-        )
-        
-        # Fill up to target minimum
-        while len(filtered) < min(target_min, len(items)) and fallback_candidates:
-            tech, classification = fallback_candidates.pop(0)
-            fallback_item = FilteredItem(
-                name=classification.name,
-                description=classification.description,
-                stars=tech.stars,
-                quadrant=classification.quadrant,
-                ring=classification.ring,
-                confidence=max(0.5, classification.confidence),  # Higher minimum confidence
-                trend=classification.trend,
-                strategic_value=StrategicValue.MEDIUM,
-            )
-            setattr(fallback_item, "market_score", tech.market_score)
-            setattr(fallback_item, "signals", tech.signals)
-            setattr(fallback_item, "moved", tech.moved)
-            filtered.append(fallback_item)
-
-        return filtered[:target_max]
+    def _build_watchlist_items(
+        self,
+        technologies: List[NormalizedTech],
+        classifications: List[ClassificationResult],
+        candidate_selection: CandidateSelection,
+        main_ids: Optional[Set[str]] = None,
+    ) -> List[FilteredItem]:
+        """Build a dedicated watchlist section separate from the main radar blips."""
+        return build_watchlist_items(self, technologies, classifications, candidate_selection, main_ids)
     
     def _passes_quality_gate(self, tech: NormalizedTech, ring: str) -> bool:
         """Check if technology passes Zalando-style quality gates for its ring"""
         quality_gates = getattr(self.config, 'quality_gates', None)
         if not quality_gates:
             return True
-        
-        # Check minimum stars for the ring
+
+        if ring not in ['assess', 'trial', 'adopt']:
+            return True
+
+        # Use OR semantics (stars or HN evidence) to avoid over-pruning.
+        stars_pass = True
         min_stars_config = getattr(quality_gates, 'min_stars', None)
-        if min_stars_config and ring in ['assess', 'trial', 'adopt']:
+        if min_stars_config:
             min_stars = getattr(min_stars_config, ring, 0)
-            if tech.stars < min_stars:
-                return False
-        
-        # Check minimum HN mentions for the ring
+            stars_pass = tech.stars >= min_stars
+
+        hn_pass = True
         min_hn_config = getattr(quality_gates, 'min_hn_mentions', None)
-        if min_hn_config and ring in ['assess', 'trial', 'adopt']:
+        if min_hn_config:
             min_hn = getattr(min_hn_config, ring, 0)
-            if tech.hn_mentions < min_hn:
-                return False
-        
-        return True
+            hn_pass = tech.hn_mentions >= min_hn
+
+        return stars_pass or hn_pass
 
     def _assign_market_rings(self, items: List[FilteredItem]) -> List[FilteredItem]:
         if not items:
@@ -883,6 +858,7 @@ class RadarPipeline:
         guardrail = {
             "enabled": self.config.distribution_guardrail.enabled,
             "max_ring_ratio": self.config.distribution_guardrail.max_ring_ratio,
+            "min_ring_count": self.config.distribution.min_per_ring,
         }
 
         assigned = assign_rings(
@@ -925,58 +901,75 @@ class RadarPipeline:
 
         return filtered_items
 
-    def _generate_output(self, items: List[FilteredItem]) -> Dict[str, Any]:
+    def _generate_output(
+        self,
+        items: List[FilteredItem],
+        watchlist_items: Optional[List[FilteredItem]] = None,
+    ) -> Dict[str, Any]:
         """Phase 7: Generate output"""
-        technologies = []
-        dropped_bad_description = 0
-        for item in items:
-            description = item.description if isinstance(item.description, str) else ""
-            if not description.strip():
-                description = f"{item.name} technology with external market momentum signals."
-            elif not is_valid_description(description):
-                dropped_bad_description += 1
-                continue
 
-            raw_signals = getattr(item, "signals", {}) or {}
-            if not isinstance(raw_signals, dict):
-                raw_signals = {}
+        repaired_bad_description = 0
 
-            signals = {
-                "ghMomentum": round(float(raw_signals.get("gh_momentum", 0.0)), 2),
-                "ghPopularity": round(float(raw_signals.get("gh_popularity", 0.0)), 2),
-                "hnHeat": round(float(raw_signals.get("hn_heat", 0.0)), 2),
-            }
-            
-            # Only include Google Trends if enabled
-            if self.config.sources.google_trends.enabled:
-                signals["googleMomentum"] = round(float(raw_signals.get("google_momentum", 0.0)), 2)
+        def _serialize(blips: List[FilteredItem]) -> List[Dict[str, Any]]:
+            nonlocal repaired_bad_description
+            payload: List[Dict[str, Any]] = []
 
-            technologies.append({
-                'id': item.name.lower().replace(' ', '-'),
-                'name': item.name,
-                'quadrant': item.quadrant,
-                'ring': item.ring,
-                'description': description,
-                'moved': int(getattr(item, 'moved', 0)),
-                'trend': item.trend,
-                'marketScore': round(float(getattr(item, 'market_score', 0.0)), 2),
-                'signals': signals,
-                'stars': item.stars,
-                'confidence': item.confidence,
-                'isDeprecated': item.is_deprecated,
-                'replacement': item.replacement,
-                'updatedAt': datetime.now().isoformat()
-            })
+            for item in blips:
+                description = item.description if isinstance(item.description, str) else ""
+                if not description.strip():
+                    description = f"{item.name} technology with external market momentum signals."
+                elif not is_valid_description(description):
+                    repaired_bad_description += 1
+                    description = f"{item.name} technology tracked for current relevance and market momentum."
 
-        if dropped_bad_description:
-            logger.info(
-                "Phase 7 - Dropped %s items due to invalid descriptions",
-                dropped_bad_description,
-            )
+                raw_signals = getattr(item, "signals", {}) or {}
+                if not isinstance(raw_signals, dict):
+                    raw_signals = {}
+
+                signals = {
+                    "ghMomentum": round(float(raw_signals.get("gh_momentum", 0.0)), 2),
+                    "ghPopularity": round(float(raw_signals.get("gh_popularity", 0.0)), 2),
+                    "hnHeat": round(float(raw_signals.get("hn_heat", 0.0)), 2),
+                }
+
+                if self.config.sources.google_trends.enabled:
+                    signals["googleMomentum"] = round(float(raw_signals.get("google_momentum", 0.0)), 2)
+
+                payload.append({
+                    'id': self._normalize_id(item.name),
+                    'name': item.name,
+                    'quadrant': item.quadrant,
+                    'ring': item.ring,
+                    'description': description,
+                    'moved': int(getattr(item, 'moved', 0)),
+                    'trend': item.trend,
+                    'marketScore': round(float(getattr(item, 'market_score', 0.0)), 2),
+                    'signals': signals,
+                    'stars': item.stars,
+                    'confidence': item.confidence,
+                    'isDeprecated': bool(getattr(item, 'is_deprecated', False)),
+                    'replacement': getattr(item, 'replacement', None),
+                    'updatedAt': datetime.now().isoformat()
+                })
+
+            return payload
+
+        technologies = _serialize(items)
+        watchlist = _serialize(watchlist_items or [])
+
+        if repaired_bad_description:
+            logger.info("Phase 7 - Repaired %s invalid descriptions", repaired_bad_description)
 
         return {
             'updatedAt': datetime.now().isoformat(),
-            'technologies': technologies
+            'technologies': technologies,
+            'watchlist': watchlist,
+            'meta': {
+                'pipeline': {
+                    'droppedInvalidDescriptions': 0,
+                    'repairedDescriptions': repaired_bad_description,
+                }
+            }
         }
 
     def _save_checkpoint(self, phase: str, cursor: int = 0, **kwargs) -> None:
@@ -1000,10 +993,12 @@ class RadarPipeline:
             logger.info(f"Resuming from checkpoint: {checkpoint_data.get('phase')}")
 
         technologies = self._collect_sources()
+        collected_count = len(technologies)
         logger.info(f"Phase 1 - Collected {len(technologies)} technologies from sources")
         self._save_checkpoint("collect", cursor=len(technologies))
 
         technologies = self._normalize_and_dedupe(technologies)
+        normalized_count = len(technologies)
         logger.info(f"Phase 2 - Normalized and deduplicated to {len(technologies)} technologies")
         self._save_checkpoint("dedupe", cursor=len(technologies))
 
@@ -1015,8 +1010,6 @@ class RadarPipeline:
         logger.info("Phase 3b - Deterministic market scoring complete")
         self._save_checkpoint("market_score", cursor=len(technologies))
 
-        # Phase 4: Candidate selection - partition into Core/Watchlist/Borderline
-        # This happens BEFORE AI classification for selective LLM policy
         candidate_items = [
             {
                 "id": t.name.lower().replace(" ", "-"),
@@ -1037,13 +1030,11 @@ class RadarPipeline:
                    f"{len(candidate_selection.borderline_ids)} borderline")
         self._save_checkpoint("candidate_selection")
 
-        # Phase 4b: Selective LLM classification
-        # Only classify borderline candidates with LLM
-        # Core and watchlist get deterministic fallback classification
         classifications = self._classify_selective(
             technologies,
             candidate_selection,
         )
+        classified_count = len(classifications)
         logger.info(f"Phase 4b - Selective AI classification complete for {len(classifications)} items "
                    f"({len(candidate_selection.borderline_ids)} borderline via LLM)")
         self._save_checkpoint("classify", cursor=len(classifications))
@@ -1054,12 +1045,43 @@ class RadarPipeline:
 
         filtered_items = self._assign_market_rings(filtered_items)
 
+        watchlist_items = self._build_watchlist_items(
+            technologies,
+            classifications,
+            candidate_selection,
+            main_ids={self._normalize_id(item.name) for item in filtered_items},
+        )
+        watchlist_items = self._assign_market_rings(watchlist_items)
+
         enriched_items = self._deep_scan_enrich(filtered_items)
         logger.info(f"Phase 6 - Deep scan enrichment complete")
         self._save_checkpoint("deep_scan")
 
-        output = self._generate_output(enriched_items or [])
-        logger.info(f"Phase 7 - Output generated with {len(output['technologies'])} technologies")
+        output = self._generate_output(enriched_items or [], watchlist_items)
+        output_count = len(output['technologies'])
+        watchlist_count = len(output.get('watchlist', []))
+        logger.info(
+            "Phase 7 - Output generated with %s technologies and %s watchlist items",
+            output_count,
+            watchlist_count,
+        )
+
+        output.setdefault("meta", {})
+        output["meta"].setdefault("pipeline", {})
+        output["meta"]["pipeline"].update(
+            {
+                "collected": collected_count,
+                "normalized": normalized_count,
+                "candidatesCore": len(candidate_selection.core_ids),
+                "candidatesWatchlist": len(candidate_selection.watchlist_ids),
+                "candidatesBorderline": len(candidate_selection.borderline_ids),
+                "classified": classified_count,
+                "llmCalls": self._last_llm_calls,
+                "qualified": self._last_filter_stats.get("qualified", 0),
+                "output": output_count,
+                "watchlist": watchlist_count,
+            }
+        )
 
         if self.history_store:
             self.history_store.append_snapshot(output)

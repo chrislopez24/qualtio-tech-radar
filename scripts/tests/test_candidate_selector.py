@@ -53,10 +53,11 @@ def test_size_limiting_logic():
         for i in range(10)
     ]
     out = select_candidates(items, target_total=5, watchlist_ratio=0.2, borderline_band=5.0)
-    # With target_total=5 and watchlist_ratio=0.2: watchlist_size=1, remaining=4, borderline_size=1, core_size=3
+    # Initial bucket sizing keeps core at 3, then selector backfills to target_total.
     assert len(out.core_ids) == 3
     assert len(out.watchlist_ids) <= 1
-    assert len(out.borderline_ids) <= 1
+    total_selected = len(set(out.core_ids + out.watchlist_ids + out.borderline_ids))
+    assert total_selected == 5
 
 
 def test_missing_required_fields_raises_error():
@@ -122,3 +123,34 @@ def test_items_sorted_by_market_score():
     ]
     out = select_candidates(items, target_total=10, watchlist_ratio=0.3, borderline_band=5.0)
     assert out.core_ids == ["high-score", "medium-score", "low-score"]
+
+
+def test_selector_backfills_when_buckets_are_insufficient():
+    """Selector should backfill up to target_total when core/watchlist are small."""
+    items = [
+        {"id": "core-1", "market_score": 95, "trend_delta": 2, "confidence": 0.95},
+        {"id": "core-2", "market_score": 90, "trend_delta": 1, "confidence": 0.9},
+    ] + [
+        {"id": f"border-{i}", "market_score": 55 - i, "trend_delta": 0, "confidence": 0.55}
+        for i in range(8)
+    ]
+
+    out = select_candidates(items, target_total=8, watchlist_ratio=0.25, borderline_band=5.0)
+    total_selected = len(set(out.core_ids + out.watchlist_ids + out.borderline_ids))
+    assert total_selected == 8
+
+
+def test_selector_promotes_borderline_to_core_when_core_empty():
+    items = [
+        {"id": "top-1", "market_score": 98, "trend_delta": 2, "confidence": 0.55},
+        {"id": "top-2", "market_score": 92, "trend_delta": 1, "confidence": 0.56},
+        {"id": "top-3", "market_score": 88, "trend_delta": 0, "confidence": 0.57},
+        {"id": "other-1", "market_score": 60, "trend_delta": 0, "confidence": 0.52},
+        {"id": "other-2", "market_score": 58, "trend_delta": 0, "confidence": 0.51},
+        {"id": "other-3", "market_score": 55, "trend_delta": 0, "confidence": 0.5},
+    ]
+
+    out = select_candidates(items, target_total=6, watchlist_ratio=0.2, borderline_band=5.0)
+
+    assert out.core_ids == ["top-1", "top-2"]
+    assert "top-3" in out.borderline_ids

@@ -47,29 +47,70 @@ class GitHubTrendingSource:
         try:
             days = self._time_range_to_days(time_range)
             since = (datetime.now(timezone.utc) - timedelta(days=days)).date().isoformat()
-
-            created_query = f"created:>={since}"
-            pushed_query = f"pushed:>={since}"
+            
+            all_repos = []
+            
+            # Strategy 1: Repos with recent activity and significant stars (trending)
+            pushed_query = f"pushed:>={since} stars:>100"
+            if language:
+                pushed_query = f"{pushed_query} language:{language}"
+            
+            recent_repos = self.rate_limiter.execute_with_backoff(
+                self.scraper.search_repositories,
+                query=pushed_query,
+                sort="stars",
+                order="desc",
+                limit=100,
+            )
+            all_repos.extend(recent_repos)
+            logger.info(f"GitHub: Found {len(recent_repos)} repos with recent activity")
+            
+            # Strategy 2: Recently created repos with growth (new hot projects)
+            created_query = f"created:>={since} stars:>50"
             if language:
                 created_query = f"{created_query} language:{language}"
-                pushed_query = f"{pushed_query} language:{language}"
-
-            created_repos = self.rate_limiter.execute_with_backoff(
+            
+            new_repos = self.rate_limiter.execute_with_backoff(
                 self.scraper.search_repositories,
                 query=created_query,
                 sort="stars",
                 order="desc",
                 limit=50,
             )
-            pushed_repos = self.rate_limiter.execute_with_backoff(
+            all_repos.extend(new_repos)
+            logger.info(f"GitHub: Found {len(new_repos)} newly created repos")
+            
+            # Strategy 3: Top starred repos updated recently (established but active)
+            popular_query = "stars:>1000 pushed:>=2024-01-01"
+            if language:
+                popular_query = f"{popular_query} language:{language}"
+            
+            popular_repos = self.rate_limiter.execute_with_backoff(
                 self.scraper.search_repositories,
-                query=pushed_query,
-                sort="updated",
+                query=popular_query,
+                sort="stars",
                 order="desc",
                 limit=50,
             )
+            all_repos.extend(popular_repos)
+            logger.info(f"GitHub: Found {len(popular_repos)} popular active repos")
+            
+            # Strategy 4: Fast growing repos (high stars/forks ratio indicates buzz)
+            trending_query = f"stars:>500 forks:>50 pushed:>={since}"
+            if language:
+                trending_query = f"{trending_query} language:{language}"
+            
+            trending_repos = self.rate_limiter.execute_with_backoff(
+                self.scraper.search_repositories,
+                query=trending_query,
+                sort="stars",
+                order="desc",
+                limit=50,
+            )
+            all_repos.extend(trending_repos)
+            logger.info(f"GitHub: Found {len(trending_repos)} trending repos")
 
-            merged = self._merge_repo_results(created_repos, pushed_repos)
+            merged = self._merge_repo_results(all_repos)
             return self._filter_by_language(merged, language)
         except Exception as e:
             logger.error(f"Error fetching trending repos: {e}")
@@ -82,9 +123,9 @@ class GitHubTrendingSource:
             return 7
         return 1
 
-    def _merge_repo_results(self, created_repos: List[dict], pushed_repos: List[dict]) -> List[dict]:
+    def _merge_repo_results(self, repos: List[dict]) -> List[dict]:
         by_full_name: dict[str, dict] = {}
-        for repo in created_repos + pushed_repos:
+        for repo in repos:
             full_name = self._get_repo_attr(repo, "full_name", "")
             key = full_name or self._get_repo_attr(repo, "name", "")
             if not key:

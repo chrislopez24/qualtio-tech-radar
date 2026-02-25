@@ -47,3 +47,15 @@ worktrees
 
 # internal data files
 src/data/data.ai.full.json
+
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# local etl runtime artifacts
+.venv/
+.checkpoint/
+etl-*.log
+artifacts/
+scripts/src/

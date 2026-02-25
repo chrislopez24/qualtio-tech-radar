@@ -82,28 +82,33 @@ Use after:
 
 ### Shadow Mode (Quality Validation)
 
-Run pipeline in shadow mode to validate optimized output against baseline:
+Use shadow mode to compare two existing outputs without rerunning ETL:
 
 ```bash
-# Basic shadow mode (uses default thresholds)
-python scripts/main.py --shadow --shadow-baseline src/data/baseline.json
+# Compare baseline vs current output only
+python scripts/main.py \
+  --shadow-only \
+  --shadow-baseline src/data/baseline.json \
+  --shadow-current src/data/data.ai.json \
+  --shadow-output artifacts/shadow_eval.json
 
 # Custom thresholds
 python scripts/main.py \
-  --shadow \
+  --shadow-only \
   --shadow-baseline src/data/baseline.json \
+  --shadow-current src/data/data.ai.json \
   --shadow-threshold-core-overlap 0.90 \
   --shadow-threshold-leader-coverage 0.98 \
   --shadow-threshold-watchlist-recall 0.85 \
-  --shadow-threshold-llm-reduction 0.65 \
+  --shadow-threshold-llm-reduction 0.00 \
   --shadow-output artifacts/shadow_eval.json
 ```
 
 **Quality Thresholds** (default):
-- Core Overlap: ≥85% (Jaccard similarity of technology IDs)
-- Leader Coverage: ≥95% (adopt ring technologies preserved)
-- Watchlist Recall: ≥80% (trending technologies preserved)
-- LLM Reduction: ≥60% (API call reduction achieved)
+- Core Overlap: ≥85% (baseline coverage retained by optimized output)
+- Leader Coverage: ≥95% (top leader IDs by market score preserved)
+- Watchlist Recall: ≥80% (explicit watchlist preserved)
+- LLM Reduction: informational in routine CI (set threshold to `0.00`)
 
 **Output**: Report written to `artifacts/shadow_eval.json` with detailed metrics.
 
@@ -210,12 +215,22 @@ python -c "import json; json.load(open('src/data/data.ai.history.json'))"
 
 ## Monitoring
 
-### GitHub Actions (Weekly)
+### GitHub Actions (Quarterly)
 
-The pipeline runs automatically via `.github/workflows/weekly-update.yml`:
-- Triggers every Monday at 9 AM UTC
+The pipeline runs automatically via `.github/workflows/quarterly-update.yml`:
+- Triggers first Monday of Jan/Apr/Jul/Oct
 - Uses secrets: `GH_TOKEN`, `SYNTHETIC_API_KEY`
 - Outputs to `src/data/data.ai.json` and `src/data/data.ai.history.json`
+
+CI flow order:
+1. Checkout repository (baseline `src/data/data.ai.json` from repo state)
+2. Copy baseline to `artifacts/baseline.json`
+3. Run ETL once: `python scripts/main.py --resume`
+4. Run shadow gate only: `python scripts/main.py --shadow-only ...`
+5. Upload `artifacts/shadow_eval.json`
+6. Commit and push updated data files if changed
+
+Note: `artifacts/` can be gitignored locally; this does not affect GitHub Actions artifact upload.
 
 ### Shadow Mode in CI/CD
 
@@ -225,9 +240,13 @@ Add shadow mode validation to workflows before rollout:
 - name: Run Shadow Evaluation
   run: |
     source .venv/bin/activate
+    cp src/data/data.ai.json artifacts/baseline.json
+    python scripts/main.py --resume
+    if [ ! -f artifacts/baseline.json ]; then cp src/data/data.ai.json artifacts/baseline.json; fi
     python scripts/main.py \
-      --shadow \
-      --shadow-baseline src/data/baseline.json \
+      --shadow-only \
+      --shadow-baseline artifacts/baseline.json \
+      --shadow-current src/data/data.ai.json \
       --shadow-output artifacts/shadow_eval.json
     
 - name: Upload Shadow Report
@@ -270,9 +289,9 @@ After automated run:
 ```yaml
 llm_optimization:
   enabled: true              # Enable selective LLM (default: true)
-  max_calls_per_run: 40      # Budget limit per pipeline run
+  max_calls_per_run: 7       # Budget limit per pipeline run
   borderline_band: 5.0       # Score band around thresholds for borderline classification
-  watchlist_ratio: 0.25      # % of target_total for watchlist bucket
+  watchlist_ratio: 0.18      # % of target_total for watchlist bucket
   cache_enabled: true        # Enable drift-aware LLM cache
   cache_file: "src/data/llm_cache.json"
   cache_drift_threshold: 3.0  # Max signal drift before cache invalidation

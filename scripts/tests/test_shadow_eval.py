@@ -39,6 +39,29 @@ def test_shadow_eval_computes_leader_coverage():
     assert 0.0 <= report["leader_coverage"] <= 1.0
 
 
+def test_shadow_eval_leader_coverage_uses_leader_ids_not_ring_labels_only():
+    """Leader coverage should stay high when leader IDs are preserved even if ring labels change."""
+    from etl.shadow_eval import compare_outputs
+
+    baseline = {
+        "technologies": [
+            {"id": "react", "ring": "adopt", "marketScore": 98},
+            {"id": "kubernetes", "ring": "adopt", "marketScore": 97},
+            {"id": "bun", "ring": "assess", "marketScore": 80},
+        ]
+    }
+    optimized = {
+        "technologies": [
+            {"id": "react", "ring": "trial", "marketScore": 98},
+            {"id": "kubernetes", "ring": "trial", "marketScore": 97},
+            {"id": "bun", "ring": "assess", "marketScore": 80},
+        ]
+    }
+
+    report = compare_outputs(baseline, optimized)
+    assert report["leader_coverage"] == 1.0
+
+
 def test_shadow_eval_computes_watchlist_recall():
     """Shadow evaluator should compute watchlist recall metric"""
     from etl.shadow_eval import compare_outputs
@@ -110,3 +133,65 @@ def test_shadow_eval_writes_report_to_file(tmp_path):
     with open(output_path) as f:
         loaded = json.load(f)
     assert loaded["core_overlap"] == 1.0
+
+
+def test_shadow_eval_core_overlap_is_baseline_coverage_when_optimized_has_more_items():
+    """Core overlap should stay high when optimized keeps all baseline IDs and adds new ones."""
+    from etl.shadow_eval import compare_outputs
+
+    baseline = {"technologies": [{"id": "react"}, {"id": "kubernetes"}]}
+    optimized = {"technologies": [{"id": "react"}, {"id": "kubernetes"}, {"id": "bun"}]}
+
+    report = compare_outputs(baseline, optimized)
+    assert report["core_overlap"] == 1.0
+
+
+def test_shadow_eval_reports_filtered_counts_and_watchlist_usage():
+    """Shadow evaluator should expose filtered counts and respect explicit watchlist."""
+    from etl.shadow_eval import compare_outputs
+
+    baseline = {
+        "technologies": [{"id": "react", "ring": "adopt"}, {"id": "bun", "ring": "assess"}],
+        "watchlist": [{"id": "bun"}],
+    }
+    optimized = {
+        "technologies": [{"id": "react", "ring": "adopt"}],
+        "watchlist": [],
+    }
+
+    report = compare_outputs(baseline, optimized)
+    assert report["filtered_count"] == 1
+    assert report["filtered_by_ring"].get("assess") == 1
+    assert report["watchlist_recall"] == 0.0
+
+
+def test_shadow_eval_falls_back_to_pipeline_meta_llm_counts():
+    from etl.shadow_eval import compare_outputs
+
+    baseline = {
+        "technologies": [{"id": "react"}],
+        "meta": {"pipeline": {"classified": 10}},
+    }
+    optimized = {
+        "technologies": [{"id": "react"}],
+        "meta": {"pipeline": {"llmCalls": 4}},
+    }
+
+    report = compare_outputs(baseline, optimized)
+    assert report["llm_call_reduction"] == 0.6
+
+
+def test_shadow_eval_uses_classified_as_baseline_floor_when_present():
+    from etl.shadow_eval import compare_outputs
+
+    baseline = {
+        "technologies": [{"id": "react"}],
+        "meta": {"pipeline": {"classified": 20, "llmCalls": 7}},
+    }
+    optimized = {
+        "technologies": [{"id": "react"}],
+        "meta": {"pipeline": {"llmCalls": 7}},
+    }
+
+    report = compare_outputs(baseline, optimized)
+    assert report["llm_call_reduction"] == 0.65

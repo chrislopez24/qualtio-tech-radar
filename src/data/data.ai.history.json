@@ -1,0 +1,960 @@
+{
+  "snapshots": [
+    {
+      "updatedAt": "2026-02-26T00:04:48.855604",
+      "technologies": [
+        {
+          "id": "rust",
+          "name": "Rust",
+          "quadrant": "languages",
+          "ring": "assess",
+          "description": "Systems programming language",
+          "moved": -2,
+          "trend": "down",
+          "marketScore": 0.0,
+          "signals": {
+            "ghMomentum": 0.0,
+            "ghPopularity": 0.0,
+            "hnHeat": 0.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 95000,
+          "confidence": 0.85,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:04:48.855582"
+        },
+        {
+          "id": "react",
+          "name": "React",
+          "quadrant": "tools",
+          "ring": "hold",
+          "description": "React UI library",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 0.0,
+          "signals": {
+            "ghMomentum": 0.0,
+            "ghPopularity": 0.0,
+            "hnHeat": 0.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 220000,
+          "confidence": 0.9,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:04:48.855590"
+        }
+      ],
+      "watchlist": [
+        {
+          "id": "django",
+          "name": "django",
+          "quadrant": "tools",
+          "ring": "trial",
+          "description": "The Web framework for perfectionists with deadlines.",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 89.16,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 86.93,
+            "hnHeat": 49.5,
+            "googleMomentum": 0.0
+          },
+          "stars": 86932,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:04:48.855596"
+        },
+        {
+          "id": "python",
+          "name": "Python",
+          "quadrant": "techniques",
+          "ring": "assess",
+          "description": "All Algorithms implemented in Python",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 88.3,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 22.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 218109,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:04:48.855600"
+        },
+        {
+          "id": "build-your-own-x",
+          "name": "build-your-own-x",
+          "quadrant": "techniques",
+          "ring": "adopt",
+          "description": "Master programming by recreating your favorite technologies from scratch.",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 85.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 0.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 469066,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:04:48.855603"
+        }
+      ],
+      "meta": {
+        "pipeline": {
+          "droppedInvalidDescriptions": 0,
+          "repairedDescriptions": 0,
+          "collected": 2,
+          "normalized": 2,
+          "candidatesCore": 0,
+          "candidatesWatchlist": 0,
+          "candidatesBorderline": 2,
+          "classified": 2,
+          "llmCalls": 2,
+          "qualified": 2,
+          "output": 2,
+          "watchlist": 3
+        }
+      }
+    },
+    {
+      "updatedAt": "2026-02-26T00:04:48.870452",
+      "technologies": [],
+      "watchlist": [],
+      "meta": {
+        "pipeline": {
+          "droppedInvalidDescriptions": 0,
+          "repairedDescriptions": 0,
+          "collected": 1,
+          "normalized": 1,
+          "candidatesCore": 0,
+          "candidatesWatchlist": 0,
+          "candidatesBorderline": 1,
+          "classified": 0,
+          "llmCalls": 1,
+          "qualified": 0,
+          "output": 0,
+          "watchlist": 0
+        }
+      }
+    },
+    {
+      "updatedAt": "2026-02-26T00:04:48.881994",
+      "technologies": [],
+      "watchlist": [
+        {
+          "id": "build-your-own-x",
+          "name": "build-your-own-x",
+          "quadrant": "techniques",
+          "ring": "assess",
+          "description": "Master programming by recreating your favorite technologies from scratch.",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 85.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 0.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 469066,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:04:48.881983"
+        },
+        {
+          "id": "django",
+          "name": "django",
+          "quadrant": "tools",
+          "ring": "adopt",
+          "description": "The Web framework for perfectionists with deadlines.",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 89.16,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 86.93,
+            "hnHeat": 49.5,
+            "googleMomentum": 0.0
+          },
+          "stars": 86932,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:04:48.881989"
+        },
+        {
+          "id": "python",
+          "name": "Python",
+          "quadrant": "techniques",
+          "ring": "trial",
+          "description": "All Algorithms implemented in Python",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 88.3,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 22.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 218109,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:04:48.881993"
+        }
+      ],
+      "meta": {
+        "pipeline": {
+          "droppedInvalidDescriptions": 0,
+          "repairedDescriptions": 0,
+          "collected": 1,
+          "normalized": 1,
+          "candidatesCore": 0,
+          "candidatesWatchlist": 0,
+          "candidatesBorderline": 1,
+          "classified": 0,
+          "llmCalls": 1,
+          "qualified": 0,
+          "output": 0,
+          "watchlist": 3
+        }
+      }
+    },
+    {
+      "updatedAt": "2026-02-26T00:04:49.078073",
+      "technologies": [],
+      "watchlist": [],
+      "meta": {
+        "pipeline": {
+          "droppedInvalidDescriptions": 0,
+          "repairedDescriptions": 0,
+          "collected": 0,
+          "normalized": 0,
+          "candidatesCore": 0,
+          "candidatesWatchlist": 0,
+          "candidatesBorderline": 0,
+          "classified": 0,
+          "llmCalls": 0,
+          "qualified": 0,
+          "output": 0,
+          "watchlist": 0
+        }
+      }
+    },
+    {
+      "updatedAt": "2026-02-26T00:04:49.088474",
+      "technologies": [],
+      "watchlist": [],
+      "meta": {
+        "pipeline": {
+          "droppedInvalidDescriptions": 0,
+          "repairedDescriptions": 0,
+          "collected": 0,
+          "normalized": 0,
+          "candidatesCore": 0,
+          "candidatesWatchlist": 0,
+          "candidatesBorderline": 0,
+          "classified": 0,
+          "llmCalls": 0,
+          "qualified": 0,
+          "output": 0,
+          "watchlist": 0
+        }
+      }
+    },
+    {
+      "updatedAt": "2026-02-26T00:09:12.398824",
+      "technologies": [
+        {
+          "id": "javascript",
+          "name": "javascript",
+          "quadrant": "techniques",
+          "ring": "assess",
+          "description": "JavaScript Style Guide",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 100.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 100.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 148095,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:09:12.398802"
+        },
+        {
+          "id": "go",
+          "name": "go",
+          "quadrant": "platforms",
+          "ring": "trial",
+          "description": "The Go programming language",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 100.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 100.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 132754,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:09:12.398810"
+        },
+        {
+          "id": "rust",
+          "name": "rust",
+          "quadrant": "platforms",
+          "ring": "adopt",
+          "description": "Empowering everyone to build reliable and efficient software.",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 100.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 100.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 110701,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:09:12.398813"
+        }
+      ],
+      "watchlist": [
+        {
+          "id": "django",
+          "name": "django",
+          "quadrant": "tools",
+          "ring": "adopt",
+          "description": "The Web framework for perfectionists with deadlines.",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 89.23,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 86.93,
+            "hnHeat": 50.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 86932,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:09:12.398817"
+        },
+        {
+          "id": "python",
+          "name": "Python",
+          "quadrant": "techniques",
+          "ring": "trial",
+          "description": "All Algorithms implemented in Python",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 88.3,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 22.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 218112,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:09:12.398820"
+        },
+        {
+          "id": "build-your-own-x",
+          "name": "build-your-own-x",
+          "quadrant": "techniques",
+          "ring": "assess",
+          "description": "Master programming by recreating your favorite technologies from scratch.",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 85.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 0.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 469071,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:09:12.398823"
+        }
+      ],
+      "meta": {
+        "pipeline": {
+          "droppedInvalidDescriptions": 0,
+          "repairedDescriptions": 0,
+          "collected": 175,
+          "normalized": 175,
+          "candidatesCore": 3,
+          "candidatesWatchlist": 0,
+          "candidatesBorderline": 12,
+          "classified": 3,
+          "llmCalls": 12,
+          "qualified": 3,
+          "output": 3,
+          "watchlist": 3
+        }
+      }
+    },
+    {
+      "updatedAt": "2026-02-26T00:09:12.616238",
+      "technologies": [
+        {
+          "id": "javascript",
+          "name": "javascript",
+          "quadrant": "techniques",
+          "ring": "assess",
+          "description": "JavaScript Style Guide",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 100.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 100.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 148095,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:09:12.616216"
+        },
+        {
+          "id": "go",
+          "name": "go",
+          "quadrant": "platforms",
+          "ring": "trial",
+          "description": "The Go programming language",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 100.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 100.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 132754,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:09:12.616224"
+        },
+        {
+          "id": "rust",
+          "name": "rust",
+          "quadrant": "platforms",
+          "ring": "adopt",
+          "description": "Empowering everyone to build reliable and efficient software.",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 100.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 100.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 110701,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:09:12.616228"
+        }
+      ],
+      "watchlist": [
+        {
+          "id": "django",
+          "name": "django",
+          "quadrant": "tools",
+          "ring": "adopt",
+          "description": "The Web framework for perfectionists with deadlines.",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 89.23,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 86.93,
+            "hnHeat": 50.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 86932,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:09:12.616231"
+        },
+        {
+          "id": "python",
+          "name": "Python",
+          "quadrant": "techniques",
+          "ring": "trial",
+          "description": "All Algorithms implemented in Python",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 88.3,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 22.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 218112,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:09:12.616234"
+        },
+        {
+          "id": "build-your-own-x",
+          "name": "build-your-own-x",
+          "quadrant": "techniques",
+          "ring": "assess",
+          "description": "Master programming by recreating your favorite technologies from scratch.",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 85.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 0.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 469071,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:09:12.616237"
+        }
+      ],
+      "meta": {
+        "pipeline": {
+          "droppedInvalidDescriptions": 0,
+          "repairedDescriptions": 0,
+          "collected": 175,
+          "normalized": 175,
+          "candidatesCore": 3,
+          "candidatesWatchlist": 0,
+          "candidatesBorderline": 12,
+          "classified": 3,
+          "llmCalls": 12,
+          "qualified": 3,
+          "output": 3,
+          "watchlist": 3
+        }
+      }
+    },
+    {
+      "updatedAt": "2026-02-26T00:11:10.778351",
+      "technologies": [
+        {
+          "id": "javascript",
+          "name": "javascript",
+          "quadrant": "techniques",
+          "ring": "hold",
+          "description": "JavaScript Style Guide",
+          "moved": -1,
+          "trend": "stable",
+          "marketScore": 100.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 100.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 148095,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:11:10.778313"
+        },
+        {
+          "id": "go",
+          "name": "go",
+          "quadrant": "platforms",
+          "ring": "adopt",
+          "description": "The Go programming language",
+          "moved": 1,
+          "trend": "stable",
+          "marketScore": 100.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 100.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 132754,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:11:10.778323"
+        },
+        {
+          "id": "rust",
+          "name": "rust",
+          "quadrant": "platforms",
+          "ring": "adopt",
+          "description": "Empowering everyone to build reliable and efficient software.",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 100.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 100.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 110701,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:11:10.778326"
+        },
+        {
+          "id": "django",
+          "name": "django",
+          "quadrant": "tools",
+          "ring": "trial",
+          "description": "The Web framework for perfectionists with deadlines.",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 89.23,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 86.93,
+            "hnHeat": 50.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 86932,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:11:10.778329"
+        },
+        {
+          "id": "python",
+          "name": "Python",
+          "quadrant": "techniques",
+          "ring": "assess",
+          "description": "All Algorithms implemented in Python",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 88.3,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 22.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 218112,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:11:10.778332"
+        }
+      ],
+      "watchlist": [
+        {
+          "id": "django",
+          "name": "django",
+          "quadrant": "tools",
+          "ring": "adopt",
+          "description": "The Web framework for perfectionists with deadlines.",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 89.23,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 86.93,
+            "hnHeat": 50.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 86932,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:11:10.778335"
+        },
+        {
+          "id": "python",
+          "name": "Python",
+          "quadrant": "techniques",
+          "ring": "trial",
+          "description": "All Algorithms implemented in Python",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 88.3,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 22.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 218112,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:11:10.778338"
+        },
+        {
+          "id": "build-your-own-x",
+          "name": "build-your-own-x",
+          "quadrant": "techniques",
+          "ring": "assess",
+          "description": "Master programming by recreating your favorite technologies from scratch.",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 85.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 0.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 469073,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:11:10.778341"
+        }
+      ],
+      "meta": {
+        "pipeline": {
+          "droppedInvalidDescriptions": 0,
+          "repairedDescriptions": 0,
+          "collected": 175,
+          "normalized": 175,
+          "candidatesCore": 3,
+          "candidatesWatchlist": 0,
+          "candidatesBorderline": 12,
+          "classified": 10,
+          "llmCalls": 5,
+          "qualified": 5,
+          "output": 5,
+          "watchlist": 3
+        }
+      }
+    },
+    {
+      "updatedAt": "2026-02-26T00:11:11.415534",
+      "technologies": [
+        {
+          "id": "javascript",
+          "name": "javascript",
+          "quadrant": "techniques",
+          "ring": "hold",
+          "description": "JavaScript Style Guide",
+          "moved": -1,
+          "trend": "stable",
+          "marketScore": 100.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 100.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 148095,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:11:11.415507"
+        },
+        {
+          "id": "go",
+          "name": "go",
+          "quadrant": "platforms",
+          "ring": "adopt",
+          "description": "The Go programming language",
+          "moved": 1,
+          "trend": "stable",
+          "marketScore": 100.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 100.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 132754,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:11:11.415515"
+        },
+        {
+          "id": "rust",
+          "name": "rust",
+          "quadrant": "platforms",
+          "ring": "adopt",
+          "description": "Empowering everyone to build reliable and efficient software.",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 100.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 100.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 110701,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:11:11.415518"
+        },
+        {
+          "id": "django",
+          "name": "django",
+          "quadrant": "tools",
+          "ring": "trial",
+          "description": "The Web framework for perfectionists with deadlines.",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 89.23,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 86.93,
+            "hnHeat": 50.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 86932,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:11:11.415521"
+        },
+        {
+          "id": "python",
+          "name": "Python",
+          "quadrant": "techniques",
+          "ring": "assess",
+          "description": "All Algorithms implemented in Python",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 88.3,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 22.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 218112,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:11:11.415524"
+        }
+      ],
+      "watchlist": [
+        {
+          "id": "django",
+          "name": "django",
+          "quadrant": "tools",
+          "ring": "adopt",
+          "description": "The Web framework for perfectionists with deadlines.",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 89.23,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 86.93,
+            "hnHeat": 50.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 86932,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:11:11.415527"
+        },
+        {
+          "id": "python",
+          "name": "Python",
+          "quadrant": "techniques",
+          "ring": "trial",
+          "description": "All Algorithms implemented in Python",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 88.3,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 22.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 218112,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:11:11.415530"
+        },
+        {
+          "id": "build-your-own-x",
+          "name": "build-your-own-x",
+          "quadrant": "techniques",
+          "ring": "assess",
+          "description": "Master programming by recreating your favorite technologies from scratch.",
+          "moved": 0,
+          "trend": "up",
+          "marketScore": 85.0,
+          "signals": {
+            "ghMomentum": 100.0,
+            "ghPopularity": 100.0,
+            "hnHeat": 0.0,
+            "googleMomentum": 0.0
+          },
+          "stars": 469073,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-02-26T00:11:11.415532"
+        }
+      ],
+      "meta": {
+        "pipeline": {
+          "droppedInvalidDescriptions": 0,
+          "repairedDescriptions": 0,
+          "collected": 175,
+          "normalized": 175,
+          "candidatesCore": 3,
+          "candidatesWatchlist": 0,
+          "candidatesBorderline": 12,
+          "classified": 10,
+          "llmCalls": 5,
+          "qualified": 5,
+          "output": 5,
+          "watchlist": 3
+        }
+      }
+    }
+  ]
+}

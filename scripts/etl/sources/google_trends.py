@@ -45,10 +45,29 @@ class GoogleTrendsSource:
         return signals
 
     def _fetch_related_queries(self, topic: str) -> List[dict]:
-        self.pytrends.build_payload([topic], timeframe=self.DEFAULT_TIMEFRAME)
-        related = self.pytrends.related_queries()
-        related = related.get(topic, {})
-        return related.get("rising", [])
+        try:
+            self.pytrends.build_payload([topic], timeframe=self.DEFAULT_TIMEFRAME)
+            related = self.pytrends.related_queries()
+            
+            # Handle case where response is not a dict
+            if not isinstance(related, dict):
+                logger.warning(f"Unexpected response type for topic '{topic}': {type(related)}")
+                return []
+            
+            topic_data = related.get(topic)
+            if not isinstance(topic_data, dict):
+                logger.debug(f"No data for topic '{topic}'")
+                return []
+            
+            rising = topic_data.get("rising")
+            if not isinstance(rising, list):
+                logger.debug(f"No rising queries for topic '{topic}'")
+                return []
+            
+            return rising
+        except Exception as e:
+            logger.warning(f"Failed to fetch related queries for '{topic}': {e}")
+            return []
 
     def _normalize_name(self, name: str) -> str:
         name = name.strip().lower()
