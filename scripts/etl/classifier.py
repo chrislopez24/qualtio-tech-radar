@@ -114,7 +114,8 @@ Provide a JSON response with:
 - description: brief description (50-100 words)
 - confidence: confidence score (0-1)
 - trend: trend direction (up/down/stable/new)
-- rationale: explanation for the classification"""
+- rationale: explanation for the classification
+- strategic_value: strategic importance (high/medium/low)"""
 
     def __init__(
         self,
