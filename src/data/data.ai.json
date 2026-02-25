@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-25T23:28:54.385277",
+  "updatedAt": "2026-02-25T23:36:56.900011",
   "technologies": [
     {
       "id": "javascript",
@@ -7,7 +7,7 @@
       "quadrant": "techniques",
       "ring": "adopt",
       "description": "JavaScript Style Guide",
-      "moved": 2,
+      "moved": 0,
       "trend": "stable",
       "marketScore": 100.0,
       "signals": {
@@ -19,7 +19,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381096"
+      "updatedAt": "2026-02-25T23:36:56.894639"
     },
     {
       "id": "go",
@@ -27,7 +27,7 @@
       "quadrant": "platforms",
       "ring": "adopt",
       "description": "The Go programming language",
-      "moved": 2,
+      "moved": 0,
       "trend": "stable",
       "marketScore": 100.0,
       "signals": {
@@ -39,7 +39,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381111"
+      "updatedAt": "2026-02-25T23:36:56.894660"
     },
     {
       "id": "rust",
@@ -47,7 +47,7 @@
       "quadrant": "platforms",
       "ring": "adopt",
       "description": "Empowering everyone to build reliable and efficient software.",
-      "moved": 3,
+      "moved": 0,
       "trend": "stable",
       "marketScore": 100.0,
       "signals": {
@@ -59,7 +59,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381120"
+      "updatedAt": "2026-02-25T23:36:56.894673"
     },
     {
       "id": "django",
@@ -69,17 +69,17 @@
       "description": "The Web framework for perfectionists with deadlines.",
       "moved": 0,
       "trend": "stable",
-      "marketScore": 89.46,
+      "marketScore": 89.53,
       "signals": {
         "ghMomentum": 100.0,
         "ghPopularity": 86.93,
-        "hnHeat": 51.5
+        "hnHeat": 52.0
       },
       "stars": 86933,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381126"
+      "updatedAt": "2026-02-25T23:36:56.894683"
     },
     {
       "id": "python",
@@ -99,7 +99,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381134"
+      "updatedAt": "2026-02-25T23:36:56.894694"
     },
     {
       "id": "build-your-own-x",
@@ -115,11 +115,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 469079,
+      "stars": 469080,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381148"
+      "updatedAt": "2026-02-25T23:36:56.894705"
     },
     {
       "id": "awesome",
@@ -135,11 +135,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 440698,
+      "stars": 440700,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381161"
+      "updatedAt": "2026-02-25T23:36:56.894718"
     },
     {
       "id": "free-programming-books",
@@ -159,7 +159,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381166"
+      "updatedAt": "2026-02-25T23:36:56.894729"
     },
     {
       "id": "developer-roadmap",
@@ -167,7 +167,7 @@
       "quadrant": "techniques",
       "ring": "assess",
       "description": "Interactive roadmaps, guides and other educational content to help developers grow in their careers.",
-      "moved": -1,
+      "moved": 0,
       "trend": "stable",
       "marketScore": 85.0,
       "signals": {
@@ -175,11 +175,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 349778,
+      "stars": 349780,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381171"
+      "updatedAt": "2026-02-25T23:36:56.894749"
     },
     {
       "id": "awesome-python",
@@ -187,7 +187,7 @@
       "quadrant": "techniques",
       "ring": "assess",
       "description": "An opinionated list of awesome Python frameworks, libraries, software and resources.",
-      "moved": -1,
+      "moved": 0,
       "trend": "stable",
       "marketScore": 85.0,
       "signals": {
@@ -195,11 +195,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 284606,
+      "stars": 284608,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381177"
+      "updatedAt": "2026-02-25T23:36:56.894754"
     },
     {
       "id": "computer-science",
@@ -207,7 +207,7 @@
       "quadrant": "techniques",
       "ring": "hold",
       "description": "\ud83c\udf93 Path to a free self-taught education in Computer Science!",
-      "moved": -2,
+      "moved": 0,
       "trend": "stable",
       "marketScore": 85.0,
       "signals": {
@@ -219,7 +219,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381185"
+      "updatedAt": "2026-02-25T23:36:56.894762"
     },
     {
       "id": "javascript-algorithms",
@@ -239,7 +239,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381191"
+      "updatedAt": "2026-02-25T23:36:56.894769"
     },
     {
       "id": "tensorflow",
@@ -259,7 +259,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381196"
+      "updatedAt": "2026-02-25T23:36:56.894774"
     },
     {
       "id": "awesome-selfhosted",
@@ -275,11 +275,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 275173,
+      "stars": 275174,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381201"
+      "updatedAt": "2026-02-25T23:36:56.894778"
     },
     {
       "id": "openclaw",
@@ -295,11 +295,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 228781,
+      "stars": 228790,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381207"
+      "updatedAt": "2026-02-25T23:36:56.894785"
     },
     {
       "id": "linux",
@@ -315,11 +315,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 219061,
+      "stars": 219062,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381212"
+      "updatedAt": "2026-02-25T23:36:56.894790"
     },
     {
       "id": "ohmyzsh",
@@ -339,7 +339,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381220"
+      "updatedAt": "2026-02-25T23:36:56.894799"
     },
     {
       "id": "n8n",
@@ -355,11 +355,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 176367,
+      "stars": 176368,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381226"
+      "updatedAt": "2026-02-25T23:36:56.894805"
     },
     {
       "id": "langflow",
@@ -379,7 +379,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381231"
+      "updatedAt": "2026-02-25T23:36:56.894810"
     },
     {
       "id": "dify",
@@ -399,7 +399,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381236"
+      "updatedAt": "2026-02-25T23:36:56.894815"
     },
     {
       "id": "langchain",
@@ -419,7 +419,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381242"
+      "updatedAt": "2026-02-25T23:36:56.894820"
     },
     {
       "id": "react",
@@ -439,7 +439,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381247"
+      "updatedAt": "2026-02-25T23:36:56.894825"
     },
     {
       "id": "autogpt",
@@ -459,7 +459,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381252"
+      "updatedAt": "2026-02-25T23:36:56.894830"
     },
     {
       "id": "bootstrap",
@@ -475,11 +475,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 174005,
+      "stars": 174004,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381257"
+      "updatedAt": "2026-02-25T23:36:56.894835"
     },
     {
       "id": "next.js",
@@ -499,7 +499,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381261"
+      "updatedAt": "2026-02-25T23:36:56.894840"
     },
     {
       "id": "awesome-go",
@@ -515,11 +515,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 166033,
+      "stars": 166034,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381267"
+      "updatedAt": "2026-02-25T23:36:56.894845"
     },
     {
       "id": "transformers",
@@ -535,11 +535,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 156978,
+      "stars": 156977,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381274"
+      "updatedAt": "2026-02-25T23:36:56.894852"
     },
     {
       "id": "freecodecamp",
@@ -555,11 +555,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 437528,
+      "stars": 437527,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381279"
+      "updatedAt": "2026-02-25T23:36:56.894858"
     },
     {
       "id": "public-apis",
@@ -579,7 +579,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381284"
+      "updatedAt": "2026-02-25T23:36:56.894862"
     },
     {
       "id": "flutter",
@@ -599,7 +599,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381289"
+      "updatedAt": "2026-02-25T23:36:56.894867"
     },
     {
       "id": "vscode",
@@ -619,7 +619,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381294"
+      "updatedAt": "2026-02-25T23:36:56.894873"
     },
     {
       "id": "ollama",
@@ -639,7 +639,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381299"
+      "updatedAt": "2026-02-25T23:36:56.894878"
     },
     {
       "id": "yt-dlp",
@@ -655,11 +655,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 148576,
+      "stars": 148578,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381304"
+      "updatedAt": "2026-02-25T23:36:56.894883"
     },
     {
       "id": "hellogithub",
@@ -679,7 +679,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381311"
+      "updatedAt": "2026-02-25T23:36:56.894889"
     },
     {
       "id": "youtube-dl",
@@ -699,7 +699,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381316"
+      "updatedAt": "2026-02-25T23:36:56.894894"
     },
     {
       "id": "powertoys",
@@ -719,7 +719,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381321"
+      "updatedAt": "2026-02-25T23:36:56.894899"
     },
     {
       "id": "javaguide",
@@ -739,7 +739,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381327"
+      "updatedAt": "2026-02-25T23:36:56.894905"
     },
     {
       "id": "tech-interview-handbook",
@@ -759,7 +759,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381331"
+      "updatedAt": "2026-02-25T23:36:56.894909"
     },
     {
       "id": "you-dont-know-js",
@@ -779,7 +779,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381336"
+      "updatedAt": "2026-02-25T23:36:56.894914"
     },
     {
       "id": "scrcpy",
@@ -799,7 +799,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381341"
+      "updatedAt": "2026-02-25T23:36:56.894919"
     },
     {
       "id": "python-100-days",
@@ -819,7 +819,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381346"
+      "updatedAt": "2026-02-25T23:36:56.894924"
     },
     {
       "id": "gitignore",
@@ -839,7 +839,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381352"
+      "updatedAt": "2026-02-25T23:36:56.894929"
     },
     {
       "id": "microsoft-activation-scripts",
@@ -859,7 +859,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381357"
+      "updatedAt": "2026-02-25T23:36:56.894934"
     },
     {
       "id": "prompts.chat",
@@ -875,11 +875,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 147793,
+      "stars": 147795,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381364"
+      "updatedAt": "2026-02-25T23:36:56.894940"
     }
   ],
   "watchlist": [
@@ -891,17 +891,17 @@
       "description": "The Web framework for perfectionists with deadlines.",
       "moved": 0,
       "trend": "stable",
-      "marketScore": 89.46,
+      "marketScore": 89.53,
       "signals": {
         "ghMomentum": 100.0,
         "ghPopularity": 86.93,
-        "hnHeat": 51.5
+        "hnHeat": 52.0
       },
       "stars": 86933,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381370"
+      "updatedAt": "2026-02-25T23:36:56.894946"
     },
     {
       "id": "python",
@@ -921,7 +921,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381376"
+      "updatedAt": "2026-02-25T23:36:56.894951"
     },
     {
       "id": "build-your-own-x",
@@ -937,11 +937,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 469079,
+      "stars": 469080,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381381"
+      "updatedAt": "2026-02-25T23:36:56.894956"
     },
     {
       "id": "30-seconds-of-code",
@@ -961,7 +961,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381385"
+      "updatedAt": "2026-02-25T23:36:56.894961"
     },
     {
       "id": "react-native",
@@ -981,7 +981,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381390"
+      "updatedAt": "2026-02-25T23:36:56.894966"
     },
     {
       "id": "open-webui",
@@ -997,11 +997,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 124924,
+      "stars": 124923,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381395"
+      "updatedAt": "2026-02-25T23:36:56.894971"
     },
     {
       "id": "system-prompts-and-models-of-ai-tools",
@@ -1017,11 +1017,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 124067,
+      "stars": 124070,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-25T23:28:54.381401"
+      "updatedAt": "2026-02-25T23:36:56.894976"
     }
   ],
   "meta": {
