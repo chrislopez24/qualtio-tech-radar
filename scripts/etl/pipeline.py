@@ -31,6 +31,7 @@ from etl.sources.github_trending import GitHubTrendingSource
 from etl.sources.hackernews import HackerNewsSource
 from etl.sources.google_trends import GoogleTrendsSource
 from etl.candidate_selector import select_candidates, CandidateSelection
+from etl.llm_cache import LLMDecisionCache
 
 logger = logging.getLogger(__name__)
 
@@ -308,6 +309,13 @@ class RadarPipeline:
                 max_weeks=self.config.history.max_weeks,
             )
             self.previous_snapshot = self.history_store.get_latest_snapshot()
+        
+        # Initialize LLM decision cache if enabled
+        self.llm_cache: Optional[LLMDecisionCache] = None
+        if self.config.llm_optimization.cache_enabled:
+            cache_path = Path(self.config.llm_optimization.cache_file)
+            self.llm_cache = LLMDecisionCache(cache_path)
+        
         self._init_components()
 
     def _init_components(self):

@@ -136,6 +136,8 @@ class LLMOptimizationConfig(BaseModel):
     borderline_band: float = Field(ge=0.0, le=20.0, default=5.0)
     watchlist_ratio: float = Field(gt=0.0, lt=1.0, default=0.25)
     cache_enabled: bool = True
+    cache_file: str = "src/data/llm_cache.json"
+    cache_drift_threshold: float = Field(ge=0.0, default=3.0)
 
 
 class ETLConfig(BaseModel):
