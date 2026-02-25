@@ -30,43 +30,219 @@ from etl.ring_assignment import assign_rings
 from etl.sources.github_trending import GitHubTrendingSource
 from etl.sources.hackernews import HackerNewsSource
 from etl.sources.google_trends import GoogleTrendsSource
+from etl.candidate_selector import select_candidates, CandidateSelection
 
 logger = logging.getLogger(__name__)
 
 TECH_ALIASES = {
+    # Databases
     "postgres": "postgresql",
     "postgresql": "postgresql",
     "postgre": "postgresql",
+    "pg": "postgresql",
+    "redis": "redis",
+    "mongodb": "mongodb",
+    "mongo": "mongodb",
+    "mysql": "mysql",
+    "sqlite": "sqlite",
+    "cassandra": "cassandra",
+    "elasticsearch": "elasticsearch",
+    "clickhouse": "clickhouse",
+    "supabase": "supabase",
+    "firebase": "firebase",
+    "dynamodb": "dynamodb",
+    "cockroachdb": "cockroachdb",
+    "neo4j": "neo4j",
+    "influxdb": "influxdb",
+    "timescaledb": "timescaledb",
+    # Languages
     "rust": "rust",
+    "rustlang": "rust",
+    "golang": "go",
+    "go": "go",
+    "python": "python",
+    "py": "python",
+    "typescript": "typescript",
+    "ts": "typescript",
+    "javascript": "javascript",
+    "js": "javascript",
+    "java": "java",
+    "kotlin": "kotlin",
+    "swift": "swift",
+    "zig": "zig",
+    "nim": "nim",
+    "elixir": "elixir",
+    "erlang": "erlang",
+    "haskell": "haskell",
+    "scala": "scala",
+    "clojure": "clojure",
+    "ruby": "ruby",
+    "php": "php",
+    "csharp": "c#",
+    "c#": "c#",
+    "cpp": "c++",
+    "c++": "c++",
+    "dart": "dart",
+    "julia": "julia",
+    "r-lang": "r",
+    "rlang": "r",
+    # Frameworks - Frontend
     "react": "react",
+    "reactjs": "react",
     "vue": "vue",
+    "vuejs": "vue",
     "angular": "angular",
     "svelte": "svelte",
-    "python": "python",
-    "typescript": "typescript",
-    "javascript": "javascript",
-    "node": "nodejs",
-    "nodejs": "nodejs",
-    "node.js": "nodejs",
+    "next": "nextjs",
+    "next.js": "nextjs",
+    "nextjs": "nextjs",
+    "nuxt": "nuxtjs",
+    "nuxt.js": "nuxtjs",
+    "remix": "remix",
+    "astro": "astro",
+    "solid": "solidjs",
+    "solidjs": "solidjs",
+    "qwik": "qwik",
+    "htmx": "htmx",
+    "alpine": "alpinejs",
+    "alpine.js": "alpinejs",
+    # Frameworks - Backend
+    "django": "django",
+    "flask": "flask",
+    "fastapi": "fastapi",
+    "express": "express",
+    "expressjs": "express",
+    "nestjs": "nestjs",
+    "spring": "spring boot",
+    "spring-boot": "spring boot",
+    "rails": "ruby on rails",
+    "ruby-on-rails": "ruby on rails",
+    "laravel": "laravel",
+    "symfony": "symfony",
+    "gin": "gin",
+    "echo": "echo",
+    "fiber": "fiber",
+    "actix": "actix",
+    "rocket": "rocket",
+    # DevOps/Cloud
     "docker": "docker",
     "kubernetes": "kubernetes",
     "k8s": "kubernetes",
+    "terraform": "terraform",
+    "ansible": "ansible",
+    "pulumi": "pulumi",
+    "vagrant": "vagrant",
     "aws": "aws",
     "gcp": "gcp",
     "azure": "azure",
-    "redis": "redis",
-    "mongodb": "mongodb",
-    "mysql": "mysql",
+    "vercel": "vercel",
+    "netlify": "netlify",
+    "cloudflare": "cloudflare",
+    "heroku": "heroku",
+    "fly.io": "fly.io",
+    "render": "render",
+    # CI/CD
+    "github-actions": "github actions",
+    "gitlab-ci": "gitlab ci",
+    "jenkins": "jenkins",
+    "circleci": "circleci",
+    "travis": "travis ci",
+    "argo": "argo",
+    "flux": "flux",
+    # AI/ML
+    "tensorflow": "tensorflow",
+    "pytorch": "pytorch",
+    "jax": "jax",
+    "huggingface": "huggingface",
+    "langchain": "langchain",
+    "llama": "llama",
+    "llamaindex": "llamaindex",
+    "openai": "openai",
+    "anthropic": "anthropic",
+    "ollama": "ollama",
+    "comfyui": "comfyui",
+    "stable-diffusion": "stable diffusion",
+    "mlflow": "mlflow",
+    "kubeflow": "kubeflow",
+    # Tools
+    "git": "git",
+    "github": "github",
+    "gitlab": "gitlab",
+    "bitbucket": "bitbucket",
+    "vscode": "vscode",
+    "neovim": "neovim",
+    "nvim": "neovim",
+    "vim": "vim",
+    "emacs": "emacs",
+    "jetbrains": "jetbrains",
+    "cursor": "cursor",
+    "warp": "warp",
+    "fig": "fig",
+    "starship": "starship",
+    "zellij": "zellij",
+    "tmux": "tmux",
+    "ripgrep": "ripgrep",
+    "fd": "fd",
+    "fzf": "fzf",
+    "bat": "bat",
+    "exa": "exa",
+    "eza": "eza",
+    "zoxide": "zoxide",
+    "atuin": "atuin",
+    # API/GraphQL
     "graphql": "graphql",
-    "fastapi": "fastapi",
-    "django": "django",
-    "flask": "flask",
-    "golang": "go",
-    "go": "go",
-    "terraform": "terraform",
-    "ansible": "ansible",
-    "devops": "devops",
+    "grpc": "grpc",
+    "rest": "rest api",
+    "openapi": "openapi",
+    "swagger": "swagger",
+    "postman": "postman",
+    "insomnia": "insomnia",
+    "kafka": "kafka",
+    "rabbitmq": "rabbitmq",
+    "nats": "nats",
+    "pulsar": "pulsar",
+    # Testing/QA
     "qa": "qa",
+    "testing": "testing",
+    "cypress": "cypress",
+    "playwright": "playwright",
+    "puppeteer": "puppeteer",
+    "selenium": "selenium",
+    "jest": "jest",
+    "vitest": "vitest",
+    "pytest": "pytest",
+    "mocha": "mocha",
+    "cucumber": "cucumber",
+    "gatling": "gatling",
+    "k6": "k6",
+    # Mobile
+    "react-native": "react native",
+    "flutter": "flutter",
+    "ionic": "ionic",
+    "capacitor": "capacitor",
+    "expo": "expo",
+    # Security
+    "auth0": "auth0",
+    "keycloak": "keycloak",
+    "vault": "vault",
+    "snyk": "snyk",
+    "trivy": "trivy",
+    # Monitoring/Observability
+    "prometheus": "prometheus",
+    "grafana": "grafana",
+    "datadog": "datadog",
+    "jaeger": "jaeger",
+    "otel": "opentelemetry",
+    "opentelemetry": "opentelemetry",
+    # Node.js
+    "node": "nodejs",
+    "nodejs": "nodejs",
+    "node.js": "nodejs",
+    "bun": "bun",
+    "deno": "deno",
+    "npm": "npm",
+    "pnpm": "pnpm",
+    "yarn": "yarn",
 }
 
 NON_TECH_STOPWORDS = {
@@ -268,16 +444,37 @@ class RadarPipeline:
         return list(technologies.values())
 
     def _extract_tech_name(self, title: str) -> Optional[str]:
-        """Extract technology name from HN post title"""
-        cleaned_title = re.sub(r"[^a-zA-Z0-9+#.\-\s]", " ", title.lower())
+        """Extract technology name from HN post title using multi-word patterns first"""
+        cleaned_title = re.sub(r"[^a-zA-Z0-9+#\.\-\s]", " ", title.lower())
+        
+        # First try multi-word patterns (e.g., "react native", "github actions")
+        for alias, canonical in TECH_ALIASES.items():
+            if " " in alias and alias in cleaned_title:
+                return canonical
+        
+        # Then try compound patterns with dots/dashes
+        for alias, canonical in TECH_ALIASES.items():
+            if "." in alias or "-" in alias:
+                pattern = alias.replace(".", r"\.").replace("-", r"[- ]?")
+                if re.search(rf"\b{pattern}\b", cleaned_title):
+                    return canonical
+        
+        # Finally try individual tokens
         tokens = [token.strip(".-") for token in cleaned_title.split() if token.strip(".-")]
-
+        
+        # Priority: look for known tech names first
         for token in tokens:
             if token in NON_TECH_STOPWORDS:
                 continue
             if token in TECH_ALIASES:
                 return TECH_ALIASES[token]
-
+        
+        # Look for programming languages (single word)
+        lang_patterns = ["rust", "python", "golang", "typescript", "javascript", "kotlin", "swift", "zig"]
+        for token in tokens:
+            if token in lang_patterns:
+                return token
+        
         return None
 
     def _normalize_and_dedupe(self, technologies: List[NormalizedTech]) -> List[NormalizedTech]:
@@ -311,18 +508,17 @@ class RadarPipeline:
         return technologies
 
     def _apply_market_scoring(self, technologies: List[NormalizedTech]) -> List[NormalizedTech]:
+        # Weights without Google Trends (unreliable source)
         weights = {
             "gh_momentum": self.config.scoring.weights.github_momentum,
             "gh_popularity": self.config.scoring.weights.github_popularity,
             "hn_heat": self.config.scoring.weights.hn_heat,
-            "google_momentum": self.config.scoring.weights.google_momentum,
         }
 
         for tech in technologies:
             tech.signals.setdefault("gh_popularity", min(100.0, tech.stars / 1000.0))
             tech.signals.setdefault("hn_heat", min(100.0, float(tech.hn_mentions) * 10.0))
             tech.signals.setdefault("gh_momentum", tech.signals.get("gh_momentum", 0.0))
-            tech.signals.setdefault("google_momentum", tech.signals.get("google_momentum", 0.0))
 
             tech.market_score = score_technology(tech.signals, weights=weights)
 
@@ -330,7 +526,6 @@ class RadarPipeline:
                 float(tech.signals.get("gh_momentum", 0.0)),
                 float(tech.signals.get("gh_popularity", 0.0)),
                 float(tech.signals.get("hn_heat", 0.0)),
-                float(tech.signals.get("google_momentum", 0.0)),
             ]
             variance = pvariance(signal_values) if len(signal_values) > 1 else 0.0
             source_count = len(set(tech.sources))
@@ -421,9 +616,37 @@ class RadarPipeline:
 
     def _strategic_filter(self, technologies: List[NormalizedTech],
                           classifications: List[ClassificationResult]) -> List[FilteredItem]:
-        """Phase 5: Strategic filtering"""
-        items = []
+        """Phase 5: Strategic filtering with Zalando-style quality gates
+        
+        Filters applied:
+        1. Minimum sources: Must appear in at least N sources (default: 2)
+        2. Quality gates: Must meet minimum stars/HN mentions for its ring
+        3. Temporal consistency: Must have been around for minimum days
+        4. AI filtering: Strategic value assessment
+        5. Distribution: Target 12-15 technologies balanced across quadrants
+        """
+        
+        # Apply quality gates first (Zalando-style)
+        qualified_techs = []
         for tech, classification in zip(technologies, classifications):
+            # Gate 1: Minimum number of sources
+            min_sources = getattr(self.config.filtering, 'min_sources', 2)
+            if len(tech.sources) < min_sources:
+                logger.debug(f"Filtering out {tech.name}: only {len(tech.sources)} sources (min: {min_sources})")
+                continue
+            
+            # Gate 2: Quality gates based on ring
+            if not self._passes_quality_gate(tech, classification.ring):
+                logger.debug(f"Filtering out {tech.name}: doesn't pass quality gate for ring {classification.ring}")
+                continue
+            
+            qualified_techs.append((tech, classification))
+        
+        logger.info(f"Phase 5 - {len(qualified_techs)} technologies passed quality gates out of {len(technologies)}")
+        
+        # Create items for AI filtering
+        items = []
+        for tech, classification in qualified_techs:
             items.append(type('TechItem', (), {
                 'name': classification.name,
                 'description': classification.description,
@@ -435,21 +658,45 @@ class RadarPipeline:
                 'market_score': tech.market_score,
                 'signals': tech.signals,
                 'moved': tech.moved,
+                'sources': tech.sources,
             })())
 
+        # Use AI filter for strategic assessment
         filtered = self.filter.filter(items) or []
-        if len(filtered) >= 2:
-            return filtered
+        
+        # Target: 12-15 technologies (Zalando-style focused radar)
+        target_min = getattr(self.config.distribution, 'target_total', 15) - 3
+        target_max = getattr(self.config.distribution, 'target_total', 15)
+        
+        # Fallback: if AI filter is too aggressive, use top items by market score
+        if len(filtered) < target_min:
+            logger.warning(f"AI filter too aggressive: only {len(filtered)} items. Using fallback.")
+            # Sort all items by market score * confidence
+            items.sort(key=lambda x: (getattr(x, 'market_score', 0) * x.confidence), reverse=True)
+            # Take top target_max items
+            filtered = items[:target_max]
+            logger.info(f"Fallback selected {len(filtered)} top items by market score")
+        else:
+            # Sort by market score and confidence
+            filtered.sort(key=lambda x: (getattr(x, 'market_score', 0) * x.confidence), reverse=True)
+            filtered = filtered[:target_max]
 
+        # Fill with fallback candidates if needed
         existing_names = {item.name.lower() for item in filtered}
         fallback_candidates = []
-        for tech, classification in zip(technologies, classifications):
+        for tech, classification in qualified_techs:
             if classification.name.lower() in existing_names:
                 continue
             fallback_candidates.append((tech, classification))
 
-        fallback_candidates.sort(key=lambda pair: pair[0].market_score, reverse=True)
-        while len(filtered) < min(4, len(items)) and fallback_candidates:
+        # Sort by composite score (market score * confidence)
+        fallback_candidates.sort(
+            key=lambda pair: pair[0].market_score * pair[1].confidence, 
+            reverse=True
+        )
+        
+        # Fill up to target minimum
+        while len(filtered) < min(target_min, len(items)) and fallback_candidates:
             tech, classification = fallback_candidates.pop(0)
             fallback_item = FilteredItem(
                 name=classification.name,
@@ -457,7 +704,7 @@ class RadarPipeline:
                 stars=tech.stars,
                 quadrant=classification.quadrant,
                 ring=classification.ring,
-                confidence=max(0.35, classification.confidence),
+                confidence=max(0.5, classification.confidence),  # Higher minimum confidence
                 trend=classification.trend,
                 strategic_value=StrategicValue.MEDIUM,
             )
@@ -466,7 +713,29 @@ class RadarPipeline:
             setattr(fallback_item, "moved", tech.moved)
             filtered.append(fallback_item)
 
-        return filtered
+        return filtered[:target_max]
+    
+    def _passes_quality_gate(self, tech: NormalizedTech, ring: str) -> bool:
+        """Check if technology passes Zalando-style quality gates for its ring"""
+        quality_gates = getattr(self.config, 'quality_gates', None)
+        if not quality_gates:
+            return True
+        
+        # Check minimum stars for the ring
+        min_stars_config = getattr(quality_gates, 'min_stars', None)
+        if min_stars_config and ring in ['assess', 'trial', 'adopt']:
+            min_stars = getattr(min_stars_config, ring, 0)
+            if tech.stars < min_stars:
+                return False
+        
+        # Check minimum HN mentions for the ring
+        min_hn_config = getattr(quality_gates, 'min_hn_mentions', None)
+        if min_hn_config and ring in ['assess', 'trial', 'adopt']:
+            min_hn = getattr(min_hn_config, ring, 0)
+            if tech.hn_mentions < min_hn:
+                return False
+        
+        return True
 
     def _assign_market_rings(self, items: List[FilteredItem]) -> List[FilteredItem]:
         if not items:
@@ -567,8 +836,11 @@ class RadarPipeline:
                 "ghMomentum": round(float(raw_signals.get("gh_momentum", 0.0)), 2),
                 "ghPopularity": round(float(raw_signals.get("gh_popularity", 0.0)), 2),
                 "hnHeat": round(float(raw_signals.get("hn_heat", 0.0)), 2),
-                "googleMomentum": round(float(raw_signals.get("google_momentum", 0.0)), 2),
             }
+            
+            # Only include Google Trends if enabled
+            if self.config.sources.google_trends.enabled:
+                signals["googleMomentum"] = round(float(raw_signals.get("google_momentum", 0.0)), 2)
 
             technologies.append({
                 'id': item.name.lower().replace(' ', '-'),
