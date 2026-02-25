@@ -17,10 +17,41 @@ export interface Technology {
 
 export interface AITechnology extends Technology {
   trend: Trend;
-  githubStars: number;
-  hnMentions: number;
+  githubStars?: number;
+  hnMentions?: number;
   confidence: number;
   updatedAt: string;
+  marketScore?: number;
+}
+
+export interface PipelineSummary {
+  collected?: number;
+  normalized?: number;
+  candidatesCore?: number;
+  candidatesWatchlist?: number;
+  candidatesBorderline?: number;
+  classified?: number;
+  qualified?: number;
+  output?: number;
+  watchlist?: number;
+  droppedInvalidDescriptions?: number;
+}
+
+export interface ShadowGateSummary {
+  status?: 'pass' | 'fail' | 'skip';
+  coreOverlap?: number;
+  leaderCoverage?: number;
+  watchlistRecall?: number;
+  llmCallReduction?: number;
+  filteredCount?: number;
+  addedCount?: number;
+  filteredByRing?: Record<string, number>;
+  filteredSample?: string[];
+}
+
+export interface AIRadarMeta {
+  pipeline?: PipelineSummary;
+  shadowGate?: ShadowGateSummary;
 }
 
 export interface RadarData {
@@ -31,6 +62,8 @@ export interface RadarData {
 export interface AIRadarData {
   updatedAt: string;
   technologies: AITechnology[];
+  watchlist?: AITechnology[];
+  meta?: AIRadarMeta;
 }
 
 export interface QuadrantConfig {
