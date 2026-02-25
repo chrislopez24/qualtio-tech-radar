@@ -564,8 +564,106 @@ class RadarPipeline:
 
         return "general"
 
+    def _classify_selective(
+        self,
+        technologies: List[NormalizedTech],
+        candidate_selection,
+    ) -> List[ClassificationResult]:
+        """Phase 4b: Selective LLM classification
+
+        Only borderline candidates get LLM classification.
+        Core and watchlist candidates use deterministic fallback.
+        """
+        # Build lookup by ID
+        tech_by_id = {t.name.lower().replace(" ", "-"): t for t in technologies}
+
+        # Initialize results
+        all_classifications: List[ClassificationResult] = []
+
+        # Process core candidates with deterministic classification (no LLM)
+        core_techs = [tech_by_id[tid] for tid in candidate_selection.core_ids if tid in tech_by_id]
+        if core_techs:
+            logger.debug(f"Classifying {len(core_techs)} core candidates deterministically")
+            core_classifications = self._fallback_classification(core_techs)
+            for c in core_classifications:
+                c.confidence = min(0.9, c.confidence)  # High confidence for core
+            all_classifications.extend(core_classifications)
+
+        # Process watchlist candidates with deterministic classification (no LLM)
+        watchlist_techs = [tech_by_id[tid] for tid in candidate_selection.watchlist_ids if tid in tech_by_id]
+        if watchlist_techs:
+            logger.debug(f"Classifying {len(watchlist_techs)} watchlist candidates deterministically")
+            watchlist_classifications = self._fallback_classification(watchlist_techs)
+            for c in watchlist_classifications:
+                c.confidence = min(0.8, c.confidence)  # Good confidence for watchlist
+                c.trend = "up"  # Watchlist items are trending up
+            all_classifications.extend(watchlist_classifications)
+
+        # Process borderline candidates with LLM (selective)
+        borderline_techs = [tech_by_id[tid] for tid in candidate_selection.borderline_ids if tid in tech_by_id]
+        if borderline_techs and self.config.llm_optimization.enabled:
+            # Enforce budget
+            budget_remaining = self.config.llm_optimization.max_calls_per_run
+            if budget_remaining <= 0:
+                logger.warning("LLM budget exhausted, using fallback for borderline candidates")
+                borderline_classifications = self._fallback_classification(borderline_techs)
+            else:
+                logger.info(f"Classifying {len(borderline_techs)} borderline candidates via LLM "
+                           f"(budget: {budget_remaining})")
+                borderline_classifications = self._classify_borderline_batch(borderline_techs, budget_remaining)
+            all_classifications.extend(borderline_classifications)
+        elif borderline_techs:
+            # LLM optimization disabled, use fallback
+            logger.debug(f"Classifying {len(borderline_techs)} borderline candidates deterministically")
+            borderline_classifications = self._fallback_classification(borderline_techs)
+            all_classifications.extend(borderline_classifications)
+
+        return all_classifications
+
+    def _classify_borderline_batch(
+        self,
+        borderline_techs: List[NormalizedTech],
+        budget_remaining: int,
+    ) -> List[ClassificationResult]:
+        """Classify borderline candidates using LLM with budget enforcement."""
+        if not self.classifier:
+            return self._fallback_classification(borderline_techs)
+
+        # Respect budget - prioritize by uncertainty (lower confidence first)
+        prioritized = sorted(borderline_techs, key=lambda t: t.signals.get("score_confidence", 0.5))
+        to_classify = prioritized[:budget_remaining]
+
+        if len(to_classify) < len(borderline_techs):
+            logger.warning(f"Budget limited: classifying {len(to_classify)} of {len(borderline_techs)} "
+                          f"borderline candidates via LLM")
+
+        tech_dicts = [
+            {
+                'name': tech.name,
+                'stars': tech.stars,
+                'hn_mentions': tech.hn_mentions,
+                'description': tech.description
+            }
+            for tech in to_classify
+        ]
+
+        try:
+            llm_classifications = self.classifier.classify_batch(tech_dicts)
+
+            # For items that exceeded budget, use fallback
+            fallback_techs = [t for t in borderline_techs if t not in to_classify]
+            if fallback_techs:
+                fallback_classifications = self._fallback_classification(fallback_techs)
+                # Merge results
+                return llm_classifications + fallback_classifications
+
+            return llm_classifications
+        except Exception as e:
+            logger.warning(f"AI classification failed: {e}, using fallback for borderline")
+            return self._fallback_classification(borderline_techs)
+
     def _classify_ai(self, technologies: List[NormalizedTech]) -> List[ClassificationResult]:
-        """Phase 4: AI Classification"""
+        """Phase 4: AI Classification (legacy - used for non-selective mode)"""
         if not self.classifier:
             return self._fallback_classification(technologies)
 
@@ -917,27 +1015,16 @@ class RadarPipeline:
         logger.info("Phase 3b - Deterministic market scoring complete")
         self._save_checkpoint("market_score", cursor=len(technologies))
 
-        classifications = self._classify_ai(technologies)
-        logger.info(f"Phase 4 - AI classification complete for {len(classifications)} items")
-        self._save_checkpoint("classify", cursor=len(classifications))
-
-        filtered_items = self._strategic_filter(technologies, classifications)
-        logger.info(f"Phase 5 - Strategic filtering complete, {len(filtered_items or [])} items remain")
-        self._save_checkpoint("filter", cursor=len(filtered_items or []))
-
-        # Phase 5b: Candidate selection - partition into Core/Watchlist/Borderline
-        # Build lookup for market scores and trend_delta from the original technologies
-        tech_scores = {t.name.lower(): t.market_score for t in technologies}
-        tech_trend_deltas = {t.name.lower(): t.trend_delta for t in technologies}
-
+        # Phase 4: Candidate selection - partition into Core/Watchlist/Borderline
+        # This happens BEFORE AI classification for selective LLM policy
         candidate_items = [
             {
-                "id": item.name.lower().replace(" ", "-"),
-                "market_score": tech_scores.get(item.name.lower(), 0),
-                "trend_delta": tech_trend_deltas.get(item.name.lower(), 0),
-                "confidence": item.confidence,
+                "id": t.name.lower().replace(" ", "-"),
+                "market_score": t.market_score,
+                "trend_delta": t.trend_delta,
+                "confidence": t.signals.get("score_confidence", 0.5),
             }
-            for item in (filtered_items or [])
+            for t in technologies
         ]
         candidate_selection = select_candidates(
             candidate_items,
@@ -945,10 +1032,25 @@ class RadarPipeline:
             watchlist_ratio=self.config.llm_optimization.watchlist_ratio,
             borderline_band=self.config.llm_optimization.borderline_band,
         )
-        logger.info(f"Phase 5b - Candidate selection: {len(candidate_selection.core_ids)} core, "
+        logger.info(f"Phase 4 - Candidate selection: {len(candidate_selection.core_ids)} core, "
                    f"{len(candidate_selection.watchlist_ids)} watchlist, "
                    f"{len(candidate_selection.borderline_ids)} borderline")
         self._save_checkpoint("candidate_selection")
+
+        # Phase 4b: Selective LLM classification
+        # Only classify borderline candidates with LLM
+        # Core and watchlist get deterministic fallback classification
+        classifications = self._classify_selective(
+            technologies,
+            candidate_selection,
+        )
+        logger.info(f"Phase 4b - Selective AI classification complete for {len(classifications)} items "
+                   f"({len(candidate_selection.borderline_ids)} borderline via LLM)")
+        self._save_checkpoint("classify", cursor=len(classifications))
+
+        filtered_items = self._strategic_filter(technologies, classifications)
+        logger.info(f"Phase 5 - Strategic filtering complete, {len(filtered_items or [])} items remain")
+        self._save_checkpoint("filter", cursor=len(filtered_items or []))
 
         filtered_items = self._assign_market_rings(filtered_items)
 
