@@ -2,14 +2,14 @@ from pathlib import Path
 
 
 def test_workflow_uses_expected_secrets_and_commands():
-    text = Path(".github/workflows/weekly-update.yml").read_text()
+    text = Path(".github/workflows/quarterly-update.yml").read_text()
     assert "GH_TOKEN" in text
     assert "src/data/data.ai.json" in text
     assert "data.ai.full.json" not in text
 
 
 def test_workflow_persists_history_file_and_public_ai_data():
-    text = Path(".github/workflows/weekly-update.yml").read_text()
+    text = Path(".github/workflows/quarterly-update.yml").read_text()
     assert "src/data/data.ai.history.json" in text
     assert "src/data/data.ai.json" in text
 
@@ -94,3 +94,16 @@ def test_readme_references_quality_evaluation():
         "README must reference quality evaluation"
     assert "go/no-go" in text.lower() or "quality gate" in text.lower(), \
         "README should mention quality gates"
+
+
+def test_quarterly_workflow_supports_shadow_eval_gate():
+    """Quarterly workflow should support shadow evaluation gate"""
+    workflow_path = Path(".github/workflows/quarterly-update.yml")
+    assert workflow_path.exists(), "quarterly-update.yml must exist"
+
+    yml = workflow_path.read_text()
+    assert "shadow" in yml.lower(), "Workflow must reference shadow mode"
+    assert "shadow-baseline" in yml.lower() or "baseline" in yml.lower(), \
+        "Workflow must reference baseline for comparison"
+    assert "core_overlap" in yml.lower() or "leader_coverage" in yml.lower(), \
+        "Workflow must check quality thresholds"

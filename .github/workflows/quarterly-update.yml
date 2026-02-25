@@ -1,0 +1,129 @@
+name: Quarterly Tech Radar Update
+
+on:
+  schedule:
+    # Primer lunes de enero, abril, julio y octubre (trimestral)
+    - cron: '0 9 1-7 1,4,7,10 1'
+  workflow_dispatch:  # Allow manual triggering for emergency updates
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Create venv and install dependencies
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install -r scripts/requirements.txt
+          
+      - name: Run data pipeline
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          SYNTHETIC_API_KEY: ${{ secrets.SYNTHETIC_API_KEY }}
+          PYTHONUNBUFFERED: "1"
+        run: |
+          .venv/bin/python -u scripts/main.py --resume
+          
+      - name: Shadow Evaluation - Quality Gate
+        id: shadow-eval
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          SYNTHETIC_API_KEY: ${{ secrets.SYNTHETIC_API_KEY }}
+          PYTHONUNBUFFERED: "1"
+        run: |
+          # Copy current output as baseline for first run, or use previous version
+          if [ -f "src/data/data.ai.json" ]; then
+            cp src/data/data.ai.json /tmp/baseline.json
+          fi
+          
+          # Run pipeline in shadow mode with quality evaluation
+          # Quality thresholds: core_overlap >= 0.85, leader_coverage >= 0.95, 
+          # watchlist_recall >= 0.80, llm_call_reduction >= 0.60
+          echo "Running shadow evaluation..."
+          .venv/bin/python -u scripts/main.py \
+            --shadow \
+            --shadow-baseline /tmp/baseline.json \
+            --shadow-output artifacts/shadow_eval.json \
+            --shadow-threshold-core-overlap 0.85 \
+            --shadow-threshold-leader-coverage 0.95 \
+            --shadow-threshold-watchlist-recall 0.80 \
+            --shadow-threshold-llm-reduction 0.60
+          
+          # Check exit code
+          if [ $? -ne 0 ]; then
+            echo "❌ Quality thresholds not met - blocking rollout"
+            echo "Review artifacts/shadow_eval.json for details"
+            exit 1
+          fi
+          
+          echo "✅ All quality thresholds met - proceeding with rollout"
+          
+      - name: Upload Shadow Eval Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shadow-eval-report
+          path: artifacts/shadow_eval.json
+          
+      - name: Commit sanitized data
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add src/data/data.ai.json src/data/data.ai.history.json
+          git diff --staged --quiet || git commit -m "chore: update AI radar data"
+          
+      - name: Push changes
+        run: |
+          git push || echo "No new data to push"
+
+  build-and-deploy:
+    needs: update-data
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+      
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install dependencies
+        run: |
+          npm ci
+          
+      - name: Build static site
+        run: |
+          npm run build
+          
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+          
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
