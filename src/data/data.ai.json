@@ -1,13 +1,13 @@
 {
-  "updatedAt": "2026-02-26T09:33:20.932416",
+  "updatedAt": "2026-02-26T09:38:04.469747",
   "technologies": [
     {
       "id": "build-your-own-x",
       "name": "build-your-own-x",
       "quadrant": "techniques",
       "ring": "assess",
-      "description": "An educational repository that teaches programming by guiding developers to recreate popular technologies from scratch. Covers databases, compilers, web servers, and more.",
-      "moved": 1,
+      "description": "An educational repository providing tutorials for recreating popular technologies (databases, operating systems, containers, etc.) from scratch. Helps developers understand underlying systems by building them.",
+      "moved": 0,
       "trend": "stable",
       "marketScore": 85.0,
       "signals": {
@@ -15,11 +15,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 469361,
+      "stars": 469364,
       "confidence": 0.95,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925247"
+      "updatedAt": "2026-02-26T09:38:04.461891"
     },
     {
       "id": "javascript",
@@ -39,7 +39,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925270"
+      "updatedAt": "2026-02-26T09:38:04.461908"
     },
     {
       "id": "go",
@@ -59,7 +59,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925283"
+      "updatedAt": "2026-02-26T09:38:04.461916"
     },
     {
       "id": "rust",
@@ -79,7 +79,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925293"
+      "updatedAt": "2026-02-26T09:38:04.461923"
     },
     {
       "id": "django",
@@ -99,7 +99,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925306"
+      "updatedAt": "2026-02-26T09:38:04.461929"
     },
     {
       "id": "python",
@@ -119,7 +119,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925319"
+      "updatedAt": "2026-02-26T09:38:04.461936"
     },
     {
       "id": "computer-science",
@@ -139,7 +139,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925339"
+      "updatedAt": "2026-02-26T09:38:04.461970"
     },
     {
       "id": "javascript-algorithms",
@@ -159,7 +159,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925355"
+      "updatedAt": "2026-02-26T09:38:04.461986"
     },
     {
       "id": "tensorflow",
@@ -179,7 +179,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925366"
+      "updatedAt": "2026-02-26T09:38:04.461999"
     },
     {
       "id": "you-dont-know-js",
@@ -199,7 +199,27 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925375"
+      "updatedAt": "2026-02-26T09:38:04.462007"
+    },
+    {
+      "id": "python-100-days",
+      "name": "Python-100-Days",
+      "quadrant": "techniques",
+      "ring": "adopt",
+      "description": "Python - 100\u5929\u4ece\u65b0\u624b\u5230\u5927\u5e08",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 85.0,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 179021,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-02-26T09:38:04.462014"
     },
     {
       "id": "awesome-selfhosted",
@@ -215,11 +235,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 275361,
+      "stars": 275362,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925385"
+      "updatedAt": "2026-02-26T09:38:04.462020"
     },
     {
       "id": "openclaw",
@@ -235,11 +255,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 231175,
+      "stars": 231195,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925392"
+      "updatedAt": "2026-02-26T09:38:04.462027"
     },
     {
       "id": "linux",
@@ -255,11 +275,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 219204,
+      "stars": 219205,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925397"
+      "updatedAt": "2026-02-26T09:38:04.462033"
     },
     {
       "id": "ohmyzsh",
@@ -275,11 +295,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 185016,
+      "stars": 185017,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925406"
+      "updatedAt": "2026-02-26T09:38:04.462042"
     },
     {
       "id": "n8n",
@@ -295,11 +315,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 176450,
+      "stars": 176451,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925413"
+      "updatedAt": "2026-02-26T09:38:04.462048"
     },
     {
       "id": "langflow",
@@ -315,11 +335,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 145075,
+      "stars": 145076,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925418"
+      "updatedAt": "2026-02-26T09:38:04.462054"
     },
     {
       "id": "dify",
@@ -335,11 +355,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 130412,
+      "stars": 130414,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925424"
+      "updatedAt": "2026-02-26T09:38:04.462059"
     },
     {
       "id": "langchain",
@@ -355,31 +375,31 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 127507,
+      "stars": 127509,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925429"
+      "updatedAt": "2026-02-26T09:38:04.462065"
     },
     {
-      "id": "free-programming-books",
-      "name": "free-programming-books",
+      "id": "freecodecamp",
+      "name": "freeCodeCamp",
       "quadrant": "tools",
-      "ring": "hold",
-      "description": "free-programming-books technology tracked for current relevance and market momentum.",
-      "moved": 0,
-      "trend": "stable",
+      "ring": "adopt",
+      "description": "freeCodeCamp technology tracked for current relevance and market momentum.",
+      "moved": 3,
+      "trend": "up",
       "marketScore": 85.0,
       "signals": {
         "ghMomentum": 100.0,
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 383121,
+      "stars": 437545,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925437"
+      "updatedAt": "2026-02-26T09:38:04.462072"
     },
     {
       "id": "awesome-python",
@@ -399,7 +419,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925443"
+      "updatedAt": "2026-02-26T09:38:04.462078"
     },
     {
       "id": "react",
@@ -415,11 +435,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 243373,
+      "stars": 243374,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925451"
+      "updatedAt": "2026-02-26T09:38:04.462083"
     },
     {
       "id": "autogpt",
@@ -435,11 +455,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 182031,
+      "stars": 182030,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925456"
+      "updatedAt": "2026-02-26T09:38:04.462089"
     },
     {
       "id": "bootstrap",
@@ -459,7 +479,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925462"
+      "updatedAt": "2026-02-26T09:38:04.462094"
     },
     {
       "id": "next.js",
@@ -479,7 +499,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925466"
+      "updatedAt": "2026-02-26T09:38:04.462099"
     },
     {
       "id": "awesome-go",
@@ -499,27 +519,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925472"
-    },
-    {
-      "id": "transformers",
-      "name": "transformers",
-      "quadrant": "tools",
-      "ring": "adopt",
-      "description": "\ud83e\udd17 Transformers: the model-definition framework for state-of-the-art machine learning models in text, vision, audio, and multimodal models, for both inference and training. ",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 157005,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925480"
+      "updatedAt": "2026-02-26T09:38:04.462104"
     },
     {
       "id": "vscode",
@@ -539,7 +539,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925485"
+      "updatedAt": "2026-02-26T09:38:04.462109"
     },
     {
       "id": "ollama",
@@ -559,7 +559,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925493"
+      "updatedAt": "2026-02-26T09:38:04.462115"
     },
     {
       "id": "yt-dlp",
@@ -575,11 +575,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 148633,
+      "stars": 148635,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925498"
+      "updatedAt": "2026-02-26T09:38:04.462120"
     },
     {
       "id": "hellogithub",
@@ -595,11 +595,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 143901,
+      "stars": 143903,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925505"
+      "updatedAt": "2026-02-26T09:38:04.462127"
     },
     {
       "id": "youtube-dl",
@@ -619,7 +619,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925513"
+      "updatedAt": "2026-02-26T09:38:04.462132"
     },
     {
       "id": "powertoys",
@@ -639,7 +639,47 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925518"
+      "updatedAt": "2026-02-26T09:38:04.462137"
+    },
+    {
+      "id": "30-seconds-of-code",
+      "name": "30-seconds-of-code",
+      "quadrant": "languages",
+      "ring": "adopt",
+      "description": "Coding articles to level up your development skills",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 85.0,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 126874,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-02-26T09:38:04.462142"
+    },
+    {
+      "id": "transformers",
+      "name": "transformers",
+      "quadrant": "languages",
+      "ring": "adopt",
+      "description": "\ud83e\udd17 Transformers: the model-definition framework for state-of-the-art machine learning models in text, vision, audio, and multimodal models, for both inference and training. ",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 85.0,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 157005,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-02-26T09:38:04.462149"
     },
     {
       "id": "javaguide",
@@ -655,11 +695,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 153887,
+      "stars": 153888,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925524"
+      "updatedAt": "2026-02-26T09:38:04.462155"
     },
     {
       "id": "scrcpy",
@@ -675,31 +715,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 136171,
+      "stars": 136172,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925529"
-    },
-    {
-      "id": "python-100-days",
-      "name": "Python-100-Days",
-      "quadrant": "techniques",
-      "ring": "adopt",
-      "description": "Python - 100\u5929\u4ece\u65b0\u624b\u5230\u5927\u5e08",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 179020,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925534"
+      "updatedAt": "2026-02-26T09:38:04.462160"
     },
     {
       "id": "flutter",
@@ -715,11 +735,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 175331,
+      "stars": 175332,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925539"
+      "updatedAt": "2026-02-26T09:38:04.462165"
     },
     {
       "id": "gitignore",
@@ -739,7 +759,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925544"
+      "updatedAt": "2026-02-26T09:38:04.462170"
     },
     {
       "id": "microsoft-activation-scripts",
@@ -755,11 +775,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 167008,
+      "stars": 167009,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925550"
+      "updatedAt": "2026-02-26T09:38:04.462176"
     },
     {
       "id": "prompts.chat",
@@ -775,18 +795,58 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 147907,
+      "stars": 147908,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925557"
+      "updatedAt": "2026-02-26T09:38:04.462182"
     },
     {
       "id": "awesome",
       "name": "Awesome",
       "quadrant": "techniques",
       "ring": "hold",
-      "description": "A community-driven framework for creating curated lists on various topics. Provides a standardized format for organizing and discovering resources, tools, and knowledge bases across programming, DevOps, security, and many other domains.",
+      "description": "The awesome list is a community-driven collection of curated resources about various topics, organized as GitHub repositories. It has become a de facto standard for resource curation in the developer community, covering topics from programming languages to machine learning.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 0.0,
+      "signals": {
+        "ghMomentum": 0.0,
+        "ghPopularity": 0.0,
+        "hnHeat": 0.0
+      },
+      "stars": 440817,
+      "confidence": 0.95,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-02-26T09:38:04.462189"
+    },
+    {
+      "id": "public-apis",
+      "name": "Public-Apis",
+      "quadrant": "tools",
+      "ring": "hold",
+      "description": "A curated collection of free, public APIs for developers to use in their applications. The repository categorizes APIs by categories (e.g., animals, anime, finance, games) and provides essential information like authentication requirements and rate limits.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 0.0,
+      "signals": {
+        "ghMomentum": 0.0,
+        "ghPopularity": 0.0,
+        "hnHeat": 0.0
+      },
+      "stars": 400337,
+      "confidence": 0.95,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-02-26T09:38:04.462195"
+    },
+    {
+      "id": "free-programming-books",
+      "name": "Free-Programming-Books",
+      "quadrant": "tools",
+      "ring": "hold",
+      "description": "A comprehensive GitHub repository aggregating freely available programming books across multiple languages and topics. One of the most starred developer resources on GitHub, serving as a curated knowledge base for learning programming.",
       "moved": 0,
       "trend": "down",
       "marketScore": 0.0,
@@ -795,60 +855,20 @@
         "ghPopularity": 0.0,
         "hnHeat": 0.0
       },
-      "stars": 440816,
+      "stars": 383121,
       "confidence": 0.95,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925563"
-    },
-    {
-      "id": "freecodecamp",
-      "name": "Freecodecamp",
-      "quadrant": "techniques",
-      "ring": "hold",
-      "description": "freeCodeCamp is an open-source educational platform providing free curriculum for learning programming, mathematics, and computer science. It offers interactive coding challenges, projects, and certifications used by millions of learners worldwide.",
-      "moved": -3,
-      "trend": "down",
-      "marketScore": 0.0,
-      "signals": {
-        "ghMomentum": 0.0,
-        "ghPopularity": 0.0,
-        "hnHeat": 0.0
-      },
-      "stars": 437545,
-      "confidence": 0.95,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925571"
-    },
-    {
-      "id": "public-apis",
-      "name": "Public-Apis",
-      "quadrant": "tools",
-      "ring": "hold",
-      "description": "A curated collection of free APIs for developers, categorized by categories like authentication, animals, anti-malware, art, books, business, and many more. Serves as a comprehensive directory for finding free public APIs for various development projects.",
-      "moved": -3,
-      "trend": "down",
-      "marketScore": 0.0,
-      "signals": {
-        "ghMomentum": 0.0,
-        "ghPopularity": 0.0,
-        "hnHeat": 0.0
-      },
-      "stars": 400337,
-      "confidence": 0.9,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925577"
+      "updatedAt": "2026-02-26T09:38:04.462201"
     },
     {
       "id": "developer-roadmap",
       "name": "Developer-Roadmap",
       "quadrant": "techniques",
       "ring": "hold",
-      "description": "Interactive roadmaps, guides and educational content helping developers grow in their careers. Provides structured learning paths for various technologies, roles, and skills.",
-      "moved": -1,
-      "trend": "down",
+      "description": "Interactive roadmaps, guides and educational content helping developers grow in their careers. Includes comprehensive learning paths for various technologies, roles, and skills.",
+      "moved": 0,
+      "trend": "stable",
       "marketScore": 0.0,
       "signals": {
         "ghMomentum": 0.0,
@@ -859,27 +879,7 @@
       "confidence": 0.95,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925582"
-    },
-    {
-      "id": "30-seconds-of-code",
-      "name": "30-seconds-of-code",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": "Coding articles to level up your development skills",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 126874,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925588"
+      "updatedAt": "2026-02-26T09:38:04.462206"
     }
   ],
   "watchlist": [
@@ -901,7 +901,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925594"
+      "updatedAt": "2026-02-26T09:38:04.462212"
     },
     {
       "id": "python",
@@ -921,14 +921,14 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925599"
+      "updatedAt": "2026-02-26T09:38:04.462218"
     },
     {
       "id": "build-your-own-x",
       "name": "build-your-own-x",
       "quadrant": "techniques",
-      "ring": "hold",
-      "description": "An educational repository that teaches programming by guiding developers to recreate popular technologies from scratch. Covers databases, compilers, web servers, and more.",
+      "ring": "assess",
+      "description": "An educational repository providing tutorials for recreating popular technologies (databases, operating systems, containers, etc.) from scratch. Helps developers understand underlying systems by building them.",
       "moved": 0,
       "trend": "stable",
       "marketScore": 85.0,
@@ -937,11 +937,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 469361,
+      "stars": 469364,
       "confidence": 0.95,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925605"
+      "updatedAt": "2026-02-26T09:38:04.462223"
     },
     {
       "id": "30-seconds-of-code",
@@ -949,8 +949,8 @@
       "quadrant": "languages",
       "ring": "trial",
       "description": "Coding articles to level up your development skills",
-      "moved": 0,
-      "trend": "up",
+      "moved": -1,
+      "trend": "stable",
       "marketScore": 85.0,
       "signals": {
         "ghMomentum": 100.0,
@@ -961,7 +961,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925609"
+      "updatedAt": "2026-02-26T09:38:04.462228"
     },
     {
       "id": "react-native",
@@ -981,7 +981,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925614"
+      "updatedAt": "2026-02-26T09:38:04.462233"
     },
     {
       "id": "open-webui",
@@ -1001,7 +1001,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925619"
+      "updatedAt": "2026-02-26T09:38:04.462239"
     },
     {
       "id": "system-prompts-and-models-of-ai-tools",
@@ -1017,11 +1017,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 124669,
+      "stars": 124674,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:33:20.925627"
+      "updatedAt": "2026-02-26T09:38:04.462244"
     }
   ],
   "meta": {
@@ -1041,18 +1041,14 @@
     },
     "shadowGate": {
       "status": "pass",
-      "coreOverlap": 0.9773,
+      "coreOverlap": 1.0,
       "leaderCoverage": 1.0,
       "watchlistRecall": 1.0,
       "llmCallReduction": 0.8409,
-      "filteredCount": 1,
-      "addedCount": 1,
-      "filteredByRing": {
-        "adopt": 1
-      },
-      "filteredSample": [
-        "tech-interview-handbook"
-      ]
+      "filteredCount": 0,
+      "addedCount": 0,
+      "filteredByRing": {},
+      "filteredSample": []
     }
   }
 }
