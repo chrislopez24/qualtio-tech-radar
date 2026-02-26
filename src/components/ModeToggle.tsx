@@ -1,50 +1,54 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Edit3, Sparkles } from 'lucide-react';
-import type { Mode } from '@/lib/types';
+import { Sparkle } from '@phosphor-icons/react';
 
-interface ModeToggleProps {
-  mode: Mode;
-  onModeChange: (mode: Mode) => void;
-  disabled?: boolean;
-}
-
-export function ModeToggle({ mode, onModeChange, disabled }: ModeToggleProps) {
+export function ModeToggle() {
   return (
-    <div className="flex items-center gap-2 p-1 bg-muted rounded-lg">
-      <button
-        onClick={() => onModeChange('manual')}
-        disabled={disabled}
-        className={`
-          flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium
-          transition-colors duration-200
-          ${mode === 'manual' 
-            ? 'bg-background text-foreground shadow-sm' 
-            : 'text-muted-foreground hover:text-foreground'
-          }
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-        `}
+    <motion.div 
+      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#12121a] border border-[#ffffff08]
+                 hover:border-[#00d4ff]/20 transition-colors cursor-pointer group"
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+    >
+      <motion.div
+        animate={{
+          rotate: [0, 15, -15, 0],
+          scale: [1, 1.1, 1],
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          repeatDelay: 1,
+          ease: "easeInOut",
+        }}
       >
-        <Edit3 className="w-4 h-4" />
-        Manual
-      </button>
-      <button
-        onClick={() => onModeChange('ai')}
-        disabled={disabled}
-        className={`
-          flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium
-          transition-colors duration-200
-          ${mode === 'ai' 
-            ? 'bg-background text-foreground shadow-sm' 
-            : 'text-muted-foreground hover:text-foreground'
-          }
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-        `}
-      >
-        <Sparkles className="w-4 h-4" />
+        <Sparkle 
+          className="w-4 h-4 text-[#00d4ff] group-hover:text-glow-cyan transition-all" 
+          weight="fill" 
+        />
+      </motion.div>
+      <span className="text-sm font-medium text-[#a0a0b0] group-hover:text-white transition-colors">
         AI
-      </button>
-    </div>
+      </span>
+      
+      {/* Status indicator */}
+      <motion.div
+        className="w-1.5 h-1.5 rounded-full bg-[#00d4ff]"
+        animate={{
+          boxShadow: [
+            '0 0 0 0 rgba(0, 212, 255, 0.4)',
+            '0 0 10px 2px rgba(0, 212, 255, 0.2)',
+            '0 0 0 0 rgba(0, 212, 255, 0.4)',
+          ],
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+    </motion.div>
   );
 }

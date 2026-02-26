@@ -1,26 +1,22 @@
 'use client';
 
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import type { Technology, AITechnology } from '@/lib/types';
 import { getQuadrantById, getRingById } from '@/lib/radar-config';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Minus, 
-  Star, 
-  MessageSquare,
-  Calendar,
-  GitFork,
-  Sparkles
-} from 'lucide-react';
+import {
+  TrendUp,
+  TrendDown,
+  Minus,
+  Star,
+  ChatCircleText,
+  CalendarBlank,
+  Sparkle,
+  ArrowUp,
+  ArrowDown,
+  X,
+} from '@phosphor-icons/react';
 
 interface DetailPanelProps {
   technology: Technology | AITechnology | null;
@@ -28,144 +24,113 @@ interface DetailPanelProps {
   onClose: () => void;
 }
 
+function formatNumber(num: number): string {
+  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+  return num.toString();
+}
+
 export function DetailPanel({ technology, open, onClose }: DetailPanelProps) {
-  if (!technology) return null;
+  const isOpen = open && technology !== null;
+  if (!technology) {
+    return null;
+  }
 
   const quadrant = getQuadrantById(technology.quadrant);
   const ring = getRingById(technology.ring);
   const isAI = 'confidence' in technology;
 
-  const getTrendIcon = (trend?: string) => {
-    switch (trend) {
-      case 'up': return <TrendingUp className="w-4 h-4 text-green-500" />;
-      case 'down': return <TrendingDown className="w-4 h-4 text-red-500" />;
-      case 'new': return <Sparkles className="w-4 h-4 text-yellow-500" />;
-      default: return <Minus className="w-4 h-4 text-gray-500" />;
-    }
-  };
+  const trend = isAI ? (technology as AITechnology).trend : 'stable';
 
-  const getTrendLabel = (trend?: string) => {
-    switch (trend) {
-      case 'up': return 'Rising';
-      case 'down': return 'Declining';
-      case 'new': return 'New';
-      default: return 'Stable';
-    }
-  };
-
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-    return num.toString();
-  };
+  const trendVisual =
+    trend === 'up'
+      ? { label: 'Rising', icon: <TrendUp className="h-4 w-4 text-emerald-500" weight="fill" /> }
+      : trend === 'down'
+        ? { label: 'Declining', icon: <TrendDown className="h-4 w-4 text-rose-500" weight="fill" /> }
+        : trend === 'new'
+          ? { label: 'New', icon: <Sparkle className="h-4 w-4 text-amber-500" weight="fill" /> }
+          : { label: 'Stable', icon: <Minus className="h-4 w-4 text-muted-foreground" weight="bold" /> };
 
   return (
-    <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:max-w-md overflow-y-auto">
-        <SheetHeader className="space-y-4">
-          <div className="flex items-center justify-between">
-            <SheetTitle className="text-2xl font-bold">
-              {technology.name}
-            </SheetTitle>
-            {technology.moved !== undefined && technology.moved !== 0 && (
-              <Badge variant={technology.moved > 0 ? 'default' : 'destructive'}>
-                {technology.moved > 0 ? '↑' : '↓'} Moved {Math.abs(technology.moved)} ring{Math.abs(technology.moved) > 1 ? 's' : ''}
-              </Badge>
-            )}
-          </div>
-        </SheetHeader>
+    <AnimatePresence>
+      {isOpen && (
+        <motion.aside
+          initial={{ opacity: 0, x: 24, scale: 0.98 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          exit={{ opacity: 0, x: 24, scale: 0.98 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+          className="pointer-events-auto fixed bottom-4 right-4 z-40 w-[min(390px,calc(100vw-2rem))] rounded-2xl border border-border/70 bg-background/96 p-4 shadow-[0_20px_60px_-28px_rgba(15,23,42,0.55)] backdrop-blur-md lg:right-[390px]"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h3 className="text-xl font-semibold tracking-tight">{technology.name}</h3>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <Badge style={{ backgroundColor: `${ring.color}15`, color: ring.color, borderColor: `${ring.color}30` }} className="border">
+                  {ring.name}
+                </Badge>
+                <Badge style={{ backgroundColor: `${quadrant.color}15`, color: quadrant.color, borderColor: `${quadrant.color}30` }} className="border">
+                  {quadrant.name}
+                </Badge>
+                {technology.moved !== undefined && technology.moved !== 0 && (
+                  <Badge variant={technology.moved > 0 ? 'default' : 'destructive'} className="flex items-center gap-1">
+                    {technology.moved > 0 ? <ArrowUp className="h-3 w-3" weight="bold" /> : <ArrowDown className="h-3 w-3" weight="bold" />}
+                    {Math.abs(technology.moved)}
+                  </Badge>
+                )}
+              </div>
+            </div>
 
-        <div className="space-y-6 mt-6">
-          <div className="flex gap-2">
-            <Badge 
-              style={{ 
-                backgroundColor: `${ring.color}20`, 
-                color: ring.color,
-                borderColor: ring.color 
-              }}
-              className="border"
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-lg border border-border/70 p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              aria-label="Close details"
             >
-              {ring.name}
-            </Badge>
-            <Badge 
-              style={{ 
-                backgroundColor: `${quadrant.color}20`, 
-                color: quadrant.color,
-                borderColor: quadrant.color 
-              }}
-              className="border"
-            >
-              {quadrant.name}
-            </Badge>
+              <X className="h-4 w-4" weight="bold" />
+            </button>
           </div>
 
-          <p className="text-muted-foreground leading-relaxed">
-            {technology.description}
-          </p>
-
-          <Separator />
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{technology.description}</p>
 
           {isAI && (
             <>
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium">AI Metrics</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {getTrendIcon((technology as AITechnology).trend)}
-                      <span className="text-sm">Trend</span>
-                    </div>
-                    <Badge variant="outline">
-                      {getTrendLabel((technology as AITechnology).trend)}
-                    </Badge>
-                  </div>
+              <Separator className="my-3" />
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="rounded-lg border border-border/60 bg-muted/25 p-2">
+                  <div className="flex items-center gap-1.5 text-muted-foreground">{trendVisual.icon}<span>Trend</span></div>
+                  <p className="mt-1 text-sm font-semibold">{trendVisual.label}</p>
+                </div>
+                <div className="rounded-lg border border-border/60 bg-muted/25 p-2">
+                  <div className="flex items-center gap-1.5 text-muted-foreground"><Sparkle className="h-4 w-4 text-cyan-500" weight="fill" /><span>Confidence</span></div>
+                  <p className="mt-1 text-sm font-semibold">{Math.round((technology as AITechnology).confidence * 100)}%</p>
+                </div>
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Star className="w-4 h-4 text-yellow-500" />
-                      <span className="text-sm">GitHub Stars</span>
-                    </div>
-                    <span className="font-medium">
-                      {formatNumber((technology as AITechnology).githubStars)}
-                    </span>
+                {(technology as AITechnology).githubStars !== undefined && (
+                  <div className="rounded-lg border border-border/60 bg-muted/25 p-2">
+                    <div className="flex items-center gap-1.5 text-muted-foreground"><Star className="h-4 w-4 text-amber-500" weight="fill" /><span>GitHub</span></div>
+                    <p className="mt-1 text-sm font-semibold">{formatNumber((technology as AITechnology).githubStars ?? 0)}</p>
                   </div>
+                )}
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <MessageSquare className="w-4 h-4 text-orange-500" />
-                      <span className="text-sm">HN Mentions</span>
-                    </div>
-                    <span className="font-medium">
-                      {(technology as AITechnology).hnMentions}
-                    </span>
+                {(technology as AITechnology).hnMentions !== undefined && (
+                  <div className="rounded-lg border border-border/60 bg-muted/25 p-2">
+                    <div className="flex items-center gap-1.5 text-muted-foreground"><ChatCircleText className="h-4 w-4 text-orange-500" weight="fill" /><span>HN Mentions</span></div>
+                    <p className="mt-1 text-sm font-semibold">{(technology as AITechnology).hnMentions}</p>
                   </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-purple-500" />
-                      <span className="text-sm">Confidence</span>
-                    </div>
-                    <span className="font-medium">
-                      {Math.round((technology as AITechnology).confidence * 100)}%
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Separator />
+                )}
+              </div>
             </>
           )}
 
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="w-4 h-4" />
-              <span>Last updated: {new Date('updatedAt' in technology ? technology.updatedAt : new Date().toISOString()).toLocaleDateString()}</span>
-            </div>
+          <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+            <CalendarBlank className="h-4 w-4" weight="duotone" />
+            <span>
+              Last updated{' '}
+              {new Date('updatedAt' in technology ? technology.updatedAt : new Date().toISOString()).toLocaleDateString()}
+            </span>
           </div>
-        </div>
-      </SheetContent>
-    </Sheet>
+        </motion.aside>
+      )}
+    </AnimatePresence>
   );
 }
