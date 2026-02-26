@@ -1,12 +1,12 @@
 {
-  "updatedAt": "2026-02-26T09:45:00.729871",
+  "updatedAt": "2026-02-26T11:56:54.004861",
   "technologies": [
     {
       "id": "build-your-own-x",
       "name": "build-your-own-x",
       "quadrant": "techniques",
       "ring": "assess",
-      "description": "A popular GitHub repository containing curated tutorials for recreating popular technologies from scratch. Helps developers master programming by building their own versions of databases, compilers, operating systems, and other systems.",
+      "description": "A popular GitHub repository containing tutorials for recreating popular technologies (like git, docker, webpack, etc.) from scratch. It serves as an educational resource for developers to master programming by building real-world systems.",
       "moved": 0,
       "trend": "stable",
       "marketScore": 85.0,
@@ -15,11 +15,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 469367,
+      "stars": 469403,
       "confidence": 0.95,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720425"
+      "updatedAt": "2026-02-26T11:56:53.994268"
     },
     {
       "id": "javascript",
@@ -35,11 +35,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 100.0
       },
-      "stars": 148090,
+      "stars": 148089,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720442"
+      "updatedAt": "2026-02-26T11:56:53.994285"
     },
     {
       "id": "go",
@@ -55,11 +55,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 100.0
       },
-      "stars": 132767,
+      "stars": 132768,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720451"
+      "updatedAt": "2026-02-26T11:56:53.994293"
     },
     {
       "id": "rust",
@@ -75,11 +75,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 100.0
       },
-      "stars": 110717,
+      "stars": 110721,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720457"
+      "updatedAt": "2026-02-26T11:56:53.994299"
     },
     {
       "id": "django",
@@ -89,17 +89,17 @@
       "description": "The Web framework for perfectionists with deadlines.",
       "moved": 0,
       "trend": "stable",
-      "marketScore": 91.03,
+      "marketScore": 91.11,
       "signals": {
         "ghMomentum": 100.0,
-        "ghPopularity": 86.93,
-        "hnHeat": 62.0
+        "ghPopularity": 86.94,
+        "hnHeat": 62.5
       },
-      "stars": 86934,
+      "stars": 86935,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720463"
+      "updatedAt": "2026-02-26T11:56:53.994306"
     },
     {
       "id": "python",
@@ -115,11 +115,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 22.0
       },
-      "stars": 218140,
+      "stars": 218144,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720470"
+      "updatedAt": "2026-02-26T11:56:53.994312"
     },
     {
       "id": "computer-science",
@@ -135,19 +135,19 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 201738,
+      "stars": 201652,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720479"
+      "updatedAt": "2026-02-26T11:56:53.994321"
     },
     {
       "id": "javascript-algorithms",
       "name": "javascript-algorithms",
       "quadrant": "techniques",
-      "ring": "trial",
+      "ring": "assess",
       "description": "\ud83d\udcdd Algorithms and data structures implemented in JavaScript with explanations and links to further readings",
-      "moved": 0,
+      "moved": -1,
       "trend": "stable",
       "marketScore": 85.0,
       "signals": {
@@ -155,11 +155,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 195695,
+      "stars": 195697,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720486"
+      "updatedAt": "2026-02-26T11:56:53.994328"
     },
     {
       "id": "tensorflow",
@@ -175,19 +175,19 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 193918,
+      "stars": 193917,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720491"
+      "updatedAt": "2026-02-26T11:56:53.994333"
     },
     {
       "id": "you-dont-know-js",
       "name": "You-Dont-Know-JS",
       "quadrant": "techniques",
-      "ring": "adopt",
+      "ring": "trial",
       "description": "A book series (2 published editions) on the JS language.",
-      "moved": 0,
+      "moved": -1,
       "trend": "stable",
       "marketScore": 85.0,
       "signals": {
@@ -195,11 +195,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 184482,
+      "stars": 184439,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720496"
+      "updatedAt": "2026-02-26T11:56:53.994338"
     },
     {
       "id": "python-100-days",
@@ -215,11 +215,31 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 179021,
+      "stars": 179025,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720518"
+      "updatedAt": "2026-02-26T11:56:53.994350"
+    },
+    {
+      "id": "flutter",
+      "name": "flutter",
+      "quadrant": "techniques",
+      "ring": "adopt",
+      "description": "Flutter makes it easy and fast to build beautiful apps for mobile and beyond",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 85.0,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 175331,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-02-26T11:56:53.994361"
     },
     {
       "id": "awesome-selfhosted",
@@ -235,11 +255,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 275362,
+      "stars": 275352,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720530"
+      "updatedAt": "2026-02-26T11:56:53.994390"
     },
     {
       "id": "openclaw",
@@ -255,11 +275,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 231215,
+      "stars": 231594,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720545"
+      "updatedAt": "2026-02-26T11:56:53.994405"
     },
     {
       "id": "linux",
@@ -275,11 +295,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 219206,
+      "stars": 219244,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720550"
+      "updatedAt": "2026-02-26T11:56:53.994413"
     },
     {
       "id": "ohmyzsh",
@@ -295,11 +315,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 185017,
+      "stars": 184963,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720559"
+      "updatedAt": "2026-02-26T11:56:53.994422"
     },
     {
       "id": "n8n",
@@ -315,11 +335,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 176451,
+      "stars": 176474,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720566"
+      "updatedAt": "2026-02-26T11:56:53.994428"
     },
     {
       "id": "langflow",
@@ -335,11 +355,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 145077,
+      "stars": 145083,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720571"
+      "updatedAt": "2026-02-26T11:56:53.994433"
     },
     {
       "id": "dify",
@@ -355,11 +375,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 130416,
+      "stars": 130428,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720577"
+      "updatedAt": "2026-02-26T11:56:53.994439"
     },
     {
       "id": "langchain",
@@ -375,11 +395,31 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 127511,
+      "stars": 127519,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720583"
+      "updatedAt": "2026-02-26T11:56:53.994444"
+    },
+    {
+      "id": "awesome",
+      "name": "awesome",
+      "quadrant": "tools",
+      "ring": "adopt",
+      "description": "awesome technology tracked for current relevance and market momentum.",
+      "moved": 3,
+      "trend": "up",
+      "marketScore": 85.0,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 440787,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-02-26T11:56:53.994455"
     },
     {
       "id": "freecodecamp",
@@ -395,11 +435,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 437544,
+      "stars": 437547,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720591"
+      "updatedAt": "2026-02-26T11:56:53.994462"
     },
     {
       "id": "public-apis",
@@ -407,26 +447,6 @@
       "quadrant": "tools",
       "ring": "adopt",
       "description": "public-apis technology tracked for current relevance and market momentum.",
-      "moved": 3,
-      "trend": "up",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 400337,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720601"
-    },
-    {
-      "id": "awesome-python",
-      "name": "awesome-python",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "awesome-python technology tracked for current relevance and market momentum.",
       "moved": 0,
       "trend": "stable",
       "marketScore": 85.0,
@@ -435,11 +455,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 284665,
+      "stars": 400355,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720606"
+      "updatedAt": "2026-02-26T11:56:53.994467"
     },
     {
       "id": "react",
@@ -455,11 +475,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 243374,
+      "stars": 243307,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720612"
+      "updatedAt": "2026-02-26T11:56:53.994473"
     },
     {
       "id": "autogpt",
@@ -475,11 +495,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 182030,
+      "stars": 182033,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720617"
+      "updatedAt": "2026-02-26T11:56:53.994478"
     },
     {
       "id": "bootstrap",
@@ -499,7 +519,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720622"
+      "updatedAt": "2026-02-26T11:56:53.994485"
     },
     {
       "id": "next.js",
@@ -519,27 +539,7 @@
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720627"
-    },
-    {
-      "id": "awesome-go",
-      "name": "awesome-go",
-      "quadrant": "tools",
-      "ring": "adopt",
-      "description": "A curated list of awesome Go frameworks, libraries and software",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 166055,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720646"
+      "updatedAt": "2026-02-26T11:56:53.994491"
     },
     {
       "id": "vscode",
@@ -555,11 +555,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 182090,
+      "stars": 182092,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720654"
+      "updatedAt": "2026-02-26T11:56:53.994495"
     },
     {
       "id": "ollama",
@@ -575,11 +575,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 163449,
+      "stars": 163459,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720660"
+      "updatedAt": "2026-02-26T11:56:53.994501"
     },
     {
       "id": "yt-dlp",
@@ -595,11 +595,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 148637,
+      "stars": 148660,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720665"
+      "updatedAt": "2026-02-26T11:56:53.994506"
     },
     {
       "id": "hellogithub",
@@ -615,11 +615,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 143903,
+      "stars": 143907,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720674"
+      "updatedAt": "2026-02-26T11:56:53.994515"
     },
     {
       "id": "youtube-dl",
@@ -635,11 +635,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 139734,
+      "stars": 139735,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720679"
+      "updatedAt": "2026-02-26T11:56:53.994520"
     },
     {
       "id": "powertoys",
@@ -655,11 +655,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 130095,
+      "stars": 130099,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720684"
+      "updatedAt": "2026-02-26T11:56:53.994525"
     },
     {
       "id": "30-seconds-of-code",
@@ -675,11 +675,31 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 126874,
+      "stars": 126875,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720690"
+      "updatedAt": "2026-02-26T11:56:53.994530"
+    },
+    {
+      "id": "awesome-go",
+      "name": "awesome-go",
+      "quadrant": "languages",
+      "ring": "adopt",
+      "description": "A curated list of awesome Go frameworks, libraries and software",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 85.0,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 166065,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-02-26T11:56:53.994535"
     },
     {
       "id": "transformers",
@@ -695,11 +715,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 157005,
+      "stars": 157012,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720697"
+      "updatedAt": "2026-02-26T11:56:53.994542"
     },
     {
       "id": "javaguide",
@@ -715,51 +735,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 153889,
+      "stars": 153887,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720703"
-    },
-    {
-      "id": "scrcpy",
-      "name": "scrcpy",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": "Display and control your Android device",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 136172,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720708"
-    },
-    {
-      "id": "flutter",
-      "name": "flutter",
-      "quadrant": "techniques",
-      "ring": "adopt",
-      "description": "Flutter makes it easy and fast to build beautiful apps for mobile and beyond",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 175332,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720713"
+      "updatedAt": "2026-02-26T11:56:53.994548"
     },
     {
       "id": "gitignore",
@@ -775,11 +755,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 172741,
+      "stars": 172694,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720718"
+      "updatedAt": "2026-02-26T11:56:53.994553"
     },
     {
       "id": "microsoft-activation-scripts",
@@ -795,11 +775,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 167010,
+      "stars": 167021,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720723"
+      "updatedAt": "2026-02-26T11:56:53.994558"
     },
     {
       "id": "prompts.chat",
@@ -815,38 +795,38 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 147908,
+      "stars": 147934,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720733"
+      "updatedAt": "2026-02-26T11:56:53.994567"
     },
     {
-      "id": "awesome",
-      "name": "Awesome",
+      "id": "scrcpy",
+      "name": "scrcpy",
       "quadrant": "techniques",
-      "ring": "hold",
-      "description": "A popular GitHub repository format featuring curated lists of resources on specific topics. The original 'awesome' list has spawned thousands of community-maintained lists across programming languages, tools, and frameworks.",
+      "ring": "adopt",
+      "description": "Display and control your Android device",
       "moved": 0,
       "trend": "stable",
-      "marketScore": 0.0,
+      "marketScore": 85.0,
       "signals": {
-        "ghMomentum": 0.0,
-        "ghPopularity": 0.0,
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 440817,
-      "confidence": 0.95,
+      "stars": 136180,
+      "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720739"
+      "updatedAt": "2026-02-26T11:56:53.994573"
     },
     {
       "id": "free-programming-books",
       "name": "Free-Programming-Books",
       "quadrant": "tools",
       "ring": "hold",
-      "description": "A curated GitHub repository aggregating freely available programming books and learning resources across multiple languages and topics. One of the most-starred educational resources on GitHub.",
+      "description": "A comprehensive GitHub repository aggregating freely available programming books across multiple languages and topics. One of the most starred repositories on GitHub with 383k+ stars, serving as a valuable community resource for developers.",
       "moved": 0,
       "trend": "stable",
       "marketScore": 0.0,
@@ -855,18 +835,18 @@
         "ghPopularity": 0.0,
         "hnHeat": 0.0
       },
-      "stars": 383122,
+      "stars": 383129,
       "confidence": 0.95,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720745"
+      "updatedAt": "2026-02-26T11:56:53.994579"
     },
     {
       "id": "developer-roadmap",
       "name": "Developer-Roadmap",
       "quadrant": "techniques",
       "ring": "hold",
-      "description": "Interactive roadmaps, guides and educational content helping developers grow in their careers. Provides structured learning paths for various tech roles and technologies.",
+      "description": "Interactive roadmaps and educational guides helping developers navigate career paths in various technologies like frontend, backend, DevOps, and AI. Provides structured learning paths with community-contributed resources.",
       "moved": 0,
       "trend": "stable",
       "marketScore": 0.0,
@@ -879,7 +859,27 @@
       "confidence": 0.95,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720753"
+      "updatedAt": "2026-02-26T11:56:53.994585"
+    },
+    {
+      "id": "awesome-python",
+      "name": "Awesome-Python",
+      "quadrant": "tools",
+      "ring": "hold",
+      "description": "An opinionated and curated list of awesome Python frameworks, libraries, software and resources. This GitHub repository serves as a comprehensive reference guide for Python developers seeking quality tools and libraries.",
+      "moved": -1,
+      "trend": "down",
+      "marketScore": 0.0,
+      "signals": {
+        "ghMomentum": 0.0,
+        "ghPopularity": 0.0,
+        "hnHeat": 0.0
+      },
+      "stars": 284609,
+      "confidence": 0.95,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-02-26T11:56:53.994590"
     }
   ],
   "watchlist": [
@@ -891,17 +891,17 @@
       "description": "The Web framework for perfectionists with deadlines.",
       "moved": 0,
       "trend": "stable",
-      "marketScore": 91.03,
+      "marketScore": 91.11,
       "signals": {
         "ghMomentum": 100.0,
-        "ghPopularity": 86.93,
-        "hnHeat": 62.0
+        "ghPopularity": 86.94,
+        "hnHeat": 62.5
       },
-      "stars": 86934,
+      "stars": 86935,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720759"
+      "updatedAt": "2026-02-26T11:56:53.994597"
     },
     {
       "id": "python",
@@ -917,18 +917,18 @@
         "ghPopularity": 100.0,
         "hnHeat": 22.0
       },
-      "stars": 218140,
+      "stars": 218144,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720764"
+      "updatedAt": "2026-02-26T11:56:53.994602"
     },
     {
       "id": "build-your-own-x",
       "name": "build-your-own-x",
       "quadrant": "techniques",
       "ring": "assess",
-      "description": "A popular GitHub repository containing curated tutorials for recreating popular technologies from scratch. Helps developers master programming by building their own versions of databases, compilers, operating systems, and other systems.",
+      "description": "A popular GitHub repository containing tutorials for recreating popular technologies (like git, docker, webpack, etc.) from scratch. It serves as an educational resource for developers to master programming by building real-world systems.",
       "moved": 0,
       "trend": "stable",
       "marketScore": 85.0,
@@ -937,11 +937,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 469367,
+      "stars": 469403,
       "confidence": 0.95,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720770"
+      "updatedAt": "2026-02-26T11:56:53.994608"
     },
     {
       "id": "30-seconds-of-code",
@@ -957,11 +957,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 126874,
+      "stars": 126875,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720775"
+      "updatedAt": "2026-02-26T11:56:53.994612"
     },
     {
       "id": "react-native",
@@ -977,11 +977,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 125478,
+      "stars": 125443,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720780"
+      "updatedAt": "2026-02-26T11:56:53.994617"
     },
     {
       "id": "open-webui",
@@ -997,11 +997,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 124973,
+      "stars": 124982,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720785"
+      "updatedAt": "2026-02-26T11:56:53.994622"
     },
     {
       "id": "system-prompts-and-models-of-ai-tools",
@@ -1017,11 +1017,11 @@
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 124677,
+      "stars": 124757,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T09:45:00.720792"
+      "updatedAt": "2026-02-26T11:56:53.994630"
     }
   ],
   "meta": {
