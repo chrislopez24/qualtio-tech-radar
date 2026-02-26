@@ -1,448 +1,222 @@
 # ETL Operations Runbook
 
-Operational guide for running and maintaining the Tech Radar ETL pipeline.
+## Quick Reference
 
-## Prerequisites
+**Production URL**: https://chrislopez24.github.io/qualtio-tech-radar/  
+**GitHub Repo**: https://github.com/chrislopez24/qualtio-tech-radar  
+**Workflow**: Quarterly Tech Radar Update
 
-### Required Environment Variables
+## Manual Execution
 
-| Variable | Description | How to Get |
-|----------|-------------|------------|
-| `GH_TOKEN` | GitHub PAT with `repo` scope | [GitHub Settings](https://github.com/settings/tokens) |
-| `SYNTHETIC_API_KEY` | Synthetic API key | Sign up at [synthetic.new](https://synthetic.new) |
-| `SYNTHETIC_MODEL` | Model identifier (optional) | Default: `hf:MiniMaxAI/MiniMax-M2.5` |
-
-### Setup
+### Trigger Pipeline
 
 ```bash
-# Create virtual environment
-python -m venv .venv
-source .venv/bin/activate
+# Via GitHub CLI
+gh workflow run "Quarterly Tech Radar Update" --repo chrislopez24/qualtio-tech-radar
 
-# Install dependencies
-pip install -r scripts/requirements.txt
-
-# Configure environment
-cp .env.example .env.local
-# Edit .env.local with your API keys
+# Via Web UI
+# GitHub → Actions → Quarterly Tech Radar Update → Run workflow
 ```
 
-## Running the Pipeline
-
-### Basic Execution
+### Monitor Progress
 
 ```bash
-source .venv/bin/activate
-python scripts/main.py
+# Watch latest run
+gh run watch --repo chrislopez24/qualtio-tech-radar
+
+# View logs
+gh run view --repo chrislopez24/qualtio-tech-radar --log
+
+# Web UI
+gh run view --repo chrislopez24/qualtio-tech-radar --web
 ```
 
-### Selective LLM Mode (Optimized)
+## Common Operations
+
+### 1. Check Pipeline Status
 
 ```bash
-# Run with selective LLM (reduces API calls by ~70%)
-python scripts/main.py
+gh run list --repo chrislopez24/qualtio-tech-radar --limit 5
 ```
 
-The selective LLM policy is **enabled by default** and classifies:
-- **Core candidates** (high market score): Deterministic (no LLM)
-- **Watchlist candidates** (trending): Deterministic (no LLM)
-- **Borderline candidates** only: LLM classification
-
-### Dry Run (No Data Collection)
+### 2. View Shadow Evaluation Results
 
 ```bash
-python scripts/main.py --dry-run
+# Download artifacts
+ghe run download --repo chrislopez24/qualtio-tech-radar --name shadow-eval-report
+
+# View report
+cat artifacts/shadow_eval.json
 ```
 
-Useful for verifying:
-- Configuration is correct
-- API connections work
-- No syntax errors
-
-### Selective Sources
+### 3. Update Secrets
 
 ```bash
-# Run only GitHub and HN
-python scripts/main.py --sources github_trending,hackernews
+# GitHub Token
+ghe secret set GH_TOKEN --repo chrislopez24/qualtio-tech-radar
+# Paste: ghp_xxx
 
-# Single source
-python scripts/main.py --sources google_trends
+# AI API Key
+ghe secret set SYNTHETIC_API_KEY --repo chrislopez24/qualtio-tech-radar
+# Paste: syn_xxx
 ```
 
-### Resume from Checkpoint
+### 4. Emergency Rollback
+
+If deployment fails:
 
 ```bash
-python scripts/main.py --resume
+# Revert to previous data commit
+git log --oneline --all -- src/data/
+git revert <COMMIT_SHA>
+git push
 ```
-
-Use after:
-- Interrupted run
-- API failure mid-pipeline
-- Testing changes mid-execution
-
-### Shadow Mode (Quality Validation)
-
-Use shadow mode to compare two existing outputs without rerunning ETL:
-
-```bash
-# Compare baseline vs current output only
-python scripts/main.py \
-  --shadow-only \
-  --shadow-baseline src/data/baseline.json \
-  --shadow-current src/data/data.ai.json \
-  --shadow-output artifacts/shadow_eval.json
-
-# Custom thresholds
-python scripts/main.py \
-  --shadow-only \
-  --shadow-baseline src/data/baseline.json \
-  --shadow-current src/data/data.ai.json \
-  --shadow-threshold-core-overlap 0.90 \
-  --shadow-threshold-leader-coverage 0.98 \
-  --shadow-threshold-watchlist-recall 0.85 \
-  --shadow-threshold-llm-reduction 0.00 \
-  --shadow-output artifacts/shadow_eval.json
-```
-
-**Quality Thresholds** (default):
-- Core Overlap: ≥85% (baseline coverage retained by optimized output)
-- Leader Coverage: ≥95% (top leader IDs by market score preserved)
-- Watchlist Recall: ≥80% (explicit watchlist preserved)
-- LLM Reduction: informational in routine CI (set threshold to `0.00`)
-
-**Output**: Report written to `artifacts/shadow_eval.json` with detailed metrics.
-
-**Go/No-Go**: Pipeline exits with code 1 if any threshold not met, blocking automatic rollout.
-
-**Generate Baseline**:
-```bash
-# First, generate baseline with full LLM mode (if needed)
-# Then copy to baseline file
-cp src/data/data.ai.json src/data/baseline.json
-```
-
-### Limit Processing
-
-```bash
-# Process max 25 technologies
-python scripts/main.py --max-technologies 25
-```
-
-Useful for testing or limiting API costs.
 
 ## Troubleshooting
 
-### Issue: Import Errors
+### Issue: "AI classifier not available, using fallback"
 
+**Cause**: SYNTHETIC_API_KEY not set or invalid
+
+**Solution**:
 ```bash
-# Run from scripts directory
-cd scripts
-source ../.venv/bin/activate
-python -m pytest tests -q
+# Verify secret exists
+ghe secret list --repo chrislopez24/qualtio-tech-radar
+
+# Update if needed
+ghe secret set SYNTHETIC_API_KEY --repo chrislopez24/qualtio-tech-radar
 ```
 
-### Issue: API Rate Limiting
+### Issue: "Core overlap below threshold"
 
-- Check `GH_TOKEN` is set
-- Reduce `requests_per_minute` in config.yaml
-- Circuit breaker will auto-skip failing sources
+**Cause**: Significant data degradation or API failures
 
-### Issue: Classification Failures
+**Solution**:
+1. Check artifacts/shadow_eval.json
+2. Review baseline vs current comparison
+3. If transient: Re-run pipeline
+4. If persistent: Investigate data source issues
 
-- Verify `SYNTHETIC_API_KEY` is valid
-- Check `SYNTHETIC_MODEL` is available
-- Increase `timeout` in config.yaml
+### Issue: GitHub Pages shows 404
 
-### Issue: Checkpoint Corruption
+**Cause**: Pages not enabled or basePath misconfiguration
+
+**Solution**:
+```bash
+# Enable Pages
+ghe repo edit chrislopez24/qualtio-tech-radar --enable-pages
+
+# Settings → Pages → Source: GitHub Actions
+```
+
+### Issue: Styles not loading (white background)
+
+**Cause**: Missing basePath for GitHub Pages
+
+**Solution**:
+Check next.config.ts has basePath set for production builds.
+
+### Issue: "Rate limit exceeded"
+
+**Cause**: GitHub API quota exhausted
+
+**Solution**:
+1. Check rate limit: `curl -H "Authorization: token $GH_TOKEN" https://api.github.com/rate_limit`
+2. Wait for reset (usually 1 hour)
+3. Consider using GitHub App instead of PAT
+
+## Configuration Changes
+
+### Update Pipeline Schedule
+
+Edit `.github/workflows/quarterly-update.yml`:
+
+```yaml
+on:
+  schedule:
+    - cron: '0 9 1-7 1,4,7,10 1'  # Quarterly
+```
+
+### Modify Thresholds
+
+Edit workflow file, shadow eval step:
 
 ```bash
-# Delete checkpoint to start fresh
-rm -f .checkpoint/radar.json
+--shadow-threshold-core-overlap 0.85
+--shadow-threshold-leader-coverage 0.95
+--shadow-threshold-watchlist-recall 0.80
+```
+
+### Add New Data Source
+
+1. Create collector in `scripts/collectors/`
+2. Update `scripts/main.py`
+3. Add tests
+4. Update documentation
+
+## Maintenance
+
+### Quarterly Tasks
+
+- [ ] Review classification accuracy
+- [ ] Update AI model if needed
+- [ ] Check for deprecated technologies
+- [ ] Verify all secrets are valid
+- [ ] Review performance metrics
+
+### Annual Tasks
+
+- [ ] Rotate API keys
+- [ ] Update dependencies
+- [ ] Review and update thresholds
+- [ ] Archive old data
+- [ ] Security audit
+
+## Contacts
+
+**Maintainer**: @chrislopez24  
+**Issues**: https://github.com/chrislopez24/qualtio-tech-radar/issues  
+**Documentation**: `/docs/etl-architecture.md`
+
+## Appendix
+
+### Error Codes
+
+| Code | Meaning | Action |
+|------|---------|--------|
+| E001 | AI API timeout | Retry manually |
+| E002 | GitHub rate limit | Wait 1 hour |
+| E003 | Shadow eval failed | Review artifacts |
+| E004 | Data validation failed | Check schema |
+| E005 | Pages deploy failed | Verify Pages enabled |
+
+### Environment Setup
+
+```bash
+# Local development
+python -m venv .venv
+source .venv/bin/activate
+pip install -r scripts/requirements.txt
+
+# Run ETL locally
 python scripts/main.py
+
+# Frontend
+npm install
+npm run dev
 ```
 
-### Issue: Empty Output
+### Backup & Recovery
 
-1. Verify sources are enabled in config.yaml
-2. Check API keys are valid
-3. Run with `--dry-run` to see configuration
-
-### Issue: Ring Collapse (for example, almost all `adopt`)
-
-1. Verify `distribution_guardrail.enabled` is `true`
-2. Check `distribution_guardrail.max_ring_ratio` in `scripts/config.yaml`
-3. Confirm `scoring.weights` are not skewed to one source
-4. Inspect `src/data/data.ai.history.json` for temporal drift
-
-## Validation Checklist
-
-Run these checks after any pipeline changes:
-
-### 1. Sources Fetch
-
+**Backup**:
 ```bash
-# Dry run shows source configuration
-python scripts/main.py --dry-run
+git clone --mirror https://github.com/chrislopez24/qualtio-tech-radar.git backup.git
 ```
 
-Verify all enabled sources appear in output.
-
-### 2. Classification Quality
-
-Check output file for:
-- All items have `quadrant` and `ring`
-- Confidence scores above threshold
-- No empty `rationale` fields
-
+**Recovery**:
 ```bash
-# Inspect output
-cat src/data/data.ai.json | python -m json.tool | less
-```
-
-### 3. Filtering Quality
-
-- No unwanted technologies in output
-- Expected technologies present
-- Confidence distribution looks reasonable
-
-### 4. Output Integrity
-
-```bash
-# Validate JSON
-python -c "import json; json.load(open('src/data/data.ai.json'))"
-python -c "import json; json.load(open('src/data/data.ai.history.json'))"
-```
-
-## Monitoring
-
-### GitHub Actions (Quarterly)
-
-The pipeline runs automatically via `.github/workflows/quarterly-update.yml`:
-- Triggers first Monday of Jan/Apr/Jul/Oct
-- Uses secrets: `GH_TOKEN`, `SYNTHETIC_API_KEY`
-- Outputs to `src/data/data.ai.json` and `src/data/data.ai.history.json`
-
-CI flow order:
-1. Checkout repository (baseline `src/data/data.ai.json` from repo state)
-2. Copy baseline to `artifacts/baseline.json`
-3. Run ETL once: `python scripts/main.py --resume`
-4. Run shadow gate only: `python scripts/main.py --shadow-only ...`
-5. Upload `artifacts/shadow_eval.json`
-6. Commit and push updated data files if changed
-
-Note: `artifacts/` can be gitignored locally; this does not affect GitHub Actions artifact upload.
-
-### Shadow Mode in CI/CD
-
-Add shadow mode validation to workflows before rollout:
-
-```yaml
-- name: Run Shadow Evaluation
-  run: |
-    source .venv/bin/activate
-    cp src/data/data.ai.json artifacts/baseline.json
-    python scripts/main.py --resume
-    if [ ! -f artifacts/baseline.json ]; then cp src/data/data.ai.json artifacts/baseline.json; fi
-    python scripts/main.py \
-      --shadow-only \
-      --shadow-baseline artifacts/baseline.json \
-      --shadow-current src/data/data.ai.json \
-      --shadow-output artifacts/shadow_eval.json
-    
-- name: Upload Shadow Report
-  uses: actions/upload-artifact@v4
-  with:
-    name: shadow-eval-report
-    path: artifacts/shadow_eval.json
-```
-
-### Cache Monitoring
-
-Monitor LLM cache performance:
-
-```bash
-# Check cache hit rate
-ls -lh src/data/llm_cache.json
-
-# Clear cache if needed
-rm src/data/llm_cache.json
-```
-
-**When to Clear Cache**:
-- After major config changes
-- When prompt version changes
-- If cache corruption suspected
-- Quarterly cleanup
-
-### Manual Verification
-
-After automated run:
-1. Check workflow run status
-2. Verify `data.ai.json` and `data.ai.history.json` were updated
-3. Check radar displays new data
-4. Review shadow eval report (if shadow mode enabled)
-
-## Configuration Reference
-
-### LLM Optimization Config
-
-```yaml
-llm_optimization:
-  enabled: true              # Enable selective LLM (default: true)
-  max_calls_per_run: 7       # Budget limit per pipeline run
-  borderline_band: 5.0       # Score band around thresholds for borderline classification
-  watchlist_ratio: 0.18      # % of target_total for watchlist bucket
-  cache_enabled: true        # Enable drift-aware LLM cache
-  cache_file: "src/data/llm_cache.json"
-  cache_drift_threshold: 3.0  # Max signal drift before cache invalidation
-```
-
-**Tuning Guide**:
-- `max_calls_per_run`: Lower = fewer API calls, may miss some borderline candidates
-- `borderline_band`: Higher = more borderline candidates get LLM classification
-- `watchlist_ratio`: Higher = more slots for trending technologies
-- `cache_drift_threshold`: Lower = more cache hits, but may use stale decisions
-
-### Source Config
-
-```yaml
-sources:
-  github_trending:
-    enabled: true
-    language: all        # or specific: python, javascript
-    time_range: daily    # daily, weekly, monthly
-  hackernews:
-    enabled: true
-    min_points: 10       # minimum HN points
-    days_back: 7         # how far back to fetch
-  google_trends:
-    enabled: true
-    seed_topics:         # topics to search
-      - python
-      - javascript
-```
-
-### Classification Config
-
-```yaml
-classification:
-  model: hf:MiniMaxAI/MiniMax-M2.5
-  temperature: 0.2       # lower = more deterministic
-  json_mode: true        # always use JSON
-  timeout: 30            # seconds per request
-  max_retries: 3         # retry failed requests
-```
-
-### Rate Limiting
-
-```yaml
-rate_limit:
-  requests_per_minute: 30
-  max_retries: 3
-```
-
-### Checkpoint
-
-```yaml
-checkpoint:
-  enabled: true
-  interval: 100          # save every N items
-```
-
-## Emergency Procedures
-
-### Pipeline Stuck
-
-1. Check for checkpoint: `cat .checkpoint/radar.json`
-2. Delete checkpoint: `rm -f .checkpoint/radar.json`
-3. Re-run: `python scripts/main.py`
-
-### API Key Compromised
-
-1. Revoke key in provider console
-2. Update `.env.local` with new key
-3. Re-run pipeline
-
-### Data Quality Issues
-
-1. Adjust `min_confidence` in config.yaml
-2. Add to `auto_ignore` list
-3. Re-run with `--resume` or fresh start
-
-### Issue: Selective LLM Not Reducing Calls
-
-**Symptoms**: API calls still high despite selective LLM enabled
-
-**Diagnosis**:
-```bash
-# Check how many borderline candidates
-# Look for log line: "Phase 4 - Candidate selection: X core, Y watchlist, Z borderline"
-```
-
-**Solutions**:
-1. Increase `borderline_band` to reduce borderline candidates
-2. Increase `max_calls_per_run` if hitting budget
-3. Tune `watchlist_ratio` to balance buckets
-4. Verify `llm_optimization.enabled: true` in config
-
-### Issue: Cache Not Working
-
-**Symptoms**: Same technologies being classified repeatedly
-
-**Diagnosis**:
-```bash
-# Check if cache file exists and is readable
-cat src/data/llm_cache.json | head -5
-
-# Check logs for "Cache hit" or "Cache miss"
-grep -i "cache" scripts/main.py.log 2>/dev/null || echo "Check console output"
-```
-
-**Solutions**:
-1. Verify `llm_optimization.cache_enabled: true`
-2. Check cache file permissions
-3. Clear cache: `rm src/data/llm_cache.json`
-4. Lower `cache_drift_threshold` for more hits
-
-### Issue: Shadow Mode Fails Quality Gates
-
-**Symptoms**: Pipeline exits with code 1, "Quality thresholds not met"
-
-**Diagnosis**:
-```bash
-# Review shadow eval report
-cat artifacts/shadow_eval.json | python -m json.tool
-
-# Check specific metrics
-cat artifacts/shadow_eval.json | jq '.core_overlap, .leader_coverage, .watchlist_recall'
-```
-
-**Solutions**:
-1. **Core Overlap Low**: Adjust `borderline_band` to include more technologies
-2. **Leader Coverage Low**: Lower threshold or increase `max_calls_per_run`
-3. **Watchlist Recall Low**: Increase `watchlist_ratio`
-4. **LLM Reduction Low**: Verify selective LLM is enabled
-
-**Emergency Override** (use with caution):
-```bash
-# Temporarily lower thresholds
-python scripts/main.py \
-  --shadow \
-  --shadow-baseline src/data/baseline.json \
-  --shadow-threshold-core-overlap 0.70 \
-  --shadow-threshold-llm-reduction 0.40
-```
-
-## Testing
-
-```bash
-# Full test suite
-cd scripts
-source ../.venv/bin/activate
-python -m pytest tests -q
-
-# Expected: 58 passed (1 unrelated failure possible)
-
-# Frontend build
-npm run build
+# Restore from mirror
+git clone backup.git
+# Or restore specific file
+git show <COMMIT>:src/data/data.ai.json > data.ai.json
 ```

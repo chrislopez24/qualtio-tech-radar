@@ -1,274 +1,250 @@
-# ETL Architecture
-
-System architecture for the Tech Radar data pipeline.
+# Qualtio Tech Radar - ETL Architecture
 
 ## Overview
 
+The Qualtio Tech Radar ETL pipeline automatically identifies, classifies, and tracks technology trends from multiple sources (GitHub, Hacker News) using AI-powered classification.
+
+## System Architecture
+
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                     RadarPipeline                                │
-├─────────────────────────────────────────────────────────────────┤
-│  Sources ─► Normalize ─► Market Score ─► Ring Engine ─► AI/Filter ─► Output │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-## Components
-
-### 1. Sources (`scripts/etl/sources/`)
-
-| Source | Description | API/Scraper |
-|--------|-------------|-------------|
-| GitHub Trending | Daily trending repositories | GitHub REST API |
-| Hacker News | Top stories from past 7 days | Official HN API |
-| Google Trends | Interest data for seed topics | Google Trends API |
-
-Each source implements a standard interface:
-- `fetch()` - Retrieve raw data
-- `normalize()` - Convert to `TechnologySignal` format
-
-### 2. Normalizer (`scripts/etl/normalizer.py`)
-
-Standardizes data from all sources into unified `TechnologySignal` format:
-- `name`: Technology name
-- `description`: Raw description text
-- `source`: Origin (github, hn, trends)
-- `url`: Reference URL
-- `metadata`: Source-specific data (stars, points, etc.)
-
-### 3. Classifier (`scripts/etl/classifier.py`)
-
-AI-powered classification using Synthetic API:
-- **Quadrant**: Platform, Language, Tool, Technique
-- **Ring**: Adopt, Trial, Assess, Hold
-- **Confidence**: 0.0-1.0 score
-- **Rationale**: Short explanation
-
-Classification prompt includes:
-- Technology name and description
-- Quadrant/ring definitions
-- Examples for few-shot learning
-
-### 4. Market Scoring + Ring Engine (`scripts/etl/market_scoring.py`, `scripts/etl/ring_assignment.py`)
-
-Deterministic ring assignment based on external momentum:
-- Weighted external signals: GitHub momentum/popularity, Hacker News heat, Google momentum
-- Threshold-based initial ring assignment
-- Hysteresis on promote/demote transitions
-- Distribution guardrail (`max_ring_ratio`) to prevent ring collapse (for example, all-`adopt`)
-
-### 4b. Selective LLM Policy (`scripts/etl/pipeline.py`)
-
-**Goal**: Reduce LLM calls by 70%+ while preserving output quality.
-
-**How it works**:
-1. **Candidate Selection** (`scripts/etl/candidate_selector.py`): Partition technologies into three buckets:
-   - **Core** (high market_score + high confidence): Deterministic classification (no LLM)
-   - **Watchlist** (high trend_delta): Deterministic classification (no LLM)  
-   - **Borderline** (near thresholds or contradictory signals): LLM classification only for these
-
-2. **Budget Enforcement**: Configurable `max_calls_per_run` limits LLM usage per pipeline run
-
-3. **Deterministic Fallback**: Core and watchlist candidates use rule-based classification:
-   - High confidence (0.8-0.9) for core items
-   - "up" trend for watchlist items
-
-**Configuration**:
-```yaml
-llm_optimization:
-  enabled: true              # Enable selective LLM
-  max_calls_per_run: 40      # Budget limit per run
-  borderline_band: 5.0       # Score range for borderline classification
-  watchlist_ratio: 0.25      # % of target allocated to watchlist
-  cache_enabled: true        # Enable drift-aware cache
-  cache_file: "src/data/llm_cache.json"
-  cache_drift_threshold: 3.0  # Max signal drift before cache invalidation
+┌─────────────────────────────────────────────────────────────┐
+│                      DATA SOURCES                           │
+├──────────────┬──────────────┬───────────────────────────────┤
+│ GitHub API   │ Hacker News  │ Google Trends (future)        │
+└──────┬───────┴──────┬───────┴───────────────────────────────┘
+       │              │
+       ▼              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    RAW COLLECTION                           │
+│  • Leader repositories (>1000 stars)                        │
+│  • Trending topics                                        │
+│  • HN discussions (>10 points)                            │
+└──────────────────┬──────────────────────────────────────────┘
+                   │
+                   ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    ETL PIPELINE                             │
+├─────────────────────────────────────────────────────────────┤
+│ 1. EXTRACT                                                │
+│    ├─ GitHub API pagination                               │
+│    ├─ HN API scraping                                     │
+│    └─ Deduplication & normalization                       │
+│                                                           │
+│ 2. TRANSFORM                                              │
+│    ├─ AI Classification (MiniMax-M2.5)                  │
+│    ├─ Quadrant assignment                               │
+│    ├─ Ring calculation (momentum scores)                │
+│    └─ Metadata enrichment                                 │
+│                                                           │
+│ 3. LOAD                                                   │
+│    ├─ Data validation                                     │
+│    ├─ Shadow evaluation (quality gate)                    │
+│    └─ JSON output (data.ai.json)                        │
+└──────────────────┬──────────────────────────────────────────┘
+                   │
+                   ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   DATA STORAGE                              │
+│  ┌─────────────────────────────────────────────────────┐  │
+│  │  data.ai.json          Current snapshot             │  │
+│  │  data.ai.history.json  Historical data               │  │
+│  └─────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-**Data Flow with Selective LLM**:
-```
-Sources → Normalize → Market Score → Candidate Selection → Selective LLM → Filter → Output
-                                     (core/watchlist/borderline)    (borderline only)
-```
+## Pipeline Stages
 
-### 4c. LLM Decision Cache (`scripts/etl/llm_cache.py`)
+### Stage 1: Data Collection (Extract)
 
-Drift-aware caching to reuse LLM decisions across runs:
-- **Cache Key**: Technology name + model + prompt_version + normalized features
-- **Drift Detection**: Invalidates cache when signals change beyond threshold
-- **Tolerant**: Cache errors don't block pipeline execution
-- **Safety**: JSON-backed storage with corruption recovery
+**GitHub Collection**
+- Queries repositories with >1000 stars
+- Collects: name, description, stars, topics, language
+- Pagination handling for rate limits
 
-### 5. History Store (`scripts/etl/history_store.py`)
+**Hacker News Collection**
+- Scans stories with >10 points
+- Extracts mentions of technologies
+- Correlates with GitHub data
 
-JSON rolling store for temporal trend/movement:
-- Persists `src/data/data.ai.history.json`
-- Keeps last `max_weeks` snapshots
-- Enables `trend` and `moved` relative to previous snapshot
+### Stage 2: AI Classification (Transform)
 
-### 6. Filter (`scripts/etl/pipeline.py`)
-
-Quality gates applied post-classification:
-- Minimum confidence threshold (default: 0.5)
-- Auto-ignore list (configurable)
-- Include-only list (optional override)
-
-### 7. Output Generator (`scripts/etl/output_generator.py`)
-
-Generates radar data files:
-- `src/data/data.ai.json` - Public, sanitized
-- `src/data/data.ai.history.json` - Rolling temporal history
-
-Sanitization removes:
-- Internal URLs
-- Sensitive metadata
-- Raw API responses
-
-### 7b. Shadow Quality Evaluator (`scripts/etl/shadow_eval.py`)
-
-Compares optimized (selective LLM) output against baseline (full LLM) to ensure quality:
-
-**Metrics**:
-- **Core Overlap** (Jaccard similarity): % of technologies present in both outputs (threshold: 85%)
-- **Leader Coverage**: % of "adopt" ring technologies preserved (threshold: 95%)
-- **Watchlist Recall**: % of trending (up) technologies preserved (threshold: 80%)
-- **LLM Call Reduction**: % reduction in LLM API calls (threshold: 60%)
-
-**Usage**:
-```bash
-# Run pipeline in shadow mode
-python scripts/main.py --shadow --shadow-baseline src/data/baseline.json
-
-# Custom thresholds
-python scripts/main.py \
-  --shadow \
-  --shadow-baseline src/data/baseline.json \
-  --shadow-threshold-core-overlap 0.90 \
-  --shadow-threshold-leader-coverage 0.95
+**Classification Service**
+```python
+# Synthetic API Configuration
+Model: MiniMaxAI/MiniMax-M2.5
+API: https://api.synthetic.new/v1
+Fallback: Rule-based heuristics
 ```
 
-**Report Output** (`artifacts/shadow_eval.json`):
-```json
-{
-  "core_overlap": 0.9231,
-  "leader_coverage": 1.0,
-  "watchlist_recall": 0.8889,
-  "llm_call_reduction": 0.72,
-  "total_baseline": 26,
-  "total_optimized": 24,
-  "missing_from_optimized": ["deprecated-tool"],
-  "added_in_optimized": ["new-framework"]
-}
-```
+**Classification Logic**
+- Input: Technology name + description + GitHub metadata
+- Output: Quadrant (platforms|techniques|tools|languages)
+- Confidence score: 0.0 - 1.0
 
-**Go/No-Go Decision**: Exit code 1 if any threshold not met, blocking rollout.
+### Stage 3: Quality Gate (Shadow Evaluation)
 
-## Resilience Patterns
+Before deploying, the pipeline validates:
 
-### Checkpoint (`scripts/etl/checkpoint.py`)
+| Metric | Threshold | Purpose |
+|--------|-----------|---------|
+| Core Overlap | >85% | Ensure stable technologies persist |
+| Leader Coverage | >95% | Verify data completeness |
+| Watchlist Recall | >80% | Maintain tracking continuity |
+| LLM Reduction | >0% | Track efficiency improvements |
 
-Saves pipeline state after each phase:
-- Current phase name
-- Cursor position
-- Completed phases list
+**If any metric fails:**
+- Pipeline stops
+- Previous version preserved
+- Error logged to artifacts/shadow_eval.json
 
-On resume, pipeline continues from last checkpoint.
+### Stage 4: Deployment
 
-### Rate Limiter (`scripts/etl/rate_limiter.py`)
-
-Token bucket algorithm:
-- Configurable requests per minute
-- Per-source token buckets
-- Automatic throttling
-
-### Circuit Breaker (`scripts/etl/rate_limiter.py`)
-
-Failure detection for external APIs:
-- Tracks failure counts
-- Opens circuit after threshold
-- Half-open state for recovery
-- Auto-reset after timeout
-
-## Data Flow
-
-### Standard Flow
-```
-1. Load Config (config.yaml)
-2. For each enabled source:
-   a. Fetch raw data
-   b. Normalize to TechnologySignal
-3. Deduplicate by name
-4. Compute deterministic market score from external signals
-5. Assign rings with hysteresis + guardrails
-6. Classify quadrants/descriptions and apply strategic filtering
-7. Generate output files (public + rolling history)
-8. Save checkpoint
-```
-
-### Selective LLM Flow (Optimized)
-```
-1. Load Config (config.yaml)
-2. For each enabled source:
-   a. Fetch raw data
-   b. Normalize to TechnologySignal
-3. Deduplicate by name
-4. Compute deterministic market score from external signals
-5. Select candidates (core/watchlist/borderline)
-6. Classify selectively:
-   a. Core + Watchlist: Deterministic (no LLM)
-   b. Borderline: LLM classification (respects budget)
-7. Assign rings with hysteresis + guardrails
-8. Apply strategic filtering
-9. Generate output files (public + rolling history)
-10. Save checkpoint
-11. (Shadow mode) Compare against baseline, validate thresholds
-```
+On success:
+1. Commit data.ai.json
+2. Trigger GitHub Pages rebuild
+3. Deploy updated radar
 
 ## Configuration
 
-`scripts/config.yaml` controls all pipeline behavior:
+### Environment Variables
 
-```yaml
-sources:
-  github_trending:
-    enabled: true
-    language: all
-    time_range: daily
+```bash
+# GitHub
+GH_TOKEN=ghp_xxx                          # Personal access token
 
-classification:
-  model: hf:MiniMaxAI/MiniMax-M2.5
-  temperature: 0.2
-  timeout: 30
-  max_retries: 3
+# AI Classification (Synthetic)
+SYNTHETIC_API_KEY=syn_xxx                 # API key
+SYNTHETIC_API_URL=https://api.synthetic.new/v1
+SYNTHETIC_MODEL=hf:MiniMaxAI/MiniMax-M2.5
 
-filtering:
-  min_confidence: 0.5
-  auto_ignore: []
-  include_only: []
-
-rate_limit:
-  requests_per_minute: 30
-
-checkpoint:
-  enabled: true
-  interval: 100
+# Pipeline Filters
+MIN_STARS=100                             # Minimum GitHub stars
+HN_MIN_POINTS=10                          # Minimum HN points
+MAX_TECHNOLOGIES=50                       # Maximum technologies to track
 ```
 
-## File Structure
+## Data Schema
+
+### Technology Object
+
+```json
+{
+  "id": "string",           // Unique identifier
+  "name": "string",         // Display name
+  "description": "string",  // Short description
+  "quadrant": "string",     // platforms|techniques|tools|languages
+  "ring": "string",         // adopt|trial|assess|hold
+  "githubStars": number,    // Star count
+  "hnMentions": number,     // HN mentions
+  "confidence": number,     // AI confidence (0-1)
+  "trend": "string",        // up|down|stable|new
+  "moved": number,          // Ring movement (+/-)
+  "updatedAt": "ISO8601"
+}
+```
+
+### Radar Output
+
+```json
+{
+  "technologies": [...],     // Array of Technology objects
+  "watchlist": [...],        // Emerging technologies
+  "meta": {
+    "generatedAt": "ISO8601",
+    "totalTechnologies": number,
+    "aiClassified": number
+  }
+}
+```
+
+## Error Handling
+
+### Fallback Strategy
+
+When AI classification fails:
+1. Retry with exponential backoff (3 attempts)
+2. Use rule-based classification (keywords)
+3. Mark with `confidence: 0` and flag for review
+
+### Data Persistence
+
+All intermediate states saved:
+- `artifacts/baseline.json` - Previous run
+- `artifacts/shadow_eval.json` - Quality report
+- `artifacts/etl.log` - Execution logs
+
+## Performance
+
+### Typical Run Metrics
+
+- **Duration**: 2-3 minutes
+- **LLM Calls**: ~50 (depends on new technologies)
+- **Data Points**: 40-50 technologies
+- **Success Rate**: >95%
+
+### Optimization Strategies
+
+1. **Caching**: Classify only new/changed technologies
+2. **Batching**: Group API calls
+3. **Parallelization**: GitHub + HN in parallel
+4. **Rate Limiting**: Respect API quotas
+
+## Monitoring
+
+### Key Metrics
 
 ```
-scripts/
-├── etl/
-│   ├── __init__.py       # Package entry
-│   ├── config.py         # Config loading
-│   ├── models.py         # Data models
-│   ├── pipeline.py       # Main pipeline
-│   ├── normalizer.py     # Data normalization
-│   ├── classifier.py     # AI classification
-│   ├── output_generator.py
-│   ├── checkpoint.py     # State persistence
-│   ├── rate_limiter.py   # Rate limiting + circuit breaker
-│   ├── temporal_analyzer.py
-│   └── sources/          # Source implementations
-├── main.py              # CLI entry point
-└── config.yaml          # Configuration
+etl.pipeline.duration_ms
+etl.pipeline.technologies.count
+etl.ai.classification.confidence.avg
+etl.shadow_eval.core_overlap
+github.api.rate_limit.remaining
 ```
+
+### Alerts
+
+Trigger on:
+- Core overlap < 85%
+- AI classification unavailable
+- GitHub API rate limit < 10%
+- Pipeline duration > 10 minutes
+
+## Security
+
+### Secrets Management
+
+All credentials stored in GitHub Secrets:
+- `GH_TOKEN` - GitHub API
+- `SYNTHETIC_API_KEY` - AI service
+- Never commit to repository
+
+### Data Sanitization
+
+- Remove PII from descriptions
+- Validate all inputs
+- Escape special characters
+- Limit description length
+
+## Future Improvements
+
+### Planned Features
+
+1. **Google Trends Integration** - Add search volume data
+2. **Twitter/X Mentions** - Social sentiment
+3. **Reddit Discussions** - Community interest
+4. **Stack Overflow** - Developer questions
+5. **NPM/DockerHub** - Package metrics
+
+### Technical Debt
+
+- [ ] Implement incremental updates
+- [ ] Add retry logic for flaky APIs
+- [ ] Cache AI classifications locally
+- [ ] Parallel AI classification
+- [ ] Real-time webhook support
+
+---
+
+**Version**: 1.0.0  
+**Last Updated**: 2026-02-26  
+**Maintainer**: Qualtio Engineering
