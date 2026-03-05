@@ -13,24 +13,41 @@ export function filterTechnologies(
   searchQuery: string,
   filters: RadarFilterState,
 ): AITechnology[] {
+  const normalizedSearch = searchQuery.trim();
+  const hasRingFilters = filters.rings.length > 0;
+  const hasQuadrantFilters = filters.quadrants.length > 0;
+  const hasTrendFilters = filters.trends.length > 0;
+  const minConfidence = filters.minConfidence;
+  const hasConfidenceFilter = minConfidence !== null;
+
+  if (
+    normalizedSearch.length === 0 &&
+    !hasRingFilters &&
+    !hasQuadrantFilters &&
+    !hasTrendFilters &&
+    !hasConfidenceFilter
+  ) {
+    return technologies;
+  }
+
   return technologies.filter((technology) => {
-    if (!matchesTechnologySearch(technology, searchQuery)) {
+    if (!matchesTechnologySearch(technology, normalizedSearch)) {
       return false;
     }
 
-    if (filters.rings.length > 0 && !filters.rings.includes(technology.ring)) {
+    if (hasRingFilters && !filters.rings.includes(technology.ring)) {
       return false;
     }
 
-    if (filters.quadrants.length > 0 && !filters.quadrants.includes(technology.quadrant)) {
+    if (hasQuadrantFilters && !filters.quadrants.includes(technology.quadrant)) {
       return false;
     }
 
-    if (filters.trends.length > 0 && !filters.trends.includes(technology.trend)) {
+    if (hasTrendFilters && !filters.trends.includes(technology.trend)) {
       return false;
     }
 
-    if (filters.minConfidence !== null && technology.confidence < filters.minConfidence) {
+    if (minConfidence !== null && technology.confidence < minConfidence) {
       return false;
     }
 

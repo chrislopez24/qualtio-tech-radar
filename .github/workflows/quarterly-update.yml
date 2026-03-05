@@ -11,7 +11,10 @@ jobs:
     timeout-minutes: 120
     permissions:
       contents: write
-    
+    outputs:
+      shadow_gate_status: ${{ steps.shadow-status.outputs.gate_status }}
+      shadow_gate_pass: ${{ steps.shadow-status.outputs.gate_pass }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -46,6 +49,7 @@ jobs:
           
       - name: Shadow Evaluation - Quality Gate
         id: shadow-eval
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           SYNTHETIC_API_KEY: ${{ secrets.SYNTHETIC_API_KEY }}
@@ -68,7 +72,28 @@ jobs:
             --shadow-threshold-watchlist-recall 0.80 \
             --shadow-threshold-llm-reduction 0.00
 
-          echo "✅ All quality thresholds met - proceeding with rollout"
+      - name: Resolve Shadow Gate Status
+        id: shadow-status
+        if: always()
+        run: |
+          if [ -f "artifacts/shadow_eval.json" ]; then
+            gate_status=$(python -c "import json;from pathlib import Path;report=json.loads(Path('artifacts/shadow_eval.json').read_text());print(str(report.get('gate_status') or 'fail').strip().lower())")
+          else
+            gate_status="fail"
+          fi
+
+          echo "gate_status=${gate_status}" >> "$GITHUB_OUTPUT"
+
+          if [ "$gate_status" = "pass" ]; then
+            echo "gate_pass=true" >> "$GITHUB_OUTPUT"
+            echo "Shadow gate PASS - ETL data eligible for commit"
+          else
+            echo "gate_pass=false" >> "$GITHUB_OUTPUT"
+            echo "Shadow gate ${gate_status} - restoring validated data snapshot"
+            if [ -f "artifacts/baseline.json" ]; then
+              cp artifacts/baseline.json src/data/data.ai.json
+            fi
+          fi
           
       - name: Upload Shadow Eval Artifacts
         if: always()
@@ -81,6 +106,7 @@ jobs:
           if-no-files-found: warn
           
       - name: Commit sanitized data
+        if: ${{ steps.shadow-status.outputs.gate_pass == 'true' }}
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"

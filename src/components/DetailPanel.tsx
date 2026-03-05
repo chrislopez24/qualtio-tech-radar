@@ -30,6 +30,20 @@ function formatNumber(num: number): string {
   return num.toString();
 }
 
+function renderStringListSection(title: string, items?: string[]) {
+  if (!items?.length) return null;
+  return (
+    <section>
+      <h4 className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{title}</h4>
+      <ul className="mt-1 list-disc space-y-1 pl-4 text-muted-foreground">
+        {items.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export function DetailPanel({ technology, open, onClose }: DetailPanelProps) {
   const isOpen = open && technology !== null;
   if (!technology) {
@@ -132,27 +146,9 @@ export function DetailPanel({ technology, open, onClose }: DetailPanelProps) {
                       </section>
                     )}
 
-                    {aiTechnology?.useCases?.length ? (
-                      <section>
-                        <h4 className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Use cases</h4>
-                        <ul className="mt-1 list-disc space-y-1 pl-4 text-muted-foreground">
-                          {aiTechnology.useCases.map((item) => (
-                            <li key={item}>{item}</li>
-                          ))}
-                        </ul>
-                      </section>
-                    ) : null}
+                    {renderStringListSection('Use cases', aiTechnology?.useCases)}
 
-                    {aiTechnology?.avoidWhen?.length ? (
-                      <section>
-                        <h4 className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Avoid when</h4>
-                        <ul className="mt-1 list-disc space-y-1 pl-4 text-muted-foreground">
-                          {aiTechnology.avoidWhen.map((item) => (
-                            <li key={item}>{item}</li>
-                          ))}
-                        </ul>
-                      </section>
-                    ) : null}
+                    {renderStringListSection('Avoid when', aiTechnology?.avoidWhen)}
 
                     {aiTechnology?.risk && (
                       <section>

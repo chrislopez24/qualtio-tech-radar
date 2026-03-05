@@ -10,7 +10,7 @@ AI-powered Technology Radar with automated weekly updates from GitHub, Hacker Ne
 - **Dual Mode**: Manual curation mode + AI-powered auto-classification mode
 - **Selective LLM Optimization**: 70%+ reduction in LLM calls via intelligent candidate selection (core/watchlist/borderline)
 - **Drift-Aware Caching**: Reuse LLM decisions across runs with automatic invalidation
-- **Shadow Quality Evaluation**: Validate optimized pipeline against baseline with go/no-go gates
+- **Shadow Quality Evaluation**: Validate optimized pipeline against baseline with pass/warn/fail quality gate outcomes
 - **Glassmorphism UI**: Modern, responsive design with dark theme support
 - **Automated Data Pipeline**: Weekly updates via GitHub Actions
 - **Market-Signal Ringing**: External momentum scoring (GitHub + HN + Google Trends) with anti-collapse guardrails
@@ -186,6 +186,8 @@ The pipeline includes:
 - **Circuit breaker**: Automatically skips failing sources
 - **Retry logic**: 3 retries with exponential backoff
 - **Ring guardrails**: Hysteresis and max-ring-ratio fallback rebalance to avoid all-`adopt`
+- **Strict leader quality**: `leader_coverage` remains strict, with 3-run stability confirmation for leader-set changes
+- **Decoupled deploy behavior**: frontend deploy can continue with last validated `src/data/data.ai.json` when ETL gate is warn/fail
 
 ### Testing
 

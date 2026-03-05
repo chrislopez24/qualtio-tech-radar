@@ -52,6 +52,20 @@ function reviewBadgeClass(tone: 'neutral' | 'warning' | 'danger'): string {
   return 'border-border/60 bg-background/70 text-muted-foreground';
 }
 
+function renderActionBadges(technology: AITechnology) {
+  const reviewStatus = getReviewStatus(technology.nextReviewAt);
+
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+      {technology.owner ? <span className="rounded border border-border/60 px-1.5 py-0.5">Owner: {technology.owner}</span> : null}
+      {technology.nextStep ? <span className="rounded border border-border/60 px-1.5 py-0.5">Action: {technology.nextStep}</span> : null}
+      <span className={`rounded border px-1.5 py-0.5 ${reviewBadgeClass(reviewStatus.tone)}`}>
+        {reviewStatus.label}
+      </span>
+    </div>
+  );
+}
+
 export function WatchlistPanel({ watchlist, meta, onSelectTechnology }: WatchlistPanelProps) {
   const pipeline = meta?.pipeline;
   const shadow = meta?.shadowGate;
@@ -67,33 +81,23 @@ export function WatchlistPanel({ watchlist, meta, onSelectTechnology }: Watchlis
           <p className="text-sm text-muted-foreground">No watchlist entries in current run.</p>
         ) : (
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-1">
-            {watchlist.map((technology) => {
-              const reviewStatus = getReviewStatus(technology.nextReviewAt);
+            {watchlist.map((technology) => (
+              <button
+                key={technology.id}
+                type="button"
+                onClick={() => onSelectTechnology(technology)}
+                className="rounded-xl border border-border/60 bg-background/70 px-3 py-2 text-left transition-colors hover:bg-muted/60"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-sm font-medium leading-tight">{technology.name}</p>
+                  <span className="text-xs text-muted-foreground">{getRingById(technology.ring).name}</span>
+                </div>
 
-              return (
-                <button
-                  key={technology.id}
-                  type="button"
-                  onClick={() => onSelectTechnology(technology)}
-                  className="rounded-xl border border-border/60 bg-background/70 px-3 py-2 text-left transition-colors hover:bg-muted/60"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-medium leading-tight">{technology.name}</p>
-                    <span className="text-xs text-muted-foreground">{getRingById(technology.ring).name}</span>
-                  </div>
+                <p className="mt-1 text-xs text-muted-foreground">{getQuadrantById(technology.quadrant).name}</p>
 
-                  <p className="mt-1 text-xs text-muted-foreground">{getQuadrantById(technology.quadrant).name}</p>
-
-                  <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
-                    {technology.owner ? <span className="rounded border border-border/60 px-1.5 py-0.5">Owner: {technology.owner}</span> : null}
-                    {technology.nextStep ? <span className="rounded border border-border/60 px-1.5 py-0.5">Action: {technology.nextStep}</span> : null}
-                    <span className={`rounded border px-1.5 py-0.5 ${reviewBadgeClass(reviewStatus.tone)}`}>
-                      {reviewStatus.label}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
+                {renderActionBadges(technology)}
+              </button>
+            ))}
           </div>
         )}
       </div>

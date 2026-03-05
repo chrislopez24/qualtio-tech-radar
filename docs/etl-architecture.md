@@ -116,26 +116,42 @@ Quality metrics validate selective LLM effectiveness:
 
 ### Stage 3: Quality Gate (Shadow Evaluation)
 
-Before deploying, the pipeline validates:
+Before promoting ETL candidate data, the pipeline validates:
 
 | Metric | Threshold | Purpose |
 |--------|-----------|---------|
 | Core Overlap | >85% | Ensure stable technologies persist |
-| Leader Coverage | >95% | Verify data completeness |
+| Leader Coverage | >95% | Verify data completeness for leaders |
 | Watchlist Recall | >80% | Maintain tracking continuity |
 | LLM Reduction | >0% | Track efficiency improvements |
 
-**If any metric fails:**
-- Pipeline stops
-- Previous version preserved
-- Error logged to artifacts/shadow_eval.json
+#### Leader stability policy (strict + temporal inertia)
+
+- Leader threshold remains strict (`leader_coverage > 95%`).
+- Leader-set changes use **3-run consecutive confirmation** before promotion.
+- Shadow state tracks:
+  - `stable_leaders`
+  - `candidate_changes` (added/removed + consecutive count)
+  - promotion events
+
+This avoids one-run noise while allowing sustained real changes.
+
+#### Gate statuses
+
+- `PASS`: thresholds met, no blocking instability
+- `WARN`: thresholds met but leader changes are still candidate (<3 runs)
+- `FAIL`: threshold breach or quality regression
+
+Shadow report (`artifacts/shadow_eval.json`) includes gate status and transition summary for auditability.
 
 ### Stage 4: Deployment
 
-On success:
-1. Commit data.ai.json
-2. Trigger GitHub Pages rebuild
-3. Deploy updated radar
+Workflow behavior is decoupled:
+
+1. ETL candidate run + shadow eval always execute.
+2. Candidate data is committed only when shadow gate is `PASS`.
+3. If gate is `WARN`/`FAIL`, workflow restores validated baseline data.
+4. Frontend build/deploy can continue using validated repository data (`src/data/data.ai.json`).
 
 ## Configuration
 

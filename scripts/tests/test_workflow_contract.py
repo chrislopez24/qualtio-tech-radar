@@ -107,3 +107,24 @@ def test_quarterly_workflow_supports_shadow_eval_gate():
         "Workflow must reference baseline for comparison"
     assert "core_overlap" in yml.lower() or "leader_coverage" in yml.lower(), \
         "Workflow must check quality thresholds"
+
+
+def test_quarterly_workflow_exposes_shadow_status_outputs():
+    """Workflow should expose shadow gate outputs for downstream control"""
+    yml = Path(".github/workflows/quarterly-update.yml").read_text()
+    assert "shadow_gate_status" in yml
+    assert "shadow_gate_pass" in yml
+    assert "Resolve Shadow Gate Status" in yml
+
+
+def test_quarterly_workflow_commits_data_only_on_gate_pass():
+    """Data commit step should be gated by shadow gate pass"""
+    yml = Path(".github/workflows/quarterly-update.yml").read_text()
+    assert "if: ${{ steps.shadow-status.outputs.gate_pass == 'true' }}" in yml
+
+
+def test_quarterly_workflow_restores_validated_data_on_gate_non_pass():
+    """Workflow should restore validated baseline data when gate is not pass"""
+    yml = Path(".github/workflows/quarterly-update.yml").read_text()
+    assert "restoring validated data snapshot" in yml
+    assert "cp artifacts/baseline.json src/data/data.ai.json" in yml

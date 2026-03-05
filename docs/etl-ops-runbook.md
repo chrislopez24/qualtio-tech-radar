@@ -97,6 +97,21 @@ ghe secret set SYNTHETIC_API_KEY --repo chrislopez24/qualtio-tech-radar
 3. If transient: Re-run pipeline
 4. If persistent: Investigate data source issues
 
+### Issue: "Leader coverage failed in one run"
+
+**Cause**: Potential volatility in leader set for current candidate run
+
+**Policy**:
+- Keep strict threshold (`leader_coverage >= 0.95`)
+- Use 3-run inertia for leader transitions
+- Do not promote candidate leader changes until sustained
+
+**Operational behavior**:
+1. Read `gate_status` in `artifacts/shadow_eval.json` (`pass|warn|fail`)
+2. If `warn`, keep monitoring next runs (candidate changes in report)
+3. If `fail`, investigate data quality before approving ETL update
+4. Validated `src/data/data.ai.json` remains production source unless gate is `pass`
+
 ### Issue: GitHub Pages shows 404
 
 **Cause**: Pages not enabled or basePath misconfiguration
@@ -170,6 +185,20 @@ Control caching behavior via `cache_enabled` and `cache_drift_threshold`:
 
 - **cache_enabled**: Enable/disable classification caching
 - **cache_drift**: Maximum allowed drift before cache invalidation
+
+## Shadow Gate Outcomes and Deploy Behavior
+
+- **PASS**
+  - ETL candidate data is eligible for commit
+  - deploy proceeds with new validated data
+- **WARN**
+  - leader drift detected but not yet stable (<3 runs)
+  - ETL candidate data is not promoted
+  - frontend can still build/deploy using last validated `data.ai.json`
+- **FAIL**
+  - threshold breach or regression
+  - ETL candidate data is not promoted
+  - frontend can still build/deploy using last validated `data.ai.json`
 
 ## Configuration Changes
 

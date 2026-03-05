@@ -7,7 +7,7 @@ pipeline produces similar results to the baseline (full LLM) pipeline.
 import json
 import logging
 from pathlib import Path
-from typing import Dict, Any, List, Set
+from typing import Dict, Any, List, Set, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +57,98 @@ def _extract_llm_calls(payload: Dict[str, Any], *, assume_full_llm_when_missing:
     return observed_calls
 
 
+LEADER_PROMOTION_RUNS = 3
+
+
+def select_top_leaders(technologies: List[Dict[str, Any]], top_n: int = 5) -> Set[str]:
+    """Select leader IDs using market-score ranking with adopt-ring fallback."""
+    scored_leaders: List[Tuple[str, float]] = []
+    for tech in technologies:
+        tech_id = tech.get("id")
+        if not tech_id:
+            continue
+        try:
+            score = float(tech.get("marketScore", 0.0))
+        except Exception:
+            score = 0.0
+        scored_leaders.append((str(tech_id), score))
+
+    if scored_leaders:
+        scored_leaders.sort(key=lambda pair: pair[1], reverse=True)
+        bounded_top_n = max(1, min(top_n, len(scored_leaders)))
+        return {tech_id for tech_id, _ in scored_leaders[:bounded_top_n]}
+
+    return {str(t.get("id")) for t in technologies if t.get("ring") == "adopt" and t.get("id")}
+
+
+def update_leader_stability_state(
+    previous_state: Dict[str, Any] | None,
+    observed_leaders: Set[str],
+    run_id: str,
+    promotion_runs: int = LEADER_PROMOTION_RUNS,
+) -> Dict[str, Any]:
+    """Update stable leader set using consecutive-run candidate promotion.
+
+    Rules:
+    - bootstrap: if no prior stable leaders, initialize with observed leaders
+    - candidate changes are tracked per leader_id + change_type
+    - candidate count increments only when same change is observed in consecutive evaluations
+    - candidates missing in current run are dropped (reset)
+    - changes are promoted into stable leaders once count reaches promotion_runs
+    """
+    prev_state = previous_state or {}
+    prev_stable = set(prev_state.get("stable_leaders") or [])
+    if not prev_stable:
+        prev_stable = set(observed_leaders)
+
+    prev_candidates: Dict[str, Dict[str, Any]] = dict(prev_state.get("candidate_changes") or {})
+
+    added = observed_leaders - prev_stable
+    removed = prev_stable - observed_leaders
+
+    observed_change_keys: Dict[str, Tuple[str, str]] = {}
+    for leader_id in sorted(added):
+        observed_change_keys[f"{leader_id}:added"] = (leader_id, "added")
+    for leader_id in sorted(removed):
+        observed_change_keys[f"{leader_id}:removed"] = (leader_id, "removed")
+
+    next_candidates: Dict[str, Dict[str, Any]] = {}
+    for key, (leader_id, change_type) in observed_change_keys.items():
+        previous = prev_candidates.get(key)
+        previous_count = int(previous.get("consecutive_count", 0)) if previous else 0
+        next_candidates[key] = {
+            "leader_id": leader_id,
+            "change_type": change_type,
+            "consecutive_count": previous_count + 1,
+            "first_seen_run": previous.get("first_seen_run", run_id) if previous else run_id,
+            "last_seen_run": run_id,
+        }
+
+    next_stable = set(prev_stable)
+    promoted: List[Dict[str, str]] = []
+    remaining_candidates: Dict[str, Dict[str, Any]] = {}
+
+    for key, candidate in next_candidates.items():
+        if int(candidate.get("consecutive_count", 0)) >= promotion_runs:
+            leader_id = str(candidate["leader_id"])
+            change_type = str(candidate["change_type"])
+            if change_type == "added":
+                next_stable.add(leader_id)
+            else:
+                next_stable.discard(leader_id)
+            promoted.append({"leader_id": leader_id, "change_type": change_type})
+        else:
+            remaining_candidates[key] = candidate
+
+    return {
+        "stable_leaders": sorted(next_stable),
+        "candidate_changes": remaining_candidates,
+        "promoted_changes": promoted,
+        "last_run_id": run_id,
+        "promotion_runs": promotion_runs,
+    }
+
+
 def compare_outputs(baseline: Dict[str, Any], optimized: Dict[str, Any]) -> Dict[str, Any]:
     """Compare baseline and optimized outputs and compute quality metrics.
 
@@ -94,25 +186,7 @@ def compare_outputs(baseline: Dict[str, Any], optimized: Dict[str, Any]) -> Dict
     added_in_optimized = sorted(optimized_ids - baseline_ids)
 
     # Compute leader coverage.
-    # Prefer top market-score leaders; fallback to adopt ring leaders.
-    scored_leaders = []
-    for tech in baseline_techs:
-        tech_id = tech.get("id")
-        if not tech_id:
-            continue
-        try:
-            score = float(tech.get("marketScore", 0.0))
-        except Exception:
-            score = 0.0
-        scored_leaders.append((str(tech_id), score))
-
-    if scored_leaders:
-        scored_leaders.sort(key=lambda pair: pair[1], reverse=True)
-        top_n = max(1, min(5, len(scored_leaders)))
-        baseline_leaders = {tech_id for tech_id, _ in scored_leaders[:top_n]}
-    else:
-        baseline_leaders = {t.get("id") for t in baseline_techs if t.get("ring") == "adopt" and t.get("id")}
-
+    baseline_leaders = select_top_leaders(baseline_techs)
     leader_coverage = len(baseline_leaders & optimized_ids) / len(baseline_leaders) if baseline_leaders else 1.0
 
     # Compute watchlist recall (prefer explicit watchlist section, fallback to trending-up items)
@@ -188,6 +262,63 @@ def write_report(report: Dict[str, Any], output_path: Path) -> None:
     logger.info("Shadow eval report written to %s", output_path)
 
 
+def classify_quality_gate(
+    report: Dict[str, Any],
+    thresholds: Dict[str, float],
+    leader_state: Dict[str, Any] | None = None,
+) -> Dict[str, Any]:
+    """Classify quality gate status and provide operational guidance."""
+    failed_metrics: Dict[str, Dict[str, float]] = {}
+    for metric, min_value in thresholds.items():
+        actual_value = float(report.get(metric, 0.0))
+        if actual_value < min_value:
+            failed_metrics[metric] = {
+                "required": float(min_value),
+                "actual": actual_value,
+            }
+
+    candidate_changes = (leader_state or {}).get("candidate_changes") or {}
+    promoted_changes = (leader_state or {}).get("promoted_changes") or []
+
+    if failed_metrics:
+        status = "fail"
+        next_action = "investigate-quality-regression"
+    elif candidate_changes:
+        status = "warn"
+        next_action = "await-stable-leader-transition"
+    else:
+        status = "pass"
+        next_action = "rollout-approved"
+
+    return {
+        "status": status,
+        "next_action": next_action,
+        "failed_metrics": failed_metrics,
+        "leader_transition_summary": {
+            "candidate_count": len(candidate_changes),
+            "promoted_count": len(promoted_changes),
+        },
+    }
+
+
+def build_shadow_eval_report(
+    metrics_report: Dict[str, Any],
+    thresholds: Dict[str, float],
+    leader_state: Dict[str, Any] | None = None,
+) -> Dict[str, Any]:
+    """Merge metrics, gate classification, and leader-state context."""
+    gate = classify_quality_gate(metrics_report, thresholds, leader_state)
+
+    merged = dict(metrics_report)
+    merged["gate_status"] = gate["status"]
+    merged["next_action"] = gate["next_action"]
+    merged["failed_metrics"] = gate["failed_metrics"]
+    merged["leader_transition_summary"] = gate["leader_transition_summary"]
+    merged["candidate_changes"] = (leader_state or {}).get("candidate_changes", {})
+    merged["stable_leaders"] = (leader_state or {}).get("stable_leaders", [])
+    return merged
+
+
 def meets_quality_thresholds(report: Dict[str, Any], thresholds: Dict[str, float]) -> bool:
     """Check if report meets all quality thresholds.
 
@@ -198,16 +329,16 @@ def meets_quality_thresholds(report: Dict[str, Any], thresholds: Dict[str, float
     Returns:
         True if all thresholds are met, False otherwise
     """
-    for metric, min_value in thresholds.items():
-        actual_value = report.get(metric, 0.0)
-        if actual_value < min_value:
+    gate = classify_quality_gate(report, thresholds)
+    if gate["status"] == "fail":
+        for metric, values in gate["failed_metrics"].items():
             logger.warning(
                 "Quality threshold not met | metric=%s required=%s actual=%s",
                 metric,
-                min_value,
-                actual_value,
+                values["required"],
+                values["actual"],
             )
-            return False
+        return False
 
     logger.info("All quality thresholds met")
     return True

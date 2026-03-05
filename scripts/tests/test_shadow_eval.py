@@ -195,3 +195,224 @@ def test_shadow_eval_uses_classified_as_baseline_floor_when_present():
 
     report = compare_outputs(baseline, optimized)
     assert report["llm_call_reduction"] == 0.65
+
+
+def test_leader_stability_bootstraps_stable_set_from_first_run():
+    from etl.shadow_eval import update_leader_stability_state
+
+    state = update_leader_stability_state(
+        previous_state=None,
+        observed_leaders={"react", "kubernetes"},
+        run_id="run-1",
+    )
+
+    assert set(state["stable_leaders"]) == {"react", "kubernetes"}
+    assert state["candidate_changes"] == {}
+    assert state["promoted_changes"] == []
+
+
+def test_leader_stability_tracks_new_candidate_with_count_one():
+    from etl.shadow_eval import update_leader_stability_state
+
+    previous_state = {
+        "stable_leaders": ["react", "kubernetes"],
+        "candidate_changes": {},
+    }
+
+    state = update_leader_stability_state(
+        previous_state=previous_state,
+        observed_leaders={"react", "kubernetes", "bun"},
+        run_id="run-2",
+    )
+
+    candidate = state["candidate_changes"]["bun:added"]
+    assert candidate["consecutive_count"] == 1
+    assert candidate["first_seen_run"] == "run-2"
+    assert candidate["last_seen_run"] == "run-2"
+    assert "bun" not in state["stable_leaders"]
+
+
+def test_leader_stability_increments_count_for_consecutive_change():
+    from etl.shadow_eval import update_leader_stability_state
+
+    previous_state = {
+        "stable_leaders": ["react", "kubernetes"],
+        "candidate_changes": {
+            "bun:added": {
+                "leader_id": "bun",
+                "change_type": "added",
+                "consecutive_count": 1,
+                "first_seen_run": "run-2",
+                "last_seen_run": "run-2",
+            }
+        },
+    }
+
+    state = update_leader_stability_state(
+        previous_state=previous_state,
+        observed_leaders={"react", "kubernetes", "bun"},
+        run_id="run-3",
+    )
+
+    assert state["candidate_changes"]["bun:added"]["consecutive_count"] == 2
+    assert "bun" not in state["stable_leaders"]
+
+
+def test_leader_stability_resets_interrupted_candidate_changes():
+    from etl.shadow_eval import update_leader_stability_state
+
+    previous_state = {
+        "stable_leaders": ["react", "kubernetes"],
+        "candidate_changes": {
+            "bun:added": {
+                "leader_id": "bun",
+                "change_type": "added",
+                "consecutive_count": 2,
+                "first_seen_run": "run-2",
+                "last_seen_run": "run-3",
+            }
+        },
+    }
+
+    state = update_leader_stability_state(
+        previous_state=previous_state,
+        observed_leaders={"react", "kubernetes"},
+        run_id="run-4",
+    )
+
+    assert state["candidate_changes"] == {}
+    assert set(state["stable_leaders"]) == {"react", "kubernetes"}
+
+
+def test_leader_stability_promotes_change_after_three_consecutive_runs():
+    from etl.shadow_eval import update_leader_stability_state
+
+    state_run_2 = {
+        "stable_leaders": ["react", "kubernetes"],
+        "candidate_changes": {
+            "bun:added": {
+                "leader_id": "bun",
+                "change_type": "added",
+                "consecutive_count": 1,
+                "first_seen_run": "run-2",
+                "last_seen_run": "run-2",
+            }
+        },
+    }
+
+    state_run_3 = update_leader_stability_state(
+        previous_state=state_run_2,
+        observed_leaders={"react", "kubernetes", "bun"},
+        run_id="run-3",
+    )
+
+    state_run_4 = update_leader_stability_state(
+        previous_state=state_run_3,
+        observed_leaders={"react", "kubernetes", "bun"},
+        run_id="run-4",
+    )
+
+    assert set(state_run_4["stable_leaders"]) == {"react", "kubernetes", "bun"}
+    assert state_run_4["candidate_changes"] == {}
+    assert {"leader_id": "bun", "change_type": "added"} in state_run_4["promoted_changes"]
+
+
+def test_quality_gate_classifies_as_pass_when_thresholds_met_and_no_candidates():
+    from etl.shadow_eval import classify_quality_gate
+
+    report = {
+        "core_overlap": 0.95,
+        "leader_coverage": 1.0,
+        "watchlist_recall": 1.0,
+        "llm_call_reduction": 0.8,
+    }
+    thresholds = {
+        "core_overlap": 0.85,
+        "leader_coverage": 0.95,
+        "watchlist_recall": 0.80,
+        "llm_call_reduction": 0.6,
+    }
+
+    gate = classify_quality_gate(report, thresholds, leader_state={"candidate_changes": {}})
+    assert gate["status"] == "pass"
+    assert gate["next_action"] == "rollout-approved"
+
+
+def test_quality_gate_classifies_as_warn_when_candidate_changes_exist():
+    from etl.shadow_eval import classify_quality_gate
+
+    report = {
+        "core_overlap": 0.95,
+        "leader_coverage": 1.0,
+        "watchlist_recall": 1.0,
+        "llm_call_reduction": 0.8,
+    }
+    thresholds = {
+        "core_overlap": 0.85,
+        "leader_coverage": 0.95,
+        "watchlist_recall": 0.80,
+        "llm_call_reduction": 0.6,
+    }
+    leader_state = {
+        "candidate_changes": {
+            "bun:added": {
+                "leader_id": "bun",
+                "change_type": "added",
+                "consecutive_count": 2,
+            }
+        },
+        "promoted_changes": [],
+    }
+
+    gate = classify_quality_gate(report, thresholds, leader_state=leader_state)
+    assert gate["status"] == "warn"
+    assert gate["next_action"] == "await-stable-leader-transition"
+
+
+def test_quality_gate_classifies_as_fail_when_any_threshold_breaches():
+    from etl.shadow_eval import classify_quality_gate
+
+    report = {
+        "core_overlap": 0.95,
+        "leader_coverage": 0.6,
+        "watchlist_recall": 1.0,
+        "llm_call_reduction": 0.8,
+    }
+    thresholds = {
+        "core_overlap": 0.85,
+        "leader_coverage": 0.95,
+        "watchlist_recall": 0.80,
+        "llm_call_reduction": 0.6,
+    }
+
+    gate = classify_quality_gate(report, thresholds, leader_state={"candidate_changes": {}})
+    assert gate["status"] == "fail"
+    assert "leader_coverage" in gate["failed_metrics"]
+
+
+def test_build_shadow_eval_report_includes_gate_and_leader_state_fields():
+    from etl.shadow_eval import build_shadow_eval_report
+
+    metrics = {
+        "core_overlap": 0.95,
+        "leader_coverage": 1.0,
+        "watchlist_recall": 1.0,
+        "llm_call_reduction": 0.8,
+    }
+    thresholds = {
+        "core_overlap": 0.85,
+        "leader_coverage": 0.95,
+        "watchlist_recall": 0.80,
+        "llm_call_reduction": 0.6,
+    }
+    leader_state = {
+        "stable_leaders": ["react", "kubernetes"],
+        "candidate_changes": {},
+        "promoted_changes": [],
+    }
+
+    report = build_shadow_eval_report(metrics, thresholds, leader_state=leader_state)
+
+    assert report["gate_status"] == "pass"
+    assert report["stable_leaders"] == ["react", "kubernetes"]
+    assert "leader_transition_summary" in report

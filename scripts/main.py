@@ -20,7 +20,15 @@ from etl.pipeline import RadarPipeline
 from etl.config import ETLConfig, load_etl_config
 from etl.checkpoint import safe_json_write
 from etl.output_generator import sanitize_for_public
-from etl.shadow_eval import compare_outputs, write_report, meets_quality_thresholds, DEFAULT_THRESHOLDS
+from etl.shadow_eval import (
+    compare_outputs,
+    write_report,
+    build_shadow_eval_report,
+    classify_quality_gate,
+    update_leader_stability_state,
+    select_top_leaders,
+    DEFAULT_THRESHOLDS,
+)
 
 
 def run_main_for_test():
@@ -55,7 +63,7 @@ def main():
         config = load_etl_config(str(Path(__file__).parent / "config.yaml"))
         public_output_path = Path(config.output.public_file)
 
-        def build_shadow_summary(report: dict[str, float], status: str) -> dict[str, object]:
+        def build_shadow_summary(report: dict[str, float], status: str, leader_state: dict[str, object] | None = None) -> dict[str, object]:
             return {
                 "status": status,
                 "coreOverlap": report.get("core_overlap"),
@@ -66,7 +74,14 @@ def main():
                 "addedCount": report.get("added_count", 0),
                 "filteredByRing": report.get("filtered_by_ring", {}),
                 "filteredSample": report.get("filtered_sample", []),
+                "nextAction": report.get("next_action"),
+                "leaderState": leader_state or {},
+                "candidateChanges": report.get("candidate_changes", {}),
             }
+
+        def extract_observed_leaders(payload: dict) -> set[str]:
+            technologies = payload.get("technologies", [])
+            return select_top_leaders(technologies)
 
         def run_shadow_evaluation(
             baseline_path: Path,
@@ -81,8 +96,6 @@ def main():
                 baseline = json.load(f)
 
             report = compare_outputs(baseline, current_payload)
-            write_report(report, output_path)
-            print(f"\nShadow eval report saved to: {output_path}")
 
             thresholds = {
                 "core_overlap": args.shadow_threshold_core_overlap,
@@ -91,20 +104,38 @@ def main():
                 "llm_call_reduction": args.shadow_threshold_llm_reduction,
             }
 
+            previous_shadow_state = baseline.get("meta", {}).get("shadowGate", {}).get("leaderState", {})
+            observed_leaders = extract_observed_leaders(current_payload)
+            leader_state = update_leader_stability_state(
+                previous_state=previous_shadow_state,
+                observed_leaders=observed_leaders,
+                run_id=datetime.now().isoformat(),
+            )
+
+            report = build_shadow_eval_report(report, thresholds, leader_state=leader_state)
+            gate = classify_quality_gate(report, thresholds, leader_state=leader_state)
+
+            write_report(report, output_path)
+            print(f"\nShadow eval report saved to: {output_path}")
+
             print("\nQuality Metrics:")
             print(f"  Core Overlap:      {report['core_overlap']:.2%} (threshold: {thresholds['core_overlap']:.0%})")
             print(f"  Leader Coverage:   {report['leader_coverage']:.2%} (threshold: {thresholds['leader_coverage']:.0%})")
             print(f"  Watchlist Recall:  {report['watchlist_recall']:.2%} (threshold: {thresholds['watchlist_recall']:.0%})")
             print(f"  LLM Reduction:     {report['llm_call_reduction']:.2%} (threshold: {thresholds['llm_call_reduction']:.0%})")
             print(f"  Filtered by gate:  {report.get('filtered_count', 0)}")
+            print(f"  Gate status:       {report.get('gate_status', 'unknown').upper()}")
 
-            passed = meets_quality_thresholds(report, thresholds)
-            if passed:
+            status = gate["status"]
+            if status == "pass":
                 print("\n✓ All quality thresholds met - GO for rollout")
-                return 0, build_shadow_summary(report, "pass")
+                return 0, build_shadow_summary(report, "pass", leader_state=leader_state)
+            if status == "warn":
+                print("\n⚠ Quality thresholds met but leader changes are not yet stable")
+                return 0, build_shadow_summary(report, "warn", leader_state=leader_state)
 
             print("\n✗ Quality thresholds not met - NO-GO for rollout")
-            return 1, build_shadow_summary(report, "fail")
+            return 1, build_shadow_summary(report, "fail", leader_state=leader_state)
 
         if args.max_technologies:
             config.deep_scan.repos = args.max_technologies * [""][:1] or []
