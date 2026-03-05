@@ -1,17 +1,19 @@
 'use client';
 
-import { useState, useCallback, Suspense, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Header } from '@/components/Header';
 import { Radar } from '@/components/Radar';
 import { RadarSidebar } from '@/components/RadarSidebar';
 import { WatchlistPanel } from '@/components/WatchlistPanel';
+import { Legend } from '@/components/Legend';
 import { DetailPanel } from '@/components/DetailPanel';
 import { useRadarData } from '@/hooks/useRadarData';
-import type { AITechnology, AIRadarData, Technology } from '@/lib/types';
+import type { AITechnology, AIRadarData, Technology, Quadrant, Ring, Trend } from '@/lib/types';
 import { Spinner } from '@/components/ui/spinner';
 import { WarningCircle } from '@phosphor-icons/react';
-import { matchesTechnologySearch } from '@/lib/radar-search';
+import { SPRING_SMOOTH } from '@/lib/animation-constants';
+import { filterTechnologies, type RadarFilterState } from '@/lib/radar-filters';
 
 function LoadingState() {
   return (
@@ -19,7 +21,7 @@ function LoadingState() {
       <Spinner className="w-8 h-8" />
       <div className="flex flex-col items-center gap-2">
         <p className="text-sm text-muted-foreground font-medium">
-          Cargando tecnologías...
+          Loading technologies...
         </p>
         <div className="flex gap-1.5">
           {[0, 1, 2].map((i) => (
@@ -49,13 +51,13 @@ function ErrorState({ error }: { error: string }) {
       className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 100, damping: 20 }}
+      transition={SPRING_SMOOTH}
     >
       <div className="w-16 h-16 rounded-2xl bg-destructive/10 flex items-center justify-center">
         <WarningCircle className="w-8 h-8 text-destructive" weight="duotone" />
       </div>
       <div className="text-center max-w-md">
-        <h3 className="text-lg font-semibold mb-1">Error al cargar</h3>
+        <h3 className="text-lg font-semibold mb-1">Error loading data</h3>
         <p className="text-sm text-muted-foreground">{error}</p>
       </div>
     </motion.div>
@@ -68,7 +70,7 @@ function EmptyState() {
       className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 100, damping: 20 }}
+      transition={SPRING_SMOOTH}
     >
       <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center">
         <svg 
@@ -83,9 +85,9 @@ function EmptyState() {
         </svg>
       </div>
       <div className="text-center max-w-md">
-        <h3 className="text-lg font-semibold mb-1">Sin tecnologías</h3>
+        <h3 className="text-lg font-semibold mb-1">No technologies found</h3>
         <p className="text-sm text-muted-foreground">
-          No se encontraron tecnologías. Intenta recargar la página.
+          No technologies were found. Try reloading the page.
         </p>
       </div>
     </motion.div>
@@ -96,6 +98,12 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTech, setSelectedTech] = useState<Technology | AITechnology | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [filters, setFilters] = useState<RadarFilterState>({
+    rings: [],
+    quadrants: [],
+    trends: [],
+    minConfidence: null,
+  });
 
   const { data, loading, error } = useRadarData('ai');
 
@@ -110,15 +118,57 @@ export default function Home() {
     setPanelOpen(false);
   }, []);
 
-  const technologies = aiData?.technologies || [];
-  const watchlist = aiData?.watchlist || [];
+  const toggleRing = useCallback((ring: Ring) => {
+    setFilters((prev) => ({
+      ...prev,
+      rings: prev.rings.includes(ring)
+        ? prev.rings.filter((value) => value !== ring)
+        : [...prev.rings, ring],
+    }));
+  }, []);
+
+  const toggleQuadrant = useCallback((quadrant: Quadrant) => {
+    setFilters((prev) => ({
+      ...prev,
+      quadrants: prev.quadrants.includes(quadrant)
+        ? prev.quadrants.filter((value) => value !== quadrant)
+        : [...prev.quadrants, quadrant],
+    }));
+  }, []);
+
+  const toggleTrend = useCallback((trend: Trend) => {
+    setFilters((prev) => ({
+      ...prev,
+      trends: prev.trends.includes(trend)
+        ? prev.trends.filter((value) => value !== trend)
+        : [...prev.trends, trend],
+    }));
+  }, []);
+
+  const setMinConfidence = useCallback((value: number | null) => {
+    setFilters((prev) => ({ ...prev, minConfidence: value }));
+  }, []);
+
+  const resetFilters = useCallback(() => {
+    setFilters({
+      rings: [],
+      quadrants: [],
+      trends: [],
+      minConfidence: null,
+    });
+  }, []);
+
+  const technologies = useMemo(() => aiData?.technologies ?? [], [aiData]);
+  const watchlist = useMemo(() => aiData?.watchlist ?? [], [aiData]);
+
   const visibleTechnologies = useMemo(
-    () => technologies.filter((technology) => matchesTechnologySearch(technology, searchQuery)),
-    [technologies, searchQuery],
+    () => filterTechnologies(technologies, searchQuery, filters),
+    [technologies, searchQuery, filters],
   );
+
   const visibleWatchlist = useMemo(
-    () => watchlist.filter((technology) => matchesTechnologySearch(technology, searchQuery)),
-    [watchlist, searchQuery],
+    () => filterTechnologies(watchlist, searchQuery, filters),
+    [watchlist, searchQuery, filters],
   );
 
   return (
@@ -163,18 +213,16 @@ export default function Home() {
               className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_360px]"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ type: "spring", stiffness: 100, damping: 20 }}
+              transition={SPRING_SMOOTH}
             >
               <div className="min-w-0">
                 <div className="bento-card flex items-center justify-center p-3 sm:p-4">
-                  <Suspense fallback={<LoadingState />}>
                     <Radar
-                      technologies={technologies}
+                      technologies={visibleTechnologies}
                       selectedTech={selectedTech}
                       searchQuery={searchQuery}
                       onSelect={handleSelect}
                     />
-                  </Suspense>
                 </div>
 
                 <WatchlistPanel
@@ -182,12 +230,20 @@ export default function Home() {
                   meta={aiData?.meta}
                   onSelectTechnology={handleSelect}
                 />
+
+                <Legend />
               </div>
 
               <RadarSidebar
                 visibleTechnologies={visibleTechnologies}
                 totalTechnologies={technologies.length}
                 selectedTechnologyId={selectedTech?.id ?? null}
+                filters={filters}
+                onToggleRing={toggleRing}
+                onToggleQuadrant={toggleQuadrant}
+                onToggleTrend={toggleTrend}
+                onSetMinConfidence={setMinConfidence}
+                onResetFilters={resetFilters}
                 onSelectTechnology={handleSelect}
               />
             </motion.div>

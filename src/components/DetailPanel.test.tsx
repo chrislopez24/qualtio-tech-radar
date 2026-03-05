@@ -1,0 +1,67 @@
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { describe, expect, it } from 'vitest';
+import type { AITechnology } from '@/lib/types';
+import { DetailPanel } from './DetailPanel';
+
+const richTechnology: AITechnology = {
+  id: 'go',
+  name: 'Go',
+  quadrant: 'platforms',
+  ring: 'adopt',
+  description: 'A systems language.',
+  trend: 'up',
+  confidence: 0.91,
+  updatedAt: '2026-03-05T00:00:00.000Z',
+  whyNow: 'Demand is increasing for resilient cloud services.',
+  useCases: ['API services', 'CLIs'],
+  avoidWhen: ['Ultra-fast prototyping with no Go expertise'],
+  risk: {
+    security: 'Dependency governance is required.',
+    lockIn: 'Low lock-in risk.',
+  },
+  owner: 'Platform Team',
+  nextStep: 'Ship one pilot service.',
+  nextReviewAt: '2026-06-01',
+  evidence: ['https://go.dev/'],
+  alternatives: ['Rust', 'Node.js'],
+};
+
+describe('DetailPanel', () => {
+  it('renders actionable sections when metadata is present', () => {
+    const html = renderToStaticMarkup(
+      <DetailPanel technology={richTechnology} open onClose={() => {}} />,
+    );
+
+    expect(html).toContain('Why now');
+    expect(html).toContain('Use cases');
+    expect(html).toContain('Avoid when');
+    expect(html).toContain('Risks');
+    expect(html).toContain('Owner &amp; review');
+    expect(html).toContain('Next step');
+    expect(html).toContain('Evidence / alternatives');
+  });
+
+  it('does not render actionable headings when metadata is absent', () => {
+    const html = renderToStaticMarkup(
+      <DetailPanel
+        technology={{
+          id: 'legacy',
+          name: 'Legacy',
+          quadrant: 'tools',
+          ring: 'assess',
+          description: 'Legacy item',
+          trend: 'stable',
+          confidence: 0.5,
+          updatedAt: '2026-03-05T00:00:00.000Z',
+        }}
+        open
+        onClose={() => {}}
+      />,
+    );
+
+    expect(html).not.toContain('Why now');
+    expect(html).not.toContain('Use cases');
+    expect(html).not.toContain('Avoid when');
+  });
+});

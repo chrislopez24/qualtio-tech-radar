@@ -15,13 +15,41 @@ export interface Technology {
   moved?: number;
 }
 
+export type MaturityLevel = 'poc' | 'pilot' | 'production';
+
+export type AdoptionEffort = 's' | 'm' | 'l';
+
+export interface DecisionRisk {
+  security?: string;
+  lockIn?: string;
+  talent?: string;
+  cost?: string;
+}
+
 export interface AITechnology extends Technology {
   trend: Trend;
-  githubStars: number;
-  hnMentions: number;
+  githubStars?: number;
+  hnMentions?: number;
+  stars?: number;
+  signals?: {
+    ghMomentum?: number;
+    ghPopularity?: number;
+    hnHeat?: number;
+  };
   confidence: number;
   updatedAt: string;
   marketScore?: number;
+  whyNow?: string;
+  useCases?: string[];
+  avoidWhen?: string[];
+  maturityLevel?: MaturityLevel;
+  adoptionEffort?: AdoptionEffort;
+  risk?: DecisionRisk;
+  owner?: string;
+  nextStep?: string;
+  nextReviewAt?: string;
+  evidence?: string[];
+  alternatives?: string[];
 }
 
 export interface PipelineSummary {

@@ -2,6 +2,7 @@
 
 import { CheckCircle, WarningCircle } from '@phosphor-icons/react';
 import type { AITechnology, AIRadarMeta } from '@/lib/types';
+import { getQuadrantById, getRingById } from '@/lib/radar-config';
 
 interface WatchlistPanelProps {
   watchlist: AITechnology[];
@@ -12,6 +13,43 @@ interface WatchlistPanelProps {
 function formatPercent(value?: number): string {
   if (typeof value !== 'number') return 'n/a';
   return `${Math.round(value * 100)}%`;
+}
+
+function getReviewStatus(nextReviewAt?: string): { label: string; tone: 'neutral' | 'warning' | 'danger' } {
+  if (!nextReviewAt) {
+    return { label: 'No review date', tone: 'neutral' };
+  }
+
+  const reviewDate = new Date(nextReviewAt);
+  if (Number.isNaN(reviewDate.getTime())) {
+    return { label: 'Invalid review date', tone: 'warning' };
+  }
+
+  const now = new Date();
+  const diffMs = reviewDate.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) {
+    return { label: `Overdue ${Math.abs(diffDays)}d`, tone: 'danger' };
+  }
+
+  if (diffDays <= 14) {
+    return { label: `Due in ${diffDays}d`, tone: 'warning' };
+  }
+
+  return { label: `Due in ${diffDays}d`, tone: 'neutral' };
+}
+
+function reviewBadgeClass(tone: 'neutral' | 'warning' | 'danger'): string {
+  if (tone === 'danger') {
+    return 'border-rose-500/40 bg-rose-500/10 text-rose-300';
+  }
+
+  if (tone === 'warning') {
+    return 'border-amber-500/40 bg-amber-500/10 text-amber-300';
+  }
+
+  return 'border-border/60 bg-background/70 text-muted-foreground';
 }
 
 export function WatchlistPanel({ watchlist, meta, onSelectTechnology }: WatchlistPanelProps) {
@@ -29,20 +67,33 @@ export function WatchlistPanel({ watchlist, meta, onSelectTechnology }: Watchlis
           <p className="text-sm text-muted-foreground">No watchlist entries in current run.</p>
         ) : (
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-1">
-            {watchlist.map((technology) => (
-              <button
-                key={technology.id}
-                type="button"
-                onClick={() => onSelectTechnology(technology)}
-                className="flex items-center justify-between rounded-xl border border-border/60 bg-background/70 px-3 py-2 text-left transition-colors hover:bg-muted/60"
-              >
-                <div>
-                  <p className="text-sm font-medium leading-tight">{technology.name}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{technology.quadrant}</p>
-                </div>
-                <span className="text-xs text-muted-foreground">{technology.ring}</span>
-              </button>
-            ))}
+            {watchlist.map((technology) => {
+              const reviewStatus = getReviewStatus(technology.nextReviewAt);
+
+              return (
+                <button
+                  key={technology.id}
+                  type="button"
+                  onClick={() => onSelectTechnology(technology)}
+                  className="rounded-xl border border-border/60 bg-background/70 px-3 py-2 text-left transition-colors hover:bg-muted/60"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-medium leading-tight">{technology.name}</p>
+                    <span className="text-xs text-muted-foreground">{getRingById(technology.ring).name}</span>
+                  </div>
+
+                  <p className="mt-1 text-xs text-muted-foreground">{getQuadrantById(technology.quadrant).name}</p>
+
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+                    {technology.owner ? <span className="rounded border border-border/60 px-1.5 py-0.5">Owner: {technology.owner}</span> : null}
+                    {technology.nextStep ? <span className="rounded border border-border/60 px-1.5 py-0.5">Action: {technology.nextStep}</span> : null}
+                    <span className={`rounded border px-1.5 py-0.5 ${reviewBadgeClass(reviewStatus.tone)}`}>
+                      {reviewStatus.label}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
