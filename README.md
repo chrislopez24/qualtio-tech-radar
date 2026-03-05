@@ -11,6 +11,7 @@ AI-powered Technology Radar with automated weekly updates from GitHub, Hacker Ne
 - **Selective LLM Optimization**: 70%+ reduction in LLM calls via intelligent candidate selection (core/watchlist/borderline)
 - **Drift-Aware Caching**: Reuse LLM decisions across runs with automatic invalidation
 - **Shadow Quality Evaluation**: Validate optimized pipeline against baseline with pass/warn/fail quality gate outcomes
+- **Operational Explainability**: Shadow evaluation reports with leader transition visibility and "what changed" insights
 - **Glassmorphism UI**: Modern, responsive design with dark theme support
 - **Automated Data Pipeline**: Weekly updates via GitHub Actions
 - **Market-Signal Ringing**: External momentum scoring (GitHub + HN + Google Trends) with anti-collapse guardrails
@@ -95,7 +96,7 @@ The static site will be generated in the `dist/` folder.
 │   ├── ai/               # AI classifier
 │   └── main.py           # Pipeline entry point
 ├── .github/workflows/    # CI/CD automation
-└── docs/                 # Documentation
+└── docs/                 # Operational and architectural documentation (A+C hardening details)
 ```
 
 ## Available Scripts
@@ -186,8 +187,36 @@ The pipeline includes:
 - **Circuit breaker**: Automatically skips failing sources
 - **Retry logic**: 3 retries with exponential backoff
 - **Ring guardrails**: Hysteresis and max-ring-ratio fallback rebalance to avoid all-`adopt`
-- **Strict leader quality**: `leader_coverage` remains strict, with 3-run stability confirmation for leader-set changes
+- **Leader explainability**: Leader transition visibility with `consecutiveCount` tracking (3-run stability confirmation required for leader-set changes)
+- **Shadow evaluation gate**: `meta.shadowGate` contract provides operational visibility into quality metrics and "what changed" insights
 - **Decoupled deploy behavior**: frontend deploy can continue with last validated `src/data/data.ai.json` when ETL gate is warn/fail
+
+### Shadow Evaluation Metadata
+
+The pipeline outputs a `meta.shadowGate` object in `data.ai.json` for operational visibility:
+
+| Field | Description |
+|-------|-------------|
+| `status` | Quality gate outcome: `pass`, `warn`, or `fail` |
+| `quality.coreOverlap` | % of core technologies retained vs full-run baseline |
+| `quality.leaderCoverage` | % of quadrant leaders present (strict threshold) |
+| `quality.watchlistRecall` | % of watchlist technologies retained |
+| `changes.filteredCount` | Technologies filtered by optimization (LLM call reduction) |
+| `changes.addedCount` | New technologies added this run |
+| `candidateChanges` | Leader stability tracking with `consecutiveCount` for each transition |
+
+This provides "what changed" visibility for operations teams monitoring pipeline health.
+
+### Provenance Fields
+
+When provenance tracking is enabled, technology objects include optional source metadata:
+
+| Field | Description |
+|-------|-------------|
+| `sourceSummary` | Human-readable summary of signal sources (e.g., "GitHub: 1.2k stars, HN: 45 pts") |
+| `signalFreshness` | ISO timestamp of when external signals were collected |
+
+These fields appear only when present—backward compatible with existing data files.
 
 ### Testing
 

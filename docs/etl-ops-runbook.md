@@ -103,14 +103,18 @@ ghe secret set SYNTHETIC_API_KEY --repo chrislopez24/qualtio-tech-radar
 
 **Policy**:
 - Keep strict threshold (`leader_coverage >= 0.95`)
-- Use 3-run inertia for leader transitions
+- Use 3-run inertia for leader transitions (candidate must persist for 3 consecutive runs)
 - Do not promote candidate leader changes until sustained
 
 **Operational behavior**:
-1. Read `gate_status` in `artifacts/shadow_eval.json` (`pass|warn|fail`)
-2. If `warn`, keep monitoring next runs (candidate changes in report)
-3. If `fail`, investigate data quality before approving ETL update
-4. Validated `src/data/data.ai.json` remains production source unless gate is `pass`
+1. Read `status` in `artifacts/shadow_eval.json` (`pass|warn|fail`)
+2. Check `candidate_changes` for leader IDs with their `consecutive_count` and `change_type`
+3. Review `next_action_message` for human-readable guidance on handling the situation
+4. If `warn`, keep monitoring next runs (candidate changes in report)
+5. If `fail`, investigate data quality before approving ETL update
+6. Validated `src/data/data.ai.json` remains production source unless gate is `pass`
+
+**3-Run Inertia Rule**: A candidate leader change must appear in 3 consecutive pipeline runs before promotion. The `consecutive_count` field tracks this progress. Changes with count < 3 remain in candidate state and are not promoted to production.
 
 ### Issue: GitHub Pages shows 404
 
@@ -199,6 +203,150 @@ Control caching behavior via `cache_enabled` and `cache_drift_threshold`:
   - threshold breach or regression
   - ETL candidate data is not promoted
   - frontend can still build/deploy using last validated `data.ai.json`
+
+## Leader Explainability Fields
+
+The `shadow_eval.json` report includes detailed explainability fields for operational transparency:
+
+### Transition Summary
+
+```json
+{
+  "leader_transition_summary": {
+    "candidate_count": 3,
+    "promoted_count": 1
+  }
+}
+```
+
+- `candidate_count`: Number of leaders under evaluation (not yet stable)
+- `promoted_count`: Number of leaders that completed the 3-run inertia requirement and were promoted
+
+### Candidate Changes Structure
+
+```json
+{
+  "candidate_changes": [
+    {
+      "leader_id": "react",
+      "change_type": "demotion",
+      "consecutive_count": 2
+    }
+  ]
+}
+```
+
+- `leader_id`: Technology identifier for the affected leader
+- `change_type`: `promotion` or `demotion` indicating the direction of change
+- `consecutive_count`: Number of consecutive runs this change has been observed (1-3, where 3 triggers promotion)
+
+### Action Fields
+
+Two fields guide operational response:
+
+- `next_action`: Machine-readable code for automation (`monitor`, `promote_candidate`, `investigate`)
+- `next_action_message`: Human-readable guidance providing context and recommended steps
+
+The `next_action` code remains stable for automation compatibility, while `next_action_message` provides detailed context that may evolve as the system improves.
+
+## What-Changed Panel Data
+
+The Shadow Gate exposes structured data through `meta.shadowGate` in the radar output:
+
+### Status and Metrics
+
+```json
+{
+  "meta": {
+    "shadowGate": {
+      "status": "pass",
+      "coreOverlap": 0.92,
+      "leaderCoverage": 0.96,
+      "watchlistRecall": 0.88,
+      "filteredCount": 5,
+      "addedCount": 3
+    }
+  }
+}
+```
+
+- `status`: Gate outcome - `pass`, `warn`, `fail`, or `skip`
+- `coreOverlap`: Percentage of core technologies preserved from baseline (0.0-1.0)
+- `leaderCoverage`: Percentage of quadrant leaders included in current data (0.0-1.0)
+- `watchlistRecall`: Percentage of watchlist items tracked (0.0-1.0)
+- `filteredCount`: Number of items filtered by the gate
+- `addedCount`: Number of new items added
+
+### Filtered Sample
+
+When items are filtered, up to 10 example IDs are included:
+
+```json
+{
+  "filteredSample": ["tech1", "tech2", "tech3"]
+}
+```
+
+This helps operators understand what types of items are being excluded.
+
+### Candidate Changes and Leader State
+
+The panel includes leader stability tracking:
+
+```json
+{
+  "candidateChanges": [
+    {
+      "leaderId": "react",
+      "consecutiveCount": 2,
+      "changeType": "demotion"
+    }
+  ],
+  "leaderState": {
+    "stableLeaders": ["react", "vue", "angular"],
+    "candidateChanges": [...],
+    "promotedChanges": [...]
+  }
+}
+```
+
+- `candidateChanges`: Leaders under evaluation with their consecutive observation counts
+- `leaderState`: Persisted state including stable leaders and change history
+
+## Provenance and Freshness Fields
+
+`AITechnology` supports optional provenance fields for traceability:
+
+```json
+{
+  "sourceSummary": "GitHub trending + HN mentions",
+  "signalFreshness": "2025-03-05T10:30:00Z"
+}
+```
+
+- `sourceSummary`: High-level origin summary describing data sources (e.g., "GitHub trending + HN mentions", "Industry report Q1 2025")
+- `signalFreshness`: ISO8601 timestamp indicating when signals were collected
+
+These fields are optional and only displayed when present to maintain backward compatibility. When absent, the UI displays without provenance information.
+
+## Workflow Caching
+
+The CI pipeline includes caching for improved performance:
+
+### Python Dependencies
+
+- Cache location: `~/.cache/pip`
+- Cache key: Hash of `scripts/requirements.txt`
+- Effect: Faster workflow execution on subsequent runs when requirements unchanged
+
+### Node.js Dependencies
+
+- Cache key: Hash of `package-lock.json`
+- Effect: Preserves `node_modules` between runs
+
+### Cache Invalidation
+
+Changes to `scripts/requirements.txt` or `package-lock.json` trigger fresh dependency installation. This ensures updates are applied while maintaining fast execution for stable dependency sets.
 
 ## Configuration Changes
 

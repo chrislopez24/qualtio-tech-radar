@@ -125,16 +125,121 @@ Before promoting ETL candidate data, the pipeline validates:
 | Watchlist Recall | >80% | Maintain tracking continuity |
 | LLM Reduction | >0% | Track efficiency improvements |
 
-#### Leader stability policy (strict + temporal inertia)
+#### Leader Stability Policy
 
-- Leader threshold remains strict (`leader_coverage > 95%`).
-- Leader-set changes use **3-run consecutive confirmation** before promotion.
-- Shadow state tracks:
-  - `stable_leaders`
-  - `candidate_changes` (added/removed + consecutive count)
-  - promotion events
+The leader stability policy prevents one-run noise while allowing sustained real changes:
 
-This avoids one-run noise while allowing sustained real changes.
+**3-Run Consecutive Confirmation**
+- Leader threshold remains strict (`leader_coverage > 95%`)
+- Changes to the leader-set require **3 consecutive runs** of the same change before promotion
+- This creates temporal inertia that filters out transient data fluctuations
+
+**Candidate Tracking**
+The shadow evaluation maintains state for:
+- `stable_leaders`: Current confirmed leaders
+- `candidate_changes`: Pending changes with metadata:
+  - `leaderId`: Identifier of the leader
+  - `changeType`: "added" or "removed"
+  - `consecutive_count`: Number of consecutive runs showing this change (1-3)
+- `promoted_changes`: Changes that reached 3 runs and were promoted
+
+**Promotion Events**
+When a candidate reaches 3 consecutive runs:
+1. It is removed from `candidate_changes`
+2. It is added to `promoted_changes`
+3. The actual leader set is updated
+4. Deterministic serialization ensures consistent persistence across runs
+
+#### Explainability and Observability
+
+The `shadow_eval.json` file includes structured explainability fields for auditing and debugging:
+
+**`leader_transition_summary`**
+```json
+{
+  "candidateChanges": 5,
+  "promotedChanges": 2
+}
+```
+- `candidateChanges`: Number of pending changes in the candidate pool
+- `promotedChanges`: Number of changes promoted to stable this run
+
+**`candidate_changes` (per-candidate details)**
+```json
+{
+  "candidate_changes": [
+    {
+      "leaderId": "react",
+      "changeType": "added",
+      "consecutive_count": 2
+    }
+  ]
+}
+```
+
+**Action Fields (Next Action Contract)**
+The shadow evaluation provides machine-readable action guidance:
+
+| Field | Purpose | Stability |
+|-------|---------|-----------|
+| `next_action` | Machine-readable action code (e.g., `promote_candidate`, `wait_for_confirmation`) | Stable for automation |
+| `next_action_message` | Human-readable explanation | May change |
+| `next_action_code` | Stable integer code for programmatic handling | Stable for automation |
+
+The `next_action` field is specifically designed to be **machine-readable and stable** for automation systems.
+
+#### What-Changed Metadata Contract
+
+The `meta.shadowGate` field in the ETL output provides a stable contract for downstream consumers:
+
+```json
+{
+  "meta": {
+    "shadowGate": {
+      "status": "WARN",
+      "coreOverlap": 92.5,
+      "leaderCoverage": 97.8,
+      "watchlistRecall": 85.2,
+      "llmCallReduction": 72.1,
+      "filteredCount": 8,
+      "addedCount": 2,
+      "filteredSample": ["tech-a", "tech-b"],
+      "leaderState": {
+        "stableLeaders": [...],
+        "candidateChanges": [...],
+        "promotedChanges": [...]
+      }
+    }
+  }
+}
+```
+
+**Field Reference:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | string | `PASS`, `WARN`, or `FAIL` |
+| `coreOverlap` | number | % of core technologies preserved vs baseline |
+| `leaderCoverage` | number | % of GitHub leaders included |
+| `watchlistRecall` | number | % of watchlist items tracked |
+| `llmCallReduction` | number | % reduction in LLM calls vs full classification |
+| `filteredCount` | number | Technologies filtered this run |
+| `addedCount` | number | Technologies added this run |
+| `filteredSample` | array | Sample of filtered technology IDs (up to 5) |
+| `leaderState.stableLeaders` | array | Current confirmed leader IDs |
+| `leaderState.candidateChanges` | array | Pending changes with `leaderId`, `changeType`, `consecutiveCount` |
+| `leaderState.promotedChanges` | array | Changes promoted this run |
+
+#### Provenance Tracking
+
+Technology objects may include optional provenance fields for data lineage:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `sourceSummary` | string | Summary of data origin (e.g., "GitHub API + HN mentions") |
+| `signalFreshness` | string (ISO8601) | Timestamp when signals were collected |
+
+Both fields are **optional** to maintain backward compatibility with existing data.
 
 #### Gate statuses
 
@@ -188,7 +293,9 @@ MAX_TECHNOLOGIES=50                       # Maximum technologies to track
   "confidence": number,     // AI confidence (0-1)
   "trend": "string",        // up|down|stable|new
   "moved": number,          // Ring movement (+/-)
-  "updatedAt": "ISO8601"
+  "updatedAt": "ISO8601",
+  "sourceSummary": "string",     // (Optional) Data origin summary
+  "signalFreshness": "ISO8601"   // (Optional) Signal collection timestamp
 }
 ```
 
@@ -237,6 +344,24 @@ All intermediate states saved:
 2. **Batching**: Group API calls
 3. **Parallelization**: GitHub + HN in parallel
 4. **Rate Limiting**: Respect API quotas
+
+### CI Performance
+
+The `quarterly-update.yml` workflow implements dependency caching for improved CI performance:
+
+**Python Dependencies**
+- pip cache keyed by `requirements.txt`
+- Automatically restored on cache hits
+- Reduces package installation time
+
+**Node.js Dependencies**
+- npm cache keyed by `package-lock.json`
+- Cached `node_modules` directory
+- Faster build times on subsequent runs
+
+Cache keys are derived from:
+- `requirements.txt` hash → Python dependencies
+- `package-lock.json` hash → Node.js dependencies
 
 ## Monitoring
 
