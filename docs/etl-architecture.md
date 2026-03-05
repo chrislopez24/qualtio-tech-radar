@@ -81,6 +81,39 @@ Fallback: Rule-based heuristics
 - Output: Quadrant (platforms|techniques|tools|languages)
 - Confidence score: 0.0 - 1.0
 
+### Selective LLM Optimization
+
+To reduce API costs while maintaining quality, the pipeline implements a **selective LLM policy**:
+
+#### Candidate Categories
+
+Technologies are categorized into three groups based on signal confidence:
+
+| Category | Criteria | LLM Usage | Typical % |
+|----------|----------|-----------|-----------|
+| **Core** | High confidence (>70%), strong market signals | Deterministic rules | ~50% |
+| **Watchlist** | Trending items, moderate signals | Heuristic classification | ~30% |
+| **Borderline** | Uncertain scores, near thresholds | LLM classification | ~20% |
+
+#### Borderline Candidates
+
+**Borderline** technologies are identified when:
+- Market score within `borderline_band` (default: 5 points) of core threshold
+- Confidence score near threshold (70%)
+- Trend delta near watchlist threshold
+
+Only borderline candidates are sent to the LLM, achieving ~70% reduction in API calls.
+
+#### Shadow Evaluation
+
+Quality metrics validate selective LLM effectiveness:
+
+| Metric | Description | Threshold |
+|--------|-------------|-----------|
+| `core_overlap` | % of core technologies preserved vs baseline | >85% |
+| `leader_coverage` | % of GitHub leaders included | >95% |
+| `watchlist_recall` | % of watchlist items tracked | >80% |
+
 ### Stage 3: Quality Gate (Shadow Evaluation)
 
 Before deploying, the pipeline validates:

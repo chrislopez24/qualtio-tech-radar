@@ -1,3 +1,5 @@
+import os
+import os
 import pytest
 from dataclasses import dataclass
 from unittest.mock import Mock, patch
@@ -244,3 +246,22 @@ class TestAITechnologyFilter:
         assert angular_item is not None
         assert react_item.strategic_value == StrategicValue.HIGH
         assert angular_item.strategic_value == StrategicValue.MEDIUM
+
+    def test_ai_filter_uses_model_adaptive_openai_timeout(self):
+        """AI filter should adapt OpenAI client timeout to model latency profile."""
+        filter_config = Mock()
+        filter_config.auto_ignore = []
+        filter_config.include_only = []
+        filter_config.min_confidence = 0.5
+
+        with patch("etl.ai_filter.OpenAI") as mock_openai:
+            with patch.dict(os.environ, {"SYNTHETIC_API_KEY": "test-key"}, clear=False):
+                AITechnologyFilter(filter_config, model="hf:MiniMaxAI/MiniMax-M2.5")
+            assert mock_openai.call_args.kwargs["timeout"] == 60
+
+        with patch("etl.ai_filter.OpenAI") as mock_openai:
+            with patch.dict(os.environ, {"SYNTHETIC_API_KEY": "test-key"}, clear=False):
+                AITechnologyFilter(filter_config, model="hf:moonshotai/Kimi-K2.5")
+            assert mock_openai.call_args.kwargs["timeout"] == 120
+
+

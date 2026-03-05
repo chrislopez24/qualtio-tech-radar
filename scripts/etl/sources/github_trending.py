@@ -49,12 +49,12 @@ class GitHubTrendingSource:
             since = (datetime.now(timezone.utc) - timedelta(days=days)).date().isoformat()
             
             all_repos = []
-            
-            # Strategy 1: Repos with recent activity and significant stars (trending)
-            pushed_query = f"pushed:>={since} stars:>100"
+
+            # Strategy 1: Repos with recent push activity
+            pushed_query = f"pushed:>={since}"
             if language:
                 pushed_query = f"{pushed_query} language:{language}"
-            
+
             recent_repos = self.rate_limiter.execute_with_backoff(
                 self.scraper.search_repositories,
                 query=pushed_query,
@@ -64,12 +64,12 @@ class GitHubTrendingSource:
             )
             all_repos.extend(recent_repos)
             logger.info(f"GitHub: Found {len(recent_repos)} repos with recent activity")
-            
-            # Strategy 2: Recently created repos with growth (new hot projects)
-            created_query = f"created:>={since} stars:>50"
+
+            # Strategy 2: Recently created repos
+            created_query = f"created:>={since}"
             if language:
                 created_query = f"{created_query} language:{language}"
-            
+
             new_repos = self.rate_limiter.execute_with_backoff(
                 self.scraper.search_repositories,
                 query=created_query,
@@ -79,36 +79,6 @@ class GitHubTrendingSource:
             )
             all_repos.extend(new_repos)
             logger.info(f"GitHub: Found {len(new_repos)} newly created repos")
-            
-            # Strategy 3: Top starred repos updated recently (established but active)
-            popular_query = "stars:>1000 pushed:>=2024-01-01"
-            if language:
-                popular_query = f"{popular_query} language:{language}"
-            
-            popular_repos = self.rate_limiter.execute_with_backoff(
-                self.scraper.search_repositories,
-                query=popular_query,
-                sort="stars",
-                order="desc",
-                limit=50,
-            )
-            all_repos.extend(popular_repos)
-            logger.info(f"GitHub: Found {len(popular_repos)} popular active repos")
-            
-            # Strategy 4: Fast growing repos (high stars/forks ratio indicates buzz)
-            trending_query = f"stars:>500 forks:>50 pushed:>={since}"
-            if language:
-                trending_query = f"{trending_query} language:{language}"
-            
-            trending_repos = self.rate_limiter.execute_with_backoff(
-                self.scraper.search_repositories,
-                query=trending_query,
-                sort="stars",
-                order="desc",
-                limit=50,
-            )
-            all_repos.extend(trending_repos)
-            logger.info(f"GitHub: Found {len(trending_repos)} trending repos")
 
             merged = self._merge_repo_results(all_repos)
             return self._filter_by_language(merged, language)

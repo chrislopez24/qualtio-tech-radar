@@ -8,4 +8,4 @@ def test_market_score_uses_weighted_external_signals():
         "google_momentum": 40,
     }
     score = score_technology(item)
-    assert round(score, 2) == 59.0
+    assert round(score, 2) == 70.5

@@ -18,6 +18,7 @@ logging.basicConfig(
 
 from etl.pipeline import RadarPipeline
 from etl.config import ETLConfig, load_etl_config
+from etl.checkpoint import safe_json_write
 from etl.output_generator import sanitize_for_public
 from etl.shadow_eval import compare_outputs, write_report, meets_quality_thresholds, DEFAULT_THRESHOLDS
 
@@ -51,7 +52,7 @@ def main():
         return 1
 
     try:
-        config = load_etl_config("scripts/config.yaml")
+        config = load_etl_config(str(Path(__file__).parent / "config.yaml"))
         public_output_path = Path(config.output.public_file)
 
         def build_shadow_summary(report: dict[str, float], status: str) -> dict[str, object]:
@@ -143,8 +144,7 @@ def main():
             )
 
             current_payload.setdefault("meta", {})["shadowGate"] = shadow_summary
-            with open(current_path, "w") as f:
-                json.dump(current_payload, f, indent=2)
+            safe_json_write(current_path, current_payload)
 
             return exit_code
 
@@ -171,8 +171,7 @@ def main():
             "meta": meta,
         }
 
-        with open(public_output_path, "w") as f:
-            json.dump(public_output_data, f, indent=2)
+        safe_json_write(public_output_path, public_output_data)
 
         print(f"\nPublic output saved to: {public_output_path}")
 
@@ -193,8 +192,7 @@ def main():
                 )
                 public_output_data.setdefault("meta", {})["shadowGate"] = shadow_summary
 
-                with open(public_output_path, "w") as f:
-                    json.dump(public_output_data, f, indent=2)
+                safe_json_write(public_output_path, public_output_data)
 
                 if exit_code != 0:
                     return exit_code
@@ -207,8 +205,8 @@ def main():
 
     except Exception as e:
         print(f"\nError: {e}")
-        sys.exit(1)
+        return 1
 
 
 if __name__ == "__main__":
-    sys.exit(main() if hasattr(main, "__code__") and main.__code__.co_argcount == 0 else main())
+    sys.exit(main())

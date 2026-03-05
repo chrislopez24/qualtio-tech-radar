@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Technology, AITechnology } from '@/lib/types';
 import { getRingById } from '@/lib/radar-config';
@@ -15,7 +15,7 @@ interface BlipProps {
   onSelect: (tech: Technology | AITechnology) => void;
 }
 
-export function Blip({
+export const Blip = memo(function Blip({
   technology,
   x,
   y,
@@ -32,12 +32,19 @@ export function Blip({
     onSelect(technology);
   }, [technology, onSelect]);
 
-  // Calcular posición del tooltip para evitar que se corte
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onSelect(technology);
+    }
+  }, [technology, onSelect]);
+
+  // Calculate tooltip position to avoid clipping
   const tooltipWidth = Math.min(technology.name.length * 8 + 24, 160);
   const tooltipX = x + 18;
   const tooltipY = y - 14;
   
-  // Ajustar si el tooltip se sale por la derecha
+  // Adjust if tooltip overflows right edge
   const adjustedX = tooltipX + tooltipWidth > RADAR_SIZE - 20 
     ? x - tooltipWidth - 18 
     : tooltipX;
@@ -55,11 +62,17 @@ export function Blip({
         damping: 25
       }}
       style={{ cursor: 'pointer' }}
+      tabIndex={isFiltered ? -1 : 0}
+      role="button"
+      aria-label={`${technology.name} - ${technology.ring} ring, ${technology.quadrant} quadrant`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onFocus={() => setIsHovered(true)}
+      onBlur={() => setIsHovered(false)}
+      onKeyDown={handleKeyDown}
       onClick={handleClick}
     >
-      {/* Outer glow ring - más sutil */}
+      {/* Outer glow ring */}
       {(isHovered || isSelected) && (
         <motion.circle
           cx={x}
@@ -82,7 +95,7 @@ export function Blip({
         />
       )}
       
-      {/* Main blip - glow reducido */}
+      {/* Main blip */}
       <motion.circle
         cx={x}
         cy={y}
@@ -106,7 +119,7 @@ export function Blip({
         opacity={isHovered || isSelected ? 0.95 : 0.8}
       />
       
-      {/* Rotating selection ring - solo si está seleccionado */}
+      {/* Rotating selection ring */}
       {isSelected && (
         <motion.circle
           cx={x}
@@ -130,7 +143,7 @@ export function Blip({
         />
       )}
       
-      {/* Tooltip - posicionado inteligentemente */}
+      {/* Smart-positioned tooltip */}
       <AnimatePresence>
         {(isHovered || isSelected) && (
           <motion.g
@@ -180,4 +193,4 @@ export function Blip({
       </AnimatePresence>
     </motion.g>
   );
-}
+});

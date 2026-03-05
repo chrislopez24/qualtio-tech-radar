@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from datetime import datetime
 from pathlib import Path
+from etl.checkpoint import safe_json_write
 from typing import Any, Dict, List, Optional
 
 
@@ -29,9 +30,8 @@ class HistoryStore:
         return []
 
     def _save_history(self, snapshots: List[Dict[str, Any]]) -> None:
-        self.file_path.parent.mkdir(parents=True, exist_ok=True)
         payload = {"snapshots": snapshots}
-        self.file_path.write_text(json.dumps(payload, indent=2))
+        safe_json_write(self.file_path, payload)
 
     def append_snapshot(self, snapshot: Dict[str, Any]) -> None:
         snapshots = self._load_history()

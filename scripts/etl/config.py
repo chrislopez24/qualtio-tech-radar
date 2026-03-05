@@ -1,8 +1,11 @@
+import logging
 from pathlib import Path
 from typing import Literal
 
 import yaml
 from pydantic import BaseModel, Field, field_validator
+
+logger = logging.getLogger(__name__)
 
 
 class RateLimitConfig(BaseModel):
@@ -45,6 +48,7 @@ class ClassificationConfig(BaseModel):
     model: str = "hf:MiniMaxAI/MiniMax-M2.5"
     temperature: float = Field(ge=0.0, le=2.0, default=0.1)
     json_mode: bool = True
+
 
 
 class FilteringConfig(BaseModel):
@@ -160,6 +164,7 @@ class ETLConfig(BaseModel):
 def load_etl_config(config_path: str) -> ETLConfig:
     path = Path(config_path)
     if not path.exists():
+        logger.warning(f"Config file not found at {path}, using defaults")
         return ETLConfig()
 
     with open(path) as f:

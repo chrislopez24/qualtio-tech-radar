@@ -2,8 +2,9 @@
 
 import { motion } from 'framer-motion';
 import { GithubLogo, Compass } from '@phosphor-icons/react';
-import { ModeToggle } from './ModeToggle';
+import { AIIndicator } from './ModeToggle';
 import { SearchBar } from './SearchBar';
+import { SPRING_SMOOTH, SPRING_SNAPPY } from '@/lib/animation-constants';
 
 interface HeaderProps {
   searchQuery: string;
@@ -19,10 +20,10 @@ export function Header({
       className="fixed top-0 left-0 right-0 z-50"
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 100, damping: 20 }}
+      transition={SPRING_SMOOTH}
     >
       {/* Gradient Line */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-[#00d4ff]/50 to-transparent" />
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-accent-cyan/50 to-transparent" />
       
       {/* Header Content */}
       <div className="glass-panel border-b-0">
@@ -34,23 +35,13 @@ export function Header({
                 className="relative w-11 h-11 rounded-xl flex items-center justify-center overflow-hidden group"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                transition={SPRING_SNAPPY}
               >
                 {/* Background Glow */}
                 <div className="absolute inset-0 bg-gradient-to-br from-[#00d4ff] to-[#ff006e] opacity-80 group-hover:opacity-100 transition-opacity" />
                 
                 {/* Animated Border */}
-                <motion.div
-                  className="absolute inset-0 rounded-xl border-2 border-white/20"
-                  animate={{ 
-                    boxShadow: [
-                      '0 0 0 0 rgba(0, 212, 255, 0)',
-                      '0 0 20px 2px rgba(0, 212, 255, 0.3)',
-                      '0 0 0 0 rgba(0, 212, 255, 0)'
-                    ]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                />
+                <div className="absolute inset-0 rounded-xl border-2 border-white/20 group-hover:shadow-[0_0_20px_2px_rgba(0,212,255,0.3)] transition-shadow duration-300" />
                 
                 <Compass className="w-6 h-6 text-white relative z-10" weight="fill" />
               </motion.div>
@@ -65,7 +56,7 @@ export function Header({
                   <span className="text-glow-cyan">Q</span>ualtio
                 </motion.h1>
                 <motion.p 
-                  className="text-xs font-mono text-[#6a6a7a] uppercase tracking-widest"
+                  className="text-xs font-mono text-text-tertiary uppercase tracking-widest"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
@@ -82,19 +73,19 @@ export function Header({
 
             {/* Right Section */}
             <div className="flex items-center gap-2">
-              <ModeToggle />
+              <AIIndicator />
               
               <motion.a
-                href="https://github.com"
+                href="https://github.com/qualtio/tech-radar"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-3 rounded-xl hover:bg-white/5 transition-colors spring-transition group"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                transition={SPRING_SNAPPY}
               >
                 <GithubLogo 
-                  className="w-5 h-5 text-[#a0a0b0] group-hover:text-white transition-colors" 
+                  className="w-5 h-5 text-text-secondary group-hover:text-white transition-colors" 
                   weight="duotone" 
                 />
               </motion.a>

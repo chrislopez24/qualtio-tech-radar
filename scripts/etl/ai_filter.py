@@ -120,6 +120,11 @@ class FilteredItem:
 class AITechnologyFilter:
     """AI-powered filter for technology radar items based on strategic value"""
 
+    MODEL_TIMEOUTS = {
+        "hf:minimaxai/minimax-m2.5": 60,
+        "hf:moonshotai/kimi-k2.5": 120,
+    }
+
     SYSTEM_PROMPT = """You are a technology analyst evaluating open-source projects for a tech radar.
 
 Context:
@@ -150,6 +155,7 @@ Respond with JSON only: {"strategic_value": "high|medium|low", "reason": "brief 
         self.include_only = set(config.include_only) if config.include_only else None
         self.min_confidence = config.min_confidence
         self.model = model or os.environ.get("SYNTHETIC_MODEL", "hf:MiniMaxAI/MiniMax-M2.5")
+        self.timeout = self._resolve_timeout(30)
         self.llm_cache = llm_cache
         self.max_drift = max_drift
 
@@ -157,7 +163,8 @@ Respond with JSON only: {"strategic_value": "high|medium|low", "reason": "brief 
         if os.environ.get("SYNTHETIC_API_KEY"):
             self._client = OpenAI(
                 api_key=os.environ.get("SYNTHETIC_API_KEY"),
-                base_url=os.environ.get("SYNTHETIC_API_URL", "https://api.synthetic.new/v1")
+                base_url=os.environ.get("SYNTHETIC_API_URL", "https://api.synthetic.new/v1"),
+                timeout=self.timeout,
             )
 
         self.metrics = {
@@ -168,6 +175,13 @@ Respond with JSON only: {"strategic_value": "high|medium|low", "reason": "brief 
             "small_requests": 0,
             "tool_calls": 0,
         }
+
+    def _resolve_timeout(self, default_timeout: int) -> int:
+        model_key = (self.model or "").lower()
+        for prefix, timeout in self.MODEL_TIMEOUTS.items():
+            if model_key.startswith(prefix):
+                return timeout
+        return default_timeout
 
     def _estimate_tokens(self, text: str) -> int:
         if not text:
@@ -350,8 +364,8 @@ Consider the strategic value for a tech radar."""
         elif stars > 10000:
             if any(x in name_lower for x in ["typescript", "rust", "go", "kotlin", "swift"]):
                 return StrategicValue.MEDIUM
-            # Tools with strong adoption
-            if any(x in name_lower for x in ["webpack", "vite", "nextjs", "fastapi", "terraform"]):
+            # Tools/platforms with strong adoption
+            if any(x in name_lower for x in ["webpack", "vite", "nextjs", "fastapi", "terraform", "firebase"]):
                 return StrategicValue.MEDIUM
             return StrategicValue.LOW  # Stars alone aren't enough
         

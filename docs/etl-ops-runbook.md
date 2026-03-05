@@ -125,6 +125,52 @@ Check next.config.ts has basePath set for production builds.
 2. Wait for reset (usually 1 hour)
 3. Consider using GitHub App instead of PAT
 
+## LLM Optimization Configuration
+
+The pipeline supports selective LLM classification to reduce API costs while maintaining quality.
+
+### Configuration Options
+
+```yaml
+llm_optimization:
+  enabled: true                    # Enable selective LLM
+  max_calls_per_run: 50           # Budget limit per pipeline run
+  borderline_band: 5.0            # Score proximity threshold for borderline
+  watchlist_ratio: 0.3            # Ratio of watchlist to core items
+  cache_enabled: true             # Enable classification caching
+  cache_drift_threshold: 3.0      # Cache drift detection threshold
+```
+
+### Selective LLM Policy
+
+Only **borderline** candidates (uncertain classifications near thresholds) are sent to the LLM:
+
+- **Core candidates**: High confidence, classified deterministically
+- **Watchlist candidates**: Trending items, classified with heuristics  
+- **Borderline candidates**: Uncertain scores, classified via LLM
+
+This achieves ~70% reduction in LLM calls while maintaining quality.
+
+### Shadow Baseline Parameter
+
+For quality validation, provide a shadow baseline for comparison:
+
+```bash
+python scripts/main.py --shadow-baseline data.ai.json
+```
+
+Metrics compared against baseline:
+- `core_overlap`: % of core technologies preserved (>85% threshold)
+- `leader_coverage`: % of leaders included (>95% threshold)
+- `watchlist_recall`: % of watchlist tracked (>80% threshold)
+
+### Cache Configuration
+
+Control caching behavior via `cache_enabled` and `cache_drift_threshold`:
+
+- **cache_enabled**: Enable/disable classification caching
+- **cache_drift**: Maximum allowed drift before cache invalidation
+
 ## Configuration Changes
 
 ### Update Pipeline Schedule

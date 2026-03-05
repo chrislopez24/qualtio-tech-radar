@@ -2,53 +2,38 @@
 
 import { motion } from 'framer-motion';
 import { Sparkle } from '@phosphor-icons/react';
+import { SPRING_SNAPPY } from '@/lib/animation-constants';
 
-export function ModeToggle() {
+export function AIIndicator() {
   return (
     <motion.div 
-      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#12121a] border border-[#ffffff08]
-                 hover:border-[#00d4ff]/20 transition-colors cursor-pointer group"
+      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-bg-secondary border border-border-subtle
+                 hover:border-accent-cyan/20 transition-colors cursor-pointer group"
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      transition={SPRING_SNAPPY}
     >
       <motion.div
-        animate={{
+        whileHover={{
           rotate: [0, 15, -15, 0],
           scale: [1, 1.1, 1],
         }}
         transition={{
-          duration: 4,
-          repeat: Infinity,
-          repeatDelay: 1,
+          duration: 0.6,
           ease: "easeInOut",
         }}
       >
         <Sparkle 
-          className="w-4 h-4 text-[#00d4ff] group-hover:text-glow-cyan transition-all" 
+          className="w-4 h-4 text-accent-cyan group-hover:text-glow-cyan transition-all" 
           weight="fill" 
         />
       </motion.div>
-      <span className="text-sm font-medium text-[#a0a0b0] group-hover:text-white transition-colors">
+      <span className="text-sm font-medium text-text-secondary group-hover:text-white transition-colors">
         AI
       </span>
       
       {/* Status indicator */}
-      <motion.div
-        className="w-1.5 h-1.5 rounded-full bg-[#00d4ff]"
-        animate={{
-          boxShadow: [
-            '0 0 0 0 rgba(0, 212, 255, 0.4)',
-            '0 0 10px 2px rgba(0, 212, 255, 0.2)',
-            '0 0 0 0 rgba(0, 212, 255, 0.4)',
-          ],
-        }}
-        transition={{
-          duration: 2,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
+      <div className="w-1.5 h-1.5 rounded-full bg-accent-cyan" />
     </motion.div>
   );
 }

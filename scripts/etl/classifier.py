@@ -8,10 +8,10 @@ import numbers
 import logging
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
+from etl.quadrant_logic import infer_quadrant
 from openai import OpenAI, RateLimitError, APITimeoutError, APIConnectionError
 from pydantic import BaseModel, Field, field_validator
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -86,6 +86,11 @@ class TechnologyClassifier:
     RINGS = ['adopt', 'trial', 'assess', 'hold']
     TRENDS = ['up', 'down', 'stable', 'new']
 
+    MODEL_TIMEOUTS = {
+        "hf:minimaxai/minimax-m2.5": 60,
+        "hf:moonshotai/kimi-k2.5": 120,
+    }
+
     SYSTEM_PROMPT = """You are a technology analyst specializing in tech radar categorization.
 Your task is to classify technologies into the appropriate quadrant and ring based on their popularity and maturity.
 
@@ -130,8 +135,9 @@ Provide a JSON response with:
         self.base_url = base_url or os.environ.get('SYNTHETIC_API_URL', 'https://api.synthetic.new/v1')
         self.model = model or os.environ.get('SYNTHETIC_MODEL', 'hf:MiniMaxAI/MiniMax-M2.5')
         self.max_retries = max_retries
-        self.timeout = timeout
+        self.timeout = self._resolve_timeout(timeout)
         self.batch_size = batch_size
+
         
         if not self.api_key:
             raise ValueError("SYNTHETIC_API_KEY is required")
@@ -149,6 +155,17 @@ Provide a JSON response with:
             "small_requests": 0,
             "tool_calls": 0,
         }
+
+    def _resolve_timeout(self, explicit_timeout: int) -> int:
+        if explicit_timeout != 30:
+            return explicit_timeout
+
+        model_key = (self.model or "").lower()
+        for prefix, timeout in self.MODEL_TIMEOUTS.items():
+            if model_key.startswith(prefix):
+                return timeout
+
+        return explicit_timeout
 
     def _estimate_tokens(self, text: str) -> int:
         if not text:
@@ -243,7 +260,7 @@ Respond with JSON only."""
                         {"role": "user", "content": prompt}
                     ],
                     temperature=0.3,
-                    max_tokens=500,
+                    max_tokens=8000,
                     response_format={"type": "json_object"}
                 )
                 
@@ -263,7 +280,7 @@ Respond with JSON only."""
             except APITimeoutError as e:
                 logger.warning(f"API timeout for {name}, attempt {attempt + 1}/{self.max_retries}")
                 if attempt < self.max_retries - 1:
-                    wait_time = (2 ** attempt) * 1
+                    wait_time = (2 ** attempt) * 3
                     time.sleep(wait_time)
                 else:
                     logger.error(f"Timeout error classifying {name} after {self.max_retries} attempts: {e}")
@@ -272,7 +289,7 @@ Respond with JSON only."""
             except APIConnectionError as e:
                 logger.warning(f"Connection error for {name}, attempt {attempt + 1}/{self.max_retries}")
                 if attempt < self.max_retries - 1:
-                    wait_time = (2 ** attempt) * 1
+                    wait_time = (2 ** attempt) * 3
                     time.sleep(wait_time)
                 else:
                     logger.error(f"Connection error classifying {name} after {self.max_retries} attempts: {e}")
@@ -405,10 +422,14 @@ Respond with JSON only."""
         else:
             ring = 'hold'
             strategic_value = 'low'
-            
+
+        # Use infer_quadrant instead of hardcoded 'tools'
+        _ns = type('_NS', (), {'name': name, 'description': description or '', 'language': '', 'topics': []})()
+        inferred_quadrant = infer_quadrant(_ns)
+
         return ClassificationResult(
             name=name,
-            quadrant='tools',
+            quadrant=inferred_quadrant,
             ring=ring,
             description=description or f"{name} - technology with {stars} stars",
             confidence=0.5,

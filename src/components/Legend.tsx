@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { QUADRANTS, RINGS } from '@/lib/radar-config';
 import { Circle, Square } from '@phosphor-icons/react';
+import { SPRING_SMOOTH, SPRING_SNAPPY } from '@/lib/animation-constants';
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -10,9 +11,7 @@ const containerVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      type: "spring" as const,
-      stiffness: 100,
-      damping: 20,
+      ...SPRING_SMOOTH,
       staggerChildren: 0.08,
       delayChildren: 0.2,
     },
@@ -25,9 +24,7 @@ const itemVariants = {
     opacity: 1,
     x: 0,
     transition: {
-      type: "spring" as const,
-      stiffness: 100,
-      damping: 20,
+      ...SPRING_SMOOTH,
     },
   },
 };
@@ -45,7 +42,7 @@ export function Legend() {
         <h3 className="font-display text-sm font-semibold tracking-tight text-white mb-1">
           Radar Guide
         </h3>
-        <p className="text-xs text-[#6a6a7a] font-mono uppercase tracking-widest">
+        <p className="text-xs text-text-tertiary font-mono uppercase tracking-widest">
           Classification System
         </p>
       </motion.div>
@@ -54,7 +51,7 @@ export function Legend() {
       <div className="mb-6">
         <motion.h4 
           variants={itemVariants}
-          className="text-xs font-mono text-[#6a6a7a] uppercase tracking-widest mb-3 flex items-center gap-2"
+          className="text-xs font-mono text-text-tertiary uppercase tracking-widest mb-3 flex items-center gap-2"
         >
           <Circle className="w-3 h-3" weight="duotone" />
           Rings
@@ -69,7 +66,7 @@ export function Legend() {
               className="flex items-center gap-3 group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-white/5 transition-colors"
               variants={itemVariants}
               whileHover={{ x: 4 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              transition={SPRING_SNAPPY}
             >
               <div className="relative">
                 <motion.div
@@ -79,15 +76,15 @@ export function Legend() {
                     boxShadow: `0 0 10px ${ring.color}40`
                   }}
                   whileHover={{ scale: 1.3 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  transition={SPRING_SNAPPY}
                 />
               </div>
               <div className="flex-1">
-                <span className="text-sm text-[#a0a0b0] group-hover:text-white transition-colors font-medium">
+                <span className="text-sm text-text-secondary group-hover:text-white transition-colors font-medium">
                   {ring.name}
                 </span>
               </div>
-              <span className="text-xs font-mono text-[#6a6a7a]">
+              <span className="text-xs font-mono text-text-tertiary">
                 {ring.id}
               </span>
             </motion.div>
@@ -98,14 +95,14 @@ export function Legend() {
       {/* Divider */}
       <motion.div 
         variants={itemVariants}
-        className="h-px bg-gradient-to-r from-transparent via-[#ffffff08] to-transparent my-6" 
+        className="h-px bg-gradient-to-r from-transparent via-border-subtle to-transparent my-6" 
       />
 
       {/* Quadrants Section */}
       <div>
         <motion.h4 
           variants={itemVariants}
-          className="text-xs font-mono text-[#6a6a7a] uppercase tracking-widest mb-3 flex items-center gap-2"
+          className="text-xs font-mono text-text-tertiary uppercase tracking-widest mb-3 flex items-center gap-2"
         >
           <Square className="w-3 h-3" weight="duotone" />
           Quadrants
@@ -120,7 +117,7 @@ export function Legend() {
               className="flex items-center gap-3 group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-white/5 transition-colors"
               variants={itemVariants}
               whileHover={{ x: 4 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              transition={SPRING_SNAPPY}
             >
               <div className="relative">
                 <motion.div
@@ -130,15 +127,15 @@ export function Legend() {
                     boxShadow: `0 0 10px ${quadrant.color}40`
                   }}
                   whileHover={{ scale: 1.3 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  transition={SPRING_SNAPPY}
                 />
               </div>
               <div className="flex-1">
-                <span className="text-sm text-[#a0a0b0] group-hover:text-white transition-colors font-medium">
+                <span className="text-sm text-text-secondary group-hover:text-white transition-colors font-medium">
                   {quadrant.name}
                 </span>
               </div>
-              <span className="text-xs font-mono text-[#6a6a7a]">
+              <span className="text-xs font-mono text-text-tertiary">
                 {quadrant.id.slice(0, 2).toUpperCase()}
               </span>
             </motion.div>

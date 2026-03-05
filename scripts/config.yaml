@@ -26,6 +26,7 @@ classification:
   temperature: 0.1  # Lower temperature for more consistent results
   json_mode: true
 
+
 filtering:
   # Auto-ignore common noise and utility packages
   auto_ignore:

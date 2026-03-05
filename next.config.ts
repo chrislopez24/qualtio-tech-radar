@@ -3,7 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: 'export',
   distDir: 'dist',
-  basePath: '/qualtio-tech-radar',
+  // Only use basePath in production (GitHub Pages)
+  basePath: process.env.NODE_ENV === 'production' ? '/qualtio-tech-radar' : '',
   images: {
     unoptimized: true,
   },

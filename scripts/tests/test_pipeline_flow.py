@@ -219,9 +219,11 @@ class TestPipelineFlow:
                     "classify_batch should be called before filter"
             assert "filter" in call_order, "filter should be called"
 
-    def test_pipeline_uses_configured_classification_model(self):
+    def test_pipeline_uses_configured_classification_model(self, monkeypatch):
         """Pipeline should pass config.classification.model to AI components"""
         from etl.pipeline import RadarPipeline
+
+        monkeypatch.delenv("SYNTHETIC_MODEL", raising=False)
 
         config = ETLConfig(
             classification=ClassificationConfig(model="hf:MiniMaxAI/MiniMax-M2.5")
@@ -246,8 +248,36 @@ class TestPipelineFlow:
             args, kwargs = mock_filter.call_args
             assert args[0] == config.filtering
             assert kwargs["model"] == "hf:MiniMaxAI/MiniMax-M2.5"
+
             assert kwargs["max_drift"] == config.llm_optimization.cache_drift_threshold
             assert kwargs["llm_cache"] is not None
+
+    def test_pipeline_prefers_synthetic_model_env_over_config(self, monkeypatch):
+        """Pipeline should honor SYNTHETIC_MODEL env override when provided."""
+        from etl.pipeline import RadarPipeline
+
+        config = ETLConfig(
+            classification=ClassificationConfig(model="hf:MiniMaxAI/MiniMax-M2.5")
+        )
+        monkeypatch.setenv("SYNTHETIC_MODEL", "hf:moonshotai/Kimi-K2.5")
+
+        with patch('etl.pipeline.GitHubTrendingSource') as mock_github_source, \
+             patch('etl.pipeline.HackerNewsSource') as mock_hn_source, \
+             patch('etl.pipeline.TechnologyClassifier') as mock_classifier, \
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter, \
+             patch('etl.pipeline.DeepScanner'):
+
+            mock_github_source.return_value.fetch.return_value = []
+            mock_hn_source.return_value.fetch.return_value = []
+            mock_classifier.return_value.classify_batch.return_value = []
+            mock_filter.return_value.filter.return_value = []
+
+            pipeline = RadarPipeline(config=config)
+            pipeline.run()
+
+            mock_classifier.assert_called_once_with(model="hf:moonshotai/Kimi-K2.5")
+            _, kwargs = mock_filter.call_args
+            assert kwargs["model"] == "hf:moonshotai/Kimi-K2.5"
 
     def test_pipeline_repairs_items_with_placeholder_descriptions(self):
         """Output should repair placeholder descriptions instead of dropping items."""

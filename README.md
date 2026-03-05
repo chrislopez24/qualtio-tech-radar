@@ -134,8 +134,10 @@ Required for running the pipeline:
 |----------|-------------|----------|
 | `GH_TOKEN` | GitHub personal access token for API rate limits | Yes |
 | `SYNTHETIC_API_KEY` | API key for Synthetic (LLM) classification | Yes |
-| `SYNTHETIC_MODEL` | Model to use (default: `llama-3.3-70b`) | No |
+| `SYNTHETIC_MODEL` | Model to use (default: `hf:MiniMaxAI/MiniMax-M2.5`) | No |
 | `SYNTHETIC_API_URL` | Synthetic API endpoint (default: `https://api.synthetic.new/v1`) | No |
+
+Use `SYNTHETIC_MODEL` to switch models (for example, `hf:moonshotai/Kimi-K2.5` for evaluation runs). Keep `SYNTHETIC_API_URL` unchanged unless your environment explicitly requires a different endpoint.
 
 ### Source Toggles
 

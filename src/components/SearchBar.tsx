@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MagnifyingGlass, X, Command } from '@phosphor-icons/react';
 
@@ -10,6 +11,19 @@ interface SearchBarProps {
 }
 
 export function SearchBar({ value, onChange, placeholder = 'Search technologies...' }: SearchBarProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <div className="relative group">
       {/* Glow effect on focus */}
@@ -19,18 +33,20 @@ export function SearchBar({ value, onChange, placeholder = 'Search technologies.
       
       <div className="relative flex items-center">
         <MagnifyingGlass 
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6a6a7a] group-focus-within:text-[#00d4ff] transition-colors" 
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-tertiary group-focus-within:text-accent-cyan transition-colors" 
           weight="duotone" 
         />
         
         <input
+          ref={inputRef}
           type="text"
+          aria-label="Search technologies"
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full pl-11 pr-24 py-2.5 bg-[#12121a]/80 border border-[#ffffff08] rounded-xl
-                     text-sm text-white placeholder:text-[#6a6a7a]
-                     focus:outline-none focus:border-[#00d4ff]/30 focus:bg-[#1a1a24]
+          className="w-full pl-11 pr-24 py-2.5 bg-bg-secondary/80 border border-border-subtle rounded-xl
+                     text-sm text-white placeholder:text-text-tertiary
+                     focus:outline-none focus:border-accent-cyan/30 focus:bg-bg-tertiary
                      transition-all duration-300
                      font-body"
         />
@@ -42,10 +58,10 @@ export function SearchBar({ value, onChange, placeholder = 'Search technologies.
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="absolute right-3 flex items-center gap-1 px-2 py-1 rounded-md bg-[#1a1a24] border border-[#ffffff08]"
+              className="absolute right-3 flex items-center gap-1 px-2 py-1 rounded-md bg-bg-tertiary border border-border-subtle"
             >
-              <Command className="w-3 h-3 text-[#6a6a7a]" weight="duotone" />
-              <span className="text-[10px] font-mono text-[#6a6a7a] uppercase">K</span>
+              <Command className="w-3 h-3 text-text-tertiary" weight="duotone" />
+              <span className="text-[10px] font-mono text-text-tertiary uppercase">K</span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -58,7 +74,7 @@ export function SearchBar({ value, onChange, placeholder = 'Search technologies.
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               onClick={() => onChange('')}
-              className="absolute right-3 p-1 rounded-md text-[#6a6a7a] hover:text-white hover:bg-white/10 transition-colors"
+              className="absolute right-3 p-1 rounded-md text-text-tertiary hover:text-white hover:bg-white/10 transition-colors"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
             >

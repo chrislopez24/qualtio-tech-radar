@@ -51,12 +51,15 @@ export function Radar({
     return technologies.filter((technology) => matchesTechnologySearch(technology, searchQuery));
   }, [technologies, searchQuery]);
 
-  const filteredIds = new Set(filteredTechnologies.map(t => t.id));
+  const filteredIds = useMemo(
+    () => new Set(filteredTechnologies.map(t => t.id)),
+    [filteredTechnologies],
+  );
   const center = RADAR_SIZE / 2;
 
   return (
     <div className="relative">
-      {/* Background Grid Effect - más sutil */}
+      {/* Background Grid Effect */}
       <div className="absolute inset-0 opacity-10">
         <div 
           className="w-full h-full"
@@ -76,9 +79,11 @@ export function Radar({
         height={RADAR_SIZE}
         viewBox={`0 0 ${RADAR_SIZE} ${RADAR_SIZE}`}
         className="max-w-full h-auto relative z-10"
+        role="img"
+        aria-label="Technology radar visualization showing technologies across four quadrants and maturity rings"
       >
         <defs>
-          {/* Glow Filters - menos intensos */}
+          {/* Glow Filters */}
           <filter id="glow-soft" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="2" result="coloredBlur" />
             <feMerge>
@@ -87,7 +92,7 @@ export function Radar({
             </feMerge>
           </filter>
           
-          {/* Radial Gradient for center glow - más sutil */}
+          {/* Radial Gradient for center glow */}
           <radialGradient id="radarCenterGlow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#00d4ff" stopOpacity={0.05} />
             <stop offset="50%" stopColor="#00d4ff" stopOpacity={0.02} />
@@ -95,7 +100,7 @@ export function Radar({
           </radialGradient>
         </defs>
 
-        {/* Background Glow - más sutil */}
+        {/* Background Glow */}
         <motion.circle
           cx={center}
           cy={center}
@@ -110,6 +115,25 @@ export function Radar({
             delay: 0.2 
           }}
         />
+
+        {/* Quadrant background fills */}
+        {QUADRANTS.map((quadrant) => {
+          const startAngle = (quadrant.angle - 90) * Math.PI / 180;
+          const endAngle = startAngle + Math.PI / 2;
+          const outerRadius = RINGS[0].radius;
+          const largeArcFlag = 0;
+          return (
+            <path
+              key={`quadrant-fill-${quadrant.id}`}
+              d={`M ${center} ${center}
+                  L ${center + outerRadius * Math.cos(startAngle)} ${center + outerRadius * Math.sin(startAngle)}
+                  A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${center + outerRadius * Math.cos(endAngle)} ${center + outerRadius * Math.sin(endAngle)}
+                  Z`}
+              fill={quadrant.color}
+              opacity={0.04}
+            />
+          );
+        })}
 
         {/* Radar Rings */}
         <motion.g
@@ -138,7 +162,7 @@ export function Radar({
             />
           ))}
 
-          {/* Quadrant Lines - más visibles */}
+          {/* Quadrant Lines */}
           {QUADRANTS.map((quadrant, index) => {
             return (
               <motion.line
@@ -181,13 +205,13 @@ export function Radar({
             </motion.text>
           ))}
 
-          {/* Quadrant Labels - ajustadas para no cortarse */}
+          {/* Quadrant Labels */}
           {QUADRANTS.map((quadrant, index) => {
             const labelRadius = RINGS[0].radius + 40;
             const angle = (quadrant.angle - 90) * Math.PI / 180;
             const rawX = center + labelRadius * Math.cos(angle);
             const rawY = center + labelRadius * Math.sin(angle);
-            // Ajustar para mantener dentro del SVG
+            // Clamp to keep within SVG bounds
             const x = Math.max(70, Math.min(RADAR_SIZE - 70, rawX));
             const y = Math.max(25, Math.min(RADAR_SIZE - 25, rawY));
             

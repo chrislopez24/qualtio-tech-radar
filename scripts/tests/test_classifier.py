@@ -1,7 +1,7 @@
 """Tests for the ETL classifier module"""
 
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, Mock
 from etl.classifier import ClassificationResult, TechnologyClassifier
 
 
@@ -171,3 +171,78 @@ def test_classifier_returns_semantic_decision_with_strategic_value():
     assert hasattr(result, "strategic_value")
     assert result.strategic_value == "high"
     assert result.rationale == "Widely adopted UI library with strong community"
+
+
+def test_classifier_uses_8000_token_budget():
+    """Classifier should request 8000 max tokens for richer model outputs."""
+    classifier = TechnologyClassifier(api_key="test-key")
+    classifier.client = MagicMock()
+
+    mock_message = MagicMock()
+    mock_message.content = '{"name":"React","quadrant":"tools","ring":"adopt","description":"UI library","confidence":0.9,"trend":"up"}'
+    mock_message.tool_calls = []
+
+    mock_choice = MagicMock()
+    mock_choice.message = mock_message
+    mock_choice.finish_reason = "stop"
+
+    mock_usage = MagicMock()
+    mock_usage.prompt_tokens = 120
+    mock_usage.completion_tokens = 80
+    mock_usage.total_tokens = 200
+
+    mock_response = MagicMock()
+    mock_response.choices = [mock_choice]
+    mock_response.usage = mock_usage
+
+    classifier.client.chat.completions.create.return_value = mock_response
+
+    classifier.classify_one("React", 220000, 10, "UI library")
+
+    assert classifier.client.chat.completions.create.call_args.kwargs["max_tokens"] == 8000
+
+
+def test_classifier_uses_model_adaptive_openai_timeout():
+    """Classifier should adapt OpenAI client timeout to model latency profile."""
+    with patch("etl.classifier.OpenAI") as mock_openai:
+        TechnologyClassifier(api_key="test-key", model="hf:MiniMaxAI/MiniMax-M2.5")
+        assert mock_openai.call_args.kwargs["timeout"] == 60
+
+    with patch("etl.classifier.OpenAI") as mock_openai:
+        TechnologyClassifier(api_key="test-key", model="hf:moonshotai/Kimi-K2.5")
+        assert mock_openai.call_args.kwargs["timeout"] == 120
+
+
+def test_classifier_timeout_retry_uses_conservative_backoff():
+    """Classifier timeout retries should use conservative exponential backoff."""
+    from openai import APITimeoutError
+
+    classifier = TechnologyClassifier(api_key="test-key")
+    classifier.client = MagicMock()
+
+    mock_message = MagicMock()
+    mock_message.content = '{"name":"React","quadrant":"tools","ring":"adopt","description":"UI library","confidence":0.9,"trend":"up"}'
+    mock_message.tool_calls = []
+
+    mock_choice = MagicMock()
+    mock_choice.message = mock_message
+    mock_choice.finish_reason = "stop"
+
+    mock_usage = MagicMock()
+    mock_usage.prompt_tokens = 120
+    mock_usage.completion_tokens = 80
+    mock_usage.total_tokens = 200
+
+    mock_response = MagicMock()
+    mock_response.choices = [mock_choice]
+    mock_response.usage = mock_usage
+
+    classifier.client.chat.completions.create.side_effect = [
+        APITimeoutError(request=Mock()),
+        mock_response,
+    ]
+
+    with patch("etl.classifier.time.sleep") as mock_sleep:
+        classifier.classify_one("React", 220000, 10, "UI library")
+
+    mock_sleep.assert_called_once_with(3)
