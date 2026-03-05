@@ -66,6 +66,12 @@ function renderActionBadges(technology: AITechnology) {
   );
 }
 
+function getShadowStatusClass(status?: string): string {
+  if (status === 'pass') return 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300';
+  if (status === 'fail') return 'border-rose-500/40 bg-rose-500/10 text-rose-300';
+  return 'border-amber-500/40 bg-amber-500/10 text-amber-300';
+}
+
 export function WatchlistPanel({ watchlist, meta, onSelectTechnology }: WatchlistPanelProps) {
   const pipeline = meta?.pipeline;
   const shadow = meta?.shadowGate;
@@ -138,6 +144,18 @@ export function WatchlistPanel({ watchlist, meta, onSelectTechnology }: Watchlis
               <span className="font-mono">{formatPercent(shadow.llmCallReduction)}</span>
               <span className="text-muted-foreground">Filtered</span>
               <span className="font-mono">{shadow.filteredCount ?? 0}</span>
+            </div>
+
+            <div className="mt-2 rounded border border-border/60 bg-background/60 p-2 text-[11px]">
+              <p className="font-medium text-muted-foreground">What changed</p>
+              <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                <span className={`rounded border px-1.5 py-0.5 font-semibold ${getShadowStatusClass(shadow.status)}`}>
+                  {(shadow.status ?? 'warn').toUpperCase()}
+                </span>
+                <span className="rounded border border-border/60 px-1.5 py-0.5">Added: {shadow.addedCount ?? 0}</span>
+                <span className="rounded border border-border/60 px-1.5 py-0.5">Filtered: {shadow.filteredCount ?? 0}</span>
+              </div>
+              <p className="mt-1 text-muted-foreground">Candidate transitions: {Object.keys(shadow.candidateChanges ?? {}).length}</p>
             </div>
           </div>
         )}

@@ -165,10 +165,22 @@ export function DetailPanel({ technology, open, onClose }: DetailPanelProps) {
                 </>
               )}
 
-              {(aiTechnology?.owner || aiTechnology?.nextStep || aiTechnology?.nextReviewAt || aiTechnology?.evidence?.length || aiTechnology?.alternatives?.length) && (
+              {(aiTechnology?.sourceSummary || aiTechnology?.signalFreshness || aiTechnology?.owner || aiTechnology?.nextStep || aiTechnology?.nextReviewAt || aiTechnology?.evidence?.length || aiTechnology?.alternatives?.length) && (
                 <>
                   <Separator className="my-3" />
                   <div className="space-y-3 text-sm">
+                    {(aiTechnology.sourceSummary || aiTechnology.signalFreshness) && (
+                      <section>
+                        <h4 className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Data provenance</h4>
+                        {aiTechnology.sourceSummary ? (
+                          <p className="mt-1 text-muted-foreground">{aiTechnology.sourceSummary}</p>
+                        ) : null}
+                        {aiTechnology.signalFreshness ? (
+                          <p className="mt-1 text-muted-foreground">Signal freshness: {aiTechnology.signalFreshness}</p>
+                        ) : null}
+                      </section>
+                    )}
+
                     {(aiTechnology.owner || aiTechnology.nextReviewAt) && (
                       <section>
                         <h4 className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Owner & review</h4>
@@ -200,6 +212,7 @@ export function DetailPanel({ technology, open, onClose }: DetailPanelProps) {
                   </div>
                 </>
               )}
+
             </>
           )}
 

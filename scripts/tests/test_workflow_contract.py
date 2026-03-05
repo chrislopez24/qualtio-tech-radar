@@ -128,3 +128,18 @@ def test_quarterly_workflow_restores_validated_data_on_gate_non_pass():
     yml = Path(".github/workflows/quarterly-update.yml").read_text()
     assert "restoring validated data snapshot" in yml
     assert "cp artifacts/baseline.json src/data/data.ai.json" in yml
+
+
+def test_quarterly_workflow_has_pip_cache_step():
+    """Workflow should cache pip packages in ~/.cache/pip keyed by requirements."""
+    yml = Path(".github/workflows/quarterly-update.yml").read_text()
+    assert "~/.cache/pip" in yml
+    assert "hashFiles('scripts/requirements.txt')" in yml
+
+
+def test_quarterly_workflow_has_npm_cache_step():
+    """Workflow should cache npm artifacts keyed by package-lock.json."""
+    yml = Path(".github/workflows/quarterly-update.yml").read_text()
+    assert "package-lock.json" in yml
+    assert "hashFiles('package-lock.json')" in yml
+    assert "actions/cache@" in yml or "cache: 'npm'" in yml

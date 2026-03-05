@@ -64,4 +64,40 @@ describe('DetailPanel', () => {
     expect(html).not.toContain('Use cases');
     expect(html).not.toContain('Avoid when');
   });
+
+  it('renders provenance and freshness hints when present', () => {
+    const html = renderToStaticMarkup(
+      <DetailPanel
+        technology={{
+          ...richTechnology,
+          sourceSummary: 'github + hn blended signals',
+          signalFreshness: 'fresh in last 7 days',
+        }}
+        open
+        onClose={() => {}}
+      />,
+    );
+
+    expect(html).toContain('Data provenance');
+    expect(html).toContain('github + hn blended signals');
+    expect(html).toContain('Signal freshness');
+    expect(html).toContain('fresh in last 7 days');
+  });
+
+  it('does not render provenance section when optional fields are absent', () => {
+    const html = renderToStaticMarkup(
+      <DetailPanel
+        technology={{
+          ...richTechnology,
+          sourceSummary: undefined,
+          signalFreshness: undefined,
+        }}
+        open
+        onClose={() => {}}
+      />,
+    );
+
+    expect(html).not.toContain('Data provenance');
+    expect(html).not.toContain('Signal freshness');
+  });
 });

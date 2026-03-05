@@ -108,3 +108,281 @@ def test_shadow_only_mode_uses_existing_files_without_running_pipeline(tmp_path)
     assert exit_code == 0
     mock_pipeline.assert_not_called()
     assert report_file.exists()
+
+
+def assert_skip_shadow_gate_defaults(shadow_gate):
+    assert shadow_gate["status"] == "skip"
+    assert "nextAction" in shadow_gate
+    assert shadow_gate["nextAction"] is None
+    assert "filteredCount" in shadow_gate
+    assert shadow_gate["filteredCount"] == 0
+    assert "addedCount" in shadow_gate
+    assert shadow_gate["addedCount"] == 0
+    assert "filteredSample" in shadow_gate
+    assert shadow_gate["filteredSample"] == []
+    assert "candidateChanges" in shadow_gate
+    assert shadow_gate["candidateChanges"] == {}
+    assert "leaderState" in shadow_gate
+    assert shadow_gate["leaderState"] == {}
+
+
+def test_shadow_gate_contract_is_stable_when_shadow_eval_skips(tmp_path):
+    from main import main
+    from etl.config import ETLConfig, OutputConfig
+
+    current_file = tmp_path / "data.ai.json"
+    missing_baseline_file = tmp_path / "missing-baseline.json"
+
+    current_file.write_text(
+        json.dumps(
+            {
+                "technologies": [{"id": "react", "name": "React"}],
+                "watchlist": [],
+                "meta": {},
+            }
+        )
+    )
+
+    cfg = ETLConfig(output=OutputConfig(public_file=str(current_file)))
+
+    with patch("main.load_etl_config", return_value=cfg), \
+         patch("main.RadarPipeline") as mock_pipeline, \
+         patch.object(
+             sys,
+             "argv",
+             [
+                 "main.py",
+                 "--shadow-only",
+                 "--shadow-baseline",
+                 str(missing_baseline_file),
+                 "--shadow-current",
+                 str(current_file),
+             ],
+         ):
+        exit_code = main()
+
+    assert exit_code == 0
+    mock_pipeline.assert_not_called()
+
+    payload = json.loads(current_file.read_text())
+    shadow_gate = payload["meta"]["shadowGate"]
+    assert_skip_shadow_gate_defaults(shadow_gate)
+
+
+def test_shadow_mode_without_baseline_uses_stable_shadow_gate_contract(tmp_path):
+    from main import main
+    from etl.config import ETLConfig, OutputConfig
+
+    public_file = tmp_path / "data.ai.json"
+    cfg = ETLConfig(output=OutputConfig(public_file=str(public_file)))
+
+    with patch("main.load_etl_config", return_value=cfg), \
+         patch("main.RadarPipeline") as mock_pipeline, \
+         patch.object(sys, "argv", ["main.py", "--shadow"]):
+        mock_pipeline.return_value.run.return_value = {
+            "technologies": [{"id": "react", "name": "React", "quadrant": "tools", "ring": "adopt", "description": "UI"}],
+            "watchlist": [],
+            "meta": {},
+        }
+
+        exit_code = main()
+
+    assert exit_code == 0
+
+    payload = json.loads(public_file.read_text())
+    shadow_gate = payload["meta"]["shadowGate"]
+    assert_skip_shadow_gate_defaults(shadow_gate)
+
+
+def test_shadow_only_without_baseline_persists_stable_shadow_gate_contract(tmp_path):
+    from main import main
+    from etl.config import ETLConfig, OutputConfig
+
+    current_file = tmp_path / "data.ai.json"
+    current_file.write_text(
+        json.dumps(
+            {
+                "technologies": [{"id": "react", "name": "React"}],
+                "watchlist": [],
+                "meta": {},
+            }
+        )
+    )
+
+    cfg = ETLConfig(output=OutputConfig(public_file=str(current_file)))
+
+    with patch("main.load_etl_config", return_value=cfg), \
+         patch("main.RadarPipeline") as mock_pipeline, \
+         patch.object(
+             sys,
+             "argv",
+             [
+                 "main.py",
+                 "--shadow-only",
+                 "--shadow-current",
+                 str(current_file),
+             ],
+         ):
+        exit_code = main()
+
+    assert exit_code == 0
+    mock_pipeline.assert_not_called()
+
+    payload = json.loads(current_file.read_text())
+    shadow_gate = payload["meta"]["shadowGate"]
+    assert_skip_shadow_gate_defaults(shadow_gate)
+
+
+def test_shadow_only_warn_and_fail_keep_baseline_leader_state_in_meta(tmp_path):
+    from main import main
+    from etl.config import ETLConfig, OutputConfig
+
+    current_file = tmp_path / "data.ai.json"
+    baseline_file = tmp_path / "baseline.json"
+    report_file = tmp_path / "shadow_eval.json"
+
+    baseline_leader_state = {
+        "stableLeaders": ["kubernetes", "react"],
+        "candidateChanges": {
+            "bun:added": {
+                "leaderId": "bun",
+                "changeType": "added",
+                "consecutiveCount": 2,
+                "firstSeenRun": "run-2",
+                "lastSeenRun": "run-3",
+            }
+        },
+        "promotedChanges": [],
+        "lastRunId": "run-3",
+        "promotionRuns": 3,
+    }
+
+    baseline_payload = {
+        "technologies": [{"id": "react", "marketScore": 98}, {"id": "kubernetes", "marketScore": 97}],
+        "watchlist": [],
+        "meta": {"shadowGate": {"leaderState": baseline_leader_state}},
+    }
+    current_payload = {
+        "technologies": [{"id": "react", "marketScore": 98}, {"id": "kubernetes", "marketScore": 97}],
+        "watchlist": [],
+        "meta": {},
+    }
+
+    baseline_file.write_text(json.dumps(baseline_payload))
+    current_file.write_text(json.dumps(current_payload))
+
+    cfg = ETLConfig(output=OutputConfig(public_file=str(current_file)))
+
+    with patch("main.load_etl_config", return_value=cfg), \
+         patch("main.RadarPipeline") as mock_pipeline, \
+         patch.object(
+             sys,
+             "argv",
+             [
+                 "main.py",
+                 "--shadow-only",
+                 "--shadow-baseline",
+                 str(baseline_file),
+                 "--shadow-current",
+                 str(current_file),
+                 "--shadow-output",
+                 str(report_file),
+                 "--shadow-threshold-core-overlap",
+                 "1.1",
+                 "--shadow-threshold-leader-coverage",
+                 "0.0",
+                 "--shadow-threshold-watchlist-recall",
+                 "0.0",
+                 "--shadow-threshold-llm-reduction",
+                 "0.0",
+             ],
+         ):
+        exit_code = main()
+
+    assert exit_code == 1
+    mock_pipeline.assert_not_called()
+
+    payload = json.loads(current_file.read_text())
+    leader_state = payload["meta"]["shadowGate"]["leaderState"]
+    assert leader_state == baseline_leader_state
+
+
+def test_shadow_only_pass_persists_updated_stable_leader_state(tmp_path):
+    from main import main
+    from etl.config import ETLConfig, OutputConfig
+
+    current_file = tmp_path / "data.ai.json"
+    baseline_file = tmp_path / "baseline.json"
+    report_file = tmp_path / "shadow_eval.json"
+
+    baseline_leader_state = {
+        "stableLeaders": ["kubernetes", "react"],
+        "candidateChanges": {
+            "bun:added": {
+                "leaderId": "bun",
+                "changeType": "added",
+                "consecutiveCount": 2,
+                "firstSeenRun": "run-2",
+                "lastSeenRun": "run-3",
+            }
+        },
+        "promotedChanges": [],
+        "lastRunId": "run-3",
+        "promotionRuns": 3,
+    }
+
+    baseline_payload = {
+        "technologies": [{"id": "react", "marketScore": 98}, {"id": "kubernetes", "marketScore": 97}],
+        "watchlist": [],
+        "meta": {"shadowGate": {"leaderState": baseline_leader_state}},
+    }
+    current_payload = {
+        "technologies": [
+            {"id": "react", "marketScore": 98},
+            {"id": "kubernetes", "marketScore": 97},
+            {"id": "bun", "marketScore": 99},
+        ],
+        "watchlist": [],
+        "meta": {},
+    }
+
+    baseline_file.write_text(json.dumps(baseline_payload))
+    current_file.write_text(json.dumps(current_payload))
+
+    cfg = ETLConfig(output=OutputConfig(public_file=str(current_file)))
+
+    with patch("main.load_etl_config", return_value=cfg), \
+         patch("main.RadarPipeline") as mock_pipeline, \
+         patch.object(
+             sys,
+             "argv",
+             [
+                 "main.py",
+                 "--shadow-only",
+                 "--shadow-baseline",
+                 str(baseline_file),
+                 "--shadow-current",
+                 str(current_file),
+                 "--shadow-output",
+                 str(report_file),
+                 "--shadow-threshold-core-overlap",
+                 "0.0",
+                 "--shadow-threshold-leader-coverage",
+                 "0.0",
+                 "--shadow-threshold-watchlist-recall",
+                 "0.0",
+                 "--shadow-threshold-llm-reduction",
+                 "0.0",
+             ],
+         ):
+        exit_code = main()
+
+    assert exit_code == 0
+    mock_pipeline.assert_not_called()
+
+    payload = json.loads(current_file.read_text())
+    leader_state = payload["meta"]["shadowGate"]["leaderState"]
+    assert leader_state["stableLeaders"] == ["bun", "kubernetes", "react"]
+    assert leader_state["candidateChanges"] == {}
+    assert leader_state["promotedChanges"] == [{"leaderId": "bun", "changeType": "added"}]
+    assert leader_state["promotionRuns"] == 3

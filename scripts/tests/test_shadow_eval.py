@@ -336,6 +336,8 @@ def test_quality_gate_classifies_as_pass_when_thresholds_met_and_no_candidates()
     gate = classify_quality_gate(report, thresholds, leader_state={"candidate_changes": {}})
     assert gate["status"] == "pass"
     assert gate["next_action"] == "rollout-approved"
+    assert gate["next_action_message"] == "Quality checks passed and rollout is approved."
+    assert gate["next_action_code"] == "rollout-approved"
 
 
 def test_quality_gate_classifies_as_warn_when_candidate_changes_exist():
@@ -367,6 +369,8 @@ def test_quality_gate_classifies_as_warn_when_candidate_changes_exist():
     gate = classify_quality_gate(report, thresholds, leader_state=leader_state)
     assert gate["status"] == "warn"
     assert gate["next_action"] == "await-stable-leader-transition"
+    assert gate["next_action_message"] == "Await stable leader transition before rollout approval."
+    assert gate["next_action_code"] == "await-stable-leader-transition"
 
 
 def test_quality_gate_classifies_as_fail_when_any_threshold_breaches():
@@ -387,6 +391,9 @@ def test_quality_gate_classifies_as_fail_when_any_threshold_breaches():
 
     gate = classify_quality_gate(report, thresholds, leader_state={"candidate_changes": {}})
     assert gate["status"] == "fail"
+    assert gate["next_action"] == "investigate-quality-regression"
+    assert gate["next_action_message"] == "Investigate quality regression before rollout."
+    assert gate["next_action_code"] == "investigate-quality-regression"
     assert "leader_coverage" in gate["failed_metrics"]
 
 
@@ -416,3 +423,265 @@ def test_build_shadow_eval_report_includes_gate_and_leader_state_fields():
     assert report["gate_status"] == "pass"
     assert report["stable_leaders"] == ["react", "kubernetes"]
     assert "leader_transition_summary" in report
+
+
+def test_build_shadow_eval_report_includes_leader_transition_explainability_details():
+    from etl.shadow_eval import build_shadow_eval_report
+
+    metrics = {
+        "core_overlap": 0.95,
+        "leader_coverage": 1.0,
+        "watchlist_recall": 1.0,
+        "llm_call_reduction": 0.8,
+    }
+    thresholds = {
+        "core_overlap": 0.85,
+        "leader_coverage": 0.95,
+        "watchlist_recall": 0.80,
+        "llm_call_reduction": 0.6,
+    }
+    leader_state = {
+        "stable_leaders": ["react", "kubernetes"],
+        "candidate_changes": {
+            "bun:added": {
+                "leader_id": "bun",
+                "change_type": "added",
+                "consecutive_count": 2,
+            }
+        },
+        "promoted_changes": [{"leader_id": "terraform", "change_type": "removed"}],
+    }
+
+    report = build_shadow_eval_report(metrics, thresholds, leader_state=leader_state)
+
+    assert report["leader_transition_summary"] == {
+        "candidate_count": 1,
+        "promoted_count": 1,
+    }
+    assert report["candidate_changes"]["bun:added"] == {
+        "leader_id": "bun",
+        "change_type": "added",
+        "consecutive_count": 2,
+    }
+
+
+def test_build_shadow_eval_report_includes_human_readable_next_action():
+    from etl.shadow_eval import build_shadow_eval_report
+
+    metrics = {
+        "core_overlap": 0.95,
+        "leader_coverage": 1.0,
+        "watchlist_recall": 1.0,
+        "llm_call_reduction": 0.8,
+    }
+    thresholds = {
+        "core_overlap": 0.85,
+        "leader_coverage": 0.95,
+        "watchlist_recall": 0.80,
+        "llm_call_reduction": 0.6,
+    }
+    leader_state = {
+        "stable_leaders": ["react", "kubernetes"],
+        "candidate_changes": {
+            "bun:added": {
+                "leader_id": "bun",
+                "change_type": "added",
+                "consecutive_count": 2,
+            }
+        },
+        "promoted_changes": [],
+    }
+
+    report = build_shadow_eval_report(metrics, thresholds, leader_state=leader_state)
+
+    assert report["next_action"] == "await-stable-leader-transition"
+    assert report["next_action_message"] == "Await stable leader transition before rollout approval."
+    assert report["next_action_code"] == "await-stable-leader-transition"
+
+
+def test_deserialize_leader_state_normalizes_meta_shape_and_sorts_keys():
+    from etl.shadow_eval import deserialize_leader_state
+
+    raw_state = {
+        "stableLeaders": ["react", "bun", "kubernetes"],
+        "candidateChanges": {
+            "react:removed": {
+                "leaderId": "react",
+                "changeType": "removed",
+                "consecutiveCount": 1,
+                "firstSeenRun": "run-4",
+                "lastSeenRun": "run-4",
+            },
+            "bun:added": {
+                "leaderId": "bun",
+                "changeType": "added",
+                "consecutiveCount": 2,
+                "firstSeenRun": "run-3",
+                "lastSeenRun": "run-4",
+            },
+        },
+        "promotedChanges": [{"leaderId": "terraform", "changeType": "added"}],
+        "lastRunId": "run-4",
+        "promotionRuns": 3,
+    }
+
+    state = deserialize_leader_state(raw_state)
+
+    assert state["stable_leaders"] == ["bun", "kubernetes", "react"]
+    assert list(state["candidate_changes"].keys()) == ["bun:added", "react:removed"]
+    assert state["promoted_changes"] == [{"leader_id": "terraform", "change_type": "added"}]
+    assert state["last_run_id"] == "run-4"
+    assert state["promotion_runs"] == 3
+
+
+def test_serialize_leader_state_emits_deterministic_meta_shape():
+    from etl.shadow_eval import serialize_leader_state
+
+    state = {
+        "stable_leaders": ["react", "bun", "kubernetes"],
+        "candidate_changes": {
+            "react:removed": {
+                "leader_id": "react",
+                "change_type": "removed",
+                "consecutive_count": 1,
+                "first_seen_run": "run-4",
+                "last_seen_run": "run-4",
+            },
+            "bun:added": {
+                "leader_id": "bun",
+                "change_type": "added",
+                "consecutive_count": 2,
+                "first_seen_run": "run-3",
+                "last_seen_run": "run-4",
+            },
+        },
+        "promoted_changes": [{"leader_id": "terraform", "change_type": "added"}],
+        "last_run_id": "run-4",
+        "promotion_runs": 3,
+    }
+
+    serialized = serialize_leader_state(state)
+
+    assert serialized["stableLeaders"] == ["bun", "kubernetes", "react"]
+    assert list(serialized["candidateChanges"].keys()) == ["bun:added", "react:removed"]
+    assert serialized["candidateChanges"]["bun:added"] == {
+        "leaderId": "bun",
+        "changeType": "added",
+        "consecutiveCount": 2,
+        "firstSeenRun": "run-3",
+        "lastSeenRun": "run-4",
+    }
+    assert serialized["promotedChanges"] == [{"leaderId": "terraform", "changeType": "added"}]
+    assert serialized["lastRunId"] == "run-4"
+    assert serialized["promotionRuns"] == 3
+
+
+def test_deserialize_leader_state_handles_non_dict_input_safely():
+    from etl.shadow_eval import deserialize_leader_state
+
+    assert deserialize_leader_state("invalid") == {
+        "stable_leaders": [],
+        "candidate_changes": {},
+        "promoted_changes": [],
+        "last_run_id": "",
+        "promotion_runs": 3,
+    }
+    assert deserialize_leader_state(["invalid"]) == {
+        "stable_leaders": [],
+        "candidate_changes": {},
+        "promoted_changes": [],
+        "last_run_id": "",
+        "promotion_runs": 3,
+    }
+
+
+def test_shadow_eval_clamps_llm_call_reduction_when_optimized_exceeds_baseline():
+    from etl.shadow_eval import compare_outputs
+
+    baseline = {"technologies": [{"id": "react"}], "metadata": {"llm_calls": 10}}
+    optimized = {"technologies": [{"id": "react"}], "metadata": {"llm_calls": 20}}
+
+    report = compare_outputs(baseline, optimized)
+    assert report["llm_call_reduction"] == 0.0
+
+
+def test_extract_metric_inputs_computes_id_sets_and_diffs():
+    from etl.shadow_eval import _extract_metric_inputs
+
+    baseline = {
+        "technologies": [{"id": "react"}, {"id": "kubernetes"}],
+        "watchlist": [{"id": "bun"}],
+    }
+    optimized = {
+        "technologies": [{"id": "react"}, {"id": "bun"}],
+        "watchlist": [],
+    }
+
+    inputs = _extract_metric_inputs(baseline, optimized)
+
+    assert inputs["baseline_ids"] == {"react", "kubernetes"}
+    assert inputs["optimized_ids"] == {"react", "bun"}
+    assert inputs["missing_from_optimized"] == ["kubernetes"]
+    assert inputs["added_in_optimized"] == ["bun"]
+
+
+def test_apply_leader_policy_promotes_added_and_removed_candidates():
+    from etl.shadow_eval import _apply_leader_policy
+
+    prev_stable = {"react", "kubernetes"}
+    next_candidates = {
+        "bun:added": {
+            "leader_id": "bun",
+            "change_type": "added",
+            "consecutive_count": 3,
+            "first_seen_run": "run-2",
+            "last_seen_run": "run-4",
+        },
+        "kubernetes:removed": {
+            "leader_id": "kubernetes",
+            "change_type": "removed",
+            "consecutive_count": 3,
+            "first_seen_run": "run-2",
+            "last_seen_run": "run-4",
+        },
+        "terraform:added": {
+            "leader_id": "terraform",
+            "change_type": "added",
+            "consecutive_count": 2,
+            "first_seen_run": "run-3",
+            "last_seen_run": "run-4",
+        },
+    }
+
+    policy = _apply_leader_policy(prev_stable, next_candidates, promotion_runs=3)
+
+    assert policy["stable_leaders"] == ["bun", "react"]
+    assert policy["promoted_changes"] == [
+        {"leader_id": "bun", "change_type": "added"},
+        {"leader_id": "kubernetes", "change_type": "removed"},
+    ]
+    assert list(policy["remaining_candidates"].keys()) == ["terraform:added"]
+
+
+def test_collect_failed_metrics_reports_only_breaching_thresholds():
+    from etl.shadow_eval import _collect_failed_metrics
+
+    report = {
+        "core_overlap": 0.9,
+        "leader_coverage": 0.7,
+        "watchlist_recall": 1.0,
+    }
+    thresholds = {
+        "core_overlap": 0.85,
+        "leader_coverage": 0.95,
+        "watchlist_recall": 0.8,
+    }
+
+    failed = _collect_failed_metrics(report, thresholds)
+
+    assert failed == {
+        "leader_coverage": {
+            "required": 0.95,
+            "actual": 0.7,
+        }
+    }

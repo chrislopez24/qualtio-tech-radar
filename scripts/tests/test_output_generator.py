@@ -143,3 +143,57 @@ def test_output_contains_market_score_trend_and_moved():
     assert "trend" in tech
     assert "moved" in tech
     assert "signals" in tech
+
+
+def test_output_generator_generates_optional_provenance_fields(tmp_path):
+    """Test that optional provenance fields are generated in public output."""
+    output_dir = tmp_path / "data"
+    output_dir.mkdir()
+
+    technologies = [
+        {
+            "id": "go",
+            "name": "Go",
+            "quadrant": "platforms",
+            "ring": "adopt",
+            "description": "Compiled language",
+            "moved": 0,
+            "source_summary": "github+hn blend",
+            "signal_freshness": "fresh:7d",
+        }
+    ]
+
+    generate_outputs(technologies, output_dir)
+
+    with open(output_dir / "data.ai.json") as f:
+        public_payload = json.load(f)
+
+    tech = public_payload["technologies"][0]
+    assert tech["sourceSummary"] == "github+hn blend"
+    assert tech["signalFreshness"] == "fresh:7d"
+
+
+def test_output_generator_keeps_backward_compatibility_without_provenance_fields(tmp_path):
+    """Test that provenance fields are omitted when absent."""
+    output_dir = tmp_path / "data"
+    output_dir.mkdir()
+
+    technologies = [
+        {
+            "id": "legacy",
+            "name": "Legacy",
+            "quadrant": "tools",
+            "ring": "assess",
+            "description": "Legacy tool",
+            "moved": 0,
+        }
+    ]
+
+    generate_outputs(technologies, output_dir)
+
+    with open(output_dir / "data.ai.json") as f:
+        public_payload = json.load(f)
+
+    tech = public_payload["technologies"][0]
+    assert "sourceSummary" not in tech
+    assert "signalFreshness" not in tech

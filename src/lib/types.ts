@@ -28,6 +28,8 @@ export interface DecisionRisk {
 
 export interface AITechnology extends Technology {
   trend: Trend;
+  sourceSummary?: string;
+  signalFreshness?: string;
   githubStars?: number;
   hnMentions?: number;
   stars?: number;
@@ -75,6 +77,11 @@ export interface ShadowGateSummary {
   addedCount?: number;
   filteredByRing?: Record<string, number>;
   filteredSample?: string[];
+  candidateChanges?: Record<string, {
+    leaderId: string;
+    changeType: 'added' | 'removed';
+    consecutiveCount: number;
+  }>;
 }
 
 export interface AIRadarMeta {

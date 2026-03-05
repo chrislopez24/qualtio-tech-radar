@@ -32,6 +32,32 @@ describe('WatchlistPanel', () => {
     expect(html).toContain('Due in');
   });
 
+  it('renders compact what changed block from shadow gate metadata', () => {
+    const html = renderToStaticMarkup(
+      <WatchlistPanel
+        watchlist={[watchlistItem]}
+        meta={{
+          shadowGate: {
+            status: 'warn',
+            addedCount: 3,
+            filteredCount: 2,
+            candidateChanges: {
+              llama: { leaderId: 'llama', changeType: 'added', consecutiveCount: 2 },
+              mistral: { leaderId: 'mistral', changeType: 'removed', consecutiveCount: 1 },
+            },
+          },
+        }}
+        onSelectTechnology={() => {}}
+      />,
+    );
+
+    expect(html).toContain('What changed');
+    expect(html).toContain('WARN');
+    expect(html).toContain('Added: 3');
+    expect(html).toContain('Filtered: 2');
+    expect(html).toContain('Candidate transitions: 2');
+  });
+
   it('renders fallback status when review date is missing', () => {
     const html = renderToStaticMarkup(
       <WatchlistPanel

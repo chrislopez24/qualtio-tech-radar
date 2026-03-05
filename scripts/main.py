@@ -27,6 +27,8 @@ from etl.shadow_eval import (
     classify_quality_gate,
     update_leader_stability_state,
     select_top_leaders,
+    deserialize_leader_state,
+    serialize_leader_state,
     DEFAULT_THRESHOLDS,
 )
 
@@ -63,20 +65,40 @@ def main():
         config = load_etl_config(str(Path(__file__).parent / "config.yaml"))
         public_output_path = Path(config.output.public_file)
 
-        def build_shadow_summary(report: dict[str, float], status: str, leader_state: dict[str, object] | None = None) -> dict[str, object]:
+        def build_shadow_summary(
+            report: dict[str, object] | None,
+            status: str,
+            leader_state: dict[str, object] | None = None,
+        ) -> dict[str, object]:
+            source = report or {}
+            raw_candidate_changes = source.get("candidate_changes")
+            candidate_changes = raw_candidate_changes if isinstance(raw_candidate_changes, dict) else {}
+
+            normalized_candidate_changes = {}
+            for key in sorted(candidate_changes.keys()):
+                value = candidate_changes.get(key)
+                if not isinstance(value, dict):
+                    continue
+                change_type = value.get("change_type")
+                normalized_candidate_changes[str(key)] = {
+                    "leaderId": str(value.get("leader_id", "")),
+                    "changeType": change_type if change_type in {"added", "removed"} else "added",
+                    "consecutiveCount": int(value.get("consecutive_count", 0)),
+                }
+
             return {
                 "status": status,
-                "coreOverlap": report.get("core_overlap"),
-                "leaderCoverage": report.get("leader_coverage"),
-                "watchlistRecall": report.get("watchlist_recall"),
-                "llmCallReduction": report.get("llm_call_reduction"),
-                "filteredCount": report.get("filtered_count", 0),
-                "addedCount": report.get("added_count", 0),
-                "filteredByRing": report.get("filtered_by_ring", {}),
-                "filteredSample": report.get("filtered_sample", []),
-                "nextAction": report.get("next_action"),
-                "leaderState": leader_state or {},
-                "candidateChanges": report.get("candidate_changes", {}),
+                "coreOverlap": source.get("core_overlap"),
+                "leaderCoverage": source.get("leader_coverage"),
+                "watchlistRecall": source.get("watchlist_recall"),
+                "llmCallReduction": source.get("llm_call_reduction"),
+                "filteredCount": source.get("filtered_count", 0),
+                "addedCount": source.get("added_count", 0),
+                "filteredByRing": source.get("filtered_by_ring", {}),
+                "filteredSample": source.get("filtered_sample", []),
+                "nextAction": source.get("next_action"),
+                "leaderState": serialize_leader_state(leader_state) if leader_state is not None else {},
+                "candidateChanges": normalized_candidate_changes,
             }
 
         def extract_observed_leaders(payload: dict) -> set[str]:
@@ -90,7 +112,7 @@ def main():
         ) -> tuple[int, dict[str, object]]:
             if not baseline_path.exists():
                 print(f"Warning: Baseline file not found: {baseline_path}")
-                return 0, {"status": "skip"}
+                return 0, build_shadow_summary(report=None, status="skip")
 
             with open(baseline_path) as f:
                 baseline = json.load(f)
@@ -104,16 +126,17 @@ def main():
                 "llm_call_reduction": args.shadow_threshold_llm_reduction,
             }
 
-            previous_shadow_state = baseline.get("meta", {}).get("shadowGate", {}).get("leaderState", {})
+            previous_shadow_state_raw = baseline.get("meta", {}).get("shadowGate", {}).get("leaderState", {})
+            previous_shadow_state = deserialize_leader_state(previous_shadow_state_raw)
             observed_leaders = extract_observed_leaders(current_payload)
-            leader_state = update_leader_stability_state(
+            next_leader_state = update_leader_stability_state(
                 previous_state=previous_shadow_state,
                 observed_leaders=observed_leaders,
                 run_id=datetime.now().isoformat(),
             )
 
-            report = build_shadow_eval_report(report, thresholds, leader_state=leader_state)
-            gate = classify_quality_gate(report, thresholds, leader_state=leader_state)
+            report = build_shadow_eval_report(report, thresholds, leader_state=next_leader_state)
+            gate = classify_quality_gate(report, thresholds, leader_state=next_leader_state)
 
             write_report(report, output_path)
             print(f"\nShadow eval report saved to: {output_path}")
@@ -129,13 +152,13 @@ def main():
             status = gate["status"]
             if status == "pass":
                 print("\n✓ All quality thresholds met - GO for rollout")
-                return 0, build_shadow_summary(report, "pass", leader_state=leader_state)
+                return 0, build_shadow_summary(report, "pass", leader_state=next_leader_state)
             if status == "warn":
                 print("\n⚠ Quality thresholds met but leader changes are not yet stable")
-                return 0, build_shadow_summary(report, "warn", leader_state=leader_state)
+                return 0, build_shadow_summary(report, "warn", leader_state=previous_shadow_state)
 
             print("\n✗ Quality thresholds not met - NO-GO for rollout")
-            return 1, build_shadow_summary(report, "fail", leader_state=leader_state)
+            return 1, build_shadow_summary(report, "fail", leader_state=previous_shadow_state)
 
         if args.max_technologies:
             config.deep_scan.repos = args.max_technologies * [""][:1] or []
@@ -155,9 +178,17 @@ def main():
             print("Running in SHADOW-ONLY MODE")
             print("-" * 60)
 
+            current_path = Path(args.shadow_current) if args.shadow_current else public_output_path
             baseline_arg = Path(args.shadow_baseline) if args.shadow_baseline else None
             if baseline_arg is None:
                 print("Warning: --shadow-baseline not specified, skipping quality evaluation")
+                if not current_path.exists():
+                    print(f"Error: Current output file not found: {current_path}")
+                    return 1
+                with open(current_path) as f:
+                    current_payload = json.load(f)
+                current_payload.setdefault("meta", {})["shadowGate"] = build_shadow_summary(report=None, status="skip")
+                safe_json_write(current_path, current_payload)
                 return 0
 
             current_path = Path(args.shadow_current) if args.shadow_current else public_output_path
@@ -214,7 +245,8 @@ def main():
 
             if not args.shadow_baseline:
                 print("Warning: --shadow-baseline not specified, skipping quality evaluation")
-                public_output_data.setdefault("meta", {}).setdefault("shadowGate", {"status": "skip"})
+                public_output_data.setdefault("meta", {})["shadowGate"] = build_shadow_summary(report=None, status="skip")
+                safe_json_write(public_output_path, public_output_data)
             else:
                 exit_code, shadow_summary = run_shadow_evaluation(
                     baseline_path=Path(args.shadow_baseline),

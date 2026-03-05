@@ -10,6 +10,8 @@ FIELDS_TO_REMOVE_FOR_PUBLIC = [
     "repoNames",
     "internalNote",
     "rawData",
+    "source_summary",
+    "signal_freshness",
 ]
 
 
@@ -19,6 +21,15 @@ def sanitize_for_public(technology: Dict[str, Any]) -> Dict[str, Any]:
     for key, value in technology.items():
         if key not in FIELDS_TO_REMOVE_FOR_PUBLIC:
             sanitized[key] = value
+
+    source_summary = technology.get("sourceSummary") or technology.get("source_summary")
+    if source_summary:
+        sanitized["sourceSummary"] = source_summary
+
+    signal_freshness = technology.get("signalFreshness") or technology.get("signal_freshness")
+    if signal_freshness:
+        sanitized["signalFreshness"] = signal_freshness
+
     return sanitized
 
 
