@@ -11,6 +11,7 @@ This module orchestrates the complete pipeline:
 """
 
 import logging
+import os
 import re
 from statistics import pvariance
 from datetime import datetime
@@ -18,7 +19,7 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional, Set
 from dataclasses import dataclass, field
 
-from etl.config import ETLConfig, SourcesConfig, ClassificationConfig, FilteringConfig, DeepScanConfig
+from etl.config import ETLConfig, SourcesConfig, ClassificationConfig, FilteringConfig, DeepScanConfig, load_etl_config
 from etl.ai_filter import AITechnologyFilter, FilteredItem, StrategicValue
 from etl.deep_scanner import DeepScanner
 from etl.checkpoint import CheckpointStore
@@ -318,7 +319,8 @@ class RadarPipeline:
         self.llm_cache: Optional[LLMDecisionCache] = None
         if self.config.llm_optimization.cache_enabled:
             cache_path = Path(self.config.llm_optimization.cache_file)
-            self.llm_cache = LLMDecisionCache(cache_path)
+            # Buffer writes during run, flush once at the end for better ETL throughput.
+            self.llm_cache = LLMDecisionCache(cache_path, auto_flush=False)
 
         self._last_filter_stats: Dict[str, int] = {
             "classified": 0,
@@ -335,9 +337,12 @@ class RadarPipeline:
         self.hn_source = HackerNewsSource(self.config.sources.hackernews)
         self.google_trends_source = GoogleTrendsSource(self.config.sources.google_trends)
 
+        configured_model = self.config.classification.model
+        effective_model = os.environ.get("SYNTHETIC_MODEL", configured_model)
+
         if self.config.classification:
             try:
-                self.classifier = TechnologyClassifier(model=self.config.classification.model)
+                self.classifier = TechnologyClassifier(model=effective_model)
             except ValueError:
                 logger.warning("AI classifier not available, using fallback")
                 self.classifier = None
@@ -346,7 +351,7 @@ class RadarPipeline:
 
         self.filter = AITechnologyFilter(
             self.config.filtering,
-            model=self.config.classification.model,
+            model=effective_model,
             llm_cache=self.llm_cache,
             max_drift=self.config.llm_optimization.cache_drift_threshold,
         )
@@ -1086,6 +1091,9 @@ class RadarPipeline:
         if self.history_store:
             self.history_store.append_snapshot(output)
 
+        if self.llm_cache:
+            self.llm_cache.flush()
+
         self._save_checkpoint("complete", cursor=len(output['technologies']))
 
         return output
@@ -1104,8 +1112,3 @@ def run(config_path: Optional[str] = None,
     pipeline = RadarPipeline(config, checkpoint_path, save_interval, resume)
     return pipeline.run()
 
-
-def load_etl_config(config_path: str) -> ETLConfig:
-    """Load ETL config from path"""
-    from etl.config import load_etl_config as load_config
-    return load_config(config_path)
