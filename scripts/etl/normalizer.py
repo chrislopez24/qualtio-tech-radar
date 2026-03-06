@@ -9,7 +9,6 @@ from etl.models import TechnologySignal
 SOURCE_WEIGHTS = {
     "github_trending": 1.0,
     "hackernews": 0.8,
-    "google_trends": 0.6,
 }
 
 ALIAS_MAP = {

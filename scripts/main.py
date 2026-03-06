@@ -32,6 +32,8 @@ from etl.shadow_eval import (
     DEFAULT_THRESHOLDS,
 )
 
+SUPPORTED_SOURCE_NAMES = {"github_trending", "hackernews"}
+
 
 def run_main_for_test():
     """Entry point for testing - returns exit code"""
@@ -43,8 +45,8 @@ def main():
     parser = argparse.ArgumentParser(description="Tech Radar Data Pipeline")
     parser.add_argument("--resume", action="store_true", help="Resume from checkpoint")
     parser.add_argument("--dry-run", action="store_true", help="Run without making changes")
-    parser.add_argument("--max-technologies", type=int, help="Maximum technologies to process")
-    parser.add_argument("--sources", type=str, help="Comma-separated list of sources (github_trending,hackernews,google_trends)")
+    parser.add_argument("--max-technologies", type=int, help="Maximum technologies to include in radar output")
+    parser.add_argument("--sources", type=str, help="Comma-separated list of sources (github_trending,hackernews)")
     parser.add_argument("--shadow", action="store_true", help="Run in shadow mode with quality evaluation")
     parser.add_argument("--shadow-only", action="store_true", help="Run only shadow evaluation using existing output files")
     parser.add_argument("--shadow-baseline", type=str, help="Path to baseline output for shadow mode comparison")
@@ -86,6 +88,9 @@ def main():
                     "consecutiveCount": int(value.get("consecutive_count", 0)),
                 }
 
+            raw_transition_summary = source.get("leader_transition_summary")
+            transition_summary = raw_transition_summary if isinstance(raw_transition_summary, dict) else {}
+
             return {
                 "status": status,
                 "coreOverlap": source.get("core_overlap"),
@@ -97,6 +102,10 @@ def main():
                 "filteredByRing": source.get("filtered_by_ring", {}),
                 "filteredSample": source.get("filtered_sample", []),
                 "nextAction": source.get("next_action"),
+                "leaderTransitionSummary": {
+                    "candidateCount": int(transition_summary.get("candidate_count", 0)),
+                    "promotedCount": int(transition_summary.get("promoted_count", 0)),
+                },
                 "leaderState": serialize_leader_state(leader_state) if leader_state is not None else {},
                 "candidateChanges": normalized_candidate_changes,
             }
@@ -155,19 +164,29 @@ def main():
                 return 0, build_shadow_summary(report, "pass", leader_state=next_leader_state)
             if status == "warn":
                 print("\n⚠ Quality thresholds met but leader changes are not yet stable")
-                return 0, build_shadow_summary(report, "warn", leader_state=previous_shadow_state)
+                return 0, build_shadow_summary(report, "warn", leader_state=next_leader_state)
 
             print("\n✗ Quality thresholds not met - NO-GO for rollout")
             return 1, build_shadow_summary(report, "fail", leader_state=previous_shadow_state)
 
-        if args.max_technologies:
-            config.deep_scan.repos = args.max_technologies * [""][:1] or []
+        if args.max_technologies is not None:
+            target_total = max(1, int(args.max_technologies))
+            config.distribution.target_total = target_total
+            config.distribution.min_per_quadrant = 1
+            config.distribution.max_per_quadrant = min(config.distribution.max_per_quadrant, target_total)
 
         if args.sources:
-            source_names = [s.strip() for s in args.sources.split(",")]
+            source_names = {s.strip() for s in args.sources.split(",") if s.strip()}
+            invalid_sources = sorted(source_names - SUPPORTED_SOURCE_NAMES)
+            if invalid_sources or not source_names:
+                print(
+                    "Invalid --sources value. Supported values: "
+                    + ",".join(sorted(SUPPORTED_SOURCE_NAMES))
+                )
+                return 1
+
             config.sources.github_trending.enabled = "github_trending" in source_names
             config.sources.hackernews.enabled = "hackernews" in source_names
-            config.sources.google_trends.enabled = "google_trends" in source_names
 
         if args.dry_run:
             print("[DRY RUN] Pipeline execution simulated (no data will be collected)")

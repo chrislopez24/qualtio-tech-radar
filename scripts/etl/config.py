@@ -32,16 +32,9 @@ class HackerNewsSource(BaseModel):
     min_points: int = Field(ge=1, default=25)
     days_back: int = Field(ge=1, default=90)
 
-
-class GoogleTrendsSource(BaseModel):
-    enabled: bool = True
-    seed_topics: list[str] = Field(default_factory=list)
-
-
 class SourcesConfig(BaseModel):
     github_trending: GitHubTrendingSource = Field(default_factory=GitHubTrendingSource)
     hackernews: HackerNewsSource = Field(default_factory=HackerNewsSource)
-    google_trends: GoogleTrendsSource = Field(default_factory=GoogleTrendsSource)
 
 
 class ClassificationConfig(BaseModel):
@@ -66,11 +59,6 @@ class OutputConfig(BaseModel):
 class CheckpointConfig(BaseModel):
     enabled: bool = True
     interval: int = Field(ge=1, default=100)
-
-
-class DeepScanConfig(BaseModel):
-    enabled: bool = False
-    repos: list[str] = Field(default_factory=list)
 
 
 class ScoringWeightsConfig(BaseModel):
@@ -152,7 +140,6 @@ class ETLConfig(BaseModel):
     output: OutputConfig = Field(default_factory=OutputConfig)
     rate_limit: RateLimitConfig = Field(default_factory=RateLimitConfig)
     checkpoint: CheckpointConfig = Field(default_factory=CheckpointConfig)
-    deep_scan: DeepScanConfig = Field(default_factory=DeepScanConfig)
     scoring: ScoringConfig = Field(default_factory=ScoringConfig)
     distribution: DistributionConfig = Field(default_factory=DistributionConfig)
     quality_gates: QualityGatesConfig = Field(default_factory=QualityGatesConfig)

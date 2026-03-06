@@ -51,8 +51,8 @@ def test_temporal_analyzer_growing_trend():
         ),
         TechnologySignal(
             name="new-tech",
-            source="google_trends",
-            signal_type="google_trends",
+            source="github_trending",
+            signal_type="github_stars",
             score=7.0,
             raw_data={"trending_date": (now - timedelta(days=25)).strftime("%Y-%m-%d")}
         ),

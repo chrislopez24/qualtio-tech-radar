@@ -8,6 +8,8 @@
 
 ## Manual Execution
 
+The production ETL run is driven entirely by GitHub and Hacker News signals. There is no separate repository deep-scan step to configure or troubleshoot.
+
 ### Trigger Pipeline
 
 ```bash
@@ -276,6 +278,18 @@ The Shadow Gate exposes structured data through `meta.shadowGate` in the radar o
 - `watchlistRecall`: Percentage of watchlist items tracked (0.0-1.0)
 - `filteredCount`: Number of items filtered by the gate
 - `addedCount`: Number of new items added
+- `leaderTransitionSummary`: Compact pending/promoted leader counts
+
+### Pipeline Explainability
+
+`meta.pipeline` now exposes compact operator-facing context for each run:
+
+- `rejectedByStage`: Counts for `insufficientSources`, `qualityGate`, and `aiFilter`
+- `ringDistribution`: Current radar distribution by ring
+- `topAdded`: Small sample of highest-scoring additions vs previous snapshot
+- `topDropped`: Small sample of highest-scoring drops vs previous snapshot
+
+These fields are intentionally compact and are designed for dashboards, job summaries, and quick human review rather than full forensic debugging.
 
 ### Filtered Sample
 

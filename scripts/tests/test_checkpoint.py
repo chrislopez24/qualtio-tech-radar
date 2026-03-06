@@ -1,9 +1,5 @@
 """Tests for checkpoint functionality"""
 
-import pytest
-from pathlib import Path
-import tempfile
-
 from etl.checkpoint import CheckpointStore
 from etl.pipeline import RadarPipeline
 
@@ -44,6 +40,7 @@ def test_pipeline_accepts_checkpoint_parameters(tmp_path):
     assert pipeline.checkpoint is not None
     assert pipeline.save_interval == 50
     assert pipeline.resume is True
+    assert not hasattr(pipeline, "google_trends_source")
 
 
 def test_checkpoint_clear(tmp_path):

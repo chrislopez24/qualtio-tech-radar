@@ -14,12 +14,6 @@ sources:
     enabled: true
     min_points: 25  # Increased from 10 to filter hype
     days_back: 90   # Changed from 7 to 90 days for quarterly view
-  
-  # Google Trends disabled - pytrends is unreliable and blocked by Google
-  # We rely on GitHub (primary) and HackerNews (secondary) for quality signals
-  google_trends:
-    enabled: false
-    seed_topics: []
 
 classification:
   model: hf:MiniMaxAI/MiniMax-M2.5
@@ -49,7 +43,7 @@ filtering:
   min_confidence: 0.6
   
   # Temporal consistency: must appear in at least 1 reliable source
-  # (GitHub is considered reliable; HN and Google Trends are supplementary)
+  # (GitHub is considered reliable; HN is supplementary)
   min_sources: 1
   
   # Temporal consistency: must have data for at least 14 days
@@ -65,10 +59,6 @@ rate_limit:
 checkpoint:
   enabled: true
   interval: 100
-
-deep_scan:
-  enabled: false
-  repos: []
 
 scoring:
   weights:

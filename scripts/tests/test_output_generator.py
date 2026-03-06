@@ -143,6 +143,8 @@ def test_output_contains_market_score_trend_and_moved():
     assert "trend" in tech
     assert "moved" in tech
     assert "signals" in tech
+    assert set(tech["signals"].keys()) == {"ghMomentum", "ghPopularity", "hnHeat"}
+    assert "googleMomentum" not in tech["signals"]
 
 
 def test_output_generator_generates_optional_provenance_fields(tmp_path):
@@ -197,3 +199,78 @@ def test_output_generator_keeps_backward_compatibility_without_provenance_fields
     tech = public_payload["technologies"][0]
     assert "sourceSummary" not in tech
     assert "signalFreshness" not in tech
+
+
+def test_pipeline_output_includes_compact_explainability_metadata():
+    from types import SimpleNamespace
+    from etl.pipeline import RadarPipeline
+
+    pipeline = RadarPipeline()
+    pipeline.previous_snapshot = {
+        "technologies": [
+            {"id": "react", "name": "React", "ring": "trial", "marketScore": 72.5},
+            {"id": "vue", "name": "Vue", "ring": "assess", "marketScore": 66.0},
+        ],
+        "watchlist": [],
+    }
+    pipeline._last_filter_stats = {
+        "classified": 6,
+        "qualified": 4,
+        "ai_accepted": 3,
+        "rejected_low_sources": 1,
+        "rejected_quality_gate": 1,
+        "rejected_ai_filter": 1,
+    }
+
+    output = pipeline._generate_output(
+        [
+            SimpleNamespace(
+                name="React",
+                description="UI library for interfaces",
+                stars=220000,
+                quadrant="tools",
+                ring="adopt",
+                confidence=0.95,
+                trend="up",
+                moved=1,
+                market_score=88.4,
+                signals={"gh_momentum": 80, "gh_popularity": 90, "hn_heat": 60},
+                is_deprecated=False,
+                replacement=None,
+            ),
+            SimpleNamespace(
+                name="Svelte",
+                description="Compiler for reactive UI",
+                stars=82000,
+                quadrant="tools",
+                ring="trial",
+                confidence=0.82,
+                trend="up",
+                moved=2,
+                market_score=79.1,
+                signals={"gh_momentum": 75, "gh_popularity": 70, "hn_heat": 55},
+                is_deprecated=False,
+                replacement=None,
+            ),
+        ],
+        [],
+    )
+
+    pipeline_meta = output["meta"]["pipeline"]
+    assert pipeline_meta["rejectedByStage"] == {
+        "insufficientSources": 1,
+        "qualityGate": 1,
+        "aiFilter": 1,
+    }
+    assert pipeline_meta["ringDistribution"] == {
+        "adopt": 1,
+        "trial": 1,
+        "assess": 0,
+        "hold": 0,
+    }
+    assert pipeline_meta["topAdded"] == [
+        {"id": "svelte", "name": "Svelte", "ring": "trial", "marketScore": 79.1}
+    ]
+    assert pipeline_meta["topDropped"] == [
+        {"id": "vue", "name": "Vue", "ring": "assess", "marketScore": 66.0}
+    ]

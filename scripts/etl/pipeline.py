@@ -6,8 +6,7 @@ This module orchestrates the complete pipeline:
 3. temporal/domain enrichment
 4. classify AI
 5. strategic filtering
-6. optional deep scan enrich
-7. output generation
+6. output generation
 """
 
 import logging
@@ -19,9 +18,8 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional, Set
 from dataclasses import dataclass, field
 
-from etl.config import ETLConfig, SourcesConfig, ClassificationConfig, FilteringConfig, DeepScanConfig, load_etl_config
+from etl.config import ETLConfig, load_etl_config
 from etl.ai_filter import AITechnologyFilter, FilteredItem, StrategicValue
-from etl.deep_scanner import DeepScanner
 from etl.checkpoint import CheckpointStore
 from etl.history_store import HistoryStore
 from etl.description_quality import is_valid_description
@@ -30,7 +28,6 @@ from etl.market_scoring import score_technology, calculate_confidence
 from etl.ring_assignment import assign_rings
 from etl.sources.github_trending import GitHubTrendingSource
 from etl.sources.hackernews import HackerNewsSource
-from etl.sources.google_trends import GoogleTrendsSource
 from etl.candidate_selector import select_candidates, CandidateSelection
 from etl.llm_cache import LLMDecisionCache
 from etl.quadrant_logic import infer_quadrant, quadrant_affinity
@@ -326,6 +323,9 @@ class RadarPipeline:
             "classified": 0,
             "qualified": 0,
             "ai_accepted": 0,
+            "rejected_low_sources": 0,
+            "rejected_quality_gate": 0,
+            "rejected_ai_filter": 0,
         }
         self._last_llm_calls: int = 0
         
@@ -335,7 +335,6 @@ class RadarPipeline:
         """Initialize pipeline components"""
         self.github_source = GitHubTrendingSource(self.config.sources.github_trending)
         self.hn_source = HackerNewsSource(self.config.sources.hackernews)
-        self.google_trends_source = GoogleTrendsSource(self.config.sources.google_trends)
 
         configured_model = self.config.classification.model
         effective_model = os.environ.get("SYNTHETIC_MODEL", configured_model)
@@ -354,11 +353,6 @@ class RadarPipeline:
             model=effective_model,
             llm_cache=self.llm_cache,
             max_drift=self.config.llm_optimization.cache_drift_threshold,
-        )
-
-        self.deep_scanner = DeepScanner(
-            allowed_repos=self.config.deep_scan.repos if self.config.deep_scan else None,
-            use_ai_analysis=False
         )
 
     def _collect_sources(self) -> List[NormalizedTech]:
@@ -435,38 +429,6 @@ class RadarPipeline:
                             },
                         )
 
-        if self.config.sources.google_trends.enabled:
-            google_signals = self.google_trends_source.fetch()
-            for signal in google_signals:
-                name = (signal.name or "").strip().lower()
-                if not name:
-                    continue
-
-                raw = signal.raw_data or {}
-                google_momentum = min(100.0, float(signal.score) * 10.0)
-
-                if name in technologies:
-                    tech = technologies[name]
-                    if "google_trends" not in tech.sources:
-                        tech.sources.append("google_trends")
-                    tech.signals["google_momentum"] = max(
-                        tech.signals.get("google_momentum", 0.0),
-                        google_momentum,
-                    )
-                else:
-                    technologies[name] = NormalizedTech(
-                        name=name,
-                        description=raw.get("query", name),
-                        stars=0,
-                        forks=0,
-                        language=None,
-                        topics=[],
-                        url="",
-                        hn_mentions=0,
-                        sources=["google_trends"],
-                        signals={"google_momentum": google_momentum},
-                    )
-
         return list(technologies.values())
 
     def _extract_tech_name(self, title: str) -> Optional[str]:
@@ -534,7 +496,7 @@ class RadarPipeline:
         return technologies
 
     def _apply_market_scoring(self, technologies: List[NormalizedTech]) -> List[NormalizedTech]:
-        # Weights without Google Trends (unreliable source)
+        # Supported external signals: GitHub adoption plus Hacker News buzz.
         weights = {
             "gh_momentum": self.config.scoring.weights.github_momentum,
             "gh_popularity": self.config.scoring.weights.github_popularity,
@@ -556,8 +518,6 @@ class RadarPipeline:
             tech.signals.setdefault("hn_heat", min(100.0, float(tech.hn_mentions) * 10.0))
             tech.signals.setdefault("gh_momentum", tech.signals.get("gh_momentum", 0.0))
 
-            tech.market_score = score_technology(tech.signals, weights=weights)
-
             signal_values = [
                 float(tech.signals.get("gh_momentum", 0.0)),
                 float(tech.signals.get("gh_popularity", 0.0)),
@@ -565,6 +525,13 @@ class RadarPipeline:
             ]
             variance = pvariance(signal_values) if len(signal_values) > 1 else 0.0
             source_count = len(set(tech.sources))
+            tech.market_score = score_technology(
+                tech.signals,
+                weights=weights,
+                source_count=source_count,
+                github_stars=float(tech.stars),
+                github_forks=float(tech.forks),
+            )
             tech.signals["score_confidence"] = calculate_confidence(source_count, variance)
 
             tech_id = tech.name.lower().replace(" ", "-")
@@ -896,22 +863,12 @@ class RadarPipeline:
 
         return items
 
-    def _deep_scan_enrich(self, filtered_items: List[FilteredItem]) -> List[FilteredItem]:
-        """Phase 6: Optional deep scan enrichment"""
-        if not self.config.deep_scan or not self.config.deep_scan.enabled:
-            return filtered_items
-
-        if not self.config.deep_scan.repos:
-            return filtered_items
-
-        return filtered_items
-
     def _generate_output(
         self,
         items: List[FilteredItem],
         watchlist_items: Optional[List[FilteredItem]] = None,
     ) -> Dict[str, Any]:
-        """Phase 7: Generate output"""
+        """Phase 6: Generate output"""
 
         repaired_bad_description = 0
 
@@ -937,9 +894,6 @@ class RadarPipeline:
                     "hnHeat": round(float(raw_signals.get("hn_heat", 0.0)), 2),
                 }
 
-                if self.config.sources.google_trends.enabled:
-                    signals["googleMomentum"] = round(float(raw_signals.get("google_momentum", 0.0)), 2)
-
                 payload.append({
                     'id': self._normalize_id(item.name),
                     'name': item.name,
@@ -963,7 +917,57 @@ class RadarPipeline:
         watchlist = _serialize(watchlist_items or [])
 
         if repaired_bad_description:
-            logger.info("Phase 7 - Repaired %s invalid descriptions", repaired_bad_description)
+            logger.info("Phase 6 - Repaired %s invalid descriptions", repaired_bad_description)
+
+        previous_technologies = (
+            (self.previous_snapshot or {}).get("technologies", [])
+            if isinstance((self.previous_snapshot or {}).get("technologies", []), list)
+            else []
+        )
+        previous_by_id = {
+            str(entry.get("id")): entry
+            for entry in previous_technologies
+            if isinstance(entry, dict) and entry.get("id")
+        }
+        current_ids = {str(entry.get("id")) for entry in technologies if isinstance(entry, dict) and entry.get("id")}
+
+        ring_distribution = {ring: 0 for ring in ("adopt", "trial", "assess", "hold")}
+        for entry in technologies:
+            ring = str(entry.get("ring", ""))
+            if ring in ring_distribution:
+                ring_distribution[ring] += 1
+
+        def _sample(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+            ranked = sorted(
+                entries,
+                key=lambda entry: float(entry.get("marketScore", 0.0) or 0.0),
+                reverse=True,
+            )
+            return [
+                {
+                    "id": str(entry.get("id", "")),
+                    "name": str(entry.get("name", "")),
+                    "ring": str(entry.get("ring", "")),
+                    "marketScore": round(float(entry.get("marketScore", 0.0) or 0.0), 2),
+                }
+                for entry in ranked[:5]
+                if entry.get("id")
+            ]
+
+        top_added = _sample(
+            [
+                entry
+                for entry in technologies
+                if isinstance(entry, dict) and entry.get("id") and str(entry.get("id")) not in previous_by_id
+            ]
+        )
+        top_dropped = _sample(
+            [
+                entry
+                for entry_id, entry in previous_by_id.items()
+                if entry_id not in current_ids
+            ]
+        )
 
         return {
             'updatedAt': datetime.now().isoformat(),
@@ -973,6 +977,14 @@ class RadarPipeline:
                 'pipeline': {
                     'droppedInvalidDescriptions': 0,
                     'repairedDescriptions': repaired_bad_description,
+                    'rejectedByStage': {
+                        'insufficientSources': int(self._last_filter_stats.get("rejected_low_sources", 0)),
+                        'qualityGate': int(self._last_filter_stats.get("rejected_quality_gate", 0)),
+                        'aiFilter': int(self._last_filter_stats.get("rejected_ai_filter", 0)),
+                    },
+                    'ringDistribution': ring_distribution,
+                    'topAdded': top_added,
+                    'topDropped': top_dropped,
                 }
             }
         }
@@ -1058,15 +1070,11 @@ class RadarPipeline:
         )
         watchlist_items = self._assign_market_rings(watchlist_items)
 
-        enriched_items = self._deep_scan_enrich(filtered_items)
-        logger.info(f"Phase 6 - Deep scan enrichment complete")
-        self._save_checkpoint("deep_scan")
-
-        output = self._generate_output(enriched_items or [], watchlist_items)
+        output = self._generate_output(filtered_items or [], watchlist_items)
         output_count = len(output['technologies'])
         watchlist_count = len(output.get('watchlist', []))
         logger.info(
-            "Phase 7 - Output generated with %s technologies and %s watchlist items",
+            "Phase 6 - Output generated with %s technologies and %s watchlist items",
             output_count,
             watchlist_count,
         )
@@ -1111,4 +1119,3 @@ def run(config_path: Optional[str] = None,
 
     pipeline = RadarPipeline(config, checkpoint_path, save_interval, resume)
     return pipeline.run()
-

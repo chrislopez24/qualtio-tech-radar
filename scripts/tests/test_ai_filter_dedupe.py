@@ -16,6 +16,10 @@ class MockTechItem:
     confidence: float = 0.5
     trend: str = "stable"
     strategic_value: Optional[StrategicValue] = None
+    market_score: float = 0.0
+    signals: Optional[dict] = None
+    moved: int = 0
+    sources: Optional[List[str]] = None
 
 
 class TestDeduplicationAndDeprecation:
@@ -110,3 +114,31 @@ class TestDeduplicationAndDeprecation:
         )
         
         assert has_replacement or len(result) > 0
+
+    def test_filter_preserves_etl_metadata_on_filtered_items(self):
+        """Filtered items should keep ETL metadata needed by downstream phases."""
+        filter_config = Mock()
+        filter_config.auto_ignore = []
+        filter_config.include_only = []
+        filter_config.min_confidence = 0.5
+
+        result = AITechnologyFilter(filter_config).filter([
+            MockTechItem(
+                name="React",
+                description="UI library",
+                stars=220000,
+                confidence=0.9,
+                trend="up",
+                strategic_value=StrategicValue.HIGH,
+                market_score=92.5,
+                signals={"gh_momentum": 88.0, "hn_heat": 72.0},
+                moved=1,
+                sources=["github", "hackernews"],
+            )
+        ])
+
+        assert len(result) == 1
+        assert getattr(result[0], "market_score", None) == 92.5
+        assert getattr(result[0], "signals", None) == {"gh_momentum": 88.0, "hn_heat": 72.0}
+        assert getattr(result[0], "moved", None) == 1
+        assert getattr(result[0], "sources", None) == ["github", "hackernews"]

@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch, MagicMock
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from etl.config import ETLConfig, SourcesConfig, ClassificationConfig, FilteringConfig, OutputConfig
+from etl.config import ETLConfig, ClassificationConfig, FilteringConfig
 
 
 @dataclass
@@ -46,6 +46,14 @@ class TestPipelineFlow:
         from etl import pipeline
 
         assert pipeline.TechnologyClassifier.__module__ == "etl.classifier"
+        assert not hasattr(pipeline, "DeepScanner")
+
+    def test_pipeline_does_not_initialize_deep_scanner(self):
+        from etl.pipeline import RadarPipeline
+
+        pipeline = RadarPipeline()
+
+        assert not hasattr(pipeline, "deep_scanner")
 
     def test_pipeline_executes_all_phases_in_order(self):
         """Pipeline should execute all phases in correct order and produce output"""
@@ -61,8 +69,7 @@ class TestPipelineFlow:
         with patch('etl.pipeline.GitHubTrendingSource') as mock_github_source, \
              patch('etl.pipeline.HackerNewsSource') as mock_hn_source, \
              patch('etl.pipeline.TechnologyClassifier') as mock_classifier, \
-             patch('etl.pipeline.AITechnologyFilter') as mock_filter, \
-             patch('etl.pipeline.DeepScanner') as mock_deep_scanner:
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter:
 
             mock_github_source.return_value.fetch.return_value = [
                 MockTechnologySignal(
@@ -158,9 +165,7 @@ class TestPipelineFlow:
         with patch('etl.pipeline.GitHubTrendingSource') as mock_github_source, \
              patch('etl.pipeline.HackerNewsSource') as mock_hn_source, \
              patch('etl.pipeline.TechnologyClassifier') as mock_classifier, \
-             patch('etl.pipeline.AITechnologyFilter') as mock_filter, \
-             patch('etl.pipeline.DeepScanner') as mock_deep_scanner, \
-             patch('etl.pipeline.GoogleTrendsSource') as mock_google_source:
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter:
 
             # Provide mock data so there are candidates to process
             mock_github_source.return_value.fetch.return_value = [
@@ -184,7 +189,6 @@ class TestPipelineFlow:
             mock_hn_source.return_value.fetch.return_value = [
                 MockHackerNewsPost(title="React 19 released", points=200, url=""),
             ]
-            mock_google_source.return_value.fetch.return_value = []
             mock_classifier.return_value.classify_batch.return_value = [
                 MockClassificationResult(
                     name="React", quadrant="tools", ring="adopt",
@@ -232,8 +236,7 @@ class TestPipelineFlow:
         with patch('etl.pipeline.GitHubTrendingSource') as mock_github_source, \
              patch('etl.pipeline.HackerNewsSource') as mock_hn_source, \
              patch('etl.pipeline.TechnologyClassifier') as mock_classifier, \
-             patch('etl.pipeline.AITechnologyFilter') as mock_filter, \
-             patch('etl.pipeline.DeepScanner'):
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter:
 
             mock_github_source.return_value.fetch.return_value = []
             mock_hn_source.return_value.fetch.return_value = []
@@ -264,8 +267,7 @@ class TestPipelineFlow:
         with patch('etl.pipeline.GitHubTrendingSource') as mock_github_source, \
              patch('etl.pipeline.HackerNewsSource') as mock_hn_source, \
              patch('etl.pipeline.TechnologyClassifier') as mock_classifier, \
-             patch('etl.pipeline.AITechnologyFilter') as mock_filter, \
-             patch('etl.pipeline.DeepScanner'):
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter:
 
             mock_github_source.return_value.fetch.return_value = []
             mock_hn_source.return_value.fetch.return_value = []
@@ -279,6 +281,46 @@ class TestPipelineFlow:
             _, kwargs = mock_filter.call_args
             assert kwargs["model"] == "hf:moonshotai/Kimi-K2.5"
 
+    def test_apply_market_scoring_differentiates_saturated_github_only_items(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        technologies = [
+            NormalizedTech(
+                name="React",
+                description="UI library",
+                stars=220000,
+                forks=56000,
+                language="JavaScript",
+                topics=["ui"],
+                url="https://github.com/facebook/react",
+                sources=["github"],
+                signals={"gh_momentum": 100.0, "gh_popularity": 100.0, "hn_heat": 0.0},
+            ),
+            NormalizedTech(
+                name="Smaller Tool",
+                description="Useful tool",
+                stars=12000,
+                forks=1200,
+                language="TypeScript",
+                topics=["tool"],
+                url="https://github.com/example/smaller-tool",
+                sources=["github"],
+                signals={"gh_momentum": 100.0, "gh_popularity": 100.0, "hn_heat": 0.0},
+            ),
+        ]
+
+        scored = pipeline._apply_market_scoring(technologies)
+
+        assert scored[0].market_score != scored[1].market_score
+        assert scored[0].market_score > scored[1].market_score
+        assert scored[1].market_score < 85.0
+
     def test_pipeline_repairs_items_with_placeholder_descriptions(self):
         """Output should repair placeholder descriptions instead of dropping items."""
         from etl.pipeline import RadarPipeline
@@ -288,8 +330,7 @@ class TestPipelineFlow:
         with patch('etl.pipeline.GitHubTrendingSource'), \
              patch('etl.pipeline.HackerNewsSource'), \
              patch('etl.pipeline.TechnologyClassifier'), \
-             patch('etl.pipeline.AITechnologyFilter'), \
-             patch('etl.pipeline.DeepScanner'):
+             patch('etl.pipeline.AITechnologyFilter'):
 
             pipeline = RadarPipeline(config=config)
 
@@ -344,8 +385,7 @@ class TestPipelineFlow:
         with patch('etl.pipeline.GitHubTrendingSource'), \
              patch('etl.pipeline.HackerNewsSource'), \
              patch('etl.pipeline.TechnologyClassifier'), \
-             patch('etl.pipeline.AITechnologyFilter') as mock_filter, \
-             patch('etl.pipeline.DeepScanner'):
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter:
 
             # Simulate aggressive filter that only keeps one quadrant
             mock_filter.return_value.filter.return_value = [
@@ -422,8 +462,7 @@ class TestPipelineFlow:
         with patch('etl.pipeline.GitHubTrendingSource'), \
              patch('etl.pipeline.HackerNewsSource'), \
              patch('etl.pipeline.TechnologyClassifier'), \
-             patch('etl.pipeline.AITechnologyFilter'), \
-             patch('etl.pipeline.DeepScanner'):
+             patch('etl.pipeline.AITechnologyFilter'):
             pipeline = RadarPipeline(config=config)
 
         pipeline.previous_snapshot = {
@@ -454,8 +493,7 @@ class TestPipelineFlow:
         with patch('etl.pipeline.GitHubTrendingSource'), \
              patch('etl.pipeline.HackerNewsSource'), \
              patch('etl.pipeline.TechnologyClassifier'), \
-             patch('etl.pipeline.AITechnologyFilter'), \
-             patch('etl.pipeline.DeepScanner'):
+             patch('etl.pipeline.AITechnologyFilter'):
             pipeline = RadarPipeline(config=config)
 
         pipeline.previous_snapshot = {
@@ -502,8 +540,7 @@ class TestPipelineFlow:
         with patch('etl.pipeline.GitHubTrendingSource'), \
              patch('etl.pipeline.HackerNewsSource'), \
              patch('etl.pipeline.TechnologyClassifier'), \
-             patch('etl.pipeline.AITechnologyFilter') as mock_filter, \
-             patch('etl.pipeline.DeepScanner'):
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter:
 
             mock_filter.return_value.filter.return_value = []
             pipeline = RadarPipeline(config=config)
@@ -557,8 +594,7 @@ class TestPipelineFlow:
         with patch('etl.pipeline.GitHubTrendingSource'), \
              patch('etl.pipeline.HackerNewsSource'), \
              patch('etl.pipeline.TechnologyClassifier'), \
-             patch('etl.pipeline.AITechnologyFilter') as mock_filter, \
-             patch('etl.pipeline.DeepScanner'):
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter:
 
             mock_filter.return_value.filter.return_value = []
             pipeline = RadarPipeline(config=config)
@@ -595,8 +631,7 @@ class TestPipelineFlow:
         with patch('etl.pipeline.GitHubTrendingSource'), \
              patch('etl.pipeline.HackerNewsSource'), \
              patch('etl.pipeline.TechnologyClassifier'), \
-             patch('etl.pipeline.AITechnologyFilter') as mock_filter, \
-             patch('etl.pipeline.DeepScanner'):
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter:
 
             mock_filter.return_value.filter.return_value = []
             pipeline = RadarPipeline(config=config)
@@ -619,21 +654,14 @@ class TestPipelineFlow:
 
             assert {"tools", "platforms", "languages", "techniques"}.issubset(quadrants)
 
-    def test_pipeline_collects_google_trends_when_enabled(self):
+    def test_pipeline_does_not_expose_google_trends_source(self):
         from etl.pipeline import RadarPipeline
         from etl.config import ETLConfig
 
         config = ETLConfig()
-        config.sources.google_trends.enabled = True
-        config.sources.google_trends.seed_topics = ["ai", "devops"]
+        pipeline = RadarPipeline(config=config)
 
-        with patch("etl.pipeline.GoogleTrendsSource") as mock_google_source:
-            mock_google_source.return_value.fetch.return_value = []
-            pipeline = RadarPipeline(config=config)
-            technologies = pipeline._collect_sources()
-
-        assert isinstance(technologies, list)
-        mock_google_source.return_value.fetch.assert_called_once()
+        assert not hasattr(pipeline, "google_trends_source")
 
     def test_strategic_filter_passes_classifier_strategic_value_to_filter_items(self):
         from etl.pipeline import RadarPipeline, NormalizedTech
@@ -644,8 +672,7 @@ class TestPipelineFlow:
         with patch('etl.pipeline.GitHubTrendingSource'), \
              patch('etl.pipeline.HackerNewsSource'), \
              patch('etl.pipeline.TechnologyClassifier'), \
-             patch('etl.pipeline.AITechnologyFilter') as mock_filter, \
-             patch('etl.pipeline.DeepScanner'):
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter:
 
             captured = {}
 

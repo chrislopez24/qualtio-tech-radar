@@ -117,10 +117,10 @@ def test_quarterly_workflow_exposes_shadow_status_outputs():
     assert "Resolve Shadow Gate Status" in yml
 
 
-def test_quarterly_workflow_commits_data_only_on_gate_pass():
-    """Data commit step should be gated by shadow gate pass"""
+def test_quarterly_workflow_commits_data_only_when_shadow_status_allows_persistence():
+    """Data commit step should use the workflow's explicit persistence gate output."""
     yml = Path(".github/workflows/quarterly-update.yml").read_text()
-    assert "if: ${{ steps.shadow-status.outputs.gate_pass == 'true' }}" in yml
+    assert "if: ${{ steps.shadow-status.outputs.gate_commit == 'true' }}" in yml
 
 
 def test_quarterly_workflow_restores_validated_data_on_gate_non_pass():
@@ -128,6 +128,21 @@ def test_quarterly_workflow_restores_validated_data_on_gate_non_pass():
     yml = Path(".github/workflows/quarterly-update.yml").read_text()
     assert "restoring validated data snapshot" in yml
     assert "cp artifacts/baseline.json src/data/data.ai.json" in yml
+
+
+def test_quarterly_workflow_builds_exact_ref_produced_by_update_job():
+    """Build job should checkout the exact ref emitted by update-data, not the triggering SHA."""
+    yml = Path(".github/workflows/quarterly-update.yml").read_text()
+    assert "build_ref" in yml
+    assert "ref: ${{ needs.update-data.outputs.build_ref }}" in yml
+
+
+def test_quarterly_workflow_can_commit_warn_runs_with_updated_shadow_metadata():
+    """Warn runs should be allowed to persist validated payload plus updated shadow metadata."""
+    yml = Path(".github/workflows/quarterly-update.yml").read_text()
+    assert "gate_commit" in yml
+    assert "candidate_output.json" in yml
+    assert "if: ${{ steps.shadow-status.outputs.gate_commit == 'true' }}" in yml
 
 
 def test_quarterly_workflow_has_pip_cache_step():
@@ -143,3 +158,12 @@ def test_quarterly_workflow_has_npm_cache_step():
     assert "package-lock.json" in yml
     assert "hashFiles('package-lock.json')" in yml
     assert "actions/cache@" in yml or "cache: 'npm'" in yml
+
+
+def test_quarterly_workflow_generates_radar_review_summary_artifacts():
+    """Workflow should publish a human-review summary for the radar output."""
+    yml = Path(".github/workflows/quarterly-update.yml").read_text()
+    assert "review_radar_output.py" in yml
+    assert "review-summary.json" in yml
+    assert "review-summary.md" in yml
+    assert "radar-review-summary" in yml

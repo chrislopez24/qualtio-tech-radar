@@ -2,16 +2,16 @@
 
 ## Overview
 
-The Qualtio Tech Radar ETL pipeline automatically identifies, classifies, and tracks technology trends from multiple sources (GitHub, Hacker News) using AI-powered classification.
+The Qualtio Tech Radar ETL pipeline automatically identifies, classifies, and tracks technology trends from external signals (GitHub, Hacker News) using AI-powered classification. There is no secondary repository deep-scan phase.
 
 ## System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                      DATA SOURCES                           │
-├──────────────┬──────────────┬───────────────────────────────┤
-│ GitHub API   │ Hacker News  │ Google Trends (future)        │
-└──────┬───────┴──────┬───────┴───────────────────────────────┘
+├──────────────┬──────────────┤
+│ GitHub API   │ Hacker News  │
+└──────┬───────┴──────┬───────┘
        │              │
        ▼              ▼
 ┌─────────────────────────────────────────────────────────────┐
@@ -403,11 +403,10 @@ All credentials stored in GitHub Secrets:
 
 ### Planned Features
 
-1. **Google Trends Integration** - Add search volume data
-2. **Twitter/X Mentions** - Social sentiment
-3. **Reddit Discussions** - Community interest
-4. **Stack Overflow** - Developer questions
-5. **NPM/DockerHub** - Package metrics
+1. **Twitter/X Mentions** - Social sentiment
+2. **Reddit Discussions** - Community interest
+3. **Stack Overflow** - Developer questions
+4. **NPM/DockerHub** - Package metrics
 
 ### Technical Debt
 

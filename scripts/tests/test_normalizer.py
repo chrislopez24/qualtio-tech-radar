@@ -24,10 +24,10 @@ def test_normalizer_merges_same_technology_from_multiple_sources():
         ),
         TechnologySignal(
             name="react.js",
-            source="google_trends",
-            signal_type="google_trends",
+            source="github_trending",
+            signal_type="github_stars",
             score=3.0,
-            raw_data={"interest": 30}
+            raw_data={"stars": 30}
         ),
     ]
 
@@ -55,7 +55,7 @@ def test_normalizer_alias_mapping():
     """Test that aliases are mapped to canonical names"""
     signals = [
         TechnologySignal(name="react.js", source="github_trending", signal_type="github_stars", score=5.0, raw_data={}),
-        TechnologySignal(name="reactjs", source="google_trends", signal_type="google_trends", score=3.0, raw_data={}),
+        TechnologySignal(name="reactjs", source="hackernews", signal_type="hn_mentions", score=3.0, raw_data={}),
     ]
 
     merged = normalize_signals(signals)
@@ -68,7 +68,7 @@ def test_normalizer_spacing_normalization():
     """Test that spacing differences are normalized"""
     signals = [
         TechnologySignal(name="machine learning", source="github_trending", signal_type="github_stars", score=5.0, raw_data={}),
-        TechnologySignal(name="machine-learning", source="google_trends", signal_type="google_trends", score=3.0, raw_data={}),
+        TechnologySignal(name="machine-learning", source="hackernews", signal_type="hn_mentions", score=3.0, raw_data={}),
     ]
 
     merged = normalize_signals(signals)
@@ -96,8 +96,8 @@ def test_normalizer_weighted_source_score():
         ),
         TechnologySignal(
             name="react",
-            source="google_trends",
-            signal_type="google_trends",
+            source="github_trending",
+            signal_type="github_stars",
             score=10.0,
             raw_data={}
         ),

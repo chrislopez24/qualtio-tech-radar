@@ -14,6 +14,8 @@ jobs:
     outputs:
       shadow_gate_status: ${{ steps.shadow-status.outputs.gate_status }}
       shadow_gate_pass: ${{ steps.shadow-status.outputs.gate_pass }}
+      gate_commit: ${{ steps.shadow-status.outputs.gate_commit }}
+      build_ref: ${{ steps.build-ref.outputs.build_ref }}
 
     steps:
       - name: Checkout repository
@@ -80,6 +82,13 @@ jobs:
             --shadow-threshold-watchlist-recall 0.80 \
             --shadow-threshold-llm-reduction 0.00
 
+      - name: Snapshot candidate output for shadow metadata
+        if: always()
+        run: |
+          if [ -f "src/data/data.ai.json" ]; then
+            cp src/data/data.ai.json artifacts/candidate_output.json
+          fi
+
       - name: Resolve Shadow Gate Status
         id: shadow-status
         if: always()
@@ -94,9 +103,35 @@ jobs:
 
           if [ "$gate_status" = "pass" ]; then
             echo "gate_pass=true" >> "$GITHUB_OUTPUT"
+            echo "gate_commit=true" >> "$GITHUB_OUTPUT"
             echo "Shadow gate PASS - ETL data eligible for commit"
+          elif [ "$gate_status" = "warn" ]; then
+            echo "gate_pass=false" >> "$GITHUB_OUTPUT"
+            echo "gate_commit=true" >> "$GITHUB_OUTPUT"
+            echo "Shadow gate WARN - restoring validated data snapshot and preserving updated shadow metadata"
+            if [ -f "artifacts/baseline.json" ]; then
+              cp artifacts/baseline.json src/data/data.ai.json
+            fi
+            if [ -f "artifacts/candidate_output.json" ]; then
+              python - <<'PY'
+import json
+from pathlib import Path
+
+validated_path = Path("src/data/data.ai.json")
+candidate_path = Path("artifacts/candidate_output.json")
+
+if validated_path.exists() and candidate_path.exists():
+    validated = json.loads(validated_path.read_text())
+    candidate = json.loads(candidate_path.read_text())
+    shadow_gate = candidate.get("meta", {}).get("shadowGate")
+    if shadow_gate is not None:
+        validated.setdefault("meta", {})["shadowGate"] = shadow_gate
+        validated_path.write_text(json.dumps(validated, indent=2))
+PY
+            fi
           else
             echo "gate_pass=false" >> "$GITHUB_OUTPUT"
+            echo "gate_commit=false" >> "$GITHUB_OUTPUT"
             echo "Shadow gate ${gate_status} - restoring validated data snapshot"
             if [ -f "artifacts/baseline.json" ]; then
               cp artifacts/baseline.json src/data/data.ai.json
@@ -112,18 +147,47 @@ jobs:
             artifacts/shadow_eval.json
             artifacts/baseline.json
           if-no-files-found: warn
+
+      - name: Generate Radar Review Summary
+        if: always()
+        run: |
+          PYTHONPATH=scripts .venv/bin/python scripts/review_radar_output.py \
+            --input src/data/data.ai.json \
+            --output-json artifacts/review-summary.json \
+            --output-md artifacts/review-summary.md
+          cat artifacts/review-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Radar Review Summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: radar-review-summary
+          path: |
+            artifacts/review-summary.json
+            artifacts/review-summary.md
+          if-no-files-found: warn
           
       - name: Commit sanitized data
-        if: ${{ steps.shadow-status.outputs.gate_pass == 'true' }}
+        if: ${{ steps.shadow-status.outputs.gate_commit == 'true' }}
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add src/data/data.ai.json src/data/data.ai.history.json
+          if [ "${{ steps.shadow-status.outputs.gate_status }}" = "pass" ]; then
+            git add src/data/data.ai.json src/data/data.ai.history.json
+          else
+            git add src/data/data.ai.json
+          fi
           git diff --staged --quiet || git commit -m "chore: update AI radar data"
           
       - name: Push changes
         run: |
-          git push || echo "No new data to push"
+          git push
+
+      - name: Record build ref
+        id: build-ref
+        if: always()
+        run: |
+          echo "build_ref=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
   build-and-deploy:
     needs: update-data
@@ -140,6 +204,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.update-data.outputs.build_ref }}
         
       - name: Set up Node.js
         uses: actions/setup-node@v4

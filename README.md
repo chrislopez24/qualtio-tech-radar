@@ -1,27 +1,27 @@
 # Qualtio Tech Radar
 
-AI-powered Technology Radar with automated weekly updates from GitHub, Hacker News, and Google Trends. Rings are assigned by deterministic market momentum (with hysteresis and guardrails) to avoid collapse into a single ring.
+AI-powered Technology Radar with automated weekly updates from GitHub and Hacker News. Rings are assigned by deterministic market momentum (with hysteresis and guardrails) to avoid collapse into a single ring.
 
 ![Tech Radar Preview](./docs/preview.png)
 
 ## Features
 
 - **Interactive Radar Visualization**: Custom D3.js-based radar with 4 quadrants and 4 rings
-- **Dual Mode**: Manual curation mode + AI-powered auto-classification mode
+- **AI-Only Radar**: AI-powered classification and weekly refresh pipeline
 - **Selective LLM Optimization**: 70%+ reduction in LLM calls via intelligent candidate selection (core/watchlist/borderline)
 - **Drift-Aware Caching**: Reuse LLM decisions across runs with automatic invalidation
 - **Shadow Quality Evaluation**: Validate optimized pipeline against baseline with pass/warn/fail quality gate outcomes
 - **Operational Explainability**: Shadow evaluation reports with leader transition visibility and "what changed" insights
 - **Glassmorphism UI**: Modern, responsive design with dark theme support
 - **Automated Data Pipeline**: Weekly updates via GitHub Actions
-- **Market-Signal Ringing**: External momentum scoring (GitHub + HN + Google Trends) with anti-collapse guardrails
+- **Market-Signal Ringing**: External momentum scoring (GitHub + HN) with anti-collapse guardrails
 - **Search & Filter**: Real-time search across all technologies
 
 ## Tech Stack
 
 - **Frontend**: Next.js 16 + TypeScript + Tailwind CSS + Framer Motion
 - **Visualization**: D3.js
-- **UI Components**: shadcn/ui
+- **UI Components**: Local Radix-based component primitives
 - **Data Pipeline**: Python 3.12 + Synthetic API
   - Selective LLM classification (70%+ call reduction)
   - Drift-aware decision caching
@@ -90,10 +90,10 @@ The static site will be generated in the `dist/` folder.
 │   ├── components/       # React components (Radar, Blip, etc.)
 │   ├── hooks/            # Custom React hooks
 │   ├── lib/              # Utilities & configuration
-│   └── data/             # Technology data (JSON)
+│   └── data/             # AI-generated radar data (JSON)
 ├── scripts/              # Python data pipeline
-│   ├── scraper/          # GitHub & HN scrapers
-│   ├── ai/               # AI classifier
+│   ├── etl/              # ETL pipeline, sources, scoring, filtering
+│   ├── tests/            # Pytest coverage for ETL/workflow contracts
 │   └── main.py           # Pipeline entry point
 ├── .github/workflows/    # CI/CD automation
 └── docs/                 # Operational and architectural documentation (A+C hardening details)
@@ -110,7 +110,7 @@ The static site will be generated in the `dist/` folder.
 
 ## Data Pipeline (ETL)
 
-The ETL pipeline collects technology data from multiple sources, classifies them using AI, and generates the radar data files.
+The ETL pipeline collects external technology signals from GitHub and Hacker News, classifies them using AI, and generates the radar data files. It does not perform a secondary repository deep-scan pass.
 
 ### Quick Start
 
@@ -121,7 +121,7 @@ python scripts/main.py
 ```
 
 This will:
-1. Fetch external signals from GitHub, Hacker News, and Google Trends
+1. Fetch external signals from GitHub and Hacker News
 2. Compute deterministic market scores per technology
 3. Assign rings using thresholds + hysteresis + distribution guardrails
 4. Classify quadrants/descriptions with Synthetic API support
@@ -150,8 +150,6 @@ sources:
     enabled: true   # Set to false to skip
   hackernews:
     enabled: true   # Set to false to skip
-  google_trends:
-    enabled: true   # Set to false to skip
 ```
 
 Or via CLI:
@@ -168,7 +166,7 @@ python scripts/main.py --dry-run
 # Resume from checkpoint (after interruption)
 python scripts/main.py --resume
 
-# Limit technologies processed
+# Limit radar output size
 python scripts/main.py --max-technologies 25
 ```
 
@@ -203,7 +201,12 @@ The pipeline outputs a `meta.shadowGate` object in `data.ai.json` for operationa
 | `quality.watchlistRecall` | % of watchlist technologies retained |
 | `changes.filteredCount` | Technologies filtered by optimization (LLM call reduction) |
 | `changes.addedCount` | New technologies added this run |
+| `pipeline.rejectedByStage` | Compact rejection reasons from ETL filtering stages |
+| `pipeline.ringDistribution` | Current radar mix by ring (`adopt`/`trial`/`assess`/`hold`) |
+| `pipeline.topAdded` | Sample of highest-scoring additions vs previous snapshot |
+| `pipeline.topDropped` | Sample of highest-scoring drops vs previous snapshot |
 | `candidateChanges` | Leader stability tracking with `consecutiveCount` for each transition |
+| `leaderTransitionSummary` | Pending/promoted leader transition counts for quick ops review |
 
 This provides "what changed" visibility for operations teams monitoring pipeline health.
 
@@ -223,6 +226,9 @@ These fields appear only when present—backward compatible with existing data f
 ```bash
 # Run ETL tests
 cd scripts && source ../.venv/bin/activate && python -m pytest tests -q
+
+# Generate a human review summary for the current radar output
+PYTHONPATH=scripts ./.venv/bin/python scripts/review_radar_output.py --input src/data/data.ai.json
 
 # Verify dry-run
 python scripts/main.py --dry-run

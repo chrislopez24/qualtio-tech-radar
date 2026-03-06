@@ -251,12 +251,12 @@ Respond with JSON only: {"strategic_value": "high|medium|low", "reason": "brief 
             except Exception as e:
                 logger.warning(f"AI evaluation failed for {name}, falling back to heuristic: {e}")
 
-        return self._heuristic_evaluate(name, stars)
+        return self._heuristic_evaluate(name, stars, description)
 
     def _ai_evaluate(self, name: str, stars: int, description: str) -> StrategicValue:
         """Use AI to evaluate strategic value with caching"""
         if self._client is None:
-            return self._heuristic_evaluate(name, stars)
+            return self._heuristic_evaluate(name, stars, description)
 
         # Build features for cache key
         features = {
@@ -308,7 +308,7 @@ Consider the strategic value for a tech radar."""
         content = response.choices[0].message.content
         if not content:
             self._log_request_metrics(name, prompt, response, "")
-            return self._heuristic_evaluate(name, stars)
+            return self._heuristic_evaluate(name, stars, description)
 
         self._log_request_metrics(name, prompt, response, content)
 
@@ -326,7 +326,7 @@ Consider the strategic value for a tech radar."""
             value = data.get("strategic_value", "medium").lower()
         except json.JSONDecodeError as e:
             logger.warning(f"Failed to parse AI response as JSON for {name}: {e}")
-            return self._heuristic_evaluate(name, stars)
+            return self._heuristic_evaluate(name, stars, description)
 
         # Store result in cache (cache errors should not block pipeline)
         if self.llm_cache is not None:
@@ -347,28 +347,48 @@ Consider the strategic value for a tech radar."""
             return StrategicValue.LOW
         return StrategicValue.MEDIUM
 
-    def _heuristic_evaluate(self, name: str, stars: int) -> StrategicValue:
+    def _heuristic_evaluate(self, name: str, stars: int, description: str = "") -> StrategicValue:
         """Heuristic evaluation when AI is not available - Conservative (Zalando-style)"""
         name_lower = name.lower()
-        
+        description_lower = description.lower()
+        combined_text = f"{name_lower} {description_lower}".strip()
+        deprecated_info = self._get_deprecated_info(name)
+
+        high_signal_keywords = {
+            "react", "vue", "angular", "node", "python", "kubernetes",
+            "docker", "postgresql", "typescript", "rust", "terraform",
+        }
+        medium_signal_keywords = {
+            "eslint", "babel", "firebase", "framework", "platform", "runtime",
+            "database", "compiler", "linter", "lint", "testing", "test",
+            "bundler", "build", "orchestration", "backend as a service",
+        }
+
         # Very high bar for HIGH - must be industry standard
         if stars > 50000:
-            if any(x in name_lower for x in ["react", "vue", "angular", "node", "python", "kubernetes", "docker", "postgresql"]):
+            if any(keyword in combined_text for keyword in high_signal_keywords):
                 return StrategicValue.HIGH
-            # Even with high stars, check if it's a framework/language vs utility
-            if any(x in name_lower for x in ["framework", "platform", "runtime", "database"]):
+            if any(keyword in combined_text for keyword in medium_signal_keywords):
                 return StrategicValue.HIGH
             return StrategicValue.MEDIUM
-        
+
         # MEDIUM - solid adoption but not dominant
         elif stars > 10000:
-            if any(x in name_lower for x in ["typescript", "rust", "go", "kotlin", "swift"]):
+            if deprecated_info:
                 return StrategicValue.MEDIUM
-            # Tools/platforms with strong adoption
-            if any(x in name_lower for x in ["webpack", "vite", "nextjs", "fastapi", "terraform", "firebase"]):
+            if any(x in combined_text for x in ["typescript", "rust", "go", "kotlin", "swift"]):
+                return StrategicValue.MEDIUM
+            if any(keyword in combined_text for keyword in medium_signal_keywords):
                 return StrategicValue.MEDIUM
             return StrategicValue.LOW  # Stars alone aren't enough
-        
+
+        elif stars > 1000:
+            if deprecated_info:
+                return StrategicValue.MEDIUM
+            if any(keyword in combined_text for keyword in medium_signal_keywords):
+                return StrategicValue.MEDIUM
+            return StrategicValue.LOW
+
         # LOW - everything else
         return StrategicValue.LOW
 
@@ -528,6 +548,11 @@ Consider the strategic value for a tech radar."""
                 replacement=replacement,
                 merged_names=getattr(item, 'merged_names', [])
             )
+
+            for attr in ("market_score", "signals", "moved", "sources"):
+                value = getattr(item, attr, None)
+                if value is not None:
+                    setattr(filtered_item, attr, value)
             filtered.append(filtered_item)
 
         if self.metrics["calls"]:

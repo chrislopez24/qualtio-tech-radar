@@ -9,7 +9,7 @@ from typing import Callable, Any, Optional
 from functools import wraps
 from threading import Lock
 
-from github import Github
+from github import Auth, Github
 from github.GithubException import RateLimitExceededException, GithubException
 
 logger = logging.getLogger(__name__)
@@ -90,7 +90,7 @@ class GitHubRateLimiter:
         cache_ttl: int = 60,
     ):
         self.token = token or os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
-        self.client = Github(self.token) if self.token else None
+        self.client = Github(auth=Auth.Token(self.token)) if self.token else None
         self.requests_per_minute = requests_per_minute
         self.max_retries = max_retries
         self.cache_ttl = cache_ttl

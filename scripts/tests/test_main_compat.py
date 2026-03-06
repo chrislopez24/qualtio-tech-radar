@@ -307,6 +307,120 @@ def test_shadow_only_warn_and_fail_keep_baseline_leader_state_in_meta(tmp_path):
     assert leader_state == baseline_leader_state
 
 
+def test_shadow_only_warn_persists_updated_candidate_leader_state(tmp_path):
+    from main import main
+    from etl.config import ETLConfig, OutputConfig
+
+    current_file = tmp_path / "data.ai.json"
+    baseline_file = tmp_path / "baseline.json"
+    report_file = tmp_path / "shadow_eval.json"
+
+    baseline_payload = {
+        "technologies": [{"id": "react", "marketScore": 98}, {"id": "kubernetes", "marketScore": 97}],
+        "watchlist": [],
+        "meta": {"shadowGate": {"leaderState": {"stableLeaders": ["kubernetes", "react"], "candidateChanges": {}, "promotionRuns": 3}}},
+    }
+    current_payload = {
+        "technologies": [
+            {"id": "react", "marketScore": 98},
+            {"id": "kubernetes", "marketScore": 97},
+            {"id": "bun", "marketScore": 99},
+        ],
+        "watchlist": [],
+        "meta": {},
+    }
+
+    baseline_file.write_text(json.dumps(baseline_payload))
+    current_file.write_text(json.dumps(current_payload))
+
+    cfg = ETLConfig(output=OutputConfig(public_file=str(current_file)))
+
+    with patch("main.load_etl_config", return_value=cfg), \
+         patch("main.RadarPipeline") as mock_pipeline, \
+         patch.object(
+             sys,
+             "argv",
+             [
+                 "main.py",
+                 "--shadow-only",
+                 "--shadow-baseline",
+                 str(baseline_file),
+                 "--shadow-current",
+                 str(current_file),
+                 "--shadow-output",
+                 str(report_file),
+                 "--shadow-threshold-core-overlap",
+                 "0.0",
+                 "--shadow-threshold-leader-coverage",
+                 "0.0",
+                 "--shadow-threshold-watchlist-recall",
+                 "0.0",
+                 "--shadow-threshold-llm-reduction",
+                 "0.0",
+             ],
+         ):
+        exit_code = main()
+
+    assert exit_code == 0
+    mock_pipeline.assert_not_called()
+
+    payload = json.loads(current_file.read_text())
+    shadow_gate = payload["meta"]["shadowGate"]
+    assert shadow_gate["status"] == "warn"
+    assert shadow_gate["leaderTransitionSummary"] == {
+        "candidateCount": 1,
+        "promotedCount": 0,
+    }
+    candidate_change = shadow_gate["leaderState"]["candidateChanges"]["bun:added"]
+    assert candidate_change["leaderId"] == "bun"
+    assert candidate_change["changeType"] == "added"
+    assert candidate_change["consecutiveCount"] == 1
+    assert candidate_change["firstSeenRun"]
+    assert candidate_change["lastSeenRun"]
+
+
+def test_main_applies_max_technologies_to_distribution_target(tmp_path):
+    from main import main
+    from etl.config import ETLConfig, OutputConfig
+
+    public_file = tmp_path / "data.ai.json"
+    cfg = ETLConfig(output=OutputConfig(public_file=str(public_file)))
+
+    with patch("main.load_etl_config", return_value=cfg), \
+         patch("main.RadarPipeline") as mock_pipeline, \
+         patch.object(sys, "argv", ["main.py", "--max-technologies", "6"]):
+        mock_pipeline.return_value.run.return_value = {
+            "technologies": [],
+            "watchlist": [],
+            "meta": {},
+        }
+
+        exit_code = main()
+
+    assert exit_code == 0
+    passed_config = mock_pipeline.call_args.kwargs["config"]
+    assert passed_config.distribution.target_total == 6
+    assert not hasattr(passed_config, "deep_scan")
+
+
+def test_main_rejects_invalid_sources_argument(tmp_path, capsys):
+    from main import main
+    from etl.config import ETLConfig, OutputConfig
+
+    public_file = tmp_path / "data.ai.json"
+    cfg = ETLConfig(output=OutputConfig(public_file=str(public_file)))
+
+    with patch("main.load_etl_config", return_value=cfg), \
+         patch("main.RadarPipeline") as mock_pipeline, \
+         patch.object(sys, "argv", ["main.py", "--sources", "github"]):
+        exit_code = main()
+
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "Invalid --sources value" in captured.out
+    mock_pipeline.assert_not_called()
+
+
 def test_shadow_only_pass_persists_updated_stable_leader_state(tmp_path):
     from main import main
     from etl.config import ETLConfig, OutputConfig

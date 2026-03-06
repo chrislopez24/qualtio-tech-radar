@@ -32,6 +32,8 @@ def strategic_filter(
 
     qualified_techs: List[Tuple[Any, ClassificationResult]] = []
     min_sources = getattr(pipeline.config.filtering, "min_sources", 1)
+    rejected_low_sources = 0
+    rejected_quality_gate = 0
     for tech, classification in classified_pairs:
         if len(tech.sources) < min_sources:
             logger.debug(
@@ -40,6 +42,7 @@ def strategic_filter(
                 len(tech.sources),
                 min_sources,
             )
+            rejected_low_sources += 1
             continue
 
         if not pipeline._passes_quality_gate(tech, classification.ring):
@@ -48,6 +51,7 @@ def strategic_filter(
                 tech.name,
                 classification.ring,
             )
+            rejected_quality_gate += 1
             continue
 
         qualified_techs.append((tech, classification))
@@ -86,6 +90,9 @@ def strategic_filter(
         "classified": len(classified_pairs),
         "qualified": len(qualified_techs),
         "ai_accepted": len(ai_filtered),
+        "rejected_low_sources": rejected_low_sources,
+        "rejected_quality_gate": rejected_quality_gate,
+        "rejected_ai_filter": max(0, len(qualified_techs) - len(ai_filtered)),
     }
 
     target_max = getattr(pipeline.config.distribution, "target_total", 15)

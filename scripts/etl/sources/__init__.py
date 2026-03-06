@@ -1,4 +1,4 @@
 from etl.sources.github_trending import GitHubTrendingSource
-from etl.sources.google_trends import GoogleTrendsSource
+from etl.sources.hackernews import HackerNewsSource
 
-__all__ = ["GitHubTrendingSource", "GoogleTrendsSource"]
+__all__ = ["GitHubTrendingSource", "HackerNewsSource"]
