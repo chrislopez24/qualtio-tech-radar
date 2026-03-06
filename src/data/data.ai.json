@@ -1,45 +1,185 @@
 {
-  "updatedAt": "2026-02-26T11:56:54.004861",
+  "updatedAt": "2026-03-06T15:02:26.872384",
   "technologies": [
     {
-      "id": "build-your-own-x",
-      "name": "build-your-own-x",
-      "quadrant": "techniques",
-      "ring": "assess",
-      "description": "A popular GitHub repository containing tutorials for recreating popular technologies (like git, docker, webpack, etc.) from scratch. It serves as an educational resource for developers to master programming by building real-world systems.",
+      "id": "java-design-patterns",
+      "name": "Java-Design-Patterns",
+      "quadrant": "tools",
+      "ring": "adopt",
+      "description": "A comprehensive collection of well-organized, production-ready implementations of classic design patterns in Java, serving as an educational reference and code library for developers seeking to apply object-oriented design principles.",
       "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
+      "trend": "up",
+      "marketScore": 88.34,
       "signals": {
         "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
+        "ghPopularity": 93.8,
         "hnHeat": 0.0
       },
-      "stars": 469403,
+      "stars": 93798,
       "confidence": 0.95,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994268"
+      "updatedAt": "2026-03-06T15:02:26.827549"
     },
     {
-      "id": "javascript",
-      "name": "javascript",
+      "id": "puppeteer",
+      "name": "Puppeteer",
+      "quadrant": "tools",
+      "ring": "adopt",
+      "description": "JavaScript API for controlling Chrome and Firefox browsers programmatically. Widely used for web scraping, automated testing, performance monitoring, and screenshot generation. Provides high-level API over DevTools Protocol.",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 88.1,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 93.73,
+        "hnHeat": 0.0
+      },
+      "stars": 93727,
+      "confidence": 0.95,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827561"
+    },
+    {
+      "id": "tailwindcss",
+      "name": "Tailwindcss",
+      "quadrant": "tools",
+      "ring": "adopt",
+      "description": "A utility-first CSS framework that enables rapid UI development through low-level utility classes. It has transformed modern web development by allowing developers to build custom designs without leaving HTML.",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 88.02,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 93.93,
+        "hnHeat": 0.0
+      },
+      "stars": 93928,
+      "confidence": 0.95,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827566"
+    },
+    {
+      "id": "nvm",
+      "name": "Nvm",
+      "quadrant": "tools",
+      "ring": "adopt",
+      "description": "Node Version Manager - A POSIX-compliant bash script to manage multiple active node.js versions. Essential tool for developers working with Node.js who need to switch between different versions for various projects.",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 87.69,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 92.06,
+        "hnHeat": 0.0
+      },
+      "stars": 92064,
+      "confidence": 0.95,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827569"
+    },
+    {
+      "id": "markitdown",
+      "name": "Markitdown",
+      "quadrant": "tools",
+      "ring": "adopt",
+      "description": "Python library for converting various file formats (PDF, Word, Excel, PowerPoint, images) to Markdown. Provides simple API for document transformation with support for multiple input formats.",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 87.09,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 90.2,
+        "hnHeat": 0.0
+      },
+      "stars": 90205,
+      "confidence": 0.95,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827573"
+    },
+    {
+      "id": "bitcoin",
+      "name": "Bitcoin",
+      "quadrant": "platforms",
+      "ring": "adopt",
+      "description": "Bitcoin Core is the reference implementation of the Bitcoin cryptocurrency protocol. It is a decentralized digital currency that operates on a peer-to-peer network without central authority, using blockchain technology for secure transactions.",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 87.04,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 88.37,
+        "hnHeat": 0.0
+      },
+      "stars": 88368,
+      "confidence": 0.95,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827576"
+    },
+    {
+      "id": "immich",
+      "name": "Immich",
+      "quadrant": "tools",
+      "ring": "adopt",
+      "description": "Self-hosted photo and video management solution with high performance capabilities. Provides alternative to cloud-based photo services like Google Photos, allowing users to host their own media management platform.",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 88.07,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 94.13,
+        "hnHeat": 0.0
+      },
+      "stars": 94133,
+      "confidence": 0.9,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827579"
+    },
+    {
+      "id": "python",
+      "name": "Python",
       "quadrant": "techniques",
       "ring": "adopt",
-      "description": "JavaScript Style Guide",
+      "description": "All Algorithms implemented in Python",
       "moved": 0,
-      "trend": "stable",
+      "trend": "up",
+      "marketScore": 100.0,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 86.0
+      },
+      "stars": 218388,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827581"
+    },
+    {
+      "id": "ollama",
+      "name": "ollama",
+      "quadrant": "platforms",
+      "ring": "adopt",
+      "description": "Get up and running with Kimi-K2.5, GLM-5, MiniMax, DeepSeek, gpt-oss, Qwen, Gemma and other models.",
+      "moved": 0,
+      "trend": "up",
       "marketScore": 100.0,
       "signals": {
         "ghMomentum": 100.0,
         "ghPopularity": 100.0,
         "hnHeat": 100.0
       },
-      "stars": 148089,
+      "stars": 164269,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994285"
+      "updatedAt": "2026-03-06T15:02:26.827584"
     },
     {
       "id": "go",
@@ -48,18 +188,18 @@
       "ring": "adopt",
       "description": "The Go programming language",
       "moved": 0,
-      "trend": "stable",
+      "trend": "up",
       "marketScore": 100.0,
       "signals": {
         "ghMomentum": 100.0,
         "ghPopularity": 100.0,
-        "hnHeat": 100.0
+        "hnHeat": 97.5
       },
-      "stars": 132768,
+      "stars": 132915,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994293"
+      "updatedAt": "2026-03-06T15:02:26.827586"
     },
     {
       "id": "rust",
@@ -68,398 +208,238 @@
       "ring": "adopt",
       "description": "Empowering everyone to build reliable and efficient software.",
       "moved": 0,
-      "trend": "stable",
+      "trend": "up",
       "marketScore": 100.0,
       "signals": {
         "ghMomentum": 100.0,
         "ghPopularity": 100.0,
         "hnHeat": 100.0
       },
-      "stars": 110721,
+      "stars": 110953,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994299"
+      "updatedAt": "2026-03-06T15:02:26.827596"
+    },
+    {
+      "id": "storybook",
+      "name": "storybook",
+      "quadrant": "techniques",
+      "ring": "adopt",
+      "description": "Storybook is the industry standard workshop for building, documenting, and testing UI components in isolation",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 87.01,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 89.37,
+        "hnHeat": 0.0
+      },
+      "stars": 89371,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827599"
+    },
+    {
+      "id": "firecrawl",
+      "name": "firecrawl",
+      "quadrant": "languages",
+      "ring": "adopt",
+      "description": "🔥 The Web Data API for AI - Turn entire websites into LLM-ready markdown or structured data",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 86.76,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 88.79,
+        "hnHeat": 0.0
+      },
+      "stars": 88786,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827641"
+    },
+    {
+      "id": "gin",
+      "name": "gin",
+      "quadrant": "platforms",
+      "ring": "adopt",
+      "description": "Gin is a high-performance HTTP web framework written in Go. It provides a Martini-like API but with significantly better performance—up to 40 times faster—thanks to httprouter. Gin is designed for building REST APIs, web applications, and microservices.",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 86.68,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 88.2,
+        "hnHeat": 0.0
+      },
+      "stars": 88205,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827647"
     },
     {
       "id": "django",
       "name": "django",
       "quadrant": "tools",
-      "ring": "assess",
+      "ring": "adopt",
       "description": "The Web framework for perfectionists with deadlines.",
       "moved": 0,
-      "trend": "stable",
-      "marketScore": 91.11,
+      "trend": "up",
+      "marketScore": 86.66,
       "signals": {
         "ghMomentum": 100.0,
-        "ghPopularity": 86.94,
-        "hnHeat": 62.5
-      },
-      "stars": 86935,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994306"
-    },
-    {
-      "id": "python",
-      "name": "Python",
-      "quadrant": "techniques",
-      "ring": "assess",
-      "description": "All Algorithms implemented in Python",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 88.3,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 22.0
-      },
-      "stars": 218144,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994312"
-    },
-    {
-      "id": "computer-science",
-      "name": "computer-science",
-      "quadrant": "techniques",
-      "ring": "hold",
-      "description": "\ud83c\udf93 Path to a free self-taught education in Computer Science!",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
+        "ghPopularity": 86.99,
         "hnHeat": 0.0
       },
-      "stars": 201652,
+      "stars": 86986,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994321"
+      "updatedAt": "2026-03-06T15:02:26.827651"
     },
     {
-      "id": "javascript-algorithms",
-      "name": "javascript-algorithms",
-      "quadrant": "techniques",
-      "ring": "assess",
-      "description": "\ud83d\udcdd Algorithms and data structures implemented in JavaScript with explanations and links to further readings",
-      "moved": -1,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 195697,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994328"
-    },
-    {
-      "id": "tensorflow",
-      "name": "tensorflow",
-      "quadrant": "techniques",
-      "ring": "trial",
-      "description": "An Open Source Machine Learning Framework for Everyone",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 193917,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994333"
-    },
-    {
-      "id": "you-dont-know-js",
-      "name": "You-Dont-Know-JS",
-      "quadrant": "techniques",
-      "ring": "trial",
-      "description": "A book series (2 published editions) on the JS language.",
-      "moved": -1,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 184439,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994338"
-    },
-    {
-      "id": "python-100-days",
-      "name": "Python-100-Days",
-      "quadrant": "techniques",
-      "ring": "adopt",
-      "description": "Python - 100\u5929\u4ece\u65b0\u624b\u5230\u5927\u5e08",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 179025,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994350"
-    },
-    {
-      "id": "flutter",
-      "name": "flutter",
-      "quadrant": "techniques",
-      "ring": "adopt",
-      "description": "Flutter makes it easy and fast to build beautiful apps for mobile and beyond",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 175331,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994361"
-    },
-    {
-      "id": "awesome-selfhosted",
-      "name": "awesome-selfhosted",
+      "id": "opencv",
+      "name": "opencv",
       "quadrant": "platforms",
-      "ring": "trial",
-      "description": "A list of Free Software network services and web applications which can be hosted on your own servers",
+      "ring": "adopt",
+      "description": "Open Source Computer Vision Library",
       "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
+      "trend": "up",
+      "marketScore": 86.61,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 86.46,
+        "hnHeat": 0.0
+      },
+      "stars": 86461,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827653"
+    },
+    {
+      "id": "llms-from-scratch",
+      "name": "LLMs-from-scratch",
+      "quadrant": "techniques",
+      "ring": "adopt",
+      "description": "Implement a ChatGPT-like LLM in PyTorch from scratch, step by step",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 86.54,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 87.28,
+        "hnHeat": 0.0
+      },
+      "stars": 87278,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827656"
+    },
+    {
+      "id": "bun",
+      "name": "bun",
+      "quadrant": "platforms",
+      "ring": "adopt",
+      "description": "Incredibly fast JavaScript runtime, bundler, test runner, and package manager – all in one",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 86.46,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 87.91,
+        "hnHeat": 0.0
+      },
+      "stars": 87913,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827659"
+    },
+    {
+      "id": "hugo",
+      "name": "hugo",
+      "quadrant": "tools",
+      "ring": "adopt",
+      "description": "The world’s fastest framework for building websites.",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 86.35,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 86.93,
+        "hnHeat": 0.0
+      },
+      "stars": 86932,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827661"
+    },
+    {
+      "id": "mermaid",
+      "name": "mermaid",
+      "quadrant": "languages",
+      "ring": "adopt",
+      "description": "Generation of diagrams like flowcharts or sequence diagrams from text in a similar manner as markdown",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 86.26,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 86.52,
+        "hnHeat": 0.0
+      },
+      "stars": 86516,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827664"
+    },
+    {
+      "id": "free-programming-books",
+      "name": "free-programming-books",
+      "quadrant": "techniques",
+      "ring": "adopt",
+      "description": ":books: Freely available programming books",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.25,
       "signals": {
         "ghMomentum": 100.0,
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 275352,
+      "stars": 383662,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994390"
+      "updatedAt": "2026-03-06T15:02:26.827667"
     },
     {
       "id": "openclaw",
       "name": "openclaw",
       "quadrant": "platforms",
-      "ring": "trial",
-      "description": "Your own personal AI assistant. Any OS. Any Platform. The lobster way. \ud83e\udd9e ",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 231594,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994405"
-    },
-    {
-      "id": "linux",
-      "name": "linux",
-      "quadrant": "platforms",
-      "ring": "trial",
-      "description": "Linux kernel source tree",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 219244,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994413"
-    },
-    {
-      "id": "ohmyzsh",
-      "name": "ohmyzsh",
-      "quadrant": "platforms",
-      "ring": "trial",
-      "description": "\ud83d\ude43   A delightful community-driven (with 2,400+ contributors) framework for managing your zsh configuration. Includes 300+ optional plugins (rails, git, macOS, hub, docker, homebrew, node, php, python, etc), 140+ themes to spice up your morning, and an auto-update tool that makes it easy to keep up with the latest updates from the community.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 184963,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994422"
-    },
-    {
-      "id": "n8n",
-      "name": "n8n",
-      "quadrant": "platforms",
-      "ring": "trial",
-      "description": "Fair-code workflow automation platform with native AI capabilities. Combine visual building with custom code, self-host or cloud, 400+ integrations.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 176474,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994428"
-    },
-    {
-      "id": "langflow",
-      "name": "langflow",
-      "quadrant": "platforms",
-      "ring": "trial",
-      "description": "Langflow is a powerful tool for building and deploying AI-powered agents and workflows.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 145083,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994433"
-    },
-    {
-      "id": "dify",
-      "name": "dify",
-      "quadrant": "platforms",
-      "ring": "trial",
-      "description": "Production-ready platform for agentic workflow development.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 130428,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994439"
-    },
-    {
-      "id": "langchain",
-      "name": "langchain",
-      "quadrant": "platforms",
-      "ring": "trial",
-      "description": "\ud83e\udd9c\ud83d\udd17 The platform for reliable agents.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 127519,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994444"
-    },
-    {
-      "id": "awesome",
-      "name": "awesome",
-      "quadrant": "tools",
       "ring": "adopt",
-      "description": "awesome technology tracked for current relevance and market momentum.",
-      "moved": 3,
+      "description": "Your own personal AI assistant. Any OS. Any Platform. The lobster way. 🦞 ",
+      "moved": 0,
       "trend": "up",
-      "marketScore": 85.0,
+      "marketScore": 84.25,
       "signals": {
         "ghMomentum": 100.0,
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 440787,
+      "stars": 269657,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994455"
-    },
-    {
-      "id": "freecodecamp",
-      "name": "freeCodeCamp",
-      "quadrant": "tools",
-      "ring": "adopt",
-      "description": "freeCodeCamp technology tracked for current relevance and market momentum.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 437547,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994462"
-    },
-    {
-      "id": "public-apis",
-      "name": "public-apis",
-      "quadrant": "tools",
-      "ring": "adopt",
-      "description": "public-apis technology tracked for current relevance and market momentum.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 400355,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994467"
+      "updatedAt": "2026-03-06T15:02:26.827672"
     },
     {
       "id": "react",
@@ -468,38 +448,198 @@
       "ring": "trial",
       "description": "The library for web and native user interfaces.",
       "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
+      "trend": "up",
+      "marketScore": 84.24,
       "signals": {
         "ghMomentum": 100.0,
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 243307,
+      "stars": 243666,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994473"
+      "updatedAt": "2026-03-06T15:02:26.827674"
     },
     {
-      "id": "autogpt",
-      "name": "AutoGPT",
-      "quadrant": "tools",
+      "id": "build-your-own-x",
+      "name": "build-your-own-x",
+      "quadrant": "techniques",
       "ring": "trial",
-      "description": "AutoGPT is the vision of accessible AI for everyone, to use and to build on. Our mission is to provide the tools, so that you can focus on what matters.",
+      "description": "Master programming by recreating your favorite technologies from scratch.",
       "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
+      "trend": "up",
+      "marketScore": 84.22,
       "signals": {
         "ghMomentum": 100.0,
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 182033,
+      "stars": 472801,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994478"
+      "updatedAt": "2026-03-06T15:02:26.827677"
+    },
+    {
+      "id": "developer-roadmap",
+      "name": "developer-roadmap",
+      "quadrant": "techniques",
+      "ring": "trial",
+      "description": "Interactive roadmaps, guides and other educational content to help developers grow in their careers.",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.22,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 350300,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827679"
+    },
+    {
+      "id": "public-apis",
+      "name": "public-apis",
+      "quadrant": "languages",
+      "ring": "trial",
+      "description": "A collective list of free APIs",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.22,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 404657,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827681"
+    },
+    {
+      "id": "freecodecamp",
+      "name": "freeCodeCamp",
+      "quadrant": "languages",
+      "ring": "trial",
+      "description": "freeCodeCamp.org's open-source codebase and curriculum. Learn math, programming, and computer science for free.",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.22,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 437839,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827684"
+    },
+    {
+      "id": "linux",
+      "name": "linux",
+      "quadrant": "platforms",
+      "ring": "trial",
+      "description": "Linux kernel source tree",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.22,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 221153,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827686"
+    },
+    {
+      "id": "tensorflow",
+      "name": "tensorflow",
+      "quadrant": "techniques",
+      "ring": "trial",
+      "description": "An Open Source Machine Learning Framework for Everyone",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.19,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 194012,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827688"
+    },
+    {
+      "id": "python-100-days",
+      "name": "Python-100-Days",
+      "quadrant": "techniques",
+      "ring": "trial",
+      "description": "Python - 100天从新手到大师",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.17,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 179329,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827691"
+    },
+    {
+      "id": "n8n",
+      "name": "n8n",
+      "quadrant": "platforms",
+      "ring": "trial",
+      "description": "Fair-code workflow automation platform with native AI capabilities. Combine visual building with custom code, self-host or cloud, 400+ integrations.",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.17,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 177859,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827715"
+    },
+    {
+      "id": "awesome",
+      "name": "awesome",
+      "quadrant": "techniques",
+      "ring": "trial",
+      "description": "😎 Awesome lists about all kinds of interesting topics",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.17,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 443041,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827719"
     },
     {
       "id": "bootstrap",
@@ -508,18 +648,300 @@
       "ring": "trial",
       "description": "The most popular HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web.",
       "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
+      "trend": "up",
+      "marketScore": 84.16,
       "signals": {
         "ghMomentum": 100.0,
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 174004,
+      "stars": 174027,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994485"
+      "updatedAt": "2026-03-06T15:02:26.827722"
+    },
+    {
+      "id": "gitignore",
+      "name": "gitignore",
+      "quadrant": "techniques",
+      "ring": "trial",
+      "description": "A collection of useful .gitignore templates",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.16,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 172852,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827724"
+    },
+    {
+      "id": "autogpt",
+      "name": "AutoGPT",
+      "quadrant": "languages",
+      "ring": "trial",
+      "description": "AutoGPT is the vision of accessible AI for everyone, to use and to build on. Our mission is to provide the tools, so that you can focus on what matters.",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.16,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 182217,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827727"
+    },
+    {
+      "id": "awesome-python",
+      "name": "awesome-python",
+      "quadrant": "languages",
+      "ring": "trial",
+      "description": "An opinionated list of awesome Python frameworks, libraries, software and resources.",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.12,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 285852,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827729"
+    },
+    {
+      "id": "vscode",
+      "name": "vscode",
+      "quadrant": "languages",
+      "ring": "hold",
+      "description": "Visual Studio Code",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.12,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 182359,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827731"
+    },
+    {
+      "id": "javaguide",
+      "name": "JavaGuide",
+      "quadrant": "languages",
+      "ring": "hold",
+      "description": "Java 面试 & 后端通用面试指南，覆盖计算机基础、数据库、分布式、高并发与系统设计。准备后端技术面试，首选 JavaGuide！",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.12,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 154076,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827734"
+    },
+    {
+      "id": "you-dont-know-js",
+      "name": "You-Dont-Know-JS",
+      "quadrant": "techniques",
+      "ring": "hold",
+      "description": "A book series (2 published editions) on the JS language.",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.09,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 184465,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827736"
+    },
+    {
+      "id": "javascript-algorithms",
+      "name": "javascript-algorithms",
+      "quadrant": "languages",
+      "ring": "hold",
+      "description": "📝 Algorithms and data structures implemented in JavaScript with explanations and links to further readings",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.09,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 195742,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827740"
+    },
+    {
+      "id": "flutter",
+      "name": "flutter",
+      "quadrant": "techniques",
+      "ring": "assess",
+      "description": "Flutter makes it easy and fast to build beautiful apps for mobile and beyond",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.06,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 175445,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827743"
+    },
+    {
+      "id": "computer-science",
+      "name": "computer-science",
+      "quadrant": "techniques",
+      "ring": "assess",
+      "description": "🎓 Path to a free self-taught education in Computer Science!",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.06,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 202161,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827747"
+    },
+    {
+      "id": "transformers",
+      "name": "transformers",
+      "quadrant": "languages",
+      "ring": "assess",
+      "description": "🤗 Transformers: the model-definition framework for state-of-the-art machine learning models in text, vision, audio, and multimodal models, for both inference and training. ",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.05,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 157489,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827751"
+    },
+    {
+      "id": "generative-ai-for-beginners",
+      "name": "generative-ai-for-beginners",
+      "quadrant": "techniques",
+      "ring": "assess",
+      "description": "21 Lessons, Get Started Building with Generative AI ",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.05,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 107595,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827754"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "ohmyzsh",
+      "name": "ohmyzsh",
+      "quadrant": "platforms",
+      "ring": "adopt",
+      "description": "🙃   A delightful community-driven (with 2,400+ contributors) framework for managing your zsh configuration. Includes 300+ optional plugins (rails, git, macOS, hub, docker, homebrew, node, php, python, etc), 140+ themes to spice up your morning, and an auto-update tool that makes it easy to keep up with the latest updates from the community.",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.04,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 185143,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827758"
+    },
+    {
+      "id": "kubernetes",
+      "name": "kubernetes",
+      "quadrant": "platforms",
+      "ring": "adopt",
+      "description": "Production-Grade Container Scheduling and Management",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.04,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 120958,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827761"
+    },
+    {
+      "id": "stable-diffusion-webui",
+      "name": "stable-diffusion-webui",
+      "quadrant": "languages",
+      "ring": "adopt",
+      "description": "Stable Diffusion web UI",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 84.04,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 161520,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827763"
     },
     {
       "id": "next.js",
@@ -528,508 +950,130 @@
       "ring": "trial",
       "description": "The React Framework",
       "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 137997,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994491"
-    },
-    {
-      "id": "vscode",
-      "name": "vscode",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": "Visual Studio Code",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 182092,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994495"
-    },
-    {
-      "id": "ollama",
-      "name": "ollama",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": "Get up and running with Kimi-K2.5, GLM-5, MiniMax, DeepSeek, gpt-oss, Qwen, Gemma and other models.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 163459,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994501"
-    },
-    {
-      "id": "yt-dlp",
-      "name": "yt-dlp",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": "A feature-rich command-line audio/video downloader",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 148660,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994506"
-    },
-    {
-      "id": "hellogithub",
-      "name": "HelloGitHub",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": ":octocat: \u5206\u4eab GitHub \u4e0a\u6709\u8da3\u3001\u5165\u95e8\u7ea7\u7684\u5f00\u6e90\u9879\u76ee\u3002Share interesting, entry-level open source projects on GitHub.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 143907,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994515"
-    },
-    {
-      "id": "youtube-dl",
-      "name": "youtube-dl",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": "Command-line program to download videos from YouTube.com and other video sites",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 139735,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994520"
-    },
-    {
-      "id": "powertoys",
-      "name": "PowerToys",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": "Microsoft PowerToys is a collection of utilities that supercharge productivity and customization on Windows",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 130099,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994525"
-    },
-    {
-      "id": "30-seconds-of-code",
-      "name": "30-seconds-of-code",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": "Coding articles to level up your development skills",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 126875,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994530"
-    },
-    {
-      "id": "awesome-go",
-      "name": "awesome-go",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": "A curated list of awesome Go frameworks, libraries and software",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 166065,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994535"
-    },
-    {
-      "id": "transformers",
-      "name": "transformers",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": "\ud83e\udd17 Transformers: the model-definition framework for state-of-the-art machine learning models in text, vision, audio, and multimodal models, for both inference and training. ",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 157012,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994542"
-    },
-    {
-      "id": "javaguide",
-      "name": "JavaGuide",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": "Java \u9762\u8bd5 & \u540e\u7aef\u901a\u7528\u9762\u8bd5\u6307\u5357\uff0c\u8986\u76d6\u8ba1\u7b97\u673a\u57fa\u7840\u3001\u6570\u636e\u5e93\u3001\u5206\u5e03\u5f0f\u3001\u9ad8\u5e76\u53d1\u4e0e\u7cfb\u7edf\u8bbe\u8ba1\u3002\u51c6\u5907\u540e\u7aef\u6280\u672f\u9762\u8bd5\uff0c\u9996\u9009 JavaGuide\uff01",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 153887,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994548"
-    },
-    {
-      "id": "gitignore",
-      "name": "gitignore",
-      "quadrant": "techniques",
-      "ring": "adopt",
-      "description": "A collection of useful .gitignore templates",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 172694,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994553"
-    },
-    {
-      "id": "microsoft-activation-scripts",
-      "name": "Microsoft-Activation-Scripts",
-      "quadrant": "techniques",
-      "ring": "adopt",
-      "description": "Open-source Windows and Office activator featuring HWID, Ohook, TSforge, and Online KMS activation methods, along with advanced troubleshooting.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 167021,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994558"
-    },
-    {
-      "id": "prompts.chat",
-      "name": "prompts.chat",
-      "quadrant": "techniques",
-      "ring": "adopt",
-      "description": "f.k.a. Awesome ChatGPT Prompts. Share, discover, and collect prompts from the community. Free and open source \u2014 self-host for your organization with complete privacy.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 147934,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994567"
-    },
-    {
-      "id": "scrcpy",
-      "name": "scrcpy",
-      "quadrant": "techniques",
-      "ring": "adopt",
-      "description": "Display and control your Android device",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 136180,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994573"
-    },
-    {
-      "id": "free-programming-books",
-      "name": "Free-Programming-Books",
-      "quadrant": "tools",
-      "ring": "hold",
-      "description": "A comprehensive GitHub repository aggregating freely available programming books across multiple languages and topics. One of the most starred repositories on GitHub with 383k+ stars, serving as a valuable community resource for developers.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 0.0,
-      "signals": {
-        "ghMomentum": 0.0,
-        "ghPopularity": 0.0,
-        "hnHeat": 0.0
-      },
-      "stars": 383129,
-      "confidence": 0.95,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994579"
-    },
-    {
-      "id": "developer-roadmap",
-      "name": "Developer-Roadmap",
-      "quadrant": "techniques",
-      "ring": "hold",
-      "description": "Interactive roadmaps and educational guides helping developers navigate career paths in various technologies like frontend, backend, DevOps, and AI. Provides structured learning paths with community-contributed resources.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 0.0,
-      "signals": {
-        "ghMomentum": 0.0,
-        "ghPopularity": 0.0,
-        "hnHeat": 0.0
-      },
-      "stars": 349792,
-      "confidence": 0.95,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994585"
-    },
-    {
-      "id": "awesome-python",
-      "name": "Awesome-Python",
-      "quadrant": "tools",
-      "ring": "hold",
-      "description": "An opinionated and curated list of awesome Python frameworks, libraries, software and resources. This GitHub repository serves as a comprehensive reference guide for Python developers seeking quality tools and libraries.",
-      "moved": -1,
-      "trend": "down",
-      "marketScore": 0.0,
-      "signals": {
-        "ghMomentum": 0.0,
-        "ghPopularity": 0.0,
-        "hnHeat": 0.0
-      },
-      "stars": 284609,
-      "confidence": 0.95,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994590"
-    }
-  ],
-  "watchlist": [
-    {
-      "id": "django",
-      "name": "django",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "The Web framework for perfectionists with deadlines.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 91.11,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 86.94,
-        "hnHeat": 62.5
-      },
-      "stars": 86935,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994597"
-    },
-    {
-      "id": "python",
-      "name": "Python",
-      "quadrant": "techniques",
-      "ring": "assess",
-      "description": "All Algorithms implemented in Python",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 88.3,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 22.0
-      },
-      "stars": 218144,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994602"
-    },
-    {
-      "id": "build-your-own-x",
-      "name": "build-your-own-x",
-      "quadrant": "techniques",
-      "ring": "assess",
-      "description": "A popular GitHub repository containing tutorials for recreating popular technologies (like git, docker, webpack, etc.) from scratch. It serves as an educational resource for developers to master programming by building real-world systems.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 469403,
-      "confidence": 0.95,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994608"
-    },
-    {
-      "id": "30-seconds-of-code",
-      "name": "30-seconds-of-code",
-      "quadrant": "languages",
-      "ring": "trial",
-      "description": "Coding articles to level up your development skills",
-      "moved": -1,
-      "trend": "stable",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 126875,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994612"
-    },
-    {
-      "id": "react-native",
-      "name": "react-native",
-      "quadrant": "tools",
-      "ring": "adopt",
-      "description": "A framework for building native applications using React",
-      "moved": 0,
       "trend": "up",
-      "marketScore": 85.0,
+      "marketScore": 84.0,
       "signals": {
         "ghMomentum": 100.0,
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 125443,
+      "stars": 138181,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994617"
-    },
-    {
-      "id": "open-webui",
-      "name": "open-webui",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": "User-friendly AI Interface (Supports Ollama, OpenAI API, ...)",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 85.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 124982,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994622"
+      "updatedAt": "2026-03-06T15:02:26.827765"
     },
     {
       "id": "system-prompts-and-models-of-ai-tools",
       "name": "system-prompts-and-models-of-ai-tools",
       "quadrant": "tools",
-      "ring": "adopt",
+      "ring": "trial",
       "description": "FULL Augment Code, Claude Code, Cluely, CodeBuddy, Comet, Cursor, Devin AI, Junie, Kiro, Leap.new, Lovable, Manus, NotionAI, Orchids.app, Perplexity, Poke, Qoder, Replit, Same.dev, Trae, Traycer AI, VSCode Agent, Warp.dev, Windsurf, Xcode, Z.ai Code, Dia & v0. (And other Open Sourced) System Prompts, Internal Tools & AI Models",
       "moved": 0,
       "trend": "up",
-      "marketScore": 85.0,
+      "marketScore": 84.0,
       "signals": {
         "ghMomentum": 100.0,
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 124757,
+      "stars": 128801,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-02-26T11:56:53.994630"
+      "updatedAt": "2026-03-06T15:02:26.827768"
+    },
+    {
+      "id": "javascript",
+      "name": "javascript",
+      "quadrant": "techniques",
+      "ring": "trial",
+      "description": "JavaScript Style Guide",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 83.99,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 148099,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827770"
+    },
+    {
+      "id": "node",
+      "name": "node",
+      "quadrant": "platforms",
+      "ring": "assess",
+      "description": "Node.js JavaScript runtime ✨🐢🚀✨",
+      "moved": 0,
+      "trend": "up",
+      "marketScore": 83.99,
+      "signals": {
+        "ghMomentum": 100.0,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "stars": 116105,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-06T15:02:26.827773"
     }
   ],
   "meta": {
     "pipeline": {
       "droppedInvalidDescriptions": 0,
-      "repairedDescriptions": 3,
-      "collected": 176,
-      "normalized": 176,
+      "repairedDescriptions": 0,
+      "rejectedByStage": {
+        "insufficientSources": 0,
+        "qualityGate": 0,
+        "aiFilter": 37
+      },
+      "ringDistribution": {
+        "adopt": 22,
+        "trial": 14,
+        "assess": 4,
+        "hold": 4
+      },
+      "topAdded": [
+        {
+          "id": "python",
+          "name": "Python",
+          "ring": "adopt",
+          "marketScore": 100.0
+        },
+        {
+          "id": "ollama",
+          "name": "ollama",
+          "ring": "adopt",
+          "marketScore": 100.0
+        },
+        {
+          "id": "go",
+          "name": "go",
+          "ring": "adopt",
+          "marketScore": 100.0
+        },
+        {
+          "id": "rust",
+          "name": "rust",
+          "ring": "adopt",
+          "marketScore": 100.0
+        },
+        {
+          "id": "java-design-patterns",
+          "name": "Java-Design-Patterns",
+          "ring": "adopt",
+          "marketScore": 88.34
+        }
+      ],
+      "topDropped": [],
+      "collected": 162,
+      "normalized": 162,
       "candidatesCore": 3,
       "candidatesWatchlist": 0,
       "candidatesBorderline": 41,
@@ -1038,17 +1082,6 @@
       "qualified": 44,
       "output": 44,
       "watchlist": 7
-    },
-    "shadowGate": {
-      "status": "pass",
-      "coreOverlap": 1.0,
-      "leaderCoverage": 1.0,
-      "watchlistRecall": 1.0,
-      "llmCallReduction": 0.8409,
-      "filteredCount": 0,
-      "addedCount": 0,
-      "filteredByRing": {},
-      "filteredSample": []
     }
   }
 }
