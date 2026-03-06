@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import Optional, Dict, List
 
 from etl.evidence import EvidenceRecord
 
@@ -8,10 +7,10 @@ from etl.evidence import EvidenceRecord
 class SourceTechnology:
     name: str
     source: str
-    url: Optional[str] = None
-    description: Optional[str] = None
-    stars: Optional[int] = None
-    trending_date: Optional[str] = None
+    url: str | None = None
+    description: str | None = None
+    stars: int | None = None
+    trending_date: str | None = None
 
 
 @dataclass
@@ -32,9 +31,9 @@ class TechnologyClassification:
     description: str
     is_new: bool = False
     # Canonical entity fields for Radar V2
-    canonical_id: Optional[str] = None
+    canonical_id: str | None = None
     entity_type: str = "technology"
-    evidence: List[EvidenceRecord] = field(default_factory=list)
+    evidence: list[EvidenceRecord] = field(default_factory=list)
 
 
 @dataclass
@@ -44,4 +43,4 @@ class TemporalAnalysis:
     recent_count: int = 0
     new_count: int = 0
     legacy_count: int = 0
-    domain_breakdown: Optional[Dict[str, float]] = None
+    domain_breakdown: dict[str, float] | None = None

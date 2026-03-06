@@ -39,6 +39,7 @@ from etl.candidate_selector import select_candidates, CandidateSelection
 from etl.llm_cache import LLMDecisionCache
 from etl.quadrant_logic import infer_quadrant, quadrant_affinity
 from etl.selection_logic import strategic_filter, build_watchlist_items
+from etl.evidence import EvidenceRecord
 
 logger = logging.getLogger(__name__)
 
@@ -298,7 +299,7 @@ class NormalizedTech:
     # Canonical entity fields for Radar V2
     canonical_id: Optional[str] = None
     entity_type: str = "technology"
-    evidence: List[dict] = field(default_factory=list)
+    evidence: list[EvidenceRecord] = field(default_factory=list)
 
 
 class RadarPipeline:
