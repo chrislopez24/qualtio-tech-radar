@@ -419,6 +419,115 @@ class TestPipelineFlow:
         assert len(getattr(item, "evidence")) == 1
         assert getattr(item, "evidence")[0].source == "deps_dev"
 
+    def test_attach_external_evidence_enriches_technologies_when_sources_enabled(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.evidence import EvidenceRecord
+
+        config = ETLConfig()
+        config.sources.stackexchange.enabled = True
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.StackExchangeEvidenceSource') as mock_stackexchange, \
+             patch('etl.pipeline.AITechnologyFilter'), \
+             patch('etl.pipeline.TechnologyClassifier'):
+            mock_stackexchange.return_value.fetch.return_value = [
+                EvidenceRecord(
+                    source="stackexchange",
+                    metric="tag_activity",
+                    subject_id="typescript",
+                    raw_value=150000,
+                    normalized_value=95.0,
+                    observed_at="2026-03-07T00:00:00Z",
+                    freshness_days=1,
+                )
+            ]
+            pipeline = RadarPipeline(config=config)
+
+        technologies = [
+            NormalizedTech(
+                name="TypeScript",
+                description="Typed superset of JavaScript.",
+                stars=98000,
+                forks=12000,
+                language="TypeScript",
+                topics=["language", "javascript"],
+                url="https://github.com/microsoft/TypeScript",
+                sources=["github"],
+                signals={},
+            )
+        ]
+
+        enriched = pipeline._attach_external_evidence(technologies)
+
+        assert len(enriched[0].evidence) == 1
+        assert enriched[0].evidence[0].source == "stackexchange"
+
+    def test_attach_external_evidence_survives_source_failures(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+
+        config = ETLConfig()
+        config.sources.stackexchange.enabled = True
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.StackExchangeEvidenceSource') as mock_stackexchange, \
+             patch('etl.pipeline.AITechnologyFilter'), \
+             patch('etl.pipeline.TechnologyClassifier'):
+            mock_stackexchange.return_value.fetch.side_effect = RuntimeError("boom")
+            pipeline = RadarPipeline(config=config)
+
+        technologies = [
+            NormalizedTech(
+                name="TypeScript",
+                description="Typed superset of JavaScript.",
+                stars=98000,
+                forks=12000,
+                language="TypeScript",
+                topics=["language", "javascript"],
+                url="https://github.com/microsoft/TypeScript",
+                sources=["github"],
+                signals={},
+            )
+        ]
+
+        enriched = pipeline._attach_external_evidence(technologies)
+
+        assert enriched[0].evidence == []
+
+    def test_osv_subjects_for_uses_version_evidence_from_previous_sources(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.evidence import EvidenceRecord
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.AITechnologyFilter'), \
+             patch('etl.pipeline.TechnologyClassifier'):
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        tech = NormalizedTech(
+            name="TypeScript",
+            description="Typed superset of JavaScript.",
+            stars=98000,
+            forks=12000,
+            language="TypeScript",
+            topics=["language", "javascript"],
+            url="https://github.com/microsoft/TypeScript",
+            evidence=[
+                EvidenceRecord(
+                    source="deps_dev",
+                    metric="default_version",
+                    subject_id="npm:typescript@5.4.0",
+                    raw_value="5.4.0",
+                    normalized_value=100.0,
+                    observed_at="2026-03-07T00:00:00Z",
+                    freshness_days=1,
+                )
+            ],
+        )
+
+        assert pipeline._osv_subjects_for(tech) == ["npm:typescript@5.4.0"]
+
     def test_pipeline_repairs_items_with_placeholder_descriptions(self):
         """Output should repair placeholder descriptions instead of dropping items."""
         from etl.pipeline import RadarPipeline

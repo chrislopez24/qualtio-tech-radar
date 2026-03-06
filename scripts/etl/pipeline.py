@@ -35,6 +35,10 @@ from etl.market_scoring import calculate_confidence, score_technology, scale_sig
 from etl.ring_assignment import assign_rings
 from etl.sources.github_trending import GitHubTrendingSource
 from etl.sources.hackernews import HackerNewsSource
+from etl.sources.deps_dev import DepsDevSource
+from etl.sources.stackexchange import StackExchangeSource as StackExchangeEvidenceSource
+from etl.sources.pypistats import PyPIStatsSource
+from etl.sources.osv_source import OSVSource
 from etl.candidate_selector import select_candidates, CandidateSelection
 from etl.llm_cache import LLMDecisionCache
 from etl.quadrant_logic import infer_quadrant, quadrant_affinity
@@ -347,6 +351,10 @@ class RadarPipeline:
         """Initialize pipeline components"""
         self.github_source = GitHubTrendingSource(self.config.sources.github_trending)
         self.hn_source = HackerNewsSource(self.config.sources.hackernews)
+        self.deps_dev_source = DepsDevSource(self.config.sources.deps_dev)
+        self.stackexchange_source = StackExchangeEvidenceSource(self.config.sources.stackexchange)
+        self.pypistats_source = PyPIStatsSource(self.config.sources.pypistats)
+        self.osv_source = OSVSource(self.config.sources.osv)
 
         configured_model = self.config.classification.model
         effective_model = os.environ.get("SYNTHETIC_MODEL", configured_model)
@@ -505,7 +513,81 @@ class RadarPipeline:
                 tech.last_updated = now
             if tech.domain is None:
                 tech.domain = self._infer_domain(tech)
+            if tech.canonical_id is None:
+                tech.canonical_id = self._normalize_id(tech.name)
+            if not tech.entity_type:
+                tech.entity_type = "technology"
         return technologies
+
+    def _attach_external_evidence(self, technologies: List[NormalizedTech]) -> List[NormalizedTech]:
+        """Phase 3a: Attach external evidence records from optional sources."""
+        for tech in technologies:
+            records: list[EvidenceRecord] = list(getattr(tech, "evidence", []) or [])
+
+            records.extend(self._safe_fetch_evidence(self.stackexchange_source, [self._normalize_id(tech.name)]))
+
+            if self._looks_like_package_name(tech.name):
+                records.extend(self._safe_fetch_evidence(self.pypistats_source, self._pypistats_subjects_for(tech)))
+                records.extend(self._safe_fetch_evidence(self.deps_dev_source, self._deps_dev_subjects_for(tech)))
+                records.extend(self._safe_fetch_evidence(self.osv_source, self._osv_subjects_for(tech)))
+
+            deduped: list[EvidenceRecord] = []
+            seen: set[tuple[str, str, str]] = set()
+            for record in records:
+                key = (record.source, record.metric, record.subject_id)
+                if key in seen:
+                    continue
+                seen.add(key)
+                deduped.append(record)
+
+            tech.evidence = deduped
+
+        return technologies
+
+    def _safe_fetch_evidence(self, source: Any, subjects: List[str]) -> List[EvidenceRecord]:
+        if not subjects:
+            return []
+        try:
+            return list(source.fetch(subjects))
+        except Exception as exc:
+            logger.warning("External evidence source %s failed for %s: %s", type(source).__name__, subjects, exc)
+            return []
+
+    def _looks_like_package_name(self, name: str) -> bool:
+        value = str(name or "").strip()
+        normalized = self._normalize_id(value)
+        blocked = {"python", "javascript", "java", "rust", "go", "php", "ruby", "c", "c++", "c#"}
+        return bool(value) and " " not in value and normalized not in blocked
+
+    def _deps_dev_subjects_for(self, tech: NormalizedTech) -> List[str]:
+        ecosystem = self._infer_package_ecosystem(tech)
+        if ecosystem is None:
+            return []
+        return [f"{ecosystem}:{self._normalize_id(tech.name)}"]
+
+    def _pypistats_subjects_for(self, tech: NormalizedTech) -> List[str]:
+        if self._infer_package_ecosystem(tech) != "pypi":
+            return []
+        return [self._normalize_id(tech.name)]
+
+    def _osv_subjects_for(self, tech: NormalizedTech) -> List[str]:
+        subjects: List[str] = []
+        for record in getattr(tech, "evidence", []) or []:
+            if record.source == "deps_dev" and record.metric == "default_version":
+                subjects.append(str(record.subject_id))
+        return subjects
+
+    def _infer_package_ecosystem(self, tech: NormalizedTech) -> Optional[str]:
+        language = str(tech.language or "").strip().lower()
+        if language == "python":
+            return "pypi"
+        if language in {"javascript", "typescript"}:
+            return "npm"
+        if language == "rust":
+            return "cargo"
+        if language == "go":
+            return "go"
+        return None
 
     def _apply_market_scoring(self, technologies: List[NormalizedTech]) -> List[NormalizedTech]:
         # Supported external signals: GitHub adoption plus Hacker News buzz.
@@ -1246,6 +1328,10 @@ class RadarPipeline:
         technologies = self._temporal_enrichment(technologies)
         logger.info("Phase 3 - Temporal/domain enrichment complete")
         self._save_checkpoint("enrich")
+
+        technologies = self._attach_external_evidence(technologies)
+        logger.info("Phase 3a - External evidence attachment complete")
+        self._save_checkpoint("external_evidence")
 
         technologies = self._apply_market_scoring(technologies)
         logger.info("Phase 3b - Deterministic market scoring complete")

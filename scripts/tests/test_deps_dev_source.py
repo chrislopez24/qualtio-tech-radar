@@ -1,0 +1,71 @@
+from unittest.mock import Mock, patch
+
+from etl.config import DepsDevSource as DepsDevConfig
+from etl.sources.deps_dev import DepsDevSource
+
+
+def test_deps_dev_source_maps_package_to_reverse_dependents_evidence():
+    config = DepsDevConfig(enabled=True)
+    source = DepsDevSource(config)
+
+    with patch.object(source.session, "get") as mock_get:
+        package_response = Mock()
+        package_response.raise_for_status.return_value = None
+        package_response.json.return_value = {
+            "defaultVersionKey": {
+                "system": "npm",
+                "name": "typescript",
+                "version": "5.4.0",
+            }
+        }
+
+        dependents_response = Mock()
+        dependents_response.raise_for_status.return_value = None
+        dependents_response.json.return_value = {"totalCount": 1234}
+
+        mock_get.side_effect = [package_response, dependents_response]
+
+        evidence = source.fetch(["npm:typescript"])
+
+    assert len(evidence) == 2
+    reverse_dependents = next(record for record in evidence if record.metric == "reverse_dependents")
+    default_version = next(record for record in evidence if record.metric == "default_version")
+    assert reverse_dependents.source == "deps_dev"
+    assert reverse_dependents.subject_id == "npm:typescript"
+    assert reverse_dependents.raw_value == 1234
+    assert default_version.subject_id == "npm:typescript@5.4.0"
+    assert default_version.raw_value == "5.4.0"
+
+
+def test_deps_dev_source_ignores_unparseable_subjects():
+    config = DepsDevConfig(enabled=True)
+    source = DepsDevSource(config)
+
+    assert source.fetch(["not-a-valid-subject"]) == []
+
+
+def test_deps_dev_source_url_encodes_scoped_package_names():
+    config = DepsDevConfig(enabled=True)
+    source = DepsDevSource(config)
+
+    with patch.object(source.session, "get") as mock_get:
+        package_response = Mock()
+        package_response.raise_for_status.return_value = None
+        package_response.json.return_value = {
+            "defaultVersionKey": {
+                "system": "npm",
+                "name": "@types/node",
+                "version": "22.0.0",
+            }
+        }
+
+        dependents_response = Mock()
+        dependents_response.raise_for_status.return_value = None
+        dependents_response.json.return_value = {"totalCount": 42}
+
+        mock_get.side_effect = [package_response, dependents_response]
+
+        source.fetch(["npm:@types/node"])
+
+    first_url = mock_get.call_args_list[0].args[0]
+    assert "%40types%2Fnode" in first_url

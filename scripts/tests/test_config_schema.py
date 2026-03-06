@@ -41,4 +41,8 @@ def test_config_only_exposes_supported_signal_sources():
     cfg = load_etl_config("scripts/config.yaml")
     assert hasattr(cfg.sources, "github_trending")
     assert hasattr(cfg.sources, "hackernews")
+    assert hasattr(cfg.sources, "deps_dev")
+    assert hasattr(cfg.sources, "stackexchange")
+    assert hasattr(cfg.sources, "pypistats")
+    assert hasattr(cfg.sources, "osv")
     assert not hasattr(cfg.sources, "google_trends")

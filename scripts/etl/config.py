@@ -32,9 +32,41 @@ class HackerNewsSource(BaseModel):
     min_points: int = Field(ge=1, default=25)
     days_back: int = Field(ge=1, default=90)
 
+
+class DepsDevSource(BaseModel):
+    enabled: bool = False
+    base_url: str = "https://api.deps.dev"
+    timeout_seconds: int = Field(ge=1, default=15)
+
+
+class StackExchangeSource(BaseModel):
+    enabled: bool = False
+    base_url: str = "https://api.stackexchange.com/2.3"
+    site: str = "stackoverflow"
+    pagesize: int = Field(ge=1, le=100, default=1)
+    timeout_seconds: int = Field(ge=1, default=15)
+
+
+class PyPIStatsSource(BaseModel):
+    enabled: bool = False
+    base_url: str = "https://pypistats.org/api"
+    period: Literal["recent", "overall"] = "recent"
+    timeout_seconds: int = Field(ge=1, default=15)
+
+
+class OSVSource(BaseModel):
+    enabled: bool = False
+    base_url: str = "https://api.osv.dev/v1"
+    timeout_seconds: int = Field(ge=1, default=15)
+
+
 class SourcesConfig(BaseModel):
     github_trending: GitHubTrendingSource = Field(default_factory=GitHubTrendingSource)
     hackernews: HackerNewsSource = Field(default_factory=HackerNewsSource)
+    deps_dev: DepsDevSource = Field(default_factory=DepsDevSource)
+    stackexchange: StackExchangeSource = Field(default_factory=StackExchangeSource)
+    pypistats: PyPIStatsSource = Field(default_factory=PyPIStatsSource)
+    osv: OSVSource = Field(default_factory=OSVSource)
 
 
 class ClassificationConfig(BaseModel):
