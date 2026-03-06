@@ -1,17 +1,15 @@
 'use client';
 
-import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import type { Technology, AITechnology } from '@/lib/types';
 import { QUADRANTS, RINGS, RADAR_SIZE } from '@/lib/radar-config';
 import { useBlipPosition } from '@/hooks/useBlipPosition';
-import { matchesTechnologySearch } from '@/lib/radar-search';
 import { Blip } from './Blip';
 
 interface RadarProps {
   technologies: (Technology | AITechnology)[];
+  allTechnologies?: (Technology | AITechnology)[];
   selectedTech: Technology | AITechnology | null;
-  searchQuery: string;
   onSelect: (tech: Technology | AITechnology) => void;
 }
 
@@ -41,20 +39,11 @@ const itemVariants = {
 
 export function Radar({
   technologies,
+  allTechnologies = technologies,
   selectedTech,
-  searchQuery,
   onSelect,
 }: RadarProps) {
-  const { getPosition } = useBlipPosition(technologies);
-
-  const filteredTechnologies = useMemo(() => {
-    return technologies.filter((technology) => matchesTechnologySearch(technology, searchQuery));
-  }, [technologies, searchQuery]);
-
-  const filteredIds = useMemo(
-    () => new Set(filteredTechnologies.map(t => t.id)),
-    [filteredTechnologies],
-  );
+  const { getPosition } = useBlipPosition(technologies, allTechnologies);
   const center = RADAR_SIZE / 2;
 
   return (
@@ -276,7 +265,7 @@ export function Radar({
                   x={position.x}
                   y={position.y}
                   isSelected={selectedTech?.id === tech.id}
-                  isFiltered={searchQuery.length > 0 && !filteredIds.has(tech.id)}
+                  isFiltered={false}
                   onSelect={onSelect}
                 />
               </motion.g>

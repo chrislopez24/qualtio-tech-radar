@@ -72,9 +72,21 @@ function getShadowStatusClass(status?: string): string {
   return 'border-amber-500/40 bg-amber-500/10 text-amber-300';
 }
 
+function formatRingMix(ringDistribution?: Record<string, number>) {
+  if (!ringDistribution) return [];
+
+  return ['adopt', 'trial', 'assess', 'hold']
+    .map((ring) => ({ ring, count: ringDistribution[ring] ?? 0 }))
+    .filter(({ count }) => count > 0);
+}
+
 export function WatchlistPanel({ watchlist, meta, onSelectTechnology }: WatchlistPanelProps) {
   const pipeline = meta?.pipeline;
   const shadow = meta?.shadowGate;
+  const ringMix = formatRingMix(pipeline?.ringDistribution);
+  const topAdded = pipeline?.topAdded ?? [];
+  const topDropped = pipeline?.topDropped ?? [];
+  const leaderTransitionSummary = shadow?.leaderTransitionSummary;
 
   return (
     <section className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -155,6 +167,27 @@ export function WatchlistPanel({ watchlist, meta, onSelectTechnology }: Watchlis
                 <span className="rounded border border-border/60 px-1.5 py-0.5">Added: {shadow.addedCount ?? 0}</span>
                 <span className="rounded border border-border/60 px-1.5 py-0.5">Filtered: {shadow.filteredCount ?? 0}</span>
               </div>
+              {ringMix.length > 0 ? (
+                <p className="mt-1 text-muted-foreground">
+                  Ring mix{' '}
+                  {ringMix.map(({ ring, count }) => `${ring} ${count}`).join(' · ')}
+                </p>
+              ) : null}
+              {topAdded.length > 0 ? (
+                <p className="mt-1 text-muted-foreground">
+                  Added sample {topAdded.map((entry) => entry.name).join(', ')}
+                </p>
+              ) : null}
+              {topDropped.length > 0 ? (
+                <p className="mt-1 text-muted-foreground">
+                  Dropped sample {topDropped.map((entry) => entry.name).join(', ')}
+                </p>
+              ) : null}
+              {leaderTransitionSummary ? (
+                <p className="mt-1 text-muted-foreground">
+                  Leader transitions: {leaderTransitionSummary.candidateCount} pending / {leaderTransitionSummary.promotedCount} promoted
+                </p>
+              ) : null}
               <p className="mt-1 text-muted-foreground">Candidate transitions: {Object.keys(shadow.candidateChanges ?? {}).length}</p>
             </div>
           </div>

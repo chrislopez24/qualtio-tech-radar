@@ -1,15 +1,28 @@
+@import "@fontsource/syne/400.css";
+@import "@fontsource/syne/500.css";
+@import "@fontsource/syne/600.css";
+@import "@fontsource/syne/700.css";
+@import "@fontsource/syne/800.css";
+@import "@fontsource/sora/300.css";
+@import "@fontsource/sora/400.css";
+@import "@fontsource/sora/500.css";
+@import "@fontsource/sora/600.css";
+@import "@fontsource/sora/700.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+@import "@fontsource/jetbrains-mono/600.css";
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import "./shadcn-compat.css";
 
 @custom-variant dark (&:is(.dark *));
 
 /* Editorial Tech Noir Design System */
 @theme inline {
   /* Typography */
-  --font-display: var(--font-syne);
-  --font-sans: var(--font-sora);
-  --font-mono: var(--font-jetbrains-mono);
+  --font-display: "Syne";
+  --font-sans: "Sora";
+  --font-mono: "JetBrains Mono";
   
   /* Colors - Dark Tech Noir Palette */
   --color-bg-primary: #0a0a0f;
@@ -74,31 +87,31 @@
   
   body {
     @apply bg-[#0a0a0f] text-white antialiased;
-    font-family: var(--font-sora), system-ui, sans-serif;
+    font-family: var(--font-sans), system-ui, sans-serif;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-syne), system-ui, sans-serif;
+    font-family: var(--font-display), system-ui, sans-serif;
     font-weight: 600;
     letter-spacing: -0.02em;
   }
   
   code, pre, .font-mono {
-    font-family: var(--font-jetbrains-mono), 'JetBrains Mono', monospace;
+    font-family: var(--font-mono), 'JetBrains Mono', monospace;
   }
 }
 
 /* Editorial Typography Classes */
 .font-display {
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-display), system-ui, sans-serif;
 }
 
 .font-body {
-  font-family: var(--font-sora), system-ui, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
 }
 
 .font-mono {
-  font-family: var(--font-jetbrains-mono), 'JetBrains Mono', monospace;
+  font-family: var(--font-mono), 'JetBrains Mono', monospace;
 }
 
 /* Glassmorphism with Tech Noir Edge */

@@ -2,8 +2,6 @@ export type Quadrant = 'platforms' | 'techniques' | 'tools' | 'languages';
 
 export type Ring = 'adopt' | 'trial' | 'assess' | 'hold';
 
-export type Mode = 'manual' | 'ai';
-
 export type Trend = 'up' | 'down' | 'stable' | 'new';
 
 export interface Technology {
@@ -65,10 +63,29 @@ export interface PipelineSummary {
   output?: number;
   watchlist?: number;
   droppedInvalidDescriptions?: number;
+  repairedDescriptions?: number;
+  rejectedByStage?: {
+    insufficientSources?: number;
+    qualityGate?: number;
+    aiFilter?: number;
+  };
+  ringDistribution?: Partial<Record<Ring, number>>;
+  topAdded?: Array<{
+    id: string;
+    name: string;
+    ring: Ring;
+    marketScore: number;
+  }>;
+  topDropped?: Array<{
+    id: string;
+    name: string;
+    ring: Ring;
+    marketScore: number;
+  }>;
 }
 
 export interface ShadowGateSummary {
-  status?: 'pass' | 'fail' | 'skip';
+  status?: 'pass' | 'warn' | 'fail' | 'skip';
   coreOverlap?: number;
   leaderCoverage?: number;
   watchlistRecall?: number;
@@ -77,6 +94,39 @@ export interface ShadowGateSummary {
   addedCount?: number;
   filteredByRing?: Record<string, number>;
   filteredSample?: string[];
+  nextAction?: string | null;
+  leaderTransitionSummary?: {
+    candidateCount: number;
+    promotedCount: number;
+  };
+  leaderState?: {
+    stable_leaders?: string[];
+    stableLeaders?: string[];
+    candidate_changes?: Record<string, {
+      leader_id: string;
+      change_type: 'added' | 'removed';
+      consecutive_count: number;
+      first_seen_run?: string;
+      last_seen_run?: string;
+    }>;
+    candidateChanges?: Record<string, {
+      leaderId: string;
+      changeType: 'added' | 'removed';
+      consecutiveCount: number;
+      firstSeenRun?: string;
+      lastSeenRun?: string;
+    }>;
+    promoted_changes?: Array<{
+      leader_id: string;
+      change_type: 'added' | 'removed';
+    }>;
+    promotedChanges?: Array<{
+      leaderId: string;
+      changeType: 'added' | 'removed';
+    }>;
+    lastRunId?: string;
+    promotionRuns?: number;
+  };
   candidateChanges?: Record<string, {
     leaderId: string;
     changeType: 'added' | 'removed';

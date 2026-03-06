@@ -37,10 +37,24 @@ describe('WatchlistPanel', () => {
       <WatchlistPanel
         watchlist={[watchlistItem]}
         meta={{
+          pipeline: {
+            ringDistribution: {
+              adopt: 1,
+              trial: 2,
+              assess: 0,
+              hold: 1,
+            },
+            topAdded: [{ id: 'bun', name: 'Bun', ring: 'trial', marketScore: 91.4 }],
+            topDropped: [{ id: 'vue', name: 'Vue', ring: 'assess', marketScore: 66.0 }],
+          },
           shadowGate: {
             status: 'warn',
             addedCount: 3,
             filteredCount: 2,
+            leaderTransitionSummary: {
+              candidateCount: 2,
+              promotedCount: 1,
+            },
             candidateChanges: {
               llama: { leaderId: 'llama', changeType: 'added', consecutiveCount: 2 },
               mistral: { leaderId: 'mistral', changeType: 'removed', consecutiveCount: 1 },
@@ -55,6 +69,14 @@ describe('WatchlistPanel', () => {
     expect(html).toContain('WARN');
     expect(html).toContain('Added: 3');
     expect(html).toContain('Filtered: 2');
+    expect(html).toContain('Ring mix');
+    expect(html).toContain('adopt 1');
+    expect(html).toContain('trial 2');
+    expect(html).toContain('Added sample');
+    expect(html).toContain('Bun');
+    expect(html).toContain('Dropped sample');
+    expect(html).toContain('Vue');
+    expect(html).toContain('Leader transitions: 2 pending / 1 promoted');
     expect(html).toContain('Candidate transitions: 2');
   });
 

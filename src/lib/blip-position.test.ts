@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import aiData from '../data/data.ai.json';
 import { QUADRANTS, RADAR_SIZE, RINGS } from './radar-config';
-import { calculateBlipPositions } from './blip-position';
+import { calculateBlipPositions, calculateVisibleBlipPositions } from './blip-position';
+import type { AIRadarData } from './types';
 
 function getRingBounds(ringId: string) {
   const ringIndex = RINGS.findIndex((ring) => ring.id === ringId);
@@ -18,10 +19,11 @@ function getRingBounds(ringId: string) {
 
 describe('calculateBlipPositions', () => {
   it('keeps each technology inside its ring band', () => {
-    const positions = calculateBlipPositions(aiData.technologies);
+    const typedAiData = aiData as AIRadarData;
+    const positions = calculateBlipPositions(typedAiData.technologies);
     const center = RADAR_SIZE / 2;
 
-    for (const technology of aiData.technologies) {
+    for (const technology of typedAiData.technologies) {
       const position = positions.get(technology.id);
 
       expect(position, `Missing position for ${technology.id}`).toBeDefined();
@@ -39,8 +41,9 @@ describe('calculateBlipPositions', () => {
   });
 
   it('puts Linux inside the platforms sector', () => {
-    const positions = calculateBlipPositions(aiData.technologies);
-    const linux = aiData.technologies.find((technology) => technology.id === 'linux');
+    const typedAiData = aiData as AIRadarData;
+    const positions = calculateBlipPositions(typedAiData.technologies);
+    const linux = typedAiData.technologies.find((technology) => technology.id === 'linux');
     const linuxPosition = positions.get('linux');
     const center = RADAR_SIZE / 2;
 
@@ -65,5 +68,32 @@ describe('calculateBlipPositions', () => {
 
     expect(normalizedAngle).toBeGreaterThanOrEqual(expectedCenter - 45);
     expect(normalizedAngle).toBeLessThanOrEqual(expectedCenter + 45);
+  });
+
+  it('keeps a visible technology in the same position when siblings are filtered out', () => {
+    const allTechnologies = [
+      {
+        id: 'alpha',
+        name: 'Alpha',
+        quadrant: 'tools' as const,
+        ring: 'trial' as const,
+        description: 'Alpha',
+      },
+      {
+        id: 'beta',
+        name: 'Beta',
+        quadrant: 'tools' as const,
+        ring: 'trial' as const,
+        description: 'Beta',
+      },
+    ];
+
+    const positionsWithFullContext = calculateBlipPositions(allTechnologies);
+    const positionsForVisibleSubset = calculateVisibleBlipPositions(
+      [allTechnologies[0]],
+      allTechnologies,
+    );
+
+    expect(positionsForVisibleSubset.get('alpha')).toEqual(positionsWithFullContext.get('alpha'));
   });
 });

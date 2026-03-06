@@ -111,3 +111,20 @@ export function calculateBlipPositions(technologies: Technology[]): Map<string, 
 
   return result;
 }
+
+export function calculateVisibleBlipPositions(
+  visibleTechnologies: Technology[],
+  layoutTechnologies: Technology[] = visibleTechnologies,
+): Map<string, BlipPosition> {
+  const allPositions = calculateBlipPositions(layoutTechnologies);
+  const visibleIds = new Set(visibleTechnologies.map((technology) => technology.id));
+  const visiblePositions = new Map<string, BlipPosition>();
+
+  for (const [technologyId, position] of allPositions.entries()) {
+    if (visibleIds.has(technologyId)) {
+      visiblePositions.set(technologyId, position);
+    }
+  }
+
+  return visiblePositions;
+}

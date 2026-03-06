@@ -76,13 +76,14 @@ export function Header({
               <AIIndicator />
               
               <motion.a
-                href="https://github.com/qualtio/tech-radar"
+                href="https://github.com/chrislopez24/qualtio-tech-radar"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-3 rounded-xl hover:bg-white/5 transition-colors spring-transition group"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 transition={SPRING_SNAPPY}
+                aria-label="Open GitHub repository"
               >
                 <GithubLogo 
                   className="w-5 h-5 text-text-secondary group-hover:text-white transition-colors" 

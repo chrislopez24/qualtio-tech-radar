@@ -174,6 +174,14 @@ function validateShadowGateSummaryShape(shadowGate: ShadowGateSummary): void {
       expect(typeof typedChange.consecutiveCount).toBe('number');
     }
   }
+
+  if (shadowGate.leaderTransitionSummary !== undefined) {
+    expect(shadowGate.leaderTransitionSummary).not.toBeNull();
+    expect(typeof shadowGate.leaderTransitionSummary).toBe('object');
+    expect(Array.isArray(shadowGate.leaderTransitionSummary)).toBe(false);
+    expect(typeof shadowGate.leaderTransitionSummary.candidateCount).toBe('number');
+    expect(typeof shadowGate.leaderTransitionSummary.promotedCount).toBe('number');
+  }
 }
 
 describe('radar data decision metadata schema', () => {
@@ -237,6 +245,10 @@ describe('radar data shadow gate schema', () => {
       nextAction: 'Hold rollout until leader transitions stabilize.',
       filteredCount: 2,
       addedCount: 1,
+      leaderTransitionSummary: {
+        candidateCount: 1,
+        promotedCount: 0,
+      },
       filteredSample: ['legacy-js-framework'],
       leaderState: {
         stable_leaders: ['react', 'kubernetes'],

@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MagnifyingGlass, X, Command } from '@phosphor-icons/react';
+import { focusShortcutTarget } from '@/lib/search-shortcut';
 
 interface SearchBarProps {
   value: string;
@@ -17,7 +18,7 @@ export function SearchBar({ value, onChange, placeholder = 'Search technologies.
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        inputRef.current?.focus();
+        focusShortcutTarget(inputRef.current);
       }
     }
     document.addEventListener('keydown', handleKeyDown);
@@ -70,6 +71,7 @@ export function SearchBar({ value, onChange, placeholder = 'Search technologies.
         <AnimatePresence>
           {value && (
             <motion.button
+              type="button"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
@@ -77,6 +79,7 @@ export function SearchBar({ value, onChange, placeholder = 'Search technologies.
               className="absolute right-3 p-1 rounded-md text-text-tertiary hover:text-white hover:bg-white/10 transition-colors"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
+              aria-label="Clear search"
             >
               <X className="w-4 h-4" weight="bold" />
             </motion.button>
