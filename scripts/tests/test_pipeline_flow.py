@@ -654,6 +654,67 @@ class TestPipelineFlow:
         assert watchlist
         assert "Legacy Watch" in {item.name for item in watchlist}
 
+    def test_build_watchlist_skips_resource_like_candidates_and_backfills_previous_watchlist(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+        from etl.candidate_selector import CandidateSelection
+
+        config = ETLConfig(filtering=FilteringConfig(min_sources=1))
+        config.distribution.target_total = 4
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=config)
+
+        pipeline.previous_snapshot = {
+            "watchlist": [
+                {
+                    "id": "keep-me",
+                    "name": "Keep Me",
+                    "quadrant": "tools",
+                    "ring": "assess",
+                    "description": "Legitimate watchlist item",
+                    "confidence": 0.7,
+                }
+            ]
+        }
+
+        technologies = [
+            NormalizedTech(
+                "free-programming-books",
+                "A collection of free programming books",
+                100000,
+                10000,
+                None,
+                ["books"],
+                "",
+                0,
+                ["github"],
+                {},
+                84.25,
+                5.0,
+            )
+        ]
+        classifications = [
+            ClassificationResult(
+                "free-programming-books",
+                "techniques",
+                "trial",
+                "Programming books collection",
+                0.8,
+                "up",
+                strategic_value="medium",
+            )
+        ]
+        selection = CandidateSelection(core_ids=[], watchlist_ids=["free-programming-books"], borderline_ids=[])
+
+        watchlist = pipeline._build_watchlist_items(technologies, classifications, selection)
+
+        assert watchlist
+        assert {item.name for item in watchlist} == {"Keep Me"}
+
     def test_strategic_filter_backfills_to_target_min_when_quadrant_caps_block(self):
         from etl.pipeline import RadarPipeline, NormalizedTech
         from etl.classifier import ClassificationResult

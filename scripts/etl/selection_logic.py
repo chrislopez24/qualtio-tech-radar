@@ -280,31 +280,28 @@ def build_watchlist_items(
         int(getattr(pipeline.config.distribution, "target_total", 15) * pipeline.config.llm_optimization.watchlist_ratio),
     )
 
-    watchlist_ids = list(candidate_selection.watchlist_ids)
-    if not watchlist_ids:
-        selected_main = set(main_ids or (candidate_selection.core_ids + candidate_selection.borderline_ids))
-        previous_watchlist_ids = [
-            pipeline._normalize_id(str(entry.get("id", "")))
-            for entry in (pipeline.previous_snapshot or {}).get("watchlist", [])
-            if isinstance(entry, dict) and entry.get("id")
-        ]
+    selected_main = set(main_ids or (candidate_selection.core_ids + candidate_selection.borderline_ids))
+    previous_watchlist_ids = [
+        pipeline._normalize_id(str(entry.get("id", "")))
+        for entry in (pipeline.previous_snapshot or {}).get("watchlist", [])
+        if isinstance(entry, dict) and entry.get("id")
+    ]
+    fallback_watch = sorted(
+        [tech for tech in technologies if pipeline._normalize_id(tech.name) not in selected_main],
+        key=lambda tech: (tech.trend_delta, tech.market_score),
+        reverse=True,
+    )
 
-        for watch_id in previous_watchlist_ids:
-            if len(watchlist_ids) >= target_watchlist:
-                break
+    watchlist_ids: List[str] = []
+    for watch_id in candidate_selection.watchlist_ids:
+        if watch_id and watch_id not in watchlist_ids:
             watchlist_ids.append(watch_id)
-
-        fallback_watch = sorted(
-            [tech for tech in technologies if pipeline._normalize_id(tech.name) not in selected_main],
-            key=lambda tech: (tech.trend_delta, tech.market_score),
-            reverse=True,
-        )
-        for tech in fallback_watch:
-            if len(watchlist_ids) >= target_watchlist:
-                break
-            watch_id = pipeline._normalize_id(tech.name)
-            if watch_id in watchlist_ids:
-                continue
+    for watch_id in previous_watchlist_ids:
+        if watch_id and watch_id not in watchlist_ids:
+            watchlist_ids.append(watch_id)
+    for tech in fallback_watch:
+        watch_id = pipeline._normalize_id(tech.name)
+        if watch_id and watch_id not in watchlist_ids:
             watchlist_ids.append(watch_id)
 
     watchlist: List[FilteredItem] = []
@@ -313,6 +310,8 @@ def build_watchlist_items(
         if len(watchlist) >= target_watchlist:
             break
         if watch_id in seen:
+            continue
+        if watch_id in selected_main:
             continue
 
         tech = tech_by_id.get(watch_id)
@@ -323,6 +322,8 @@ def build_watchlist_items(
 
             name = str(previous_item.get("name") or previous_item.get("id") or watch_id)
             description = str(previous_item.get("description") or f"{name} remains on the watchlist pending fresh market signals.")
+            if is_resource_like_repository(name, description):
+                continue
             quadrant = str(previous_item.get("quadrant") or "tools")
             ring = str(previous_item.get("ring") or "assess")
             confidence = max(0.5, float(previous_item.get("confidence", 0.6)))
@@ -371,6 +372,8 @@ def build_watchlist_items(
                 trend="up" if tech.trend_delta >= 0 else "stable",
                 strategic_value="medium",
             )
+        if is_resource_like_repository(tech.name, classification.description or tech.description):
+            continue
 
         item = pipeline._build_filtered_item(tech, classification, confidence_floor=0.5)
         if item.ring == "adopt":

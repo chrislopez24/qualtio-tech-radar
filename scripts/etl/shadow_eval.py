@@ -9,6 +9,8 @@ import logging
 from pathlib import Path
 from typing import Dict, Any, List, Set, Tuple
 
+from etl.ai_filter import is_resource_like_repository
+
 logger = logging.getLogger(__name__)
 
 
@@ -186,10 +188,22 @@ def select_top_leaders(technologies: List[Dict[str, Any]], top_n: int = 5) -> Se
 
 def _extract_metric_inputs(baseline: Dict[str, Any], optimized: Dict[str, Any]) -> Dict[str, Any]:
     """Extract deterministic metric-computation inputs from pipeline outputs."""
-    baseline_techs = baseline.get("technologies", [])
-    optimized_techs = optimized.get("technologies", [])
-    baseline_watchlist_techs = baseline.get("watchlist", [])
-    optimized_watchlist_techs = optimized.get("watchlist", [])
+    def _filter_resource_like(entries: Any) -> List[Dict[str, Any]]:
+        filtered: List[Dict[str, Any]] = []
+        for entry in entries if isinstance(entries, list) else []:
+            if not isinstance(entry, dict):
+                continue
+            name = str(entry.get("name") or entry.get("id") or "")
+            description = str(entry.get("description") or "")
+            if is_resource_like_repository(name, description):
+                continue
+            filtered.append(entry)
+        return filtered
+
+    baseline_techs = _filter_resource_like(baseline.get("technologies", []))
+    optimized_techs = _filter_resource_like(optimized.get("technologies", []))
+    baseline_watchlist_techs = _filter_resource_like(baseline.get("watchlist", []))
+    optimized_watchlist_techs = _filter_resource_like(optimized.get("watchlist", []))
 
     baseline_ids = {t.get("id") for t in baseline_techs if t.get("id")}
     optimized_ids = {t.get("id") for t in optimized_techs if t.get("id")}

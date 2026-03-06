@@ -165,6 +165,35 @@ def test_shadow_eval_reports_filtered_counts_and_watchlist_usage():
     assert report["watchlist_recall"] == 0.0
 
 
+def test_shadow_eval_ignores_resource_like_repos_in_overlap_and_watchlist_metrics():
+    from etl.shadow_eval import compare_outputs
+
+    baseline = {
+        "technologies": [
+            {"id": "react", "name": "React", "ring": "adopt"},
+            {"id": "free-programming-books", "name": "free-programming-books", "ring": "trial"},
+        ],
+        "watchlist": [
+            {"id": "next.js", "name": "Next.js"},
+            {"id": "free-programming-books", "name": "free-programming-books"},
+        ],
+    }
+    optimized = {
+        "technologies": [
+            {"id": "react", "name": "React", "ring": "adopt"},
+        ],
+        "watchlist": [
+            {"id": "next.js", "name": "Next.js"},
+        ],
+    }
+
+    report = compare_outputs(baseline, optimized)
+
+    assert report["core_overlap"] == 1.0
+    assert report["watchlist_recall"] == 1.0
+    assert report["filtered_count"] == 0
+
+
 def test_shadow_eval_falls_back_to_pipeline_meta_llm_counts():
     from etl.shadow_eval import compare_outputs
 
