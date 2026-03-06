@@ -1,5 +1,7 @@
-from dataclasses import dataclass
-from typing import Optional, Dict
+from dataclasses import dataclass, field
+from typing import Optional, Dict, List
+
+from etl.evidence import EvidenceRecord
 
 
 @dataclass
@@ -29,6 +31,10 @@ class TechnologyClassification:
     ring: str
     description: str
     is_new: bool = False
+    # Canonical entity fields for Radar V2
+    canonical_id: Optional[str] = None
+    entity_type: str = "technology"
+    evidence: List[EvidenceRecord] = field(default_factory=list)
 
 
 @dataclass
