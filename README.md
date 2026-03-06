@@ -12,6 +12,7 @@ AI-powered Technology Radar with automated weekly updates from GitHub and Hacker
 - **Drift-Aware Caching**: Reuse LLM decisions across runs with automatic invalidation
 - **Shadow Quality Evaluation**: Validate optimized pipeline against baseline with pass/warn/fail quality gate outcomes
 - **Operational Explainability**: Shadow evaluation reports with leader transition visibility and "what changed" insights
+- **Editorial False-Positive Guardrails**: Resource-like repositories (awesome lists, books, roadmaps, prompt collections) are treated separately from real technologies
 - **Glassmorphism UI**: Modern, responsive design with dark theme support
 - **Automated Data Pipeline**: Weekly updates via GitHub Actions
 - **Market-Signal Ringing**: External momentum scoring (GitHub + HN) with anti-collapse guardrails
@@ -125,7 +126,8 @@ This will:
 2. Compute deterministic market scores per technology
 3. Assign rings using thresholds + hysteresis + distribution guardrails
 4. Classify quadrants/descriptions with Synthetic API support
-5. Generate `src/data/data.ai.json` and `src/data/data.ai.history.json`
+5. Apply editorial filtering to keep resource collections out of strong technology rings
+6. Generate `src/data/data.ai.json` and `src/data/data.ai.history.json`
 
 ### Environment Variables
 
@@ -209,6 +211,12 @@ The pipeline outputs a `meta.shadowGate` object in `data.ai.json` for operationa
 | `leaderTransitionSummary` | Pending/promoted leader transition counts for quick ops review |
 
 This provides "what changed" visibility for operations teams monitoring pipeline health.
+
+### Editorial Filtering
+
+The radar distinguishes technologies from resource-like repositories. Popular GitHub collections such as awesome lists, books, roadmaps, prompt libraries, tutorials, and similar learning resources can still appear in review summaries, but they should not be treated as strong `adopt`/`trial` technology candidates by default.
+
+The human review summary explicitly flags these leaks under `suspiciousItems.resourceLikeStrongRings` so operators can catch editorial mistakes even when technical thresholds pass.
 
 ### Provenance Fields
 

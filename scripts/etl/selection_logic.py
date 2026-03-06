@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 
-from etl.ai_filter import FilteredItem, StrategicValue
+from etl.ai_filter import FilteredItem, StrategicValue, is_resource_like_repository
 from etl.classifier import ClassificationResult
 from etl.candidate_selector import CandidateSelection
 
@@ -50,6 +50,14 @@ def strategic_filter(
                 "Filtering out %s: doesn't pass quality gate for ring %s",
                 tech.name,
                 classification.ring,
+            )
+            rejected_quality_gate += 1
+            continue
+
+        if classification.ring in {"adopt", "trial"} and is_resource_like_repository(tech.name, classification.description or tech.description):
+            logger.debug(
+                "Filtering out %s: resource-like repository is not eligible for strong editorial rings",
+                tech.name,
             )
             rejected_quality_gate += 1
             continue

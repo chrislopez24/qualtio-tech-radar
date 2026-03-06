@@ -452,6 +452,135 @@ class TestPipelineFlow:
         assert len(output["watchlist"]) == 1
         assert output["watchlist"][0]["name"] == "Bun"
 
+    def test_strategic_filter_blocks_resource_like_repositories_from_strong_rings(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+
+        config = ETLConfig(filtering=FilteringConfig(min_sources=1))
+        config.distribution.target_total = 6
+        config.distribution.min_per_quadrant = 1
+        config.distribution.max_per_quadrant = 6
+        config.quality_gates.min_hn_mentions.assess = 0
+        config.quality_gates.min_hn_mentions.trial = 0
+        config.quality_gates.min_hn_mentions.adopt = 0
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter:
+            mock_filter.return_value.filter.side_effect = lambda items: items
+            pipeline = RadarPipeline(config=config)
+
+        technologies = [
+            NormalizedTech(
+                name="free-programming-books",
+                description="Freely available programming books collection",
+                stars=356000,
+                forks=62000,
+                language=None,
+                topics=["books", "learning", "resources"],
+                url="https://github.com/EbookFoundation/free-programming-books",
+                hn_mentions=20,
+                sources=["github", "hackernews"],
+                signals={"gh_popularity": 100.0, "gh_momentum": 72.0, "hn_heat": 45.0},
+                market_score=91.0,
+            ),
+            NormalizedTech(
+                name="developer-roadmap",
+                description="Developer roadmaps and learning paths",
+                stars=320000,
+                forks=42000,
+                language="TypeScript",
+                topics=["roadmap", "learning"],
+                url="https://github.com/kamranahmedse/developer-roadmap",
+                hn_mentions=18,
+                sources=["github", "hackernews"],
+                signals={"gh_popularity": 99.0, "gh_momentum": 70.0, "hn_heat": 42.0},
+                market_score=89.0,
+            ),
+            NormalizedTech(
+                name="React",
+                description="UI library for building user interfaces",
+                stars=235000,
+                forks=49000,
+                language="JavaScript",
+                topics=["ui", "framework"],
+                url="https://github.com/facebook/react",
+                hn_mentions=120,
+                sources=["github", "hackernews"],
+                signals={"gh_popularity": 95.0, "gh_momentum": 85.0, "hn_heat": 88.0},
+                market_score=92.0,
+            ),
+            NormalizedTech(
+                name="Kubernetes",
+                description="Container orchestration platform",
+                stars=112000,
+                forks=41000,
+                language="Go",
+                topics=["containers", "orchestration"],
+                url="https://github.com/kubernetes/kubernetes",
+                hn_mentions=90,
+                sources=["github", "hackernews"],
+                signals={"gh_popularity": 94.0, "gh_momentum": 82.0, "hn_heat": 80.0},
+                market_score=90.0,
+            ),
+            NormalizedTech(
+                name="Next.js",
+                description="React framework for production web apps",
+                stars=132000,
+                forks=29000,
+                language="TypeScript",
+                topics=["react", "framework"],
+                url="https://github.com/vercel/next.js",
+                hn_mentions=75,
+                sources=["github", "hackernews"],
+                signals={"gh_popularity": 93.0, "gh_momentum": 84.0, "hn_heat": 74.0},
+                market_score=88.0,
+            ),
+            NormalizedTech(
+                name="Python",
+                description="Programming language",
+                stars=68000,
+                forks=29000,
+                language="Python",
+                topics=["language"],
+                url="https://github.com/python/cpython",
+                hn_mentions=80,
+                sources=["github", "hackernews"],
+                signals={"gh_popularity": 90.0, "gh_momentum": 76.0, "hn_heat": 70.0},
+                market_score=87.0,
+            ),
+            NormalizedTech(
+                name="Ollama",
+                description="Local LLM runtime",
+                stars=128000,
+                forks=9500,
+                language="Go",
+                topics=["llm", "runtime"],
+                url="https://github.com/ollama/ollama",
+                hn_mentions=60,
+                sources=["github", "hackernews"],
+                signals={"gh_popularity": 92.0, "gh_momentum": 90.0, "hn_heat": 68.0},
+                market_score=86.0,
+            ),
+        ]
+        classifications = [
+            ClassificationResult("free-programming-books", "techniques", "adopt", "Programming books collection", 0.93, "up", strategic_value="high"),
+            ClassificationResult("developer-roadmap", "techniques", "trial", "Developer learning roadmap", 0.92, "up", strategic_value="high"),
+            ClassificationResult("React", "tools", "adopt", "UI library", 0.96, "up", strategic_value="high"),
+            ClassificationResult("Kubernetes", "platforms", "adopt", "Container orchestration platform", 0.95, "up", strategic_value="high"),
+            ClassificationResult("Next.js", "tools", "trial", "React framework", 0.94, "up", strategic_value="high"),
+            ClassificationResult("Python", "languages", "adopt", "Programming language", 0.97, "up", strategic_value="high"),
+            ClassificationResult("Ollama", "platforms", "trial", "Local LLM runtime", 0.9, "up", strategic_value="high"),
+        ]
+
+        filtered = pipeline._strategic_filter(technologies, classifications)
+        filtered_names = {item.name for item in filtered}
+
+        assert "free-programming-books" not in filtered_names
+        assert "developer-roadmap" not in filtered_names
+        assert {"React", "Kubernetes", "Next.js", "Python", "Ollama"}.issubset(filtered_names)
+
     def test_build_watchlist_prefers_previous_snapshot_ids(self):
         from etl.pipeline import RadarPipeline, NormalizedTech
         from etl.classifier import ClassificationResult
@@ -640,13 +769,13 @@ class TestPipelineFlow:
                 NormalizedTech("Rust", "Systems language", 1000, 10, "Rust", [], "", 2, ["github"], {}, 95.0),
                 NormalizedTech("Kubernetes", "Container orchestration platform", 1000, 10, "Go", ["infrastructure"], "", 2, ["github"], {}, 94.0),
                 NormalizedTech("Playwright", "Testing framework tool", 1000, 10, "TypeScript", ["testing", "tool"], "", 2, ["github"], {}, 93.0),
-                NormalizedTech("Awesome-Architecture", "Architecture patterns and guides", 1000, 10, None, [], "", 2, ["github"], {}, 92.0),
+                NormalizedTech("DDD", "Architecture technique for domain modeling", 1000, 10, None, ["architecture"], "", 2, ["github"], {}, 92.0),
             ]
             classifications = [
                 ClassificationResult("Rust", "tools", "trial", "Systems language", 0.8, "stable", strategic_value="medium"),
                 ClassificationResult("Kubernetes", "tools", "trial", "Container platform", 0.8, "stable", strategic_value="medium"),
                 ClassificationResult("Playwright", "tools", "trial", "Testing tool", 0.8, "stable", strategic_value="medium"),
-                ClassificationResult("Awesome-Architecture", "tools", "trial", "Architecture guide", 0.8, "stable", strategic_value="medium"),
+                ClassificationResult("DDD", "tools", "trial", "Architecture technique", 0.8, "stable", strategic_value="medium"),
             ]
 
             filtered = pipeline._strategic_filter(technologies, classifications)
@@ -713,6 +842,42 @@ class TestPipelineFlow:
             assert 'items' in captured
             assert len(captured['items']) == 1
             assert getattr(captured['items'][0], 'strategic_value') == 'high'
+
+    def test_strategic_filter_does_not_select_resource_like_repo_as_strong_candidate(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+
+        config = ETLConfig(filtering=FilteringConfig(min_sources=1))
+        config.distribution.target_total = 3
+        config.distribution.min_per_quadrant = 1
+        config.distribution.max_per_quadrant = 3
+        config.quality_gates.min_hn_mentions.assess = 0
+        config.quality_gates.min_hn_mentions.trial = 0
+        config.quality_gates.min_hn_mentions.adopt = 0
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=config)
+
+        technologies = [
+            NormalizedTech("React", "UI library", 220000, 56000, "JavaScript", ["ui", "framework"], "", 40, ["github", "hackernews"], {"gh_popularity": 100.0, "gh_momentum": 100.0, "hn_heat": 70.0}, 95.0),
+            NormalizedTech("Kubernetes", "Container orchestration platform", 120000, 38000, "Go", ["infrastructure"], "", 20, ["github"], {"gh_popularity": 100.0, "gh_momentum": 100.0, "hn_heat": 0.0}, 84.0),
+            NormalizedTech("awesome-python", "An opinionated list of awesome Python frameworks, libraries, software and resources.", 280000, 24000, "Python", ["awesome-list"], "", 0, ["github"], {"gh_popularity": 100.0, "gh_momentum": 100.0, "hn_heat": 0.0}, 84.1),
+        ]
+        classifications = [
+            ClassificationResult("React", "tools", "adopt", "UI library", 0.9, "up", strategic_value="high"),
+            ClassificationResult("Kubernetes", "platforms", "adopt", "Container orchestration platform", 0.9, "up", strategic_value="high"),
+            ClassificationResult("awesome-python", "languages", "trial", "Resource collection", 0.9, "up", strategic_value="medium"),
+        ]
+
+        filtered = pipeline._strategic_filter(technologies, classifications)
+        selected_names = {item.name.lower() for item in filtered}
+
+        assert "react" in selected_names
+        assert "kubernetes" in selected_names
+        assert "awesome-python" not in selected_names
 
     def test_pipeline_calls_llm_only_for_borderline_candidates(self):
         """Pipeline should call LLM only once (batch) for borderline candidates.

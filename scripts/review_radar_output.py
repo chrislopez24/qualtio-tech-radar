@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List
 
+from etl.ai_filter import is_resource_like_repository
+
 
 REQUIRED_SUMMARY_KEYS = [
     "inputFile",
@@ -90,6 +92,7 @@ def build_review_summary(payload: Dict[str, Any], input_name: str) -> Dict[str, 
 
     low_signal_strong_rings = []
     single_weak_signal = []
+    resource_like_strong_rings = []
     for item in technologies:
         ring = str(item.get("ring", ""))
         score = _safe_float(item.get("marketScore"))
@@ -102,6 +105,12 @@ def build_review_summary(payload: Dict[str, Any], input_name: str) -> Dict[str, 
             summarized = _summarize_item(item)
             summarized["signal"] = signal_names[0]
             single_weak_signal.append(summarized)
+
+        if ring in {"adopt", "trial"} and is_resource_like_repository(
+            str(item.get("id", "")),
+            str(item.get("description", "")),
+        ):
+            resource_like_strong_rings.append(_summarize_item(item))
 
     return {
         "inputFile": input_name,
@@ -128,6 +137,7 @@ def build_review_summary(payload: Dict[str, Any], input_name: str) -> Dict[str, 
             "repairedDescriptions": int(pipeline.get("repairedDescriptions", 0) or 0),
             "lowSignalStrongRings": low_signal_strong_rings[:10],
             "singleWeakSignal": single_weak_signal[:10],
+            "resourceLikeStrongRings": resource_like_strong_rings[:10],
         },
     }
 
@@ -166,6 +176,10 @@ def render_markdown(summary: Dict[str, Any]) -> str:
     suspicious_lines.extend(
         f"- Single weak signal: `{item['name']}` via `{item['signal']}`"
         for item in suspicious["singleWeakSignal"]
+    )
+    suspicious_lines.extend(
+        f"- Resource-like strong ring: `{item['name']}` `{item['ring']}` `{item['marketScore']}`"
+        for item in suspicious.get("resourceLikeStrongRings", [])
     )
     if len(suspicious_lines) == 1:
         suspicious_lines.append("- No suspicious items detected by current heuristics")

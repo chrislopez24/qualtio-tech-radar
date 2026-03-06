@@ -6,6 +6,7 @@ Use this checklist when reviewing a quarterly radar run or its generated summary
 
 - Do the top technologies look plausible for the current ecosystem?
 - Are there obvious false positives in `adopt` or `trial`?
+- Are any `adopt` or `trial` entries actually books, awesome lists, roadmaps, prompt collections, tutorials, or other resource repositories?
 - Are major technologies missing from the main radar?
 
 ## Ring Quality
@@ -29,4 +30,5 @@ Use this checklist when reviewing a quarterly radar run or its generated summary
 ## Follow-Up
 
 - If there are suspicious items, should thresholds or scoring heuristics be adjusted?
+- If suspicious items are resource-like repositories, should editorial filtering be tightened rather than market scoring?
 - If the summary looks weak but thresholds passed, record the issue as a product-quality problem, not only an ETL problem.

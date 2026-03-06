@@ -8,6 +8,7 @@ import os
 import json
 import numbers
 import logging
+import re
 from enum import Enum
 from typing import List, Optional, Any, Protocol
 from dataclasses import dataclass
@@ -90,6 +91,62 @@ DEPRECATED_MAP = {
     "underscore": {"replacement": "lodash or native JS", "reason": "Underscore is largely superseded by lodash"},
     "graphql": {"replacement": "@graphql-tools or nexus", "reason": "GraphQL ecosystem has evolved"},
 }
+
+RESOURCE_LIKE_EXACT_NAMES = {
+    "awesome",
+    "awesome-python",
+    "build-your-own-x",
+    "developer-roadmap",
+    "free-programming-books",
+    "gitignore",
+    "public-apis",
+    "system-prompts-and-models-of-ai-tools",
+}
+
+RESOURCE_LIKE_PREFIXES = (
+    "awesome-",
+    "build-your-own-",
+)
+
+RESOURCE_LIKE_PHRASES = (
+    "curated list",
+    "list of",
+    "learning resources",
+    "programming books",
+    "free programming books",
+    "roadmap",
+    "roadmaps",
+    "tutorial",
+    "tutorials",
+    "system prompts",
+    "prompt collection",
+    "prompt library",
+)
+
+
+def is_resource_like_repository(name: str, description: str = "") -> bool:
+    """Detect repositories that are primarily educational/resource collections."""
+    name_lower = str(name or "").strip().lower()
+    description_lower = str(description or "").strip().lower()
+    combined_text = f"{name_lower} {description_lower}".strip()
+
+    if not combined_text:
+        return False
+
+    if name_lower in RESOURCE_LIKE_EXACT_NAMES:
+        return True
+
+    if any(name_lower.startswith(prefix) for prefix in RESOURCE_LIKE_PREFIXES):
+        return True
+
+    if re.search(r"\b(books|roadmap|roadmaps|tutorial|tutorials)\b", name_lower):
+        return True
+
+    phrase_matches = sum(1 for phrase in RESOURCE_LIKE_PHRASES if phrase in combined_text)
+    if phrase_matches >= 2:
+        return True
+
+    return False
 
 
 class FilterConfig(Protocol):
@@ -354,6 +411,9 @@ Consider the strategic value for a tech radar."""
         combined_text = f"{name_lower} {description_lower}".strip()
         deprecated_info = self._get_deprecated_info(name)
 
+        if is_resource_like_repository(name, description):
+            return StrategicValue.LOW
+
         high_signal_keywords = {
             "react", "vue", "angular", "node", "python", "kubernetes",
             "docker", "postgresql", "typescript", "rust", "terraform",
@@ -522,6 +582,9 @@ Consider the strategic value for a tech radar."""
                     item.stars,
                     item.description
                 )
+
+            if is_resource_like_repository(item.name, item.description):
+                strategic_value = StrategicValue.LOW
 
             if strategic_value == StrategicValue.LOW:
                 continue

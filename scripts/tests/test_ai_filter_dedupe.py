@@ -25,6 +25,87 @@ class MockTechItem:
 class TestDeduplicationAndDeprecation:
     """Test suite for deduplication, hierarchy, and deprecation detection"""
 
+    def test_filter_rejects_resource_like_repositories_but_keeps_canonical_technologies(self):
+        """Editorial resource repos should be filtered while real technologies survive."""
+        items = [
+            MockTechItem(
+                name="free-programming-books",
+                description="Freely available programming books collection",
+                stars=356000,
+                ring="adopt",
+                confidence=0.95,
+            ),
+            MockTechItem(
+                name="developer-roadmap",
+                description="Interactive developer roadmaps and learning paths",
+                stars=320000,
+                ring="adopt",
+                confidence=0.95,
+            ),
+            MockTechItem(
+                name="public-apis",
+                description="A collective list of free APIs for developers",
+                stars=340000,
+                ring="trial",
+                confidence=0.9,
+            ),
+            MockTechItem(
+                name="React",
+                description="UI library for building user interfaces",
+                stars=235000,
+                ring="adopt",
+                confidence=0.95,
+            ),
+            MockTechItem(
+                name="Kubernetes",
+                description="Container orchestration platform",
+                stars=112000,
+                quadrant="platforms",
+                ring="adopt",
+                confidence=0.94,
+            ),
+            MockTechItem(
+                name="Next.js",
+                description="React framework for production web applications",
+                stars=132000,
+                ring="trial",
+                confidence=0.92,
+            ),
+            MockTechItem(
+                name="Python",
+                description="Programming language for general-purpose software development",
+                stars=68000,
+                quadrant="languages",
+                ring="adopt",
+                confidence=0.97,
+            ),
+            MockTechItem(
+                name="Ollama",
+                description="Local LLM runtime for running open models",
+                stars=128000,
+                quadrant="platforms",
+                ring="trial",
+                confidence=0.9,
+            ),
+        ]
+
+        filter_config = Mock()
+        filter_config.auto_ignore = []
+        filter_config.include_only = []
+        filter_config.min_confidence = 0.5
+
+        result = AITechnologyFilter(filter_config).filter(items)
+        result_names = {item.name.lower() for item in result}
+
+        assert "free-programming-books" not in result_names
+        assert "developer-roadmap" not in result_names
+        assert "public-apis" not in result_names
+        assert "react" in result_names
+        assert "kubernetes" in result_names
+        assert "next.js" in result_names
+        assert "python" in result_names
+        assert "ollama" in result_names
+
     def test_filter_merges_duplicates_and_flags_deprecated(self):
         """Duplicate technologies should be merged, deprecated should be flagged"""
         items = [
@@ -142,3 +223,39 @@ class TestDeduplicationAndDeprecation:
         assert getattr(result[0], "signals", None) == {"gh_momentum": 88.0, "hn_heat": 72.0}
         assert getattr(result[0], "moved", None) == 1
         assert getattr(result[0], "sources", None) == ["github", "hackernews"]
+
+    def test_filter_excludes_resource_like_repositories_even_when_marked_medium(self):
+        """Resource collections should not survive the editorial filter as radar technologies."""
+        filter_config = Mock()
+        filter_config.auto_ignore = []
+        filter_config.include_only = []
+        filter_config.min_confidence = 0.5
+
+        result = AITechnologyFilter(filter_config).filter([
+            MockTechItem(
+                name="awesome-python",
+                description="An opinionated list of awesome Python frameworks, libraries, software and resources.",
+                stars=280000,
+                confidence=0.9,
+                trend="up",
+                strategic_value=StrategicValue.MEDIUM,
+                market_score=84.1,
+                signals={"gh_momentum": 100.0, "gh_popularity": 100.0, "hn_heat": 0.0},
+                sources=["github"],
+            ),
+            MockTechItem(
+                name="React",
+                description="UI library",
+                stars=220000,
+                confidence=0.9,
+                trend="up",
+                strategic_value=StrategicValue.HIGH,
+                market_score=92.5,
+                signals={"gh_momentum": 88.0, "hn_heat": 72.0},
+                sources=["github", "hackernews"],
+            ),
+        ])
+
+        result_names = {item.name.lower() for item in result}
+        assert "react" in result_names
+        assert "awesome-python" not in result_names
