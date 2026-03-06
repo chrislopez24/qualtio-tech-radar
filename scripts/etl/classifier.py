@@ -9,6 +9,7 @@ import logging
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
 from etl.quadrant_logic import infer_quadrant
+from etl.evidence import EvidenceRecord
 from openai import OpenAI, RateLimitError, APITimeoutError, APIConnectionError
 from pydantic import BaseModel, Field, field_validator
 
@@ -77,6 +78,9 @@ class ClassificationResult:
     rationale: str = ""
     strategic_value: str = "medium"
     raw_response: str = ""
+    canonical_id: str | None = None
+    entity_type: str = "technology"
+    evidence: list[EvidenceRecord] = field(default_factory=list)
 
 
 class TechnologyClassifier:

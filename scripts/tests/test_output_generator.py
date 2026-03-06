@@ -4,6 +4,7 @@ import pytest
 import json
 from pathlib import Path
 from etl.output_generator import generate_outputs, sanitize_for_public
+from etl.evidence import EvidenceRecord
 
 
 @pytest.fixture
@@ -147,6 +148,48 @@ def test_output_contains_market_score_trend_and_moved():
     assert "googleMomentum" not in tech["signals"]
 
 
+def test_output_serializes_optional_canonical_fields_and_evidence():
+    from types import SimpleNamespace
+    from etl.pipeline import RadarPipeline
+
+    pipeline = RadarPipeline()
+    output = pipeline._generate_output([
+        SimpleNamespace(
+            name="TypeScript",
+            description="Typed superset of JavaScript.",
+            stars=98000,
+            quadrant="languages",
+            ring="adopt",
+            confidence=0.95,
+            trend="up",
+            moved=0,
+            market_score=92.2,
+            signals={"gh_momentum": 90, "gh_popularity": 85, "hn_heat": 10},
+            is_deprecated=False,
+            replacement=None,
+            canonical_id="typescript",
+            entity_type="language",
+            evidence=[
+                EvidenceRecord(
+                    source="deps_dev",
+                    metric="reverse_dependents",
+                    subject_id="npm:typescript",
+                    raw_value=500000,
+                    normalized_value=97.0,
+                    observed_at="2026-03-07T00:00:00Z",
+                    freshness_days=1,
+                )
+            ],
+        )
+    ])
+
+    tech = output["technologies"][0]
+    assert tech["canonicalId"] == "typescript"
+    assert tech["entityType"] == "language"
+    assert tech["evidence"][0]["source"] == "deps_dev"
+    assert tech["evidence"][0]["subjectId"] == "npm:typescript"
+
+
 def test_output_generator_generates_optional_provenance_fields(tmp_path):
     """Test that optional provenance fields are generated in public output."""
     output_dir = tmp_path / "data"
@@ -274,3 +317,176 @@ def test_pipeline_output_includes_compact_explainability_metadata():
     assert pipeline_meta["topDropped"] == [
         {"id": "vue", "name": "Vue", "ring": "assess", "marketScore": 66.0}
     ]
+    assert pipeline_meta["ringQuality"]["adopt"] == {
+        "count": 1,
+        "avgMarketScore": 88.4,
+        "githubOnlyRatio": 0.0,
+        "resourceLikeCount": 0,
+        "editoriallyWeakCount": 0,
+        "topSuspicious": [],
+        "status": "good",
+    }
+    assert pipeline_meta["ringQuality"]["trial"] == {
+        "count": 1,
+        "avgMarketScore": 79.1,
+        "githubOnlyRatio": 0.0,
+        "resourceLikeCount": 0,
+        "editoriallyWeakCount": 0,
+        "topSuspicious": [],
+        "status": "good",
+    }
+    assert pipeline_meta["ringQuality"]["assess"] == {
+        "count": 0,
+        "avgMarketScore": 0.0,
+        "githubOnlyRatio": 0.0,
+        "resourceLikeCount": 0,
+        "editoriallyWeakCount": 0,
+        "topSuspicious": [],
+        "status": "good",
+    }
+    assert pipeline_meta["ringQuality"]["hold"] == {
+        "count": 0,
+        "avgMarketScore": 0.0,
+        "githubOnlyRatio": 0.0,
+        "resourceLikeCount": 0,
+        "editoriallyWeakCount": 0,
+        "topSuspicious": [],
+        "status": "good",
+    }
+    assert pipeline_meta["quadrantQuality"]["tools"] == {
+        "count": 2,
+        "avgMarketScore": 83.75,
+        "githubOnlyRatio": 0.0,
+        "resourceLikeCount": 0,
+        "editoriallyWeakCount": 0,
+        "topSuspicious": [],
+        "status": "good",
+    }
+    assert pipeline_meta["quadrantQuality"]["platforms"]["status"] == "missing"
+    assert pipeline_meta["quadrantQuality"]["techniques"]["status"] == "missing"
+    assert pipeline_meta["quadrantQuality"]["languages"]["status"] == "missing"
+    assert pipeline_meta["quadrantRingQuality"]["tools"]["adopt"]["count"] == 1
+    assert pipeline_meta["quadrantRingQuality"]["tools"]["adopt"]["status"] == "good"
+    assert pipeline_meta["quadrantRingQuality"]["tools"]["trial"]["count"] == 1
+    assert pipeline_meta["quadrantRingQuality"]["tools"]["trial"]["status"] == "good"
+    assert pipeline_meta["quadrantRingQuality"]["platforms"]["adopt"]["status"] == "missing"
+
+
+def test_pipeline_output_includes_quality_data_for_each_ring():
+    from types import SimpleNamespace
+    from etl.pipeline import RadarPipeline
+
+    pipeline = RadarPipeline()
+    pipeline._last_filter_stats = {
+        "classified": 3,
+        "qualified": 3,
+        "ai_accepted": 3,
+        "rejected_low_sources": 0,
+        "rejected_quality_gate": 0,
+        "rejected_ai_filter": 0,
+    }
+
+    output = pipeline._generate_output(
+        [
+            SimpleNamespace(
+                name="Ohmyzsh",
+                description="A framework for managing your zsh configuration.",
+                stars=180000,
+                quadrant="tools",
+                ring="trial",
+                confidence=0.8,
+                trend="up",
+                moved=0,
+                market_score=67.0,
+                signals={"gh_momentum": 96, "gh_popularity": 100, "hn_heat": 0},
+                is_deprecated=False,
+                replacement=None,
+            ),
+            SimpleNamespace(
+                name="free-programming-books",
+                description="Freely available programming books and learning resources.",
+                stars=380000,
+                quadrant="techniques",
+                ring="assess",
+                confidence=0.7,
+                trend="stable",
+                moved=0,
+                market_score=58.0,
+                signals={"gh_momentum": 85, "gh_popularity": 100, "hn_heat": 0},
+                is_deprecated=False,
+                replacement=None,
+            ),
+        ],
+        [],
+    )
+
+    ring_quality = output["meta"]["pipeline"]["ringQuality"]
+
+    assert ring_quality["trial"]["count"] == 1
+    assert ring_quality["trial"]["githubOnlyRatio"] == 1.0
+    assert ring_quality["trial"]["editoriallyWeakCount"] == 1
+    assert ring_quality["trial"]["status"] == "bad"
+    assert ring_quality["trial"]["topSuspicious"][0]["id"] == "ohmyzsh"
+    assert "githubOnly" in ring_quality["trial"]["topSuspicious"][0]["reasons"]
+    assert "editoriallyWeak" in ring_quality["trial"]["topSuspicious"][0]["reasons"]
+
+    assert ring_quality["assess"]["count"] == 1
+    assert ring_quality["assess"]["resourceLikeCount"] == 1
+    assert ring_quality["assess"]["githubOnlyRatio"] == 1.0
+    assert ring_quality["assess"]["status"] == "warn"
+
+    quadrant_quality = output["meta"]["pipeline"]["quadrantQuality"]
+    assert quadrant_quality["tools"]["count"] == 1
+    assert quadrant_quality["tools"]["githubOnlyRatio"] == 1.0
+    assert quadrant_quality["tools"]["editoriallyWeakCount"] == 1
+    assert quadrant_quality["tools"]["status"] == "warn"
+    assert quadrant_quality["techniques"]["count"] == 1
+    assert quadrant_quality["techniques"]["resourceLikeCount"] == 1
+    assert quadrant_quality["techniques"]["status"] == "warn"
+    assert quadrant_quality["platforms"]["status"] == "missing"
+    assert quadrant_quality["languages"]["status"] == "missing"
+
+    quadrant_ring_quality = output["meta"]["pipeline"]["quadrantRingQuality"]
+    assert quadrant_ring_quality["tools"]["trial"]["count"] == 1
+    assert quadrant_ring_quality["tools"]["trial"]["githubOnlyRatio"] == 1.0
+    assert quadrant_ring_quality["tools"]["trial"]["editoriallyWeakCount"] == 1
+    assert quadrant_ring_quality["tools"]["trial"]["status"] == "bad"
+    assert quadrant_ring_quality["techniques"]["assess"]["count"] == 1
+    assert quadrant_ring_quality["techniques"]["assess"]["resourceLikeCount"] == 1
+    assert quadrant_ring_quality["techniques"]["assess"]["status"] == "warn"
+    assert quadrant_ring_quality["platforms"]["adopt"]["status"] == "missing"
+
+
+def test_pipeline_output_flags_educational_trial_repositories_as_editorially_weak():
+    from types import SimpleNamespace
+    from etl.pipeline import RadarPipeline
+
+    pipeline = RadarPipeline()
+
+    output = pipeline._generate_output(
+        [
+            SimpleNamespace(
+                name="You-Dont-Know-JS",
+                description="A book series exploring JavaScript fundamentals in depth.",
+                stars=190000,
+                quadrant="tools",
+                ring="trial",
+                confidence=0.8,
+                trend="up",
+                moved=0,
+                market_score=66.0,
+                signals={"gh_momentum": 90, "gh_popularity": 95, "hn_heat": 0},
+                is_deprecated=False,
+                replacement=None,
+            ),
+        ],
+        [],
+    )
+
+    ring_quality = output["meta"]["pipeline"]["ringQuality"]
+
+    assert ring_quality["trial"]["count"] == 1
+    assert ring_quality["trial"]["editoriallyWeakCount"] == 1
+    assert ring_quality["trial"]["status"] == "bad"
+    assert ring_quality["trial"]["topSuspicious"][0]["id"] == "you-dont-know-js"
+    assert "editoriallyWeak" in ring_quality["trial"]["topSuspicious"][0]["reasons"]

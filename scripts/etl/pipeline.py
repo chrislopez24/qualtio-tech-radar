@@ -768,6 +768,13 @@ class RadarPipeline:
         setattr(item, "moved", tech.moved)
         setattr(item, "sources", tech.sources)
         setattr(item, "topics", getattr(tech, "topics", []))
+        setattr(item, "canonical_id", getattr(classification, "canonical_id", None) or getattr(tech, "canonical_id", None))
+        setattr(item, "entity_type", getattr(classification, "entity_type", None) or getattr(tech, "entity_type", "technology"))
+        setattr(
+            item,
+            "evidence",
+            list(getattr(classification, "evidence", None) or getattr(tech, "evidence", []) or []),
+        )
         return item
 
     def _strategic_filter(self, technologies: List[NormalizedTech],
@@ -945,6 +952,30 @@ class RadarPipeline:
                     'replacement': getattr(item, 'replacement', None),
                     'updatedAt': datetime.now().isoformat()
                 })
+
+                serialized = payload[-1]
+                canonical_id = getattr(item, "canonical_id", None)
+                if canonical_id:
+                    serialized["canonicalId"] = str(canonical_id)
+
+                entity_type = getattr(item, "entity_type", None)
+                if entity_type:
+                    serialized["entityType"] = str(entity_type)
+
+                evidence = getattr(item, "evidence", []) or []
+                if evidence:
+                    serialized["evidence"] = [
+                        {
+                            "source": str(record.source),
+                            "metric": str(record.metric),
+                            "subjectId": str(record.subject_id),
+                            "rawValue": record.raw_value,
+                            "normalizedValue": float(record.normalized_value),
+                            "observedAt": str(record.observed_at),
+                            "freshnessDays": int(record.freshness_days),
+                        }
+                        for record in evidence
+                    ]
 
             return payload
 
