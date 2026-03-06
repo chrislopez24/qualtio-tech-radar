@@ -19,12 +19,19 @@ from typing import Dict, Any, List, Optional, Set
 from dataclasses import dataclass, field
 
 from etl.config import ETLConfig, load_etl_config
-from etl.ai_filter import AITechnologyFilter, FilteredItem, StrategicValue
+from etl.ai_filter import (
+    AITechnologyFilter,
+    FilteredItem,
+    StrategicValue,
+    is_resource_like_repository,
+    is_strong_ring_editorially_eligible,
+    is_trial_ring_editorially_eligible,
+)
 from etl.checkpoint import CheckpointStore
 from etl.history_store import HistoryStore
 from etl.description_quality import is_valid_description
 from etl.classifier import TechnologyClassifier, ClassificationResult
-from etl.market_scoring import score_technology, calculate_confidence
+from etl.market_scoring import calculate_confidence, score_technology, scale_signal_logarithmically
 from etl.ring_assignment import assign_rings
 from etl.sources.github_trending import GitHubTrendingSource
 from etl.sources.hackernews import HackerNewsSource
@@ -288,6 +295,10 @@ class NormalizedTech:
     moved: int = 0
     last_updated: Optional[str] = None
     domain: Optional[str] = None
+    # Canonical entity fields for Radar V2
+    canonical_id: Optional[str] = None
+    entity_type: str = "technology"
+    evidence: List[dict] = field(default_factory=list)
 
 
 class RadarPipeline:
@@ -514,7 +525,10 @@ class RadarPipeline:
                 previous_scores[tech_id] = float(entry.get("marketScore", 0.0))
 
         for tech in technologies:
-            tech.signals.setdefault("gh_popularity", min(100.0, tech.stars / 1000.0))
+            tech.signals.setdefault(
+                "gh_popularity",
+                scale_signal_logarithmically(float(tech.stars), 250000.0, 100.0),
+            )
             tech.signals.setdefault("hn_heat", min(100.0, float(tech.hn_mentions) * 10.0))
             tech.signals.setdefault("gh_momentum", tech.signals.get("gh_momentum", 0.0))
 
@@ -752,6 +766,7 @@ class RadarPipeline:
         setattr(item, "signals", tech.signals)
         setattr(item, "moved", tech.moved)
         setattr(item, "sources", tech.sources)
+        setattr(item, "topics", getattr(tech, "topics", []))
         return item
 
     def _strategic_filter(self, technologies: List[NormalizedTech],
@@ -807,13 +822,17 @@ class RadarPipeline:
         ring_inputs: List[Dict[str, Any]] = []
         for item in items:
             tech_id = item.name.lower().replace(" ", "-")
-            previous_market_score = float(previous_map.get(tech_id, {}).get("marketScore", 0.0))
+            previous_entry = previous_map.get(tech_id)
             market_score = float(getattr(item, "market_score", 0.0))
+            trend_delta = 0.0
+            if previous_entry is not None:
+                previous_market_score = float(previous_entry.get("marketScore", 0.0))
+                trend_delta = market_score - previous_market_score
             ring_inputs.append(
                 {
                     "id": tech_id,
                     "market_score": market_score,
-                    "trend_delta": market_score - previous_market_score,
+                    "trend_delta": trend_delta,
                 }
             )
 
@@ -848,6 +867,21 @@ class RadarPipeline:
             ring = assignment.get("ring", item.ring)
             trend_delta = float(assignment.get("trend_delta", 0.0))
             prev_ring = assignment.get("previous_ring")
+
+            if ring in {"adopt", "trial"} and is_resource_like_repository(item.name, item.description):
+                ring = "assess"
+            elif ring == "adopt" and not is_strong_ring_editorially_eligible(
+                item.name,
+                item.description,
+                getattr(item, "topics", []),
+            ):
+                ring = "assess"
+            elif ring == "trial" and not is_trial_ring_editorially_eligible(
+                item.name,
+                item.description,
+                getattr(item, "topics", []),
+            ):
+                ring = "assess"
 
             item.ring = ring
             setattr(item, "moved", 0)
@@ -937,6 +971,158 @@ class RadarPipeline:
             if ring in ring_distribution:
                 ring_distribution[ring] += 1
 
+        def _is_github_only_signal(entry: Dict[str, Any]) -> bool:
+            signals = entry.get("signals", {})
+            if not isinstance(signals, dict):
+                return False
+            gh_momentum = float(signals.get("ghMomentum", 0.0) or 0.0)
+            gh_popularity = float(signals.get("ghPopularity", 0.0) or 0.0)
+            hn_heat = float(signals.get("hnHeat", 0.0) or 0.0)
+            has_github_signal = gh_momentum > 0.0 or gh_popularity > 0.0
+            return has_github_signal and hn_heat <= 0.0
+
+        def _quality_snapshot(entries: List[Dict[str, Any]], *, strong_ring: Optional[str] = None) -> Dict[str, Any]:
+            count = len(entries)
+            if count == 0:
+                return {
+                    "count": 0,
+                    "avgMarketScore": 0.0,
+                    "githubOnlyRatio": 0.0,
+                    "resourceLikeCount": 0,
+                    "editoriallyWeakCount": 0,
+                    "topSuspicious": [],
+                    "status": "good",
+                }
+
+            github_only_entries: List[Dict[str, Any]] = []
+            top_suspicious: List[Dict[str, Any]] = []
+            resource_like_count = 0
+            editorially_weak_count = 0
+
+            for entry in entries:
+                reasons: List[str] = []
+                description = str(entry.get("description", ""))
+                entry_id = str(entry.get("id", ""))
+                effective_ring = strong_ring or str(entry.get("ring", ""))
+                if _is_github_only_signal(entry):
+                    github_only_entries.append(entry)
+                    reasons.append("githubOnly")
+                if is_resource_like_repository(entry_id, description):
+                    resource_like_count += 1
+                    reasons.append("resourceLike")
+                elif effective_ring == "adopt" and not is_strong_ring_editorially_eligible(
+                    str(entry.get("name", "")),
+                    description,
+                    [],
+                ):
+                    editorially_weak_count += 1
+                    reasons.append("editoriallyWeak")
+                elif effective_ring == "trial" and not is_trial_ring_editorially_eligible(
+                    str(entry.get("name", "")),
+                    description,
+                    [],
+                ):
+                    editorially_weak_count += 1
+                    reasons.append("editoriallyWeak")
+
+                if reasons:
+                    top_suspicious.append(
+                        {
+                            "id": entry_id,
+                            "name": str(entry.get("name", "")),
+                            "marketScore": round(float(entry.get("marketScore", 0.0) or 0.0), 2),
+                            "reasons": reasons,
+                        }
+                    )
+
+            avg_market_score = round(
+                sum(float(entry.get("marketScore", 0.0) or 0.0) for entry in entries) / count,
+                2,
+            )
+            github_only_ratio = round(len(github_only_entries) / count, 4)
+            top_suspicious.sort(key=lambda entry: float(entry.get("marketScore", 0.0)), reverse=True)
+
+            status = "good"
+            if strong_ring in {"adopt", "trial"}:
+                strong_ring_low_score = (
+                    strong_ring == "adopt" and avg_market_score < 80.0
+                ) or (
+                    strong_ring == "trial" and avg_market_score < 60.0
+                )
+                if (
+                    github_only_ratio >= 0.5
+                    or resource_like_count > 0
+                    or editorially_weak_count > 0
+                    or strong_ring_low_score
+                ):
+                    status = "bad"
+            elif github_only_ratio >= 0.5 or resource_like_count > 0 or editorially_weak_count > 0:
+                status = "warn"
+
+            return {
+                "count": count,
+                "avgMarketScore": avg_market_score,
+                "githubOnlyRatio": github_only_ratio,
+                "resourceLikeCount": resource_like_count,
+                "editoriallyWeakCount": editorially_weak_count,
+                "topSuspicious": top_suspicious[:5],
+                "status": status,
+            }
+
+        def _ring_quality(entries: List[Dict[str, Any]], ring: str) -> Dict[str, Any]:
+            ring_entries = [entry for entry in entries if str(entry.get("ring", "")) == ring]
+            return _quality_snapshot(ring_entries, strong_ring=ring)
+
+        quadrant_names = ("platforms", "techniques", "tools", "languages")
+        ring_names = ("adopt", "trial", "assess", "hold")
+
+        quadrant_quality = {
+            quadrant: (
+                _quality_snapshot([entry for entry in technologies if str(entry.get("quadrant", "")) == quadrant])
+                if any(str(entry.get("quadrant", "")) == quadrant for entry in technologies)
+                else {
+                    "count": 0,
+                    "avgMarketScore": 0.0,
+                    "githubOnlyRatio": 0.0,
+                    "resourceLikeCount": 0,
+                    "editoriallyWeakCount": 0,
+                    "topSuspicious": [],
+                    "status": "missing",
+                }
+            )
+            for quadrant in quadrant_names
+        }
+
+        quadrant_ring_quality = {
+            quadrant: {
+                ring: (
+                    _quality_snapshot(
+                        [
+                            entry
+                            for entry in technologies
+                            if str(entry.get("quadrant", "")) == quadrant and str(entry.get("ring", "")) == ring
+                        ],
+                        strong_ring=ring,
+                    )
+                    if any(
+                        str(entry.get("quadrant", "")) == quadrant and str(entry.get("ring", "")) == ring
+                        for entry in technologies
+                    )
+                    else {
+                        "count": 0,
+                        "avgMarketScore": 0.0,
+                        "githubOnlyRatio": 0.0,
+                        "resourceLikeCount": 0,
+                        "editoriallyWeakCount": 0,
+                        "topSuspicious": [],
+                        "status": "missing",
+                    }
+                )
+                for ring in ring_names
+            }
+            for quadrant in quadrant_names
+        }
+
         def _sample(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             ranked = sorted(
                 entries,
@@ -983,6 +1169,12 @@ class RadarPipeline:
                         'aiFilter': int(self._last_filter_stats.get("rejected_ai_filter", 0)),
                     },
                     'ringDistribution': ring_distribution,
+                    'ringQuality': {
+                        ring: _ring_quality(technologies, ring)
+                        for ring in ("adopt", "trial", "assess", "hold")
+                    },
+                    'quadrantQuality': quadrant_quality,
+                    'quadrantRingQuality': quadrant_ring_quality,
                     'topAdded': top_added,
                     'topDropped': top_dropped,
                 }

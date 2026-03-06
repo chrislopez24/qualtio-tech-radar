@@ -5,6 +5,8 @@ from etl.models import (
     TechnologySignal,
     TechnologyClassification,
 )
+from etl.entities import CanonicalTechnology
+from etl.evidence import EvidenceRecord
 from etl.pipeline import RadarPipeline
 
 __all__ = [
@@ -16,5 +18,7 @@ __all__ = [
     "SourceTechnology",
     "TechnologySignal",
     "TechnologyClassification",
+    "CanonicalTechnology",
+    "EvidenceRecord",
     "RadarPipeline",
 ]
