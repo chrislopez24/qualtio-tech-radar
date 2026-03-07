@@ -13,6 +13,8 @@ from etl.ai_filter import is_resource_like_repository
 
 logger = logging.getLogger(__name__)
 
+MAX_TRIAL_GITHUB_ONLY_RATIO = 0.5
+
 
 def _extract_llm_calls(payload: Dict[str, Any], *, assume_full_llm_when_missing: bool = False) -> int:
     classified_count: int = 0
@@ -186,6 +188,111 @@ def select_top_leaders(technologies: List[Dict[str, Any]], top_n: int = 5) -> Se
     return {str(t.get("id")) for t in technologies if t.get("ring") == "adopt" and t.get("id")}
 
 
+def _signal_value(entry: Dict[str, Any], *keys: str) -> float:
+    signals = entry.get("signals", {})
+    if not isinstance(signals, dict):
+        return 0.0
+    for key in keys:
+        if key in signals:
+            try:
+                return float(signals.get(key) or 0.0)
+            except Exception:
+                return 0.0
+    return 0.0
+
+
+def _is_github_only_entry(entry: Dict[str, Any]) -> bool:
+    gh_momentum = _signal_value(entry, "ghMomentum", "gh_momentum")
+    gh_popularity = _signal_value(entry, "ghPopularity", "gh_popularity")
+    hn_heat = _signal_value(entry, "hnHeat", "hn_heat")
+    has_github_signal = gh_momentum > 0 or gh_popularity > 0
+    return has_github_signal and hn_heat <= 0
+
+
+def _extract_source_coverage(entry: Dict[str, Any]) -> int:
+    value = entry.get("sourceCoverage")
+    if value is not None:
+        try:
+            return max(0, int(value))
+        except Exception:
+            return 0
+
+    coverage = 0
+    if _signal_value(entry, "ghMomentum", "gh_momentum") > 0 or _signal_value(entry, "ghPopularity", "gh_popularity") > 0:
+        coverage += 1
+    if _signal_value(entry, "hnHeat", "hn_heat") > 0:
+        coverage += 1
+    return coverage
+
+
+def _quadrants_missing_source_coverage(technologies: List[Dict[str, Any]]) -> List[str]:
+    quadrants = {
+        str(entry.get("quadrant", ""))
+        for entry in technologies
+        if str(entry.get("quadrant", "")) and _extract_source_coverage(entry) < 2
+    }
+    return sorted(quadrants)
+
+
+def _compute_github_bias_metrics(technologies: List[Dict[str, Any]]) -> Dict[str, Any]:
+    if not technologies:
+        return {
+            "github_bias": 0.0,
+            "github_only_count": 0,
+            "github_only_strong_ring_count": 0,
+            "github_only_strong_ring_sample": [],
+            "editorial_recommendations": [],
+        }
+
+    github_only_entries = [entry for entry in technologies if _is_github_only_entry(entry)]
+    github_only_strong = [
+        entry
+        for entry in github_only_entries
+        if str(entry.get("ring", "")) in {"adopt", "trial"}
+    ]
+    github_only_adopt = [
+        entry
+        for entry in github_only_entries
+        if str(entry.get("ring", "")) == "adopt"
+    ]
+    github_only_trial = [
+        entry
+        for entry in github_only_entries
+        if str(entry.get("ring", "")) == "trial"
+    ]
+    trial_entries = [
+        entry
+        for entry in technologies
+        if str(entry.get("ring", "")) == "trial"
+    ]
+    github_bias = len(github_only_entries) / len(technologies)
+    trial_github_only_ratio = (len(github_only_trial) / len(trial_entries)) if trial_entries else 0.0
+
+    recommendations: List[str] = []
+    if github_bias >= 0.5:
+        recommendations.append(
+            "High GitHub-only share detected; recalibrate scoring weights and add non-GitHub corroboration before publication."
+        )
+    if github_only_adopt:
+        recommendations.append(
+            "GitHub-only entries reached adopt; tighten strong-ring admission for mono-source technologies."
+        )
+    if trial_github_only_ratio > MAX_TRIAL_GITHUB_ONLY_RATIO:
+        recommendations.append(
+            "Trial exceeds the allowed GitHub-only ratio; increase corroboration or demote mono-source candidates."
+        )
+
+    return {
+        "github_bias": round(github_bias, 4),
+        "github_only_count": len(github_only_entries),
+        "github_only_strong_ring_count": len(github_only_strong),
+        "github_only_strong_ring_sample": [str(entry.get("id")) for entry in github_only_strong[:10] if entry.get("id")],
+        "adopt_github_only_count": len(github_only_adopt),
+        "trial_github_only_ratio": round(trial_github_only_ratio, 4),
+        "editorial_recommendations": recommendations,
+    }
+
+
 def _extract_metric_inputs(baseline: Dict[str, Any], optimized: Dict[str, Any]) -> Dict[str, Any]:
     """Extract deterministic metric-computation inputs from pipeline outputs."""
     def _filter_resource_like(entries: Any) -> List[Dict[str, Any]]:
@@ -205,19 +312,19 @@ def _extract_metric_inputs(baseline: Dict[str, Any], optimized: Dict[str, Any]) 
     baseline_watchlist_techs = _filter_resource_like(baseline.get("watchlist", []))
     optimized_watchlist_techs = _filter_resource_like(optimized.get("watchlist", []))
 
-    baseline_ids = {t.get("id") for t in baseline_techs if t.get("id")}
-    optimized_ids = {t.get("id") for t in optimized_techs if t.get("id")}
+    baseline_ids = {str(t.get("id")) for t in baseline_techs if t.get("id")}
+    optimized_ids = {str(t.get("id")) for t in optimized_techs if t.get("id")}
 
     missing_from_optimized = sorted(baseline_ids - optimized_ids)
     added_in_optimized = sorted(optimized_ids - baseline_ids)
 
-    baseline_watchlist = {t.get("id") for t in baseline_watchlist_techs if t.get("id")}
-    optimized_watchlist = {t.get("id") for t in optimized_watchlist_techs if t.get("id")}
+    baseline_watchlist = {str(t.get("id")) for t in baseline_watchlist_techs if t.get("id")}
+    optimized_watchlist = {str(t.get("id")) for t in optimized_watchlist_techs if t.get("id")}
 
     if not baseline_watchlist:
-        baseline_watchlist = {t.get("id") for t in baseline_techs if t.get("trend") == "up" and t.get("id")}
+        baseline_watchlist = {str(t.get("id")) for t in baseline_techs if t.get("trend") == "up" and t.get("id")}
     if not optimized_watchlist:
-        optimized_watchlist = {t.get("id") for t in optimized_techs if t.get("trend") == "up" and t.get("id")}
+        optimized_watchlist = {str(t.get("id")) for t in optimized_techs if t.get("trend") == "up" and t.get("id")}
 
     baseline_ring_map = {
         t.get("id"): t.get("ring", "unknown")
@@ -309,9 +416,9 @@ def update_leader_stability_state(
     removed = prev_stable - observed_leaders
 
     observed_change_keys: Dict[str, Tuple[str, str]] = {}
-    for leader_id in sorted(added):
+    for leader_id in sorted(str(item) for item in added if item):
         observed_change_keys[f"{leader_id}:added"] = (leader_id, "added")
-    for leader_id in sorted(removed):
+    for leader_id in sorted(str(item) for item in removed if item):
         observed_change_keys[f"{leader_id}:removed"] = (leader_id, "removed")
 
     next_candidates: Dict[str, Dict[str, Any]] = {}
@@ -394,6 +501,8 @@ def compare_outputs(baseline: Dict[str, Any], optimized: Dict[str, Any]) -> Dict
         ring = str(metric_inputs["baseline_ring_map"].get(tech_id, "unknown"))
         filtered_by_ring[ring] = filtered_by_ring.get(ring, 0) + 1
 
+    optimized_bias = _compute_github_bias_metrics(optimized_techs)
+
     report = {
         "core_overlap": round(core_overlap, 4),
         "leader_coverage": round(leader_coverage, 4),
@@ -409,6 +518,14 @@ def compare_outputs(baseline: Dict[str, Any], optimized: Dict[str, Any]) -> Dict
         "filtered_sample": missing_from_optimized[:10],
         "missing_from_optimized": missing_from_optimized,
         "added_in_optimized": added_in_optimized,
+        "github_bias": optimized_bias["github_bias"],
+        "github_only_count": optimized_bias["github_only_count"],
+        "github_only_strong_ring_count": optimized_bias["github_only_strong_ring_count"],
+        "github_only_strong_ring_sample": optimized_bias["github_only_strong_ring_sample"],
+        "adopt_github_only_count": optimized_bias["adopt_github_only_count"],
+        "trial_github_only_ratio": optimized_bias["trial_github_only_ratio"],
+        "quadrants_missing_source_coverage": _quadrants_missing_source_coverage(optimized_techs),
+        "editorial_recommendations": optimized_bias["editorial_recommendations"],
     }
 
     logger.info(
@@ -451,10 +568,22 @@ def classify_quality_gate(
     candidate_changes = (leader_state or {}).get("candidate_changes") or {}
     promoted_changes = (leader_state or {}).get("promoted_changes") or []
 
-    if failed_metrics:
+    if report.get("adopt_github_only_count", 0):
+        status = "fail"
+        next_action = "remove-github-only-adopt"
+        next_action_message = "Remove GitHub-only items from adopt before rollout."
+    elif float(report.get("trial_github_only_ratio", 0.0) or 0.0) > MAX_TRIAL_GITHUB_ONLY_RATIO:
+        status = "fail"
+        next_action = "reduce-trial-github-only-ratio"
+        next_action_message = "Reduce GitHub-only trial ratio before rollout."
+    elif failed_metrics:
         status = "fail"
         next_action = "investigate-quality-regression"
         next_action_message = "Investigate quality regression before rollout."
+    elif report.get("quadrants_missing_source_coverage"):
+        status = "warn"
+        next_action = "improve-source-coverage"
+        next_action_message = "Improve source coverage in affected quadrants before rollout approval."
     elif candidate_changes:
         status = "warn"
         next_action = "await-stable-leader-transition"

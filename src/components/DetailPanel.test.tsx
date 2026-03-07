@@ -100,4 +100,35 @@ describe('DetailPanel', () => {
     expect(html).not.toContain('Data provenance');
     expect(html).not.toContain('Signal freshness');
   });
+
+  it('renders evidence summary, source coverage and why-this-ring when present', () => {
+    const html = renderToStaticMarkup(
+      <DetailPanel
+        technology={{
+          ...richTechnology,
+          sourceCoverage: 4,
+          whyThisRing: 'Adopt because composite 88.4 is backed by external adoption evidence across 4 sources.',
+          sourceFreshness: {
+            freshestDays: 1,
+            stalestDays: 2,
+          },
+          evidenceSummary: {
+            sources: ['github', 'hackernews', 'deps_dev', 'stackexchange'],
+            metrics: ['reverse_dependents', 'tag_activity'],
+            hasExternalAdoption: true,
+            githubOnly: false,
+          },
+        }}
+        open
+        onClose={() => {}}
+      />,
+    );
+
+    expect(html).toContain('Why this ring');
+    expect(html).toContain('Source coverage');
+    expect(html).toContain('4 sources');
+    expect(html).toContain('Evidence summary');
+    expect(html).toContain('reverse_dependents');
+    expect(html).toContain('freshest 1d');
+  });
 });

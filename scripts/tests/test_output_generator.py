@@ -490,3 +490,89 @@ def test_pipeline_output_flags_educational_trial_repositories_as_editorially_wea
     assert ring_quality["trial"]["status"] == "bad"
     assert ring_quality["trial"]["topSuspicious"][0]["id"] == "you-dont-know-js"
     assert "editoriallyWeak" in ring_quality["trial"]["topSuspicious"][0]["reasons"]
+
+
+def test_output_includes_evidence_summary_source_coverage_and_why_this_ring():
+    from types import SimpleNamespace
+    from etl.pipeline import RadarPipeline
+
+    pipeline = RadarPipeline()
+    output = pipeline._generate_output([
+        SimpleNamespace(
+            name="React",
+            description="UI library for interfaces",
+            stars=220000,
+            quadrant="tools",
+            ring="adopt",
+            confidence=0.95,
+            trend="up",
+            moved=1,
+            market_score=88.4,
+            signals={
+                "gh_momentum": 80,
+                "gh_popularity": 90,
+                "hn_heat": 60,
+                "adoption_score": 94,
+                "mindshare_score": 78,
+                "health_score": 86,
+                "risk_score": 88,
+                "source_coverage": 4,
+                "has_external_adoption": 1,
+                "github_only": 0,
+            },
+            evidence=[
+                EvidenceRecord(
+                    source="deps_dev",
+                    metric="reverse_dependents",
+                    subject_id="npm:react",
+                    raw_value=800000,
+                    normalized_value=97.0,
+                    observed_at="2026-03-07T00:00:00Z",
+                    freshness_days=1,
+                ),
+                EvidenceRecord(
+                    source="stackexchange",
+                    metric="tag_activity",
+                    subject_id="reactjs",
+                    raw_value=240000,
+                    normalized_value=89.0,
+                    observed_at="2026-03-07T00:00:00Z",
+                    freshness_days=2,
+                ),
+            ],
+            is_deprecated=False,
+            replacement=None,
+        )
+    ])
+
+    tech = output["technologies"][0]
+    assert tech["sourceCoverage"] == 4
+    assert tech["evidenceSummary"]["hasExternalAdoption"] is True
+    assert "deps_dev" in tech["evidenceSummary"]["sources"]
+    assert tech["sourceFreshness"]["freshestDays"] == 1
+    assert tech["sourceFreshness"]["stalestDays"] == 2
+    assert tech["whyThisRing"]
+
+
+def test_sanitize_for_public_normalizes_explainability_aliases_without_leaking_snake_case():
+    sanitized = sanitize_for_public(
+        {
+            "id": "react",
+            "name": "React",
+            "quadrant": "tools",
+            "ring": "adopt",
+            "description": "UI library",
+            "moved": 0,
+            "source_coverage": 4,
+            "source_freshness": {"freshestDays": 1, "stalestDays": 2},
+            "evidence_summary": {"sources": ["github"], "metrics": [], "hasExternalAdoption": False, "githubOnly": True},
+            "why_this_ring": "Because.",
+        }
+    )
+
+    assert "source_coverage" not in sanitized
+    assert "source_freshness" not in sanitized
+    assert "evidence_summary" not in sanitized
+    assert "why_this_ring" not in sanitized
+    assert sanitized["sourceCoverage"] == 4
+    assert sanitized["whyThisRing"] == "Because."

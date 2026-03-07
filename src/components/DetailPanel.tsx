@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import type { Technology, AITechnology } from '@/lib/types';
 import { getQuadrantById, getRingById } from '@/lib/radar-config';
+import { EvidenceSummary } from './EvidenceSummary';
 import {
   TrendUp,
   TrendDown,
@@ -162,6 +163,13 @@ export function DetailPanel({ technology, open, onClose }: DetailPanelProps) {
                       </section>
                     )}
                   </div>
+                </>
+              )}
+
+              {(aiTechnology?.whyThisRing || aiTechnology?.sourceCoverage || aiTechnology?.evidenceSummary || aiTechnology?.sourceFreshness) && (
+                <>
+                  <Separator className="my-3" />
+                  <EvidenceSummary technology={aiTechnology} />
                 </>
               )}
 

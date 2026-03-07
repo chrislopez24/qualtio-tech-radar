@@ -24,10 +24,51 @@ export interface DecisionRisk {
   cost?: string;
 }
 
+export interface EvidenceRecordView {
+  source: string;
+  metric: string;
+  subjectId: string;
+  rawValue: unknown;
+  normalizedValue: number;
+  observedAt: string;
+  freshnessDays: number;
+}
+
+export interface EvidenceSummary {
+  sources: string[];
+  metrics: string[];
+  hasExternalAdoption: boolean;
+  githubOnly: boolean;
+}
+
+export interface SourceFreshness {
+  freshestDays: number | null;
+  stalestDays: number | null;
+}
+
+export interface QualitySnapshot {
+  count: number;
+  avgMarketScore: number;
+  githubOnlyRatio: number;
+  resourceLikeCount: number;
+  editoriallyWeakCount: number;
+  topSuspicious: Array<{
+    id: string;
+    name: string;
+    marketScore: number;
+    reasons: string[];
+  }>;
+  status: 'good' | 'warn' | 'bad' | 'missing';
+}
+
 export interface AITechnology extends Technology {
   trend: Trend;
   sourceSummary?: string;
   signalFreshness?: string;
+  sourceCoverage?: number;
+  sourceFreshness?: SourceFreshness;
+  evidenceSummary?: EvidenceSummary;
+  whyThisRing?: string;
   githubStars?: number;
   hnMentions?: number;
   stars?: number;
@@ -48,8 +89,10 @@ export interface AITechnology extends Technology {
   owner?: string;
   nextStep?: string;
   nextReviewAt?: string;
-  evidence?: string[];
+  evidence?: Array<string | EvidenceRecordView>;
   alternatives?: string[];
+  canonicalId?: string;
+  entityType?: string;
 }
 
 export interface PipelineSummary {
@@ -82,6 +125,9 @@ export interface PipelineSummary {
     ring: Ring;
     marketScore: number;
   }>;
+  ringQuality?: Partial<Record<Ring, QualitySnapshot>>;
+  quadrantQuality?: Partial<Record<Quadrant, QualitySnapshot>>;
+  quadrantRingQuality?: Partial<Record<Quadrant, Partial<Record<Ring, QualitySnapshot>>>>;
 }
 
 export interface ShadowGateSummary {
@@ -94,6 +140,7 @@ export interface ShadowGateSummary {
   addedCount?: number;
   filteredByRing?: Record<string, number>;
   filteredSample?: string[];
+  quadrantsMissingSourceCoverage?: string[];
   nextAction?: string | null;
   leaderTransitionSummary?: {
     candidateCount: number;

@@ -68,6 +68,10 @@ def test_review_summary_includes_required_sections(tmp_path):
     assert summary["suspiciousItems"]["repairedDescriptions"] == 2
     assert summary["suspiciousItems"]["lowSignalStrongRings"][0]["id"] == "bun"
     assert summary["suspiciousItems"]["singleWeakSignal"][0]["id"] == "bun"
+    assert summary["suspiciousItems"]["githubOnlySignals"][0]["id"] == "bun"
+    assert summary["suspiciousItems"]["githubOnlyStrongRings"][0]["id"] == "bun"
+    assert summary["suspiciousItems"]["githubOnlyRatio"] == 0.5
+    assert summary["suspiciousItems"]["editorialRecommendations"]
 
 
 def test_review_summary_validation_flags_missing_sections():
@@ -209,3 +213,95 @@ def test_review_summary_flags_resource_like_entries_in_strong_rings():
 
     assert "resourceLikeStrongRings" in suspicious
     assert suspicious["resourceLikeStrongRings"][0]["id"] == "free-programming-books"
+    assert suspicious["githubOnlyRatio"] == 0.5
+    assert suspicious["githubOnlySignals"][0]["id"] == "free-programming-books"
+    assert suspicious["editorialRecommendations"]
+
+
+def test_review_summary_fails_publish_readiness_for_github_only_adopt_and_missing_coverage():
+    from review_radar_output import build_review_summary
+
+    payload = {
+        "updatedAt": "2026-03-06T12:00:00Z",
+        "technologies": [
+            {
+                "id": "bun",
+                "name": "Bun",
+                "quadrant": "tools",
+                "ring": "adopt",
+                "trend": "up",
+                "marketScore": 84.0,
+                "description": "Runtime",
+                "signals": {"ghMomentum": 84, "ghPopularity": 81, "hnHeat": 0},
+                "sourceCoverage": 1,
+            },
+            {
+                "id": "react",
+                "name": "React",
+                "quadrant": "tools",
+                "ring": "trial",
+                "trend": "up",
+                "marketScore": 77.0,
+                "description": "UI library",
+                "signals": {"ghMomentum": 90, "ghPopularity": 94, "hnHeat": 30},
+                "sourceCoverage": 3,
+            },
+        ],
+        "watchlist": [],
+        "meta": {"pipeline": {}, "shadowGate": {"status": "warn"}},
+    }
+
+    summary = build_review_summary(payload, input_name="data.ai.json")
+
+    assert summary["publishReadiness"]["status"] == "fail"
+    assert summary["suspiciousItems"]["missingSourceCoverageByQuadrant"] == ["tools"]
+
+
+def test_review_summary_allows_trial_github_only_ratio_below_threshold():
+    from review_radar_output import build_review_summary
+
+    payload = {
+        "updatedAt": "2026-03-06T12:00:00Z",
+        "technologies": [
+            {
+                "id": "react",
+                "name": "React",
+                "quadrant": "tools",
+                "ring": "trial",
+                "trend": "up",
+                "marketScore": 77.0,
+                "description": "UI library",
+                "signals": {"ghMomentum": 90, "ghPopularity": 94, "hnHeat": 30},
+                "sourceCoverage": 3,
+            },
+            {
+                "id": "bun",
+                "name": "Bun",
+                "quadrant": "platforms",
+                "ring": "trial",
+                "trend": "up",
+                "marketScore": 72.0,
+                "description": "Runtime",
+                "signals": {"ghMomentum": 84, "ghPopularity": 81, "hnHeat": 0},
+                "sourceCoverage": 1,
+            },
+            {
+                "id": "rust",
+                "name": "Rust",
+                "quadrant": "languages",
+                "ring": "assess",
+                "trend": "up",
+                "marketScore": 69.0,
+                "description": "Language",
+                "signals": {"ghMomentum": 90, "ghPopularity": 93, "hnHeat": 45},
+                "sourceCoverage": 3,
+            },
+        ],
+        "watchlist": [],
+        "meta": {"pipeline": {}, "shadowGate": {"status": "warn"}},
+    }
+
+    summary = build_review_summary(payload, input_name="data.ai.json")
+
+    assert summary["publishReadiness"]["status"] == "warn"
+    assert summary["suspiciousItems"]["trialGithubOnlyRatio"] == 0.5

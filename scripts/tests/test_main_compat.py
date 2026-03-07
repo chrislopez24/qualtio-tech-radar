@@ -500,3 +500,38 @@ def test_shadow_only_pass_persists_updated_stable_leader_state(tmp_path):
     assert leader_state["candidateChanges"] == {}
     assert leader_state["promotedChanges"] == [{"leaderId": "bun", "changeType": "added"}]
     assert leader_state["promotionRuns"] == 3
+
+
+def test_main_preserves_run_metrics_in_public_meta(tmp_path):
+    from main import main
+    from etl.config import ETLConfig, OutputConfig
+
+    public_file = tmp_path / "data.ai.json"
+    cfg = ETLConfig(output=OutputConfig(public_file=str(public_file)))
+
+    with patch("main.load_etl_config", return_value=cfg), \
+         patch("main.RadarPipeline") as mock_pipeline, \
+         patch.object(sys, "argv", ["main.py"]):
+        mock_pipeline.return_value.run.return_value = {
+            "technologies": [],
+            "watchlist": [],
+            "meta": {
+                "pipeline": {
+                    "runMetrics": {
+                        "sources": {
+                            "github_trending": {
+                                "records": 20,
+                                "durationSeconds": 1.2,
+                                "failures": 0,
+                            }
+                        }
+                    }
+                }
+            },
+        }
+
+        exit_code = main()
+
+    assert exit_code == 0
+    payload = json.loads(public_file.read_text())
+    assert payload["meta"]["pipeline"]["runMetrics"]["sources"]["github_trending"]["records"] == 20

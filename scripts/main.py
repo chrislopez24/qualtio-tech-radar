@@ -32,7 +32,14 @@ from etl.shadow_eval import (
     DEFAULT_THRESHOLDS,
 )
 
-SUPPORTED_SOURCE_NAMES = {"github_trending", "hackernews"}
+SUPPORTED_SOURCE_NAMES = {
+    "github_trending",
+    "hackernews",
+    "deps_dev",
+    "stackexchange",
+    "pypistats",
+    "osv",
+}
 
 
 def run_main_for_test():
@@ -187,6 +194,10 @@ def main():
 
             config.sources.github_trending.enabled = "github_trending" in source_names
             config.sources.hackernews.enabled = "hackernews" in source_names
+            config.sources.deps_dev.enabled = "deps_dev" in source_names
+            config.sources.stackexchange.enabled = "stackexchange" in source_names
+            config.sources.pypistats.enabled = "pypistats" in source_names
+            config.sources.osv.enabled = "osv" in source_names
 
         if args.dry_run:
             print("[DRY RUN] Pipeline execution simulated (no data will be collected)")

@@ -1,6 +1,6 @@
 # Qualtio Tech Radar
 
-AI-powered Technology Radar with automated weekly updates from GitHub and Hacker News. Rings are assigned by deterministic market momentum (with hysteresis and guardrails) to avoid collapse into a single ring.
+AI-powered Technology Radar with automated weekly updates from GitHub, Hacker News, Stack Exchange, deps.dev, PyPI Stats, and OSV. Rings are assigned by evidence-based scoring plus editorial gates so strong rings require corroborated adoption instead of raw repo popularity.
 
 ![Tech Radar Preview](./docs/preview.png)
 
@@ -12,7 +12,10 @@ AI-powered Technology Radar with automated weekly updates from GitHub and Hacker
 - **Drift-Aware Caching**: Reuse LLM decisions across runs with automatic invalidation
 - **Shadow Quality Evaluation**: Validate optimized pipeline against baseline with pass/warn/fail quality gate outcomes
 - **Operational Explainability**: Shadow evaluation reports with leader transition visibility and "what changed" insights
+- **Evidence-Based Ring Policy**: `adopt` and `trial` now require corroborated evidence instead of GitHub-only momentum
+- **Explainable Artifact v2**: Each blip can expose `sourceCoverage`, `sourceFreshness`, `evidenceSummary`, and `whyThisRing`
 - **Editorial False-Positive Guardrails**: Resource-like repositories (awesome lists, books, roadmaps, prompt collections) are treated separately from real technologies
+- **Professional ETL Boundaries**: Source registry, run metrics, artifact quality summaries, and compact operational metadata
 - **Glassmorphism UI**: Modern, responsive design with dark theme support
 - **Automated Data Pipeline**: Weekly updates via GitHub Actions
 - **Market-Signal Ringing**: External momentum scoring (GitHub + HN) with anti-collapse guardrails
@@ -27,6 +30,8 @@ AI-powered Technology Radar with automated weekly updates from GitHub and Hacker
   - Selective LLM classification (70%+ call reduction)
   - Drift-aware decision caching
   - Shadow quality evaluation
+  - Evidence source adapters (`deps.dev`, `Stack Exchange`, `PyPI Stats`, `OSV`)
+  - Source registry + run metrics
   - Candidate selection (core/watchlist/borderline)
 
 ## Local Development
@@ -111,7 +116,7 @@ The static site will be generated in the `dist/` folder.
 
 ## Data Pipeline (ETL)
 
-The ETL pipeline collects external technology signals from GitHub and Hacker News, classifies them using AI, and generates the radar data files. It does not perform a secondary repository deep-scan pass.
+The ETL pipeline collects external technology signals from GitHub, Hacker News, Stack Exchange, deps.dev, PyPI Stats, and OSV, classifies them using AI, and generates the radar data files. It does not perform a secondary repository deep-scan pass.
 
 ### Quick Start
 
@@ -122,9 +127,9 @@ python scripts/main.py
 ```
 
 This will:
-1. Fetch external signals from GitHub and Hacker News
-2. Compute deterministic market scores per technology
-3. Assign rings using thresholds + hysteresis + distribution guardrails
+1. Fetch external signals plus evidence records from GitHub, Hacker News, Stack Exchange, deps.dev, PyPI Stats, and OSV
+2. Compute evidence-based sub-scores (`adoption`, `mindshare`, `health`, `risk`) per technology
+3. Assign rings using policy gates, hysteresis, and editorial guardrails
 4. Classify quadrants/descriptions with Synthetic API support
 5. Apply editorial filtering to keep resource collections out of strong technology rings
 6. Generate `src/data/data.ai.json` and `src/data/data.ai.history.json`
@@ -149,14 +154,22 @@ Enable/disable data sources in `scripts/config.yaml`:
 ```yaml
 sources:
   github_trending:
-    enabled: true   # Set to false to skip
+    enabled: true
   hackernews:
-    enabled: true   # Set to false to skip
+    enabled: true
+  deps_dev:
+    enabled: true
+  stackexchange:
+    enabled: true
+  pypistats:
+    enabled: true
+  osv:
+    enabled: true
 ```
 
 Or via CLI:
 ```bash
-python scripts/main.py --sources github_trending,hackernews
+python scripts/main.py --sources github_trending,hackernews,deps_dev,stackexchange,pypistats,osv
 ```
 
 ### Pipeline Options
@@ -187,6 +200,7 @@ The pipeline includes:
 - **Circuit breaker**: Automatically skips failing sources
 - **Retry logic**: 3 retries with exponential backoff
 - **Ring guardrails**: Hysteresis and max-ring-ratio fallback rebalance to avoid all-`adopt`
+- **Publishability checks**: Review summary fails when `adopt` is GitHub-only or `trial` exceeds the GitHub-only ceiling
 - **Leader explainability**: Leader transition visibility with `consecutiveCount` tracking (3-run stability confirmation required for leader-set changes)
 - **Shadow evaluation gate**: `meta.shadowGate` contract provides operational visibility into quality metrics and "what changed" insights
 - **Decoupled deploy behavior**: frontend deploy can continue with last validated `src/data/data.ai.json` when ETL gate is warn/fail
@@ -211,6 +225,19 @@ The pipeline outputs a `meta.shadowGate` object in `data.ai.json` for operationa
 | `leaderTransitionSummary` | Pending/promoted leader transition counts for quick ops review |
 
 This provides "what changed" visibility for operations teams monitoring pipeline health.
+
+### Explainable Blip Fields
+
+Each technology in `data.ai.json` may now include:
+
+| Field | Description |
+|-------|-------------|
+| `sourceCoverage` | Number of corroborating source families seen for the blip |
+| `sourceFreshness` | Freshest/stalest observed evidence age in days |
+| `evidenceSummary` | Compact summary of evidence sources and metrics |
+| `whyThisRing` | One-line human explanation for the assigned ring |
+
+Pipeline metadata also includes `meta.pipeline.runMetrics`, `ringQuality`, `quadrantQuality`, and `quadrantRingQuality`.
 
 ### Editorial Filtering
 

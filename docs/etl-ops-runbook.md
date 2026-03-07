@@ -8,7 +8,7 @@
 
 ## Manual Execution
 
-The production ETL run is driven entirely by GitHub and Hacker News signals. There is no separate repository deep-scan step to configure or troubleshoot.
+The production ETL run is driven by GitHub, Hacker News, Stack Exchange, deps.dev, PyPI Stats, and OSV. There is no separate repository deep-scan step to configure or troubleshoot.
 
 ### Trigger Pipeline
 
@@ -185,6 +185,24 @@ Metrics compared against baseline:
 - `leader_coverage`: % of leaders included (>95% threshold)
 - `watchlist_recall`: % of watchlist tracked (>80% threshold)
 
+## V2 Source Controls
+
+The ETL now supports public evidence sources directly from `scripts/config.yaml` or `--sources`:
+
+```bash
+python scripts/main.py --sources github_trending,hackernews,deps_dev,stackexchange,pypistats,osv
+```
+
+Default production config keeps all six enabled.
+
+Operational notes:
+- `deps.dev`: best effort package dependents
+- `stackexchange`: mindshare corroboration
+- `pypistats`: Python-only adoption evidence
+- `osv`: vulnerability pressure
+
+If one of these degrades, the run should still complete and the failure is visible under `meta.pipeline.runMetrics.sources`.
+
 ### Cache Configuration
 
 Control caching behavior via `cache_enabled` and `cache_drift_threshold`:
@@ -205,6 +223,27 @@ Control caching behavior via `cache_enabled` and `cache_drift_threshold`:
   - threshold breach or regression
   - ETL candidate data is not promoted
   - frontend can still build/deploy using last validated `data.ai.json`
+
+The review summary is also an operational gate now:
+- it fails when `adopt` contains GitHub-only items
+- it fails when `trial` exceeds the GitHub-only ceiling
+- it warns when quadrants still lack enough source coverage
+
+## Explainability and Run Metrics
+
+`meta.pipeline` now includes:
+- `runMetrics.sources.<source>` with `records`, `durationSeconds`, and `failures`
+- `ringQuality`
+- `quadrantQuality`
+- `quadrantRingQuality`
+
+Each blip may expose:
+- `sourceCoverage`
+- `sourceFreshness`
+- `evidenceSummary`
+- `whyThisRing`
+
+Use these before trusting a run. If `trial` or a full quadrant is still GitHub-heavy, do not treat the artifact as publishable just because the ETL succeeded.
 
 ## Leader Explainability Fields
 

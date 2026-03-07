@@ -90,4 +90,32 @@ describe('WatchlistPanel', () => {
 
     expect(html).toContain('No review date');
   });
+
+  it('renders quality overview when ring and quadrant quality metadata are present', () => {
+    const html = renderToStaticMarkup(
+      <WatchlistPanel
+        watchlist={[watchlistItem]}
+        meta={{
+          pipeline: {
+            ringQuality: {
+              adopt: { count: 4, avgMarketScore: 91, githubOnlyRatio: 0, resourceLikeCount: 0, editoriallyWeakCount: 0, topSuspicious: [], status: 'good' },
+              trial: { count: 6, avgMarketScore: 68, githubOnlyRatio: 0.66, resourceLikeCount: 0, editoriallyWeakCount: 1, topSuspicious: [], status: 'bad' },
+            },
+            quadrantQuality: {
+              tools: { count: 5, avgMarketScore: 74, githubOnlyRatio: 0.4, resourceLikeCount: 0, editoriallyWeakCount: 1, topSuspicious: [], status: 'warn' },
+            },
+          },
+        }}
+        onSelectTechnology={() => {}}
+      />,
+    );
+
+    expect(html).toContain('Quality overview');
+    expect(html).toContain('Adopt');
+    expect(html).toContain('good');
+    expect(html).toContain('Trial');
+    expect(html).toContain('bad');
+    expect(html).toContain('Tools');
+    expect(html).toContain('warn');
+  });
 });

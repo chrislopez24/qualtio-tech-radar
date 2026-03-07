@@ -21,7 +21,10 @@ REQUIRED_SUMMARY_KEYS = [
     "newlyAdded",
     "dropped",
     "suspiciousItems",
+    "publishReadiness",
 ]
+
+MAX_TRIAL_GITHUB_ONLY_RATIO = 0.5
 
 
 def _safe_float(value: Any) -> float:
@@ -79,6 +82,42 @@ def _summarize_item(item: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def _extract_signal_values(item: Dict[str, Any]) -> Dict[str, float]:
+    signals = item.get("signals", {})
+    if not isinstance(signals, dict):
+        signals = {}
+    return {
+        "ghMomentum": _safe_float(signals.get("ghMomentum", signals.get("gh_momentum", 0))),
+        "ghPopularity": _safe_float(signals.get("ghPopularity", signals.get("gh_popularity", 0))),
+        "hnHeat": _safe_float(signals.get("hnHeat", signals.get("hn_heat", 0))),
+    }
+
+
+def _is_github_only_signal(item: Dict[str, Any]) -> bool:
+    signal_values = _extract_signal_values(item)
+    has_github_signal = signal_values["ghMomentum"] > 0 or signal_values["ghPopularity"] > 0
+    has_hn_signal = signal_values["hnHeat"] > 0
+    return has_github_signal and not has_hn_signal
+
+
+def _extract_source_coverage(item: Dict[str, Any]) -> int:
+    value = item.get("sourceCoverage")
+    if value is not None:
+        try:
+            return max(0, int(value))
+        except (TypeError, ValueError):
+            return 0
+    if _is_github_only_signal(item):
+        return 1
+    signal_values = _extract_signal_values(item)
+    coverage = 0
+    if signal_values["ghMomentum"] > 0 or signal_values["ghPopularity"] > 0:
+        coverage += 1
+    if signal_values["hnHeat"] > 0:
+        coverage += 1
+    return coverage
+
+
 def build_review_summary(payload: Dict[str, Any], input_name: str) -> Dict[str, Any]:
     technologies = payload.get("technologies", [])
     watchlist = payload.get("watchlist", [])
@@ -93,10 +132,15 @@ def build_review_summary(payload: Dict[str, Any], input_name: str) -> Dict[str, 
     low_signal_strong_rings = []
     single_weak_signal = []
     resource_like_strong_rings = []
+    github_only_signals = []
+    github_only_strong_rings = []
+    trial_items = []
+    trial_github_only = []
     for item in technologies:
         ring = str(item.get("ring", ""))
         score = _safe_float(item.get("marketScore"))
         signal_names = _non_zero_signal_names(item)
+        github_only = _is_github_only_signal(item)
 
         if (ring == "adopt" and score < 80.0) or (ring == "trial" and score < 60.0):
             low_signal_strong_rings.append(_summarize_item(item))
@@ -111,6 +155,61 @@ def build_review_summary(payload: Dict[str, Any], input_name: str) -> Dict[str, 
             str(item.get("description", "")),
         ):
             resource_like_strong_rings.append(_summarize_item(item))
+
+        if github_only:
+            github_only_signals.append(_summarize_item(item))
+            if ring in {"adopt", "trial"}:
+                github_only_strong_rings.append(_summarize_item(item))
+            if ring == "trial":
+                trial_github_only.append(_summarize_item(item))
+
+        if ring == "trial":
+            trial_items.append(item)
+
+    total_technologies = len(technologies)
+    github_only_ratio = (len(github_only_signals) / total_technologies) if total_technologies else 0.0
+    trial_github_only_ratio = (len(trial_github_only) / len(trial_items)) if trial_items else 0.0
+    missing_source_coverage_by_quadrant = sorted(
+        {
+            str(item.get("quadrant", ""))
+            for item in technologies
+            if str(item.get("quadrant", "")) and _extract_source_coverage(item) < 2
+        }
+    )
+
+    editorial_recommendations: List[str] = []
+    if github_only_ratio >= 0.5:
+        editorial_recommendations.append(
+            "High GitHub-only signal ratio detected; review scoring weights and add non-GitHub validation before publication."
+        )
+    if github_only_strong_rings:
+        editorial_recommendations.append(
+            "Adopt/trial contains GitHub-only items; tighten strong-ring admission criteria for mono-source technologies."
+        )
+    if resource_like_strong_rings:
+        editorial_recommendations.append(
+            "Resource-like repositories still appear in strong rings; strengthen editorial filters for books/awesome/tutorial/reference repositories."
+        )
+    if low_signal_strong_rings:
+        editorial_recommendations.append(
+            "Strong rings include low-score entries; revisit ring thresholds and promotion logic."
+        )
+    if missing_source_coverage_by_quadrant:
+        editorial_recommendations.append(
+            "Some quadrants still lack multi-source corroboration; review source coverage before publication."
+        )
+
+    publish_status = "pass"
+    publish_reasons: List[str] = []
+    if any(item.get("ring") == "adopt" for item in github_only_strong_rings):
+        publish_status = "fail"
+        publish_reasons.append("Adopt contains GitHub-only items.")
+    if trial_github_only_ratio > MAX_TRIAL_GITHUB_ONLY_RATIO:
+        publish_status = "fail"
+        publish_reasons.append("Trial exceeds acceptable GitHub-only ratio.")
+    elif publish_status == "pass" and missing_source_coverage_by_quadrant:
+        publish_status = "warn"
+        publish_reasons.append("Some quadrants still lack adequate source coverage.")
 
     return {
         "inputFile": input_name,
@@ -138,6 +237,16 @@ def build_review_summary(payload: Dict[str, Any], input_name: str) -> Dict[str, 
             "lowSignalStrongRings": low_signal_strong_rings[:10],
             "singleWeakSignal": single_weak_signal[:10],
             "resourceLikeStrongRings": resource_like_strong_rings[:10],
+            "githubOnlySignals": github_only_signals[:10],
+            "githubOnlyStrongRings": github_only_strong_rings[:10],
+            "githubOnlyRatio": round(github_only_ratio, 4),
+            "trialGithubOnlyRatio": round(trial_github_only_ratio, 4),
+            "missingSourceCoverageByQuadrant": missing_source_coverage_by_quadrant,
+            "editorialRecommendations": editorial_recommendations,
+        },
+        "publishReadiness": {
+            "status": publish_status,
+            "reasons": publish_reasons,
         },
     }
 
@@ -181,7 +290,34 @@ def render_markdown(summary: Dict[str, Any]) -> str:
         f"- Resource-like strong ring: `{item['name']}` `{item['ring']}` `{item['marketScore']}`"
         for item in suspicious.get("resourceLikeStrongRings", [])
     )
-    if len(suspicious_lines) == 1:
+    suspicious_lines.extend(
+        f"- GitHub-only signal: `{item['name']}` `{item['ring']}` `{item['marketScore']}`"
+        for item in suspicious.get("githubOnlySignals", [])
+    )
+    suspicious_lines.extend(
+        f"- GitHub-only strong ring: `{item['name']}` `{item['ring']}` `{item['marketScore']}`"
+        for item in suspicious.get("githubOnlyStrongRings", [])
+    )
+    suspicious_lines.append(f"- GitHub-only ratio: {suspicious.get('githubOnlyRatio', 0.0)}")
+    suspicious_lines.append(f"- Trial GitHub-only ratio: {suspicious.get('trialGithubOnlyRatio', 0.0)}")
+    suspicious_lines.extend(
+        f"- Missing source coverage quadrant: `{quadrant}`"
+        for quadrant in suspicious.get("missingSourceCoverageByQuadrant", [])
+    )
+    suspicious_lines.extend(
+        f"- Recommendation: {message}"
+        for message in suspicious.get("editorialRecommendations", [])
+    )
+    if (
+        suspicious["repairedDescriptions"] == 0
+        and not suspicious["lowSignalStrongRings"]
+        and not suspicious["singleWeakSignal"]
+        and not suspicious.get("resourceLikeStrongRings", [])
+        and not suspicious.get("githubOnlySignals", [])
+        and not suspicious.get("githubOnlyStrongRings", [])
+        and not suspicious.get("missingSourceCoverageByQuadrant", [])
+        and not suspicious.get("editorialRecommendations", [])
+    ):
         suspicious_lines.append("- No suspicious items detected by current heuristics")
 
     quadrant_distribution = " / ".join(
@@ -197,6 +333,7 @@ def render_markdown(summary: Dict[str, Any]) -> str:
         f"- Input: `{summary['inputFile']}`",
         f"- Updated: `{summary['updatedAt']}`",
         f"- Shadow gate: `{summary['shadowStatus']}`",
+        f"- Publish readiness: `{summary['publishReadiness']['status']}`",
         f"- Counts: technologies `{summary['counts']['technologies']}`, watchlist `{summary['counts']['watchlist']}`",
         f"- Quadrants: {quadrant_distribution}",
         f"- Rings: {ring_distribution}",
@@ -241,7 +378,7 @@ def main() -> int:
     output_json.write_text(json.dumps(summary, indent=2))
     output_md.write_text(render_markdown(summary))
     print(render_markdown(summary))
-    return 0
+    return 1 if summary["publishReadiness"]["status"] == "fail" else 0
 
 
 if __name__ == "__main__":

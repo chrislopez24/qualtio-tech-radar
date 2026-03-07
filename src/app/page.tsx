@@ -167,6 +167,7 @@ export default function Home() {
                 visibleTechnologies={visibleTechnologies}
                 totalTechnologies={technologies.length}
                 selectedTechnologyId={selectedTech?.id ?? null}
+                meta={aiData?.meta}
                 filters={filters}
                 onToggleRing={toggleRing}
                 onToggleQuadrant={toggleQuadrant}

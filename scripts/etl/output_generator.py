@@ -12,7 +12,18 @@ FIELDS_TO_REMOVE_FOR_PUBLIC = [
     "rawData",
     "source_summary",
     "signal_freshness",
+    "source_coverage",
+    "source_freshness",
+    "evidence_summary",
+    "why_this_ring",
 ]
+
+OPTIONAL_PUBLIC_FIELD_ALIASES = {
+    "source_coverage": "sourceCoverage",
+    "source_freshness": "sourceFreshness",
+    "evidence_summary": "evidenceSummary",
+    "why_this_ring": "whyThisRing",
+}
 
 
 def sanitize_for_public(technology: Dict[str, Any]) -> Dict[str, Any]:
@@ -29,6 +40,13 @@ def sanitize_for_public(technology: Dict[str, Any]) -> Dict[str, Any]:
     signal_freshness = technology.get("signalFreshness") or technology.get("signal_freshness")
     if signal_freshness:
         sanitized["signalFreshness"] = signal_freshness
+
+    for source_key, target_key in OPTIONAL_PUBLIC_FIELD_ALIASES.items():
+        if target_key in sanitized:
+            continue
+        value = technology.get(target_key, technology.get(source_key))
+        if value is not None:
+            sanitized[target_key] = value
 
     return sanitized
 

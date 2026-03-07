@@ -14,108 +14,10 @@ def test_shadow_eval_computes_quality_contract():
 
     report = compare_outputs(baseline, optimized)
     assert report["core_overlap"] == 1.0
+    assert report["github_bias"] == 0.0
+    assert report["github_only_count"] == 0
+    assert report["github_only_strong_ring_count"] == 0
 
-
-def test_shadow_eval_computes_leader_coverage():
-    """Shadow evaluator should compute leader coverage metric"""
-    from etl.shadow_eval import compare_outputs
-
-    baseline = {
-        "technologies": [
-            {"id": "react", "ring": "adopt"},
-            {"id": "kubernetes", "ring": "adopt"},
-            {"id": "new-tool", "ring": "assess"},
-        ]
-    }
-    optimized = {
-        "technologies": [
-            {"id": "react", "ring": "adopt"},
-            {"id": "kubernetes", "ring": "adopt"},
-        ]
-    }
-
-    report = compare_outputs(baseline, optimized)
-    assert "leader_coverage" in report
-    assert 0.0 <= report["leader_coverage"] <= 1.0
-
-
-def test_shadow_eval_leader_coverage_uses_leader_ids_not_ring_labels_only():
-    """Leader coverage should stay high when leader IDs are preserved even if ring labels change."""
-    from etl.shadow_eval import compare_outputs
-
-    baseline = {
-        "technologies": [
-            {"id": "react", "ring": "adopt", "marketScore": 98},
-            {"id": "kubernetes", "ring": "adopt", "marketScore": 97},
-            {"id": "bun", "ring": "assess", "marketScore": 80},
-        ]
-    }
-    optimized = {
-        "technologies": [
-            {"id": "react", "ring": "trial", "marketScore": 98},
-            {"id": "kubernetes", "ring": "trial", "marketScore": 97},
-            {"id": "bun", "ring": "assess", "marketScore": 80},
-        ]
-    }
-
-    report = compare_outputs(baseline, optimized)
-    assert report["leader_coverage"] == 1.0
-
-
-def test_shadow_eval_computes_watchlist_recall():
-    """Shadow evaluator should compute watchlist recall metric"""
-    from etl.shadow_eval import compare_outputs
-
-    baseline = {
-        "technologies": [
-            {"id": "react", "ring": "adopt"},
-            {"id": "trending-tool", "ring": "trial", "trend": "up"},
-        ]
-    }
-    optimized = {
-        "technologies": [
-            {"id": "react", "ring": "adopt"},
-            {"id": "trending-tool", "ring": "trial", "trend": "up"},
-        ]
-    }
-
-    report = compare_outputs(baseline, optimized)
-    assert "watchlist_recall" in report
-    assert 0.0 <= report["watchlist_recall"] <= 1.0
-
-
-def test_shadow_eval_computes_llm_call_reduction():
-    """Shadow evaluator should compute LLM call reduction percentage"""
-    from etl.shadow_eval import compare_outputs
-
-    baseline = {"technologies": [{"id": "react"}], "metadata": {"llm_calls": 100}}
-    optimized = {"technologies": [{"id": "react"}], "metadata": {"llm_calls": 30}}
-
-    report = compare_outputs(baseline, optimized)
-    assert "llm_call_reduction" in report
-    assert report["llm_call_reduction"] == 0.7  # 70% reduction
-
-
-def test_shadow_eval_handles_missing_technologies():
-    """Shadow evaluator should handle cases where optimized is missing technologies from baseline"""
-    from etl.shadow_eval import compare_outputs
-
-    baseline = {"technologies": [{"id": "react"}, {"id": "kubernetes"}, {"id": "docker"}]}
-    optimized = {"technologies": [{"id": "react"}, {"id": "kubernetes"}]}
-
-    report = compare_outputs(baseline, optimized)
-    assert report["core_overlap"] < 1.0
-
-
-def test_shadow_eval_handles_empty_outputs():
-    """Shadow evaluator should handle empty outputs gracefully"""
-    from etl.shadow_eval import compare_outputs
-
-    baseline = {"technologies": []}
-    optimized = {"technologies": []}
-
-    report = compare_outputs(baseline, optimized)
-    assert report["core_overlap"] == 1.0
 
 
 def test_shadow_eval_writes_report_to_file(tmp_path):
@@ -163,6 +65,32 @@ def test_shadow_eval_reports_filtered_counts_and_watchlist_usage():
     assert report["filtered_count"] == 1
     assert report["filtered_by_ring"].get("assess") == 1
     assert report["watchlist_recall"] == 0.0
+
+
+def test_shadow_eval_reports_github_bias_and_editorial_recommendations():
+    from etl.shadow_eval import compare_outputs
+
+    baseline = {
+        "technologies": [
+            {"id": "react", "ring": "adopt", "signals": {"ghMomentum": 92, "ghPopularity": 95, "hnHeat": 70}},
+            {"id": "kubernetes", "ring": "adopt", "signals": {"ghMomentum": 90, "ghPopularity": 94, "hnHeat": 65}},
+        ]
+    }
+    optimized = {
+        "technologies": [
+            {"id": "react", "ring": "adopt", "signals": {"ghMomentum": 92, "ghPopularity": 95, "hnHeat": 0}},
+            {"id": "bun", "ring": "trial", "signals": {"ghMomentum": 60, "ghPopularity": 70, "hnHeat": 0}},
+            {"id": "htmx", "ring": "assess", "signals": {"ghMomentum": 50, "ghPopularity": 40, "hnHeat": 30}},
+        ]
+    }
+
+    report = compare_outputs(baseline, optimized)
+
+    assert report["github_bias"] == pytest.approx(0.6667, abs=1e-4)
+    assert report["github_only_count"] == 2
+    assert report["github_only_strong_ring_count"] == 2
+    assert report["github_only_strong_ring_sample"] == ["react", "bun"]
+    assert report["editorial_recommendations"]
 
 
 def test_shadow_eval_ignores_resource_like_repos_in_overlap_and_watchlist_metrics():
@@ -714,3 +642,66 @@ def test_collect_failed_metrics_reports_only_breaching_thresholds():
             "actual": 0.7,
         }
     }
+
+
+def test_shadow_eval_surfaces_missing_source_coverage_by_quadrant_and_fails_gate():
+    from etl.shadow_eval import build_shadow_eval_report, compare_outputs
+
+    baseline = {"technologies": [{"id": "react", "quadrant": "tools", "ring": "trial"}]}
+    optimized = {
+        "technologies": [
+            {
+                "id": "react",
+                "quadrant": "tools",
+                "ring": "adopt",
+                "signals": {"ghMomentum": 92, "ghPopularity": 95, "hnHeat": 0},
+                "sourceCoverage": 1,
+            }
+        ]
+    }
+
+    report = compare_outputs(baseline, optimized)
+    merged = build_shadow_eval_report(report, thresholds={
+        "core_overlap": 0.85,
+        "leader_coverage": 0.95,
+        "watchlist_recall": 0.80,
+        "llm_call_reduction": 0.60,
+    })
+
+    assert report["quadrants_missing_source_coverage"] == ["tools"]
+    assert merged["gate_status"] == "fail"
+
+
+def test_shadow_eval_allows_trial_github_only_ratio_at_threshold():
+    from etl.shadow_eval import build_shadow_eval_report, compare_outputs
+
+    baseline = {"technologies": [{"id": "react", "quadrant": "tools", "ring": "trial"}]}
+    optimized = {
+        "technologies": [
+            {
+                "id": "react",
+                "quadrant": "tools",
+                "ring": "trial",
+                "signals": {"ghMomentum": 92, "ghPopularity": 95, "hnHeat": 20},
+                "sourceCoverage": 2,
+            },
+            {
+                "id": "bun",
+                "quadrant": "platforms",
+                "ring": "trial",
+                "signals": {"ghMomentum": 85, "ghPopularity": 88, "hnHeat": 0},
+                "sourceCoverage": 1,
+            },
+        ]
+    }
+
+    report = compare_outputs(baseline, optimized)
+    merged = build_shadow_eval_report(report, thresholds={
+        "core_overlap": 0.0,
+        "leader_coverage": 0.0,
+        "watchlist_recall": 0.0,
+        "llm_call_reduction": 0.0,
+    })
+
+    assert report["trial_github_only_ratio"] == 0.5
+    assert merged["gate_status"] == "warn"

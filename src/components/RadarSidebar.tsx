@@ -3,9 +3,10 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, Funnel } from '@phosphor-icons/react';
-import type { AITechnology, Quadrant, Ring, Trend } from '@/lib/types';
+import type { AIRadarMeta, AITechnology, Quadrant, Ring, Trend } from '@/lib/types';
 import { QUADRANTS, RINGS } from '@/lib/radar-config';
 import type { RadarFilterState } from '@/lib/radar-filters';
+import { QualityOverview } from './QualityOverview';
 
 type RingId = 'adopt' | 'trial' | 'assess' | 'hold';
 
@@ -15,6 +16,7 @@ interface RadarSidebarProps {
   visibleTechnologies: AITechnology[];
   totalTechnologies: number;
   selectedTechnologyId: string | null;
+  meta?: AIRadarMeta;
   filters: RadarFilterState;
   onToggleRing: (ring: Ring) => void;
   onToggleQuadrant: (quadrant: Quadrant) => void;
@@ -28,6 +30,7 @@ export function RadarSidebar({
   visibleTechnologies,
   totalTechnologies,
   selectedTechnologyId,
+  meta,
   filters,
   onToggleRing,
   onToggleQuadrant,
@@ -252,6 +255,10 @@ export function RadarSidebar({
             />
           </div>
         </div>
+      </div>
+
+      <div className="mt-2">
+        <QualityOverview pipeline={meta?.pipeline} />
       </div>
 
       <div className="mt-2 min-h-0 flex-1 overflow-hidden rounded-xl border border-border/60 bg-background/90 p-3">

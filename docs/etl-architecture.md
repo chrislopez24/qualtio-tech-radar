@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Qualtio Tech Radar ETL pipeline automatically identifies, classifies, and tracks technology trends from external signals (GitHub, Hacker News) using AI-powered classification. There is no secondary repository deep-scan phase.
+The Qualtio Tech Radar ETL pipeline automatically identifies, classifies, and tracks technology trends from external signals and evidence sources (GitHub, Hacker News, Stack Exchange, deps.dev, PyPI Stats, OSV) using AI-powered classification. There is no secondary repository deep-scan phase.
 
 ## System Architecture
 
@@ -10,15 +10,16 @@ The Qualtio Tech Radar ETL pipeline automatically identifies, classifies, and tr
 ┌─────────────────────────────────────────────────────────────┐
 │                      DATA SOURCES                           │
 ├──────────────┬──────────────┤
-│ GitHub API   │ Hacker News  │
-└──────┬───────┴──────┬───────┘
-       │              │
-       ▼              ▼
+│ GitHub API   │ Hacker News  │ Stack Exchange │ deps.dev │
+│ PyPI Stats   │ OSV          │                │          │
+└──────┬───────┴──────┬────────┴───────┬────────┴──────────┘
+       │              │                │
+       ▼              ▼                ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                    RAW COLLECTION                           │
-│  • Leader repositories (>1000 stars)                        │
-│  • Trending topics                                        │
-│  • HN discussions (>10 points)                            │
+│  • Leader repositories and GitHub momentum                  │
+│  • HN discussions and Stack Exchange tag activity           │
+│  • Package adoption, dependents, and vulnerability pressure │
 └──────────────────┬──────────────────────────────────────────┘
                    │
                    ▼
@@ -26,20 +27,22 @@ The Qualtio Tech Radar ETL pipeline automatically identifies, classifies, and tr
 │                    ETL PIPELINE                             │
 ├─────────────────────────────────────────────────────────────┤
 │ 1. EXTRACT                                                │
-│    ├─ GitHub API pagination                               │
-│    ├─ HN API scraping                                     │
+│    ├─ Source registry bootstraps enabled providers        │
+│    ├─ Evidence adapters normalize external records        │
 │    └─ Deduplication & normalization                       │
 │                                                           │
 │ 2. TRANSFORM                                              │
 │    ├─ AI Classification (MiniMax-M2.5)                  │
-│    ├─ Quadrant assignment                               │
-│    ├─ Ring calculation (momentum scores)                │
-│    └─ Metadata enrichment                                 │
+│    ├─ Canonical entity + evidence enrichment            │
+│    ├─ Evidence scoring (`adoption`, `mindshare`,        │
+│    │  `health`, `risk`)                                 │
+│    ├─ Ring policy gates + editorial ceilings            │
+│    └─ Explainability + quality metadata                  │
 │                                                           │
 │ 3. LOAD                                                   │
-│    ├─ Data validation                                     │
+│    ├─ Artifact quality summaries                          │
 │    ├─ Shadow evaluation (quality gate)                    │
-│    └─ JSON output (data.ai.json)                        │
+│    └─ JSON output (data.ai.json)                          │
 └──────────────────┬──────────────────────────────────────────┘
                    │
                    ▼
@@ -56,15 +59,17 @@ The Qualtio Tech Radar ETL pipeline automatically identifies, classifies, and tr
 
 ### Stage 1: Data Collection (Extract)
 
-**GitHub Collection**
-- Queries repositories with >1000 stars
-- Collects: name, description, stars, topics, language
-- Pagination handling for rate limits
+**Source Registry**
+- The pipeline builds all enabled providers through `etl/source_registry.py`
+- Runtime metrics for each provider are captured in `etl/run_metrics.py`
 
-**Hacker News Collection**
-- Scans stories with >10 points
-- Extracts mentions of technologies
-- Correlates with GitHub data
+**Evidence Adapters**
+- `github_trending`: repo momentum and popularity
+- `hackernews`: discussion heat
+- `stackexchange`: tag activity / mindshare
+- `deps.dev`: reverse dependents and package linkage
+- `pypistats`: monthly download pressure for Python packages
+- `osv`: known vulnerability pressure
 
 ### Stage 2: AI Classification (Transform)
 
@@ -77,9 +82,25 @@ Fallback: Rule-based heuristics
 ```
 
 **Classification Logic**
-- Input: Technology name + description + GitHub metadata
+- Input: Technology name + description + source signals + evidence context
 - Output: Quadrant (platforms|techniques|tools|languages)
 - Confidence score: 0.0 - 1.0
+
+### Evidence-Based Scoring
+
+The v2 scorer uses four sub-scores:
+
+| Score | Purpose |
+|------|---------|
+| `adoption` | Package downloads, reverse dependents, and GitHub adoption proxies |
+| `mindshare` | Hacker News heat plus Stack Exchange tag activity |
+| `health` | Maintenance strength and corroboration breadth |
+| `risk` | Vulnerability pressure from OSV |
+
+The ring policy then applies explicit gates:
+- `adopt` requires corroborated non-GitHub adoption
+- `trial` requires corroboration or an editorial exception
+- `assess` and `hold` remain available for promising but weakly corroborated items
 
 ### Selective LLM Optimization
 
@@ -238,6 +259,19 @@ Technology objects may include optional provenance fields for data lineage:
 |-------|------|-------------|
 | `sourceSummary` | string | Summary of data origin (e.g., "GitHub API + HN mentions") |
 | `signalFreshness` | string (ISO8601) | Timestamp when signals were collected |
+| `sourceCoverage` | number | Number of corroborating source families |
+| `sourceFreshness` | object | Freshest/stalest evidence age in days |
+| `evidenceSummary` | object | Compact evidence sources and metric families |
+| `whyThisRing` | string | Human-readable ring explanation |
+
+## Internal Refactor Boundaries
+
+The ETL coordinator now keeps source semantics and quality summaries out of the orchestration body:
+
+- `etl/source_registry.py`: source construction
+- `etl/run_metrics.py`: per-source records, timings, failures
+- `etl/artifact_quality.py`: ring/quadrant/quadrant×ring quality summaries
+- `etl/pipeline.py`: orchestration only
 
 Both fields are **optional** to maintain backward compatibility with existing data.
 

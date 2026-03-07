@@ -3,6 +3,8 @@
 import { CheckCircle, WarningCircle } from '@phosphor-icons/react';
 import type { AITechnology, AIRadarMeta } from '@/lib/types';
 import { getQuadrantById, getRingById } from '@/lib/radar-config';
+import { QualityOverview } from './QualityOverview';
+import { SourceCoverageBadge } from './SourceCoverageBadge';
 
 interface WatchlistPanelProps {
   watchlist: AITechnology[];
@@ -108,10 +110,19 @@ export function WatchlistPanel({ watchlist, meta, onSelectTechnology }: Watchlis
               >
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-sm font-medium leading-tight">{technology.name}</p>
-                  <span className="text-xs text-muted-foreground">{getRingById(technology.ring).name}</span>
+                  <div className="flex items-center gap-1.5">
+                    <SourceCoverageBadge
+                      coverage={technology.sourceCoverage}
+                      githubOnly={technology.evidenceSummary?.githubOnly}
+                    />
+                    <span className="text-xs text-muted-foreground">{getRingById(technology.ring).name}</span>
+                  </div>
                 </div>
 
                 <p className="mt-1 text-xs text-muted-foreground">{getQuadrantById(technology.quadrant).name}</p>
+                {technology.whyThisRing ? (
+                  <p className="mt-1 text-xs text-muted-foreground">{technology.whyThisRing}</p>
+                ) : null}
 
                 {renderActionBadges(technology)}
               </button>
@@ -133,6 +144,10 @@ export function WatchlistPanel({ watchlist, meta, onSelectTechnology }: Watchlis
           <span className="font-mono">{pipeline?.watchlist ?? watchlist.length}</span>
           <span className="text-muted-foreground">Dropped desc.</span>
           <span className="font-mono">{pipeline?.droppedInvalidDescriptions ?? 0}</span>
+        </div>
+
+        <div className="mt-3">
+          <QualityOverview pipeline={pipeline} />
         </div>
 
         {shadow && (

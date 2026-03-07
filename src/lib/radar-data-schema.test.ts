@@ -3,6 +3,38 @@ import aiData from '../data/data.ai.json';
 import type { AITechnology, ShadowGateSummary } from './types';
 
 function validateDecisionMetadataShape(technology: AITechnology): void {
+  if (technology.sourceCoverage !== undefined) {
+    expect(typeof technology.sourceCoverage).toBe('number');
+  }
+
+  if (technology.whyThisRing !== undefined) {
+    expect(typeof technology.whyThisRing).toBe('string');
+  }
+
+  if (technology.sourceFreshness !== undefined) {
+    expect(typeof technology.sourceFreshness).toBe('object');
+    expect(technology.sourceFreshness).not.toBeNull();
+    if (technology.sourceFreshness?.freshestDays !== undefined && technology.sourceFreshness?.freshestDays !== null) {
+      expect(typeof technology.sourceFreshness.freshestDays).toBe('number');
+    }
+    if (technology.sourceFreshness?.stalestDays !== undefined && technology.sourceFreshness?.stalestDays !== null) {
+      expect(typeof technology.sourceFreshness.stalestDays).toBe('number');
+    }
+  }
+
+  if (technology.evidenceSummary !== undefined) {
+    expect(typeof technology.evidenceSummary).toBe('object');
+    expect(technology.evidenceSummary).not.toBeNull();
+    expect(Array.isArray(technology.evidenceSummary?.sources)).toBe(true);
+    expect(Array.isArray(technology.evidenceSummary?.metrics)).toBe(true);
+    if (technology.evidenceSummary?.hasExternalAdoption !== undefined) {
+      expect(typeof technology.evidenceSummary.hasExternalAdoption).toBe('boolean');
+    }
+    if (technology.evidenceSummary?.githubOnly !== undefined) {
+      expect(typeof technology.evidenceSummary.githubOnly).toBe('boolean');
+    }
+  }
+
   if (technology.whyNow !== undefined) {
     expect(typeof technology.whyNow).toBe('string');
   }
@@ -211,6 +243,18 @@ describe('radar data decision metadata schema', () => {
       nextReviewAt: '2026-06-01',
       evidence: ['https://example.com/benchmark'],
       alternatives: ['Existing internal stack'],
+      sourceCoverage: 4,
+      whyThisRing: 'Adopt because evidence is corroborated across multiple sources.',
+      sourceFreshness: {
+        freshestDays: 1,
+        stalestDays: 7,
+      },
+      evidenceSummary: {
+        sources: ['github', 'hackernews', 'deps_dev'],
+        metrics: ['reverse_dependents', 'tag_activity'],
+        hasExternalAdoption: true,
+        githubOnly: false,
+      },
     };
 
     expect(() => validateDecisionMetadataShape(sample)).not.toThrow();
@@ -287,4 +331,15 @@ describe('radar data shadow gate schema', () => {
     }
   });
 
+});
+
+describe('radar data evidence schema', () => {
+  it('validates evidence summary and source coverage from data.ai.json when present', () => {
+    for (const technology of aiData.technologies) {
+      const typedTechnology = technology as AITechnology;
+      if (typedTechnology.evidenceSummary !== undefined || typedTechnology.sourceCoverage !== undefined) {
+        expect(() => validateDecisionMetadataShape(typedTechnology)).not.toThrow();
+      }
+    }
+  });
 });

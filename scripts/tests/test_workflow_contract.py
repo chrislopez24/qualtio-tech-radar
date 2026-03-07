@@ -167,3 +167,22 @@ def test_quarterly_workflow_generates_radar_review_summary_artifacts():
     assert "review-summary.json" in yml
     assert "review-summary.md" in yml
     assert "radar-review-summary" in yml
+
+
+def test_pipeline_uses_source_registry_instead_of_inline_source_bootstrap():
+    from etl.pipeline import RadarPipeline
+
+    pipeline = RadarPipeline()
+
+    assert hasattr(pipeline, "source_registry")
+    assert pipeline.source_registry is not None
+
+
+def test_run_metrics_collect_source_coverage_and_timings():
+    from etl.run_metrics import RunMetrics
+
+    metrics = RunMetrics()
+    metrics.record_source("deps_dev", 12, 0.4)
+
+    assert metrics.sources["deps_dev"]["records"] == 12
+    assert metrics.sources["deps_dev"]["durationSeconds"] == 0.4
