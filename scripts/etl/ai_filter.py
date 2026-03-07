@@ -123,6 +123,43 @@ RESOURCE_LIKE_PHRASES = (
     "prompt library",
 )
 
+EDITORIALLY_WEAK_STRONG_RING_EXACT_NAMES = {
+    "java-design-patterns",
+    "nvm",
+    "ohmyzsh",
+    "oh-my-zsh",
+}
+
+EDITORIALLY_WEAK_STRONG_RING_PHRASES = (
+    "design pattern examples",
+    "design patterns in",
+    "zsh configuration",
+    "framework for managing your zsh configuration",
+)
+
+EDITORIALLY_WEAK_TRIAL_RING_EXACT_NAMES = {
+    "computer-science",
+    "generative-ai-for-beginners",
+    "hellogithub",
+    "javascript-algorithms",
+    "javaguide",
+    "prompts.chat",
+    "python-100-days",
+    "you-dont-know-js",
+}
+
+EDITORIALLY_WEAK_TRIAL_RING_PHRASES = (
+    "algorithms and data structures implemented",
+    "references to further readings",
+    "book series",
+    "study guide",
+    "interview guide",
+    "interview preparation",
+    "self-taught education",
+    "100 days",
+    "prompt engineering guide",
+)
+
 
 def is_resource_like_repository(name: str, description: str = "") -> bool:
     """Detect repositories that are primarily educational/resource collections."""
@@ -147,6 +184,61 @@ def is_resource_like_repository(name: str, description: str = "") -> bool:
         return True
 
     return False
+
+
+def is_strong_ring_editorially_eligible(
+    name: str,
+    description: str = "",
+    topics: Optional[List[str]] = None,
+) -> bool:
+    """Block strong rings for repositories that are popular but editorially weak radar leaders."""
+    name_lower = str(name or "").strip().lower()
+    description_lower = str(description or "").strip().lower()
+    topic_text = " ".join(str(topic).strip().lower() for topic in (topics or []))
+    combined_text = " ".join(part for part in (name_lower, description_lower, topic_text) if part).strip()
+
+    if not combined_text:
+        return True
+
+    if name_lower in EDITORIALLY_WEAK_STRONG_RING_EXACT_NAMES:
+        return False
+
+    if "design-patterns" in topic_text or re.search(r"\bdesign patterns?\b", combined_text):
+        return False
+
+    if any(phrase in combined_text for phrase in EDITORIALLY_WEAK_STRONG_RING_PHRASES):
+        return False
+
+    return True
+
+
+def is_trial_ring_editorially_eligible(
+    name: str,
+    description: str = "",
+    topics: Optional[List[str]] = None,
+) -> bool:
+    """Allow trial only for plausible technologies, not educational/reference repositories."""
+    name_lower = str(name or "").strip().lower()
+    description_lower = str(description or "").strip().lower()
+    topic_text = " ".join(str(topic).strip().lower() for topic in (topics or []))
+    combined_text = " ".join(part for part in (name_lower, description_lower, topic_text) if part).strip()
+
+    if not combined_text:
+        return True
+
+    if is_resource_like_repository(name, description):
+        return False
+
+    if not is_strong_ring_editorially_eligible(name, description, topics):
+        return False
+
+    if name_lower in EDITORIALLY_WEAK_TRIAL_RING_EXACT_NAMES:
+        return False
+
+    if any(phrase in combined_text for phrase in EDITORIALLY_WEAK_TRIAL_RING_PHRASES):
+        return False
+
+    return True
 
 
 class FilterConfig(Protocol):

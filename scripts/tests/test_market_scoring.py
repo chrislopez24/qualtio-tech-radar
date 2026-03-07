@@ -44,3 +44,31 @@ def test_market_score_keeps_hn_only_buzz_contained():
     )
 
     assert hn_only < 12.0
+
+
+def test_market_score_keeps_github_only_reference_repo_out_of_adopt_band():
+    from etl.market_scoring import score_technology
+
+    github_only_reference = score_technology(
+        {
+            "gh_momentum": 100,
+            "gh_popularity": 93.8,
+            "hn_heat": 0,
+        },
+        source_count=1,
+        github_stars=92000,
+        github_forks=28000,
+    )
+    multi_source_mainstream = score_technology(
+        {
+            "gh_momentum": 95,
+            "gh_popularity": 95,
+            "hn_heat": 70,
+        },
+        source_count=2,
+        github_stars=230000,
+        github_forks=47000,
+    )
+
+    assert github_only_reference < 75.0
+    assert multi_source_mainstream > github_only_reference

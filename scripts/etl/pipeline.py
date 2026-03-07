@@ -405,7 +405,7 @@ class RadarPipeline:
                 key = name.lower().strip()
 
                 existing = technologies.get(key)
-                gh_popularity = min(100.0, float(raw.get("stars", 0)) / 1000.0)
+                gh_popularity = scale_signal_logarithmically(float(raw.get("stars", 0)), 250000.0, 100.0)
                 gh_momentum = float(raw.get("gh_momentum", 0.0))
 
                 if existing is None:
@@ -630,10 +630,7 @@ class RadarPipeline:
                 previous_scores[tech_id] = float(entry.get("marketScore", 0.0))
 
         for tech in technologies:
-            tech.signals.setdefault(
-                "gh_popularity",
-                scale_signal_logarithmically(float(tech.stars), 250000.0, 100.0),
-            )
+            tech.signals["gh_popularity"] = scale_signal_logarithmically(float(tech.stars), 250000.0, 100.0)
             tech.signals.setdefault("hn_heat", min(100.0, float(tech.hn_mentions) * 10.0))
             tech.signals.setdefault("gh_momentum", tech.signals.get("gh_momentum", 0.0))
 

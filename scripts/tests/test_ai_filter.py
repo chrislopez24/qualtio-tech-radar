@@ -265,3 +265,46 @@ class TestAITechnologyFilter:
             assert mock_openai.call_args.kwargs["timeout"] == 120
 
 
+def test_strong_ring_editorial_eligibility_blocks_reference_and_shell_config_repos():
+    from etl.ai_filter import is_strong_ring_editorially_eligible
+
+    assert not is_strong_ring_editorially_eligible(
+        "Java-Design-Patterns",
+        "Design pattern examples in Java for learning.",
+        ["java", "design-patterns", "patterns"],
+    )
+    assert not is_strong_ring_editorially_eligible(
+        "ohmyzsh",
+        "A delightful community-driven framework for managing your zsh configuration.",
+        ["zsh", "shell", "terminal"],
+    )
+    assert is_strong_ring_editorially_eligible(
+        "React",
+        "UI library for building interfaces for learning and production use.",
+        ["ui", "framework", "frontend"],
+    )
+
+
+def test_trial_ring_editorial_eligibility_blocks_educational_reference_repos():
+    from etl.ai_filter import is_trial_ring_editorially_eligible
+
+    assert not is_trial_ring_editorially_eligible(
+        "javascript-algorithms",
+        "Algorithms and data structures implemented in JavaScript with explanations and references to further readings.",
+        ["algorithms", "javascript", "education"],
+    )
+    assert not is_trial_ring_editorially_eligible(
+        "You-Dont-Know-JS",
+        "A book series exploring JavaScript fundamentals in depth.",
+        ["javascript", "books"],
+    )
+    assert not is_trial_ring_editorially_eligible(
+        "Javaguide",
+        "Comprehensive Java interview and backend development study guide.",
+        ["java", "interview", "guide"],
+    )
+    assert is_trial_ring_editorially_eligible(
+        "kubernetes",
+        "Production-grade container orchestration platform.",
+        ["containers", "cloud", "orchestration"],
+    )

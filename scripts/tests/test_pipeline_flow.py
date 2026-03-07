@@ -321,6 +321,68 @@ class TestPipelineFlow:
         assert scored[0].market_score > scored[1].market_score
         assert scored[1].market_score < 85.0
 
+    def test_collect_sources_uses_logarithmic_github_popularity(self):
+        from etl.pipeline import RadarPipeline
+        from etl.market_scoring import scale_signal_logarithmically
+
+        with patch('etl.pipeline.GitHubTrendingSource') as mock_github_source, \
+             patch('etl.pipeline.HackerNewsSource') as mock_hn_source, \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            mock_github_source.return_value.fetch.return_value = [
+                MockTechnologySignal(
+                    name="React",
+                    source="github_trending",
+                    signal_type="github_stars",
+                    score=10.0,
+                    raw_data={
+                        "name": "React",
+                        "full_name": "facebook/react",
+                        "description": "React UI library",
+                        "stars": 220000,
+                        "forks": 56000,
+                        "language": "JavaScript",
+                        "topics": ["ui", "framework"],
+                        "url": "https://github.com/facebook/react",
+                        "gh_momentum": 95.0,
+                    },
+                ),
+                MockTechnologySignal(
+                    name="Smaller Tool",
+                    source="github_trending",
+                    signal_type="github_stars",
+                    score=4.0,
+                    raw_data={
+                        "name": "Smaller Tool",
+                        "full_name": "example/smaller-tool",
+                        "description": "Useful tool",
+                        "stars": 12000,
+                        "forks": 1200,
+                        "language": "TypeScript",
+                        "topics": ["tool"],
+                        "url": "https://github.com/example/smaller-tool",
+                        "gh_momentum": 72.0,
+                    },
+                ),
+            ]
+            mock_hn_source.return_value.fetch.return_value = []
+
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        collected = pipeline._collect_sources()
+        collected_by_name = {tech.name: tech for tech in collected}
+
+        assert collected_by_name["React"].signals["gh_popularity"] == pytest.approx(
+            scale_signal_logarithmically(220000.0, 250000.0, 100.0)
+        )
+        assert collected_by_name["Smaller Tool"].signals["gh_popularity"] == pytest.approx(
+            scale_signal_logarithmically(12000.0, 250000.0, 100.0)
+        )
+        assert (
+            collected_by_name["React"].signals["gh_popularity"]
+            > collected_by_name["Smaller Tool"].signals["gh_popularity"]
+        )
+
     def test_apply_market_scoring_prefers_multi_source_mainstream_over_reference_repo(self):
         from etl.pipeline import RadarPipeline, NormalizedTech
 

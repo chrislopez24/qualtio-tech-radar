@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 from typing import List, Optional, Any
 
 from etl.config import GitHubTrendingSource as GitHubTrendingConfig
+from etl.market_scoring import scale_signal_logarithmically
 from etl.models import TechnologySignal
 from etl.rate_limiter import GitHubRateLimiter
 from etl.sources.github_scraper import GitHubScraper
@@ -142,7 +143,9 @@ class GitHubTrendingSource:
     def _calculate_momentum_proxy(self, repo: dict) -> float:
         stars = float(repo.get("stars", 0))
         forks = float(repo.get("forks", 0))
-        return min(100.0, stars / 100.0 + forks / 20.0)
+        star_component = scale_signal_logarithmically(stars, 250000.0, 70.0)
+        fork_component = scale_signal_logarithmically(forks, 50000.0, 30.0)
+        return min(100.0, star_component + fork_component)
 
     def _get_repo_attr(self, repo, attr: str, default: Any = None) -> Any:
         if isinstance(repo, dict):
