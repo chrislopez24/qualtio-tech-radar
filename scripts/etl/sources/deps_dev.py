@@ -1,12 +1,14 @@
 import logging
 from datetime import datetime, timezone
 from math import log10
+from pathlib import Path
 from urllib.parse import quote
 
 import requests
 
 from etl.config import DepsDevSource as DepsDevConfig
 from etl.evidence import EvidenceRecord
+from etl.source_cache import SourceCache
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +19,7 @@ class DepsDevSource:
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": "Qualtio-Tech-Radar/1.0"})
         self._cache: dict[str, list[EvidenceRecord]] = {}
+        self._persistent_cache = SourceCache(Path(config.cache_file))
 
     def fetch(self, subjects: list[str]) -> list[EvidenceRecord]:
         if not self.config.enabled:
@@ -28,6 +31,16 @@ class DepsDevSource:
                 evidence.extend(self._cache[subject])
                 continue
 
+            persistent_hit = self._persistent_cache.get(subject)
+            if persistent_hit is not None:
+                if persistent_hit.negative:
+                    self._cache[subject] = []
+                    continue
+                records = [self._record_from_cache(item) for item in persistent_hit.value or []]
+                self._cache[subject] = records
+                evidence.extend(records)
+                continue
+
             parsed = self._parse_subject(subject)
             if parsed is None:
                 continue
@@ -37,15 +50,28 @@ class DepsDevSource:
                 version = self._fetch_default_version(system, package)
                 if not version:
                     self._cache[subject] = []
+                    self._persistent_cache.put_negative(
+                        subject,
+                        ttl_seconds=self.config.negative_cache_ttl_seconds,
+                    )
                     continue
 
                 dependent_count = self._fetch_dependents_count(system, package, version)
                 if dependent_count is None:
                     self._cache[subject] = []
+                    self._persistent_cache.put_negative(
+                        subject,
+                        ttl_seconds=self.config.negative_cache_ttl_seconds,
+                    )
                     continue
             except requests.RequestException as exc:
                 logger.warning("deps.dev lookup failed for %s: %s", subject, exc)
                 self._cache[subject] = []
+                if self._should_negative_cache_exception(exc):
+                    self._persistent_cache.put_negative(
+                        subject,
+                        ttl_seconds=self.config.negative_cache_ttl_seconds,
+                    )
                 continue
 
             records = [
@@ -53,6 +79,11 @@ class DepsDevSource:
                 self._to_version_evidence(f"{system}:{package}@{version}", version),
             ]
             self._cache[subject] = records
+            self._persistent_cache.put(
+                subject,
+                [self._record_to_cache(record) for record in records],
+                ttl_seconds=self.config.cache_ttl_seconds,
+            )
             evidence.extend(records)
 
         return evidence
@@ -75,7 +106,17 @@ class DepsDevSource:
         response.raise_for_status()
         payload = response.json() or {}
         version_key = payload.get("defaultVersionKey") or {}
-        return str(version_key.get("version") or "").strip() or None
+        default_version = str(version_key.get("version") or "").strip()
+        if default_version:
+            return default_version
+
+        for version in payload.get("versions", []) or []:
+            if version.get("isDefault"):
+                resolved = str((version.get("versionKey") or {}).get("version") or "").strip()
+                if resolved:
+                    return resolved
+
+        return None
 
     def _fetch_dependents_count(self, system: str, package: str, version: str) -> int | None:
         encoded_package = quote(package, safe="")
@@ -87,6 +128,8 @@ class DepsDevSource:
         response.raise_for_status()
         payload = response.json() or {}
         count = payload.get("totalCount")
+        if count is None:
+            count = payload.get("dependentCount")
         if count is None:
             count = len(payload.get("nodes", []) or payload.get("dependents", []))
         try:
@@ -116,3 +159,29 @@ class DepsDevSource:
             observed_at=datetime.now(timezone.utc).isoformat(),
             freshness_days=1,
         )
+
+    def _record_to_cache(self, record: EvidenceRecord) -> dict:
+        return {
+            "source": record.source,
+            "metric": record.metric,
+            "subject_id": record.subject_id,
+            "raw_value": record.raw_value,
+            "normalized_value": record.normalized_value,
+            "observed_at": record.observed_at,
+            "freshness_days": record.freshness_days,
+        }
+
+    def _record_from_cache(self, payload: dict) -> EvidenceRecord:
+        return EvidenceRecord(
+            source=str(payload["source"]),
+            metric=str(payload["metric"]),
+            subject_id=str(payload["subject_id"]),
+            raw_value=payload["raw_value"],
+            normalized_value=float(payload["normalized_value"]),
+            observed_at=str(payload["observed_at"]),
+            freshness_days=int(payload["freshness_days"]),
+        )
+
+    def _should_negative_cache_exception(self, exc: requests.RequestException) -> bool:
+        status_code = getattr(getattr(exc, "response", None), "status_code", None)
+        return status_code == 404

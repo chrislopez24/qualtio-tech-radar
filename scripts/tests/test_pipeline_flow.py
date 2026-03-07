@@ -426,6 +426,217 @@ class TestPipelineFlow:
             > scored_by_name["Java-Design-Patterns"].market_score
         )
 
+    def test_pipeline_uses_canonical_package_mapping_for_external_sources(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        django = NormalizedTech(
+            name="Django",
+            description="Python web framework.",
+            stars=82000,
+            forks=9000,
+            language="Python",
+            topics=["python", "web"],
+            url="https://github.com/django/django",
+            sources=["github"],
+            signals={},
+        )
+        nextjs = NormalizedTech(
+            name="Next.js",
+            description="React framework.",
+            stars=131000,
+            forks=28000,
+            language="JavaScript",
+            topics=["react", "framework"],
+            url="https://github.com/vercel/next.js",
+            sources=["github"],
+            signals={},
+        )
+
+        assert pipeline._pypistats_subjects_for(django) == ["django"]
+        assert pipeline._deps_dev_subjects_for(django) == ["pypi:django"]
+        assert pipeline._deps_dev_subjects_for(nextjs) == ["npm:next"]
+
+    def test_pipeline_avoids_naive_go_package_resolution_for_deps_dev(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        kubernetes = NormalizedTech(
+            name="kubernetes",
+            description="Container orchestration platform.",
+            stars=130000,
+            forks=38000,
+            language="Go",
+            topics=["containers", "orchestration"],
+            url="https://github.com/kubernetes/kubernetes",
+            sources=["github"],
+            signals={},
+        )
+
+        assert pipeline._deps_dev_subjects_for(kubernetes) == []
+
+    def test_attach_external_evidence_batches_source_requests(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.evidence import EvidenceRecord
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        technologies = [
+            NormalizedTech(
+                name="Django",
+                description="Python web framework.",
+                stars=82000,
+                forks=9000,
+                language="Python",
+                topics=["python", "web"],
+                url="https://github.com/django/django",
+                sources=["github"],
+                signals={},
+            ),
+            NormalizedTech(
+                name="React",
+                description="UI library.",
+                stars=220000,
+                forks=46000,
+                language="JavaScript",
+                topics=["react", "frontend"],
+                url="https://github.com/facebook/react",
+                sources=["github"],
+                signals={},
+            ),
+        ]
+
+        calls = []
+
+        def fake_safe_fetch(source, subjects):
+            calls.append((source, tuple(subjects)))
+            if source is pipeline.stackexchange_source:
+                return [
+                    EvidenceRecord("stackexchange", "tag_activity", "django", 1000, 70.0, "2026-03-07T00:00:00Z", 1),
+                    EvidenceRecord("stackexchange", "tag_activity", "react", 2000, 80.0, "2026-03-07T00:00:00Z", 1),
+                ]
+            if source is pipeline.pypistats_source:
+                return [
+                    EvidenceRecord("pypistats", "downloads_last_month", "django", 100000, 80.0, "2026-03-07T00:00:00Z", 1),
+                ]
+            if source is pipeline.deps_dev_source:
+                return [
+                    EvidenceRecord("deps_dev", "reverse_dependents", "pypi:django", 50000, 90.0, "2026-03-07T00:00:00Z", 1),
+                    EvidenceRecord("deps_dev", "default_version", "pypi:django@5.1.0", "5.1.0", 100.0, "2026-03-07T00:00:00Z", 1),
+                    EvidenceRecord("deps_dev", "reverse_dependents", "npm:react", 700000, 98.0, "2026-03-07T00:00:00Z", 1),
+                    EvidenceRecord("deps_dev", "default_version", "npm:react@19.0.0", "19.0.0", 100.0, "2026-03-07T00:00:00Z", 1),
+                ]
+            if source is pipeline.osv_source:
+                return []
+            return []
+
+        with patch.object(pipeline, "_safe_fetch_evidence", side_effect=fake_safe_fetch):
+            enriched = pipeline._attach_external_evidence(technologies)
+
+        stack_calls = [subjects for source, subjects in calls if source is pipeline.stackexchange_source]
+        pypi_calls = [subjects for source, subjects in calls if source is pipeline.pypistats_source]
+        deps_calls = [subjects for source, subjects in calls if source is pipeline.deps_dev_source]
+
+        assert stack_calls == [("react", "django")]
+        assert pypi_calls == [("django",)]
+        assert deps_calls == [("npm:react", "pypi:django")]
+        assert len(enriched[0].evidence) >= 3
+        assert len(enriched[1].evidence) >= 3
+
+    def test_attach_external_evidence_prioritizes_editorially_plausible_candidates(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+
+        config = ETLConfig()
+        config.sources.stackexchange.request_budget = 2
+        config.sources.pypistats.request_budget = 2
+        config.sources.deps_dev.request_budget = 2
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=config)
+
+        technologies = [
+            NormalizedTech(
+                name="React",
+                description="UI library.",
+                stars=220000,
+                forks=46000,
+                language="JavaScript",
+                topics=["react", "frontend"],
+                url="https://github.com/facebook/react",
+                hn_mentions=12,
+                sources=["github", "hackernews"],
+                signals={"gh_momentum": 95.0, "gh_popularity": 98.0, "hn_heat": 70.0},
+            ),
+            NormalizedTech(
+                name="Django",
+                description="Python web framework.",
+                stars=82000,
+                forks=9000,
+                language="Python",
+                topics=["python", "web"],
+                url="https://github.com/django/django",
+                hn_mentions=4,
+                sources=["github", "hackernews"],
+                signals={"gh_momentum": 82.0, "gh_popularity": 87.0, "hn_heat": 28.0},
+            ),
+            NormalizedTech(
+                name="awesome-python",
+                description="A curated list of Python frameworks and libraries.",
+                stars=250000,
+                forks=20000,
+                language="Python",
+                topics=["awesome-list"],
+                url="https://github.com/vinta/awesome-python",
+                sources=["github"],
+                signals={"gh_momentum": 90.0, "gh_popularity": 99.0, "hn_heat": 0.0},
+            ),
+            NormalizedTech(
+                name="build-your-own-x",
+                description="Learning resources for building systems from scratch.",
+                stars=320000,
+                forks=30000,
+                language="Python",
+                topics=["learning"],
+                url="https://github.com/codecrafters-io/build-your-own-x",
+                sources=["github"],
+                signals={"gh_momentum": 91.0, "gh_popularity": 99.0, "hn_heat": 0.0},
+            ),
+        ]
+
+        calls = []
+
+        def fake_safe_fetch(source, subjects):
+            calls.append((source, tuple(subjects)))
+            return []
+
+        with patch.object(pipeline, "_safe_fetch_evidence", side_effect=fake_safe_fetch):
+            pipeline._attach_external_evidence(technologies)
+
+        stack_calls = [subjects for source, subjects in calls if source is pipeline.stackexchange_source]
+        pypi_calls = [subjects for source, subjects in calls if source is pipeline.pypistats_source]
+        deps_calls = [subjects for source, subjects in calls if source is pipeline.deps_dev_source]
+
+        assert stack_calls == [("react", "django")]
+        assert pypi_calls == [("django",)]
+        assert deps_calls == [("npm:react", "pypi:django")]
+
     def test_build_filtered_item_preserves_canonical_fields_from_runtime_models(self):
         from etl.pipeline import RadarPipeline, NormalizedTech
         from etl.classifier import ClassificationResult

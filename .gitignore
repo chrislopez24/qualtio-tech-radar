@@ -47,6 +47,7 @@ worktrees
 
 # internal data files
 src/data/data.ai.full.json
+src/data/cache/
 
 # python
 __pycache__/

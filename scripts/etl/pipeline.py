@@ -37,6 +37,7 @@ from etl.ring_policy import decide_ring
 from etl.source_registry import build_source_registry
 from etl.run_metrics import RunMetrics
 from etl.artifact_quality import build_artifact_quality
+from etl.canonical_mapping import deps_dev_subject_for, pypistats_subject_for
 from etl.sources.github_trending import GitHubTrendingSource
 from etl.sources.hackernews import HackerNewsSource
 from etl.sources.deps_dev import DepsDevSource
@@ -539,28 +540,116 @@ class RadarPipeline:
 
     def _attach_external_evidence(self, technologies: List[NormalizedTech]) -> List[NormalizedTech]:
         """Phase 3a: Attach external evidence records from optional sources."""
-        for tech in technologies:
-            records: list[EvidenceRecord] = list(getattr(tech, "evidence", []) or [])
+        tech_records: dict[str, list[EvidenceRecord]] = {
+            self._normalize_id(tech.name): list(getattr(tech, "evidence", []) or [])
+            for tech in technologies
+        }
+        candidate_techs = self._prioritize_external_evidence_candidates(technologies)
 
-            records.extend(self._safe_fetch_evidence(self.stackexchange_source, [self._normalize_id(tech.name)]))
-
-            if self._looks_like_package_name(tech.name):
-                records.extend(self._safe_fetch_evidence(self.pypistats_source, self._pypistats_subjects_for(tech)))
-                records.extend(self._safe_fetch_evidence(self.deps_dev_source, self._deps_dev_subjects_for(tech)))
-                records.extend(self._safe_fetch_evidence(self.osv_source, self._osv_subjects_for(tech)))
-
+        def _merge_records(target_key: str, records: List[EvidenceRecord]) -> None:
+            existing = tech_records.setdefault(target_key, [])
+            existing.extend(records)
             deduped: list[EvidenceRecord] = []
             seen: set[tuple[str, str, str]] = set()
-            for record in records:
-                key = (record.source, record.metric, record.subject_id)
-                if key in seen:
+            for record in existing:
+                dedupe_key = (record.source, record.metric, record.subject_id)
+                if dedupe_key in seen:
                     continue
-                seen.add(key)
+                seen.add(dedupe_key)
                 deduped.append(record)
+            tech_records[target_key] = deduped
 
-            tech.evidence = deduped
+        stack_subjects = [
+            self._normalize_id(tech.name)
+            for tech in candidate_techs[: self.config.sources.stackexchange.request_budget]
+            if self._normalize_id(tech.name)
+        ]
+        stack_records = self._safe_fetch_evidence(self.stackexchange_source, list(dict.fromkeys(stack_subjects)))
+        for record in stack_records:
+            _merge_records(self._normalize_id(record.subject_id), [record])
+
+        pypi_subject_map: dict[str, list[str]] = {}
+        deps_subject_map: dict[str, list[str]] = {}
+        for tech in candidate_techs:
+            tech_key = self._normalize_id(tech.name)
+            if not self._looks_like_package_name(tech.name):
+                continue
+
+            for subject in self._pypistats_subjects_for(tech):
+                pypi_subject_map.setdefault(subject, []).append(tech_key)
+
+            for subject in self._deps_dev_subjects_for(tech):
+                deps_subject_map.setdefault(subject, []).append(tech_key)
+
+        pypi_subjects = list(pypi_subject_map.keys())[: self.config.sources.pypistats.request_budget]
+        pypi_records = self._safe_fetch_evidence(self.pypistats_source, pypi_subjects)
+        for record in pypi_records:
+            for tech_key in pypi_subject_map.get(str(record.subject_id), []):
+                _merge_records(tech_key, [record])
+
+        deps_subjects = list(deps_subject_map.keys())[: self.config.sources.deps_dev.request_budget]
+        deps_records = self._safe_fetch_evidence(self.deps_dev_source, deps_subjects)
+        for record in deps_records:
+            subject_id = str(record.subject_id)
+            subject_key = subject_id.split("@", 1)[0]
+            for tech_key in deps_subject_map.get(subject_key, []):
+                _merge_records(tech_key, [record])
+
+        osv_subject_map: dict[str, list[str]] = {}
+        for tech in technologies:
+            tech_key = self._normalize_id(tech.name)
+            tech.evidence = tech_records.get(tech_key, [])
+            for subject in self._osv_subjects_for(tech):
+                osv_subject_map.setdefault(subject, []).append(tech_key)
+
+        osv_records = self._safe_fetch_evidence(self.osv_source, list(osv_subject_map.keys()))
+        for record in osv_records:
+            for tech_key in osv_subject_map.get(str(record.subject_id), []):
+                _merge_records(tech_key, [record])
+
+        for tech in technologies:
+            tech.evidence = tech_records.get(self._normalize_id(tech.name), [])
 
         return technologies
+
+    def _prioritize_external_evidence_candidates(self, technologies: List[NormalizedTech]) -> List[NormalizedTech]:
+        min_score = max(35.0, float(self.config.scoring.thresholds.assess) - 5.0)
+        ranked: list[tuple[float, float, int, int, NormalizedTech]] = []
+
+        for tech in technologies:
+            if is_resource_like_repository(tech.name, tech.description):
+                continue
+
+            provisional = score_technology_breakdown(
+                tech.signals,
+                evidence=[],
+                github_stars=float(tech.stars),
+                github_forks=float(tech.forks),
+            )
+            editorially_plausible = is_trial_ring_editorially_eligible(
+                tech.name,
+                tech.description,
+                getattr(tech, "topics", []),
+            )
+            has_package_mapping = bool(self._pypistats_subjects_for(tech) or self._deps_dev_subjects_for(tech))
+
+            if not editorially_plausible and not has_package_mapping:
+                continue
+            if provisional.composite < min_score and tech.hn_mentions <= 0 and not has_package_mapping:
+                continue
+
+            ranked.append(
+                (
+                    provisional.composite,
+                    provisional.mindshare,
+                    int(tech.hn_mentions),
+                    int(tech.stars),
+                    tech,
+                )
+            )
+
+        ranked.sort(reverse=True, key=lambda item: item[:4])
+        return [tech for *_metrics, tech in ranked]
 
     def _safe_fetch_evidence(self, source: Any, subjects: List[str]) -> List[EvidenceRecord]:
         if not subjects:
@@ -590,14 +679,18 @@ class RadarPipeline:
 
     def _deps_dev_subjects_for(self, tech: NormalizedTech) -> List[str]:
         ecosystem = self._infer_package_ecosystem(tech)
-        if ecosystem is None:
+        subject = deps_dev_subject_for(tech.name, ecosystem=ecosystem)
+        if subject is None:
             return []
-        return [f"{ecosystem}:{self._normalize_id(tech.name)}"]
+        return [subject]
 
     def _pypistats_subjects_for(self, tech: NormalizedTech) -> List[str]:
         if self._infer_package_ecosystem(tech) != "pypi":
             return []
-        return [self._normalize_id(tech.name)]
+        subject = pypistats_subject_for(tech.name)
+        if subject is None:
+            return []
+        return [subject]
 
     def _osv_subjects_for(self, tech: NormalizedTech) -> List[str]:
         subjects: List[str] = []

@@ -66,10 +66,13 @@ cp .env.example .env.local
 Edit `.env.local` with your API keys (only needed if running the data pipeline locally):
 
 ```env
-# Optional - only for running data pipeline locally
-GITHUB_TOKEN=your_github_token_here
 SYNTHETIC_API_KEY=your_synthetic_api_key_here
 SYNTHETIC_API_URL=https://api.synthetic.new/v1
+SYNTHETIC_MODEL=hf:MiniMaxAI/MiniMax-M2.5
+
+# Optional but recommended for source reliability
+GH_TOKEN=your_github_token_here
+STACKEXCHANGE_KEY=your_stackexchange_key_here
 ```
 
 ### 3. Run Development Server
@@ -136,16 +139,23 @@ This will:
 
 ### Environment Variables
 
-Required for running the pipeline:
+Environment used by the pipeline:
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `GH_TOKEN` | GitHub personal access token for API rate limits | Yes |
 | `SYNTHETIC_API_KEY` | API key for Synthetic (LLM) classification | Yes |
 | `SYNTHETIC_MODEL` | Model to use (default: `hf:MiniMaxAI/MiniMax-M2.5`) | No |
 | `SYNTHETIC_API_URL` | Synthetic API endpoint (default: `https://api.synthetic.new/v1`) | No |
+| `GH_TOKEN` | GitHub personal access token for higher GitHub API quota | No |
+| `STACKEXCHANGE_KEY` | Stack Exchange API key for mindshare coverage stability | No, but strongly recommended for production |
 
 Use `SYNTHETIC_MODEL` to switch models (for example, `hf:moonshotai/Kimi-K2.5` for evaluation runs). Keep `SYNTHETIC_API_URL` unchanged unless your environment explicitly requires a different endpoint.
+
+Source-specific notes:
+- `deps.dev`, `PyPI Stats`, and `OSV` work without API keys.
+- `Stack Exchange` is public, but keyless access is fragile on shared IPs and can be throttled for hours. Production runs should set `STACKEXCHANGE_KEY`.
+- `PyPI Stats` is best-effort and can return `429` under bursty access. The ETL uses persistent cache plus explicit package mapping to keep it useful without over-querying.
+- `deps.dev` evidence is only attached for curated canonical package mappings, not by naive repo-name fallback.
 
 ### Source Toggles
 

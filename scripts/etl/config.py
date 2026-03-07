@@ -37,6 +37,10 @@ class DepsDevSource(BaseModel):
     enabled: bool = False
     base_url: str = "https://api.deps.dev"
     timeout_seconds: int = Field(ge=1, default=15)
+    cache_file: str = "src/data/cache/deps_dev.json"
+    cache_ttl_seconds: int = Field(ge=1, default=604800)
+    negative_cache_ttl_seconds: int = Field(ge=1, default=86400)
+    request_budget: int = Field(ge=1, default=12)
 
 
 class StackExchangeSource(BaseModel):
@@ -45,6 +49,10 @@ class StackExchangeSource(BaseModel):
     site: str = "stackoverflow"
     pagesize: int = Field(ge=1, le=100, default=1)
     timeout_seconds: int = Field(ge=1, default=15)
+    cache_file: str = "src/data/cache/stackexchange.json"
+    cache_ttl_seconds: int = Field(ge=1, default=86400)
+    negative_cache_ttl_seconds: int = Field(ge=1, default=86400)
+    request_budget: int = Field(ge=1, default=25)
 
 
 class PyPIStatsSource(BaseModel):
@@ -52,12 +60,18 @@ class PyPIStatsSource(BaseModel):
     base_url: str = "https://pypistats.org/api"
     period: Literal["recent", "overall"] = "recent"
     timeout_seconds: int = Field(ge=1, default=15)
+    cache_file: str = "src/data/cache/pypistats.json"
+    cache_ttl_seconds: int = Field(ge=1, default=86400)
+    negative_cache_ttl_seconds: int = Field(ge=1, default=86400)
+    request_budget: int = Field(ge=1, default=12)
 
 
 class OSVSource(BaseModel):
     enabled: bool = False
     base_url: str = "https://api.osv.dev/v1"
     timeout_seconds: int = Field(ge=1, default=15)
+    cache_file: str = "src/data/cache/osv.json"
+    cache_ttl_seconds: int = Field(ge=1, default=604800)
 
 
 class SourcesConfig(BaseModel):

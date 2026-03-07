@@ -58,6 +58,10 @@ cat artifacts/shadow_eval.json
 ghe secret set GH_TOKEN --repo chrislopez24/qualtio-tech-radar
 # Paste: ghp_xxx
 
+# Stack Exchange API key (recommended for stable mindshare coverage)
+ghe secret set STACKEXCHANGE_KEY --repo chrislopez24/qualtio-tech-radar
+# Paste: stackexchange_key_xxx
+
 # AI API Key
 ghe secret set SYNTHETIC_API_KEY --repo chrislopez24/qualtio-tech-radar
 # Paste: syn_xxx
@@ -197,11 +201,18 @@ Default production config keeps all six enabled.
 
 Operational notes:
 - `deps.dev`: best effort package dependents
-- `stackexchange`: mindshare corroboration
-- `pypistats`: Python-only adoption evidence
+- `stackexchange`: mindshare corroboration; without `STACKEXCHANGE_KEY` shared-IP throttling can block coverage for hours
+- `pypistats`: Python-only adoption evidence; best-effort, daily-updated, can return `429`
 - `osv`: vulnerability pressure
+- `deps.dev` and `pypistats` use explicit canonical package mappings to avoid repo-name false positives
 
 If one of these degrades, the run should still complete and the failure is visible under `meta.pipeline.runMetrics.sources`.
+
+Production guidance:
+- `SYNTHETIC_API_KEY` is required.
+- `STACKEXCHANGE_KEY` is strongly recommended for any scheduled/CI ETL run.
+- `GH_TOKEN` is recommended for GitHub quota headroom.
+- `deps.dev`, `pypistats`, and `osv` do not require API keys.
 
 ### Cache Configuration
 
