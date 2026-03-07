@@ -1,285 +1,243 @@
 {
-  "updatedAt": "2026-03-06T15:56:51.594165",
+  "updatedAt": "2026-03-07T01:53:20.046390",
   "technologies": [
     {
-      "id": "java-design-patterns",
-      "name": "Java-Design-Patterns",
+      "id": "react",
+      "name": "React",
       "quadrant": "tools",
-      "ring": "adopt",
-      "description": "A comprehensive collection of Gang of Four and other design patterns implemented in Java. Provides clear, production-ready code examples for developers learning or reference design patterns in their projects.",
+      "ring": "trial",
+      "description": "A JavaScript library for building user interfaces, developed by Meta. It uses a component-based architecture and virtual DOM for efficient rendering. React is the most widely used frontend library in the industry, powering millions of applications across web and mobile platforms.",
       "moved": 0,
-      "trend": "up",
-      "marketScore": 88.34,
+      "trend": "stable",
+      "marketScore": 85.61,
       "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 93.8,
+        "ghMomentum": 99.86,
+        "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 93797,
-      "confidence": 0.95,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547276"
-    },
-    {
-      "id": "puppeteer",
-      "name": "Puppeteer",
-      "quadrant": "tools",
-      "ring": "adopt",
-      "description": "Puppeteer is a Node.js library that provides a high-level API to control Chrome or Firefox headless browsers. It's widely used for web scraping, end-to-end testing, browser automation, and generating screenshots or PDFs of web pages.",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 88.1,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 93.73,
-        "hnHeat": 0.0
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": null,
+        "stalestDays": null
       },
-      "stars": 93727,
-      "confidence": 0.95,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547288"
-    },
-    {
-      "id": "immich",
-      "name": "Immich",
-      "quadrant": "tools",
-      "ring": "adopt",
-      "description": "A high-performance, self-hosted photo and video management solution that provides features similar to Google Photos but with full data ownership. Offers backup, organization, and sharing capabilities for personal media.",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 88.07,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 94.14,
-        "hnHeat": 0.0
+      "evidenceSummary": {
+        "sources": [
+          "github"
+        ],
+        "metrics": [],
+        "hasExternalAdoption": false,
+        "githubOnly": true
       },
-      "stars": 94135,
-      "confidence": 0.95,
+      "whyThisRing": "Trial because composite 85.6 shows momentum with limited GitHub-first evidence across 2 sources.",
+      "stars": 243684,
+      "confidence": 0.98,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547293"
+      "updatedAt": "2026-03-07T01:53:19.992968"
     },
     {
-      "id": "tailwindcss",
-      "name": "Tailwindcss",
-      "quadrant": "tools",
-      "ring": "adopt",
-      "description": "A utility-first CSS framework that enables rapid UI development through pre-built utility classes. It has become a standard choice for modern web development projects.",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 88.02,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 93.93,
-        "hnHeat": 0.0
-      },
-      "stars": 93929,
-      "confidence": 0.95,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547296"
-    },
-    {
-      "id": "nvm",
-      "name": "Nvm",
-      "quadrant": "tools",
-      "ring": "adopt",
-      "description": "Node Version Manager - A POSIX-compliant bash script to manage multiple active Node.js versions. Essential tool for developers working with Node.js to switch between different versions easily.",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 87.69,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 92.06,
-        "hnHeat": 0.0
-      },
-      "stars": 92064,
-      "confidence": 0.95,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547299"
-    },
-    {
-      "id": "bitcoin",
-      "name": "Bitcoin",
+      "id": "linux",
+      "name": "Linux",
       "quadrant": "platforms",
-      "ring": "adopt",
-      "description": "Bitcoin Core is the reference implementation of the Bitcoin cryptocurrency protocol. With 88k+ GitHub stars, it represents the most widely adopted decentralized digital currency, serving as the backbone of the cryptocurrency ecosystem used by millions globally.",
+      "ring": "trial",
+      "description": "The Linux kernel is the core of the open-source operating system that powers the majority of servers, cloud infrastructure, embedded systems, supercomputers, and Android devices worldwide. It is the foundation of modern computing infrastructure.",
       "moved": 0,
-      "trend": "up",
-      "marketScore": 87.04,
+      "trend": "stable",
+      "marketScore": 84.38,
       "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 88.37,
+        "ghMomentum": 99.31,
+        "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 88367,
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": null,
+        "stalestDays": null
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github"
+        ],
+        "metrics": [],
+        "hasExternalAdoption": false,
+        "githubOnly": true
+      },
+      "whyThisRing": "Trial because composite 84.4 shows momentum with limited GitHub-first evidence across 2 sources.",
+      "stars": 221228,
+      "confidence": 0.98,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.992983"
+    },
+    {
+      "id": "javascript",
+      "name": "Javascript",
+      "quadrant": "languages",
+      "ring": "trial",
+      "description": "JavaScript is the dominant programming language for web development, running in all major browsers and increasingly used for server-side, mobile, and desktop applications. With 148k+ GitHub stars, it is one of the most widely adopted technologies in the software industry.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 84.53,
+      "signals": {
+        "ghMomentum": 95.32,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": null,
+        "stalestDays": null
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github"
+        ],
+        "metrics": [],
+        "hasExternalAdoption": false,
+        "githubOnly": true
+      },
+      "whyThisRing": "Trial because composite 84.5 shows momentum with limited GitHub-first evidence across 2 sources.",
+      "stars": 148099,
       "confidence": 0.95,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547302"
+      "updatedAt": "2026-03-07T01:53:19.992991"
     },
     {
-      "id": "markitdown",
-      "name": "Markitdown",
+      "id": "tensorflow",
+      "name": "Tensorflow",
       "quadrant": "tools",
-      "ring": "adopt",
-      "description": "Python library for converting various file formats (PDF, Word, Excel, PowerPoint, images) and office documents to Markdown format. Provides simple API for document transformation workflows.",
+      "ring": "trial",
+      "description": "An open source machine learning framework developed by Google, widely used for building and deploying machine learning models. Provides comprehensive tools for deep learning, neural networks, and AI applications across various platforms.",
       "moved": 0,
-      "trend": "up",
-      "marketScore": 87.09,
+      "trend": "stable",
+      "marketScore": 82.71,
       "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 90.21,
+        "ghMomentum": 98.57,
+        "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 90206,
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": null,
+        "stalestDays": null
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github"
+        ],
+        "metrics": [],
+        "hasExternalAdoption": false,
+        "githubOnly": true
+      },
+      "whyThisRing": "Trial because composite 82.7 shows momentum with limited GitHub-first evidence across 2 sources.",
+      "stars": 194018,
+      "confidence": 0.95,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.992997"
+    },
+    {
+      "id": "angular",
+      "name": "Angular",
+      "quadrant": "tools",
+      "ring": "trial",
+      "description": "A TypeScript-based open-source web application framework developed by Google. Angular is a complete rewrite of AngularJS, providing a robust platform for building enterprise-scale web applications with features like dependency injection, two-way data binding, and modular architecture.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 81.93,
+      "signals": {
+        "ghMomentum": 93.15,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": null,
+        "stalestDays": null
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github"
+        ],
+        "metrics": [],
+        "hasExternalAdoption": false,
+        "githubOnly": true
+      },
+      "whyThisRing": "Trial because composite 81.9 shows momentum with limited GitHub-first evidence across 2 sources.",
+      "stars": 100078,
+      "confidence": 0.95,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993002"
+    },
+    {
+      "id": "vscode",
+      "name": "Vscode",
+      "quadrant": "tools",
+      "ring": "trial",
+      "description": "Visual Studio Code is a lightweight but powerful source code editor developed by Microsoft. It supports debugging, syntax highlighting, intelligent code completion, snippets, code refactoring, and integrated Git. With over 180k GitHub stars, it is the most popular code editor globally, used by millions of developers across all major platforms.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 81.48,
+      "signals": {
+        "ghMomentum": 97.49,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": null,
+        "stalestDays": null
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github"
+        ],
+        "metrics": [],
+        "hasExternalAdoption": false,
+        "githubOnly": true
+      },
+      "whyThisRing": "Trial because composite 81.5 shows momentum with limited GitHub-first evidence across 2 sources.",
+      "stars": 182368,
+      "confidence": 0.95,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993006"
+    },
+    {
+      "id": "flutter",
+      "name": "Flutter",
+      "quadrant": "tools",
+      "ring": "trial",
+      "description": "Flutter is Google's UI toolkit for building natively compiled applications for mobile, web, and desktop from a single codebase. It uses Dart programming language and offers hot reload, expressive UI, and native performance.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 82.63,
+      "signals": {
+        "ghMomentum": 96.6,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": null,
+        "stalestDays": null
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github"
+        ],
+        "metrics": [],
+        "hasExternalAdoption": false,
+        "githubOnly": true
+      },
+      "whyThisRing": "Trial because composite 82.6 shows momentum with limited GitHub-first evidence across 2 sources.",
+      "stars": 175454,
       "confidence": 0.9,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547304"
-    },
-    {
-      "id": "python",
-      "name": "Python",
-      "quadrant": "techniques",
-      "ring": "adopt",
-      "description": "All Algorithms implemented in Python",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 100.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 86.5
-      },
-      "stars": 218388,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547316"
-    },
-    {
-      "id": "ollama",
-      "name": "ollama",
-      "quadrant": "platforms",
-      "ring": "adopt",
-      "description": "Get up and running with Kimi-K2.5, GLM-5, MiniMax, DeepSeek, gpt-oss, Qwen, Gemma and other models.",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 100.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 100.0
-      },
-      "stars": 164275,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547318"
-    },
-    {
-      "id": "go",
-      "name": "go",
-      "quadrant": "platforms",
-      "ring": "adopt",
-      "description": "The Go programming language",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 100.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 97.5
-      },
-      "stars": 132915,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547321"
-    },
-    {
-      "id": "rust",
-      "name": "rust",
-      "quadrant": "platforms",
-      "ring": "adopt",
-      "description": "Empowering everyone to build reliable and efficient software.",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 100.0,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 100.0
-      },
-      "stars": 110955,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547323"
-    },
-    {
-      "id": "storybook",
-      "name": "storybook",
-      "quadrant": "techniques",
-      "ring": "adopt",
-      "description": "Storybook is the industry standard workshop for building, documenting, and testing UI components in isolation",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 87.01,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 89.37,
-        "hnHeat": 0.0
-      },
-      "stars": 89371,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547325"
-    },
-    {
-      "id": "firecrawl",
-      "name": "firecrawl",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": "🔥 The Web Data API for AI - Turn entire websites into LLM-ready markdown or structured data",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 86.77,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 88.79,
-        "hnHeat": 0.0
-      },
-      "stars": 88794,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547361"
-    },
-    {
-      "id": "gin",
-      "name": "gin",
-      "quadrant": "platforms",
-      "ring": "adopt",
-      "description": "Gin is a high-performance HTTP web framework written in Go. It provides a Martini-like API but with significantly better performance—up to 40 times faster—thanks to httprouter. Gin is designed for building REST APIs, web applications, and microservices.",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 86.68,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 88.21,
-        "hnHeat": 0.0
-      },
-      "stars": 88206,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547370"
+      "updatedAt": "2026-03-07T01:53:19.993010"
     },
     {
       "id": "django",
@@ -288,520 +246,891 @@
       "ring": "adopt",
       "description": "The Web framework for perfectionists with deadlines.",
       "moved": 0,
-      "trend": "up",
-      "marketScore": 86.66,
+      "trend": "stable",
+      "marketScore": 98.08,
       "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 86.99,
+        "ghMomentum": 92.96,
+        "ghPopularity": 87.0,
         "hnHeat": 0.0
       },
-      "stars": 86988,
+      "sourceCoverage": 3,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange",
+          "pypistats"
+        ],
+        "metrics": [
+          "downloads_last_month",
+          "tag_activity"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "whyThisRing": "Adopt because composite 98.1 is backed by external adoption evidence across 3 sources.",
+      "stars": 86995,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547373"
+      "updatedAt": "2026-03-07T01:53:19.993020",
+      "canonicalId": "django",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "django",
+          "rawValue": 312408,
+          "normalizedValue": 91.58,
+          "observedAt": "2026-03-07T00:52:30.222422+00:00",
+          "freshnessDays": 1
+        },
+        {
+          "source": "pypistats",
+          "metric": "downloads_last_month",
+          "subjectId": "django",
+          "rawValue": 38719448,
+          "normalizedValue": 100.0,
+          "observedAt": "2026-03-07T00:52:30.346528+00:00",
+          "freshnessDays": 1
+        }
+      ]
     },
     {
-      "id": "opencv",
-      "name": "opencv",
-      "quadrant": "platforms",
-      "ring": "adopt",
-      "description": "Open Source Computer Vision Library",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 86.61,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 86.46,
-        "hnHeat": 0.0
-      },
-      "stars": 86462,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547376"
-    },
-    {
-      "id": "llms-from-scratch",
-      "name": "LLMs-from-scratch",
-      "quadrant": "techniques",
-      "ring": "adopt",
-      "description": "Implement a ChatGPT-like LLM in PyTorch from scratch, step by step",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 86.54,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 87.28,
-        "hnHeat": 0.0
-      },
-      "stars": 87283,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547378"
-    },
-    {
-      "id": "bun",
-      "name": "bun",
-      "quadrant": "platforms",
-      "ring": "adopt",
-      "description": "Incredibly fast JavaScript runtime, bundler, test runner, and package manager – all in one",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 86.46,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 87.91,
-        "hnHeat": 0.0
-      },
-      "stars": 87913,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547382"
-    },
-    {
-      "id": "hugo",
-      "name": "hugo",
+      "id": "fastapi",
+      "name": "fastapi",
       "quadrant": "tools",
       "ring": "trial",
-      "description": "The world’s fastest framework for building websites.",
+      "description": "FastAPI framework, high performance, easy to learn, fast to code, ready for production",
       "moved": 0,
       "trend": "up",
-      "marketScore": 86.35,
+      "marketScore": 92.82,
       "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 86.93,
+        "ghMomentum": 89.79,
+        "ghPopularity": 95.96,
         "hnHeat": 0.0
       },
-      "stars": 86934,
+      "sourceCoverage": 3,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange",
+          "pypistats"
+        ],
+        "metrics": [
+          "downloads_last_month",
+          "tag_activity"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 92.8 shows momentum with external adoption evidence across 3 sources.",
+      "stars": 95960,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547385"
+      "updatedAt": "2026-03-07T01:53:19.993028",
+      "canonicalId": "fastapi",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "fastapi",
+          "rawValue": 7661,
+          "normalizedValue": 64.74,
+          "observedAt": "2026-03-07T00:52:27.223269+00:00",
+          "freshnessDays": 1
+        },
+        {
+          "source": "pypistats",
+          "metric": "downloads_last_month",
+          "subjectId": "fastapi",
+          "rawValue": 287339565,
+          "normalizedValue": 100.0,
+          "observedAt": "2026-03-07T00:52:27.346644+00:00",
+          "freshnessDays": 1
+        }
+      ]
     },
     {
-      "id": "mermaid",
-      "name": "mermaid",
-      "quadrant": "languages",
-      "ring": "trial",
-      "description": "Generation of diagrams like flowcharts or sequence diagrams from text in a similar manner as markdown",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 86.26,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 86.52,
-        "hnHeat": 0.0
-      },
-      "stars": 86517,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547388"
-    },
-    {
-      "id": "openclaw",
-      "name": "openclaw",
+      "id": "langchain",
+      "name": "langchain",
       "quadrant": "platforms",
-      "ring": "trial",
-      "description": "Your own personal AI assistant. Any OS. Any Platform. The lobster way. 🦞 ",
+      "ring": "adopt",
+      "description": "The agent engineering platform",
       "moved": 0,
-      "trend": "up",
-      "marketScore": 84.25,
+      "trend": "stable",
+      "marketScore": 92.5,
       "signals": {
-        "ghMomentum": 100.0,
+        "ghMomentum": 93.86,
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 269907,
+      "sourceCoverage": 3,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange",
+          "pypistats"
+        ],
+        "metrics": [
+          "downloads_last_month",
+          "tag_activity"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "whyThisRing": "Adopt because composite 92.5 is backed by external adoption evidence across 3 sources.",
+      "stars": 128487,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547391"
+      "updatedAt": "2026-03-07T01:53:19.993035",
+      "canonicalId": "langchain",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "langchain",
+          "rawValue": 2190,
+          "normalizedValue": 55.68,
+          "observedAt": "2026-03-07T00:52:19.312173+00:00",
+          "freshnessDays": 1
+        },
+        {
+          "source": "pypistats",
+          "metric": "downloads_last_month",
+          "subjectId": "langchain",
+          "rawValue": 223002558,
+          "normalizedValue": 100.0,
+          "observedAt": "2026-03-07T00:52:19.435817+00:00",
+          "freshnessDays": 1
+        }
+      ]
     },
     {
-      "id": "react",
-      "name": "react",
+      "id": "yt-dlp",
+      "name": "yt-dlp",
+      "quadrant": "languages",
+      "ring": "adopt",
+      "description": "A feature-rich command-line audio/video downloader",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 88.61,
+      "signals": {
+        "ghMomentum": 93.2,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 3,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange",
+          "pypistats"
+        ],
+        "metrics": [
+          "downloads_last_month",
+          "tag_activity"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "whyThisRing": "Adopt because composite 88.6 is backed by external adoption evidence across 3 sources.",
+      "stars": 149933,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993042",
+      "canonicalId": "yt-dlp",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "yt-dlp",
+          "rawValue": 160,
+          "normalizedValue": 36.78,
+          "observedAt": "2026-03-07T00:52:16.640503+00:00",
+          "freshnessDays": 1
+        },
+        {
+          "source": "pypistats",
+          "metric": "downloads_last_month",
+          "subjectId": "yt-dlp",
+          "rawValue": 10223161,
+          "normalizedValue": 100.0,
+          "observedAt": "2026-03-07T00:52:16.764167+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "pytorch",
+      "name": "pytorch",
+      "quadrant": "languages",
+      "ring": "adopt",
+      "description": "Tensors and Dynamic neural networks in Python with strong GPU acceleration",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 86.55,
+      "signals": {
+        "ghMomentum": 93.03,
+        "ghPopularity": 98.01,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 3,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange",
+          "pypistats"
+        ],
+        "metrics": [
+          "downloads_last_month",
+          "tag_activity"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "whyThisRing": "Adopt because composite 86.5 is backed by external adoption evidence across 3 sources.",
+      "stars": 98006,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993048",
+      "canonicalId": "pytorch",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "pytorch",
+          "rawValue": 24380,
+          "normalizedValue": 73.12,
+          "observedAt": "2026-03-07T00:52:26.175200+00:00",
+          "freshnessDays": 1
+        },
+        {
+          "source": "pypistats",
+          "metric": "downloads_last_month",
+          "subjectId": "pytorch",
+          "rawValue": 189643,
+          "normalizedValue": 75.4,
+          "observedAt": "2026-03-07T00:52:26.298604+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "python",
+      "name": "Python",
+      "quadrant": "techniques",
+      "ring": "trial",
+      "description": "All Algorithms implemented in Python",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 91.35,
+      "signals": {
+        "ghMomentum": 99.24,
+        "ghPopularity": 100.0,
+        "hnHeat": 87.5
+      },
+      "sourceCoverage": 3,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "hackernews",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 91.3 shows momentum with corroborated signals across 3 sources.",
+      "stars": 218397,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993059",
+      "canonicalId": "python",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "python",
+          "rawValue": 2221626,
+          "normalizedValue": 100.0,
+          "observedAt": "2026-03-07T00:52:12.556392+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "youtube-dl",
+      "name": "youtube-dl",
+      "quadrant": "languages",
+      "ring": "adopt",
+      "description": "Command-line program to download videos from YouTube.com and other video sites",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 82.46,
+      "signals": {
+        "ghMomentum": 92.43,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 3,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange",
+          "pypistats"
+        ],
+        "metrics": [
+          "downloads_last_month",
+          "tag_activity"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "whyThisRing": "Adopt because composite 82.5 is backed by external adoption evidence across 3 sources.",
+      "stars": 139808,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993065",
+      "canonicalId": "youtube-dl",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "youtube-dl",
+          "rawValue": 1023,
+          "normalizedValue": 50.17,
+          "observedAt": "2026-03-07T00:52:17.772065+00:00",
+          "freshnessDays": 1
+        },
+        {
+          "source": "pypistats",
+          "metric": "downloads_last_month",
+          "subjectId": "youtube-dl",
+          "rawValue": 222478,
+          "normalizedValue": 76.39,
+          "observedAt": "2026-03-07T00:52:17.895425+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "ollama",
+      "name": "ollama",
+      "quadrant": "languages",
+      "ring": "trial",
+      "description": "Get up and running with Kimi-K2.5, GLM-5, MiniMax, DeepSeek, gpt-oss, Qwen, Gemma and other models.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 89.17,
+      "signals": {
+        "ghMomentum": 94.26,
+        "ghPopularity": 100.0,
+        "hnHeat": 100.0
+      },
+      "sourceCoverage": 3,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "hackernews",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 89.2 shows momentum with corroborated signals across 3 sources.",
+      "stars": 164295,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993071",
+      "canonicalId": "ollama",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "ollama",
+          "rawValue": 339,
+          "normalizedValue": 42.19,
+          "observedAt": "2026-03-07T00:52:15.308530+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "go",
+      "name": "go",
+      "quadrant": "languages",
+      "ring": "trial",
+      "description": "The Go programming language",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 88.79,
+      "signals": {
+        "ghMomentum": 93.74,
+        "ghPopularity": 100.0,
+        "hnHeat": 99.5
+      },
+      "sourceCoverage": 3,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "hackernews",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 88.8 shows momentum with corroborated signals across 3 sources.",
+      "stars": 132926,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993076",
+      "canonicalId": "go",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "go",
+          "rawValue": 75062,
+          "normalizedValue": 81.26,
+          "observedAt": "2026-03-07T00:52:18.641460+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "rust",
+      "name": "rust",
+      "quadrant": "languages",
+      "ring": "trial",
+      "description": "Empowering everyone to build reliable and efficient software.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 88.21,
+      "signals": {
+        "ghMomentum": 92.01,
+        "ghPopularity": 100.0,
+        "hnHeat": 100.0
+      },
+      "sourceCoverage": 3,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "hackernews",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 88.2 shows momentum with corroborated signals across 3 sources.",
+      "stars": 110974,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993082",
+      "canonicalId": "rust",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "rust",
+          "rawValue": 44451,
+          "normalizedValue": 77.46,
+          "observedAt": "2026-03-07T00:52:21.893487+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "typescript",
+      "name": "TypeScript",
+      "quadrant": "techniques",
+      "ring": "trial",
+      "description": "TypeScript is a superset of JavaScript that compiles to clean JavaScript output.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 85.97,
+      "signals": {
+        "ghMomentum": 91.6,
+        "ghPopularity": 100.0,
+        "hnHeat": 38.5
+      },
+      "sourceCoverage": 3,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "hackernews",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 86.0 shows momentum with corroborated signals across 3 sources.",
+      "stars": 108035,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993087",
+      "canonicalId": "typescript",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "typescript",
+          "rawValue": 236113,
+          "normalizedValue": 89.55,
+          "observedAt": "2026-03-07T00:52:22.437413+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "markitdown",
+      "name": "markitdown",
       "quadrant": "tools",
       "ring": "trial",
-      "description": "The library for web and native user interfaces.",
+      "description": "Python tool for converting files and office documents to Markdown.",
       "moved": 0,
-      "trend": "up",
-      "marketScore": 84.24,
+      "trend": "stable",
+      "marketScore": 77.46,
       "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
+        "ghMomentum": 88.04,
+        "ghPopularity": 90.23,
         "hnHeat": 0.0
       },
-      "stars": 243668,
+      "sourceCoverage": 3,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange",
+          "pypistats"
+        ],
+        "metrics": [
+          "downloads_last_month",
+          "tag_activity"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 77.5 shows momentum with external adoption evidence across 3 sources.",
+      "stars": 90231,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547393"
-    },
-    {
-      "id": "freecodecamp",
-      "name": "freeCodeCamp",
-      "quadrant": "languages",
-      "ring": "trial",
-      "description": "freeCodeCamp.org's open-source codebase and curriculum. Learn math, programming, and computer science for free.",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 84.22,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 437840,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547396"
-    },
-    {
-      "id": "linux",
-      "name": "linux",
-      "quadrant": "platforms",
-      "ring": "trial",
-      "description": "Linux kernel source tree",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 84.22,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 221160,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547398"
-    },
-    {
-      "id": "tensorflow",
-      "name": "tensorflow",
-      "quadrant": "techniques",
-      "ring": "trial",
-      "description": "An Open Source Machine Learning Framework for Everyone",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 84.19,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 194012,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547400"
-    },
-    {
-      "id": "python-100-days",
-      "name": "Python-100-Days",
-      "quadrant": "techniques",
-      "ring": "trial",
-      "description": "Python - 100天从新手到大师",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 84.17,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 179329,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547403"
-    },
-    {
-      "id": "n8n",
-      "name": "n8n",
-      "quadrant": "platforms",
-      "ring": "trial",
-      "description": "Fair-code workflow automation platform with native AI capabilities. Combine visual building with custom code, self-host or cloud, 400+ integrations.",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 84.17,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 177866,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547405"
-    },
-    {
-      "id": "bootstrap",
-      "name": "bootstrap",
-      "quadrant": "tools",
-      "ring": "trial",
-      "description": "The most popular HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web.",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 84.16,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 174028,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547409"
-    },
-    {
-      "id": "autogpt",
-      "name": "AutoGPT",
-      "quadrant": "languages",
-      "ring": "trial",
-      "description": "AutoGPT is the vision of accessible AI for everyone, to use and to build on. Our mission is to provide the tools, so that you can focus on what matters.",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 84.16,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 182218,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547411"
-    },
-    {
-      "id": "vscode",
-      "name": "vscode",
-      "quadrant": "languages",
-      "ring": "hold",
-      "description": "Visual Studio Code",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 84.12,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 182362,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547413"
-    },
-    {
-      "id": "javaguide",
-      "name": "JavaGuide",
-      "quadrant": "techniques",
-      "ring": "hold",
-      "description": "Java 面试 & 后端通用面试指南，覆盖计算机基础、数据库、分布式、高并发与系统设计。准备后端技术面试，首选 JavaGuide！",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 84.12,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 154076,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547416"
-    },
-    {
-      "id": "you-dont-know-js",
-      "name": "You-Dont-Know-JS",
-      "quadrant": "techniques",
-      "ring": "hold",
-      "description": "A book series (2 published editions) on the JS language.",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 84.09,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 184465,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547419"
-    },
-    {
-      "id": "javascript-algorithms",
-      "name": "javascript-algorithms",
-      "quadrant": "techniques",
-      "ring": "hold",
-      "description": "📝 Algorithms and data structures implemented in JavaScript with explanations and links to further readings",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 84.09,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 195743,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547422"
-    },
-    {
-      "id": "flutter",
-      "name": "flutter",
-      "quadrant": "techniques",
-      "ring": "assess",
-      "description": "Flutter makes it easy and fast to build beautiful apps for mobile and beyond",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 84.06,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 175448,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547424"
-    },
-    {
-      "id": "computer-science",
-      "name": "computer-science",
-      "quadrant": "techniques",
-      "ring": "assess",
-      "description": "🎓 Path to a free self-taught education in Computer Science!",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 84.06,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 202162,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547427"
+      "updatedAt": "2026-03-07T01:53:19.993092",
+      "canonicalId": "markitdown",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "markitdown",
+          "rawValue": 2,
+          "normalizedValue": 7.95,
+          "observedAt": "2026-03-07T00:52:28.821213+00:00",
+          "freshnessDays": 1
+        },
+        {
+          "source": "pypistats",
+          "metric": "downloads_last_month",
+          "subjectId": "markitdown",
+          "rawValue": 2637079,
+          "normalizedValue": 91.73,
+          "observedAt": "2026-03-07T00:52:28.943989+00:00",
+          "freshnessDays": 1
+        }
+      ]
     },
     {
       "id": "transformers",
       "name": "transformers",
-      "quadrant": "languages",
-      "ring": "assess",
+      "quadrant": "techniques",
+      "ring": "trial",
       "description": "🤗 Transformers: the model-definition framework for state-of-the-art machine learning models in text, vision, audio, and multimodal models, for both inference and training. ",
       "moved": 0,
-      "trend": "up",
-      "marketScore": 84.05,
+      "trend": "stable",
+      "marketScore": 77.08,
       "signals": {
-        "ghMomentum": 100.0,
+        "ghMomentum": 96.19,
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 157492,
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "pypistats"
+        ],
+        "metrics": [
+          "downloads_last_month"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 77.1 shows momentum with external adoption evidence across 2 sources.",
+      "stars": 157500,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547431"
+      "updatedAt": "2026-03-07T01:53:19.993100",
+      "canonicalId": "transformers",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "pypistats",
+          "metric": "downloads_last_month",
+          "subjectId": "transformers",
+          "rawValue": 112560641,
+          "normalizedValue": 100.0,
+          "observedAt": "2026-03-07T00:52:15.974566+00:00",
+          "freshnessDays": 1
+        }
+      ]
     },
     {
-      "id": "generative-ai-for-beginners",
-      "name": "generative-ai-for-beginners",
-      "quadrant": "techniques",
-      "ring": "assess",
-      "description": "21 Lessons, Get Started Building with Generative AI ",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 84.05,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "stars": 107598,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547433"
-    }
-  ],
-  "watchlist": [
-    {
-      "id": "ohmyzsh",
-      "name": "ohmyzsh",
+      "id": "langflow",
+      "name": "langflow",
       "quadrant": "platforms",
-      "ring": "adopt",
-      "description": "🙃   A delightful community-driven (with 2,400+ contributors) framework for managing your zsh configuration. Includes 300+ optional plugins (rails, git, macOS, hub, docker, homebrew, node, php, python, etc), 140+ themes to spice up your morning, and an auto-update tool that makes it easy to keep up with the latest updates from the community.",
+      "ring": "trial",
+      "description": "Langflow is a powerful tool for building and deploying AI-powered agents and workflows.",
       "moved": 0,
-      "trend": "up",
-      "marketScore": 84.04,
+      "trend": "stable",
+      "marketScore": 73.82,
       "signals": {
-        "ghMomentum": 100.0,
+        "ghMomentum": 92.04,
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 185145,
+      "sourceCoverage": 3,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange",
+          "pypistats"
+        ],
+        "metrics": [
+          "downloads_last_month",
+          "tag_activity"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 73.8 shows momentum with external adoption evidence across 3 sources.",
+      "stars": 145327,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547438"
+      "updatedAt": "2026-03-07T01:53:19.993106",
+      "canonicalId": "langflow",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "langflow",
+          "rawValue": 11,
+          "normalizedValue": 17.99,
+          "observedAt": "2026-03-07T00:52:17.138609+00:00",
+          "freshnessDays": 1
+        },
+        {
+          "source": "pypistats",
+          "metric": "downloads_last_month",
+          "subjectId": "langflow",
+          "rawValue": 86317,
+          "normalizedValue": 70.52,
+          "observedAt": "2026-03-07T00:52:17.263936+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "react-native",
+      "name": "react-native",
+      "quadrant": "tools",
+      "ring": "trial",
+      "description": "A framework for building native applications using React",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 81.21,
+      "signals": {
+        "ghMomentum": 94.21,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 81.2 shows momentum with corroborated signals across 2 sources.",
+      "stars": 125511,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993111",
+      "canonicalId": "react-native",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "react-native",
+          "rawValue": 139131,
+          "normalizedValue": 85.72,
+          "observedAt": "2026-03-07T00:52:20.200987+00:00",
+          "freshnessDays": 1
+        }
+      ]
     },
     {
       "id": "kubernetes",
       "name": "kubernetes",
       "quadrant": "platforms",
-      "ring": "adopt",
+      "ring": "trial",
       "description": "Production-Grade Container Scheduling and Management",
       "moved": 0,
-      "trend": "up",
-      "marketScore": 84.04,
+      "trend": "stable",
+      "marketScore": 80.5,
       "signals": {
-        "ghMomentum": 100.0,
+        "ghMomentum": 95.47,
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 120958,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547441"
-    },
-    {
-      "id": "stable-diffusion-webui",
-      "name": "stable-diffusion-webui",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": "Stable Diffusion web UI",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 84.04,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
       },
-      "stars": 161520,
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 80.5 shows momentum with corroborated signals across 2 sources.",
+      "stars": 120964,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547443"
+      "updatedAt": "2026-03-07T01:53:19.993116",
+      "canonicalId": "kubernetes",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "kubernetes",
+          "rawValue": 58315,
+          "normalizedValue": 79.43,
+          "observedAt": "2026-03-07T00:52:20.354325+00:00",
+          "freshnessDays": 1
+        }
+      ]
     },
     {
       "id": "next.js",
@@ -810,78 +1139,1322 @@
       "ring": "trial",
       "description": "The React Framework",
       "moved": 0,
-      "trend": "up",
-      "marketScore": 84.0,
+      "trend": "stable",
+      "marketScore": 79.98,
       "signals": {
-        "ghMomentum": 100.0,
+        "ghMomentum": 95.3,
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 138181,
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 80.0 shows momentum with corroborated signals across 2 sources.",
+      "stars": 138189,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547445"
+      "updatedAt": "2026-03-07T01:53:19.993121",
+      "canonicalId": "next.js",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "next.js",
+          "rawValue": 43509,
+          "normalizedValue": 77.31,
+          "observedAt": "2026-03-07T00:52:18.127994+00:00",
+          "freshnessDays": 1
+        }
+      ]
     },
     {
-      "id": "javascript",
-      "name": "javascript",
-      "quadrant": "techniques",
+      "id": "open-webui",
+      "name": "open-webui",
+      "quadrant": "languages",
       "ring": "trial",
-      "description": "JavaScript Style Guide",
+      "description": "User-friendly AI Interface (Supports Ollama, OpenAI API, ...)",
       "moved": 0,
-      "trend": "up",
-      "marketScore": 83.99,
+      "trend": "stable",
+      "marketScore": 71.62,
       "signals": {
-        "ghMomentum": 100.0,
+        "ghMomentum": 93.28,
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 148099,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547447"
-    },
-    {
-      "id": "node",
-      "name": "node",
-      "quadrant": "platforms",
-      "ring": "trial",
-      "description": "Node.js JavaScript runtime ✨🐢🚀✨",
-      "moved": 0,
-      "trend": "up",
-      "marketScore": 83.99,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
       },
-      "stars": 116105,
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "pypistats"
+        ],
+        "metrics": [
+          "downloads_last_month"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 71.6 shows momentum with external adoption evidence across 2 sources.",
+      "stars": 126003,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547450"
+      "updatedAt": "2026-03-07T01:53:19.993126",
+      "canonicalId": "open-webui",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "pypistats",
+          "metric": "downloads_last_month",
+          "subjectId": "open-webui",
+          "rawValue": 1317818,
+          "normalizedValue": 87.43,
+          "observedAt": "2026-03-07T00:52:19.957912+00:00",
+          "freshnessDays": 1
+        }
+      ]
     },
     {
       "id": "three.js",
       "name": "three.js",
-      "quadrant": "tools",
-      "ring": "assess",
+      "quadrant": "techniques",
+      "ring": "trial",
       "description": "JavaScript 3D Library.",
       "moved": 0,
-      "trend": "up",
-      "marketScore": 83.99,
+      "trend": "stable",
+      "marketScore": 78.63,
+      "signals": {
+        "ghMomentum": 94.55,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 78.6 shows momentum with corroborated signals across 2 sources.",
+      "stars": 111202,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993131",
+      "canonicalId": "three.js",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "three.js",
+          "rawValue": 21062,
+          "normalizedValue": 72.06,
+          "observedAt": "2026-03-07T00:52:21.694715+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "ui",
+      "name": "ui",
+      "quadrant": "platforms",
+      "ring": "trial",
+      "description": "A set of beautifully-designed, accessible components and a code distribution platform. Works with your favorite frameworks. Open Source. Open Code.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 78.46,
+      "signals": {
+        "ghMomentum": 90.19,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 78.5 shows momentum with corroborated signals across 2 sources.",
+      "stars": 107860,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993137",
+      "canonicalId": "ui",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "ui",
+          "rawValue": 57731,
+          "normalizedValue": 79.36,
+          "observedAt": "2026-03-07T00:52:22.747559+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "material-ui",
+      "name": "material-ui",
+      "quadrant": "tools",
+      "ring": "trial",
+      "description": "Material UI: Comprehensive React component library that implements Google's Material Design. Free forever.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 77.86,
+      "signals": {
+        "ghMomentum": 93.55,
+        "ghPopularity": 98.01,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 77.9 shows momentum with corroborated signals across 2 sources.",
+      "stars": 98013,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993142",
+      "canonicalId": "material-ui",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "material-ui",
+          "rawValue": 22807,
+          "normalizedValue": 72.63,
+          "observedAt": "2026-03-07T00:52:25.971715+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "axios",
+      "name": "axios",
+      "quadrant": "techniques",
+      "ring": "trial",
+      "description": "Promise based HTTP client for the browser and node.js",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 77.57,
+      "signals": {
+        "ghMomentum": 91.24,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 77.6 shows momentum with corroborated signals across 2 sources.",
+      "stars": 108589,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993148",
+      "canonicalId": "axios",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "axios",
+          "rawValue": 24604,
+          "normalizedValue": 73.18,
+          "observedAt": "2026-03-07T00:52:22.238060+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "electron",
+      "name": "electron",
+      "quadrant": "platforms",
+      "ring": "trial",
+      "description": ":electron: Build cross-platform desktop apps with JavaScript, HTML, and CSS",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 77.52,
+      "signals": {
+        "ghMomentum": 92.89,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 77.5 shows momentum with corroborated signals across 2 sources.",
+      "stars": 120340,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993153",
+      "canonicalId": "electron",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "electron",
+          "rawValue": 15480,
+          "normalizedValue": 69.83,
+          "observedAt": "2026-03-07T00:52:20.550828+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "computer-science",
+      "name": "computer-science",
+      "quadrant": "techniques",
+      "ring": "assess",
+      "description": "🎓 Path to a free self-taught education in Computer Science!",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 77.47,
+      "signals": {
+        "ghMomentum": 96.9,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Assess because composite 77.5 is promising but evidence depth is still limited.",
+      "stars": 202182,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993158",
+      "canonicalId": "computer-science",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "computer-science",
+          "rawValue": 4541,
+          "normalizedValue": 60.95,
+          "observedAt": "2026-03-07T00:52:12.729615+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "terminal",
+      "name": "terminal",
+      "quadrant": "techniques",
+      "ring": "trial",
+      "description": "The new Windows Terminal and the original Windows console host, all in the same place!",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 77.22,
+      "signals": {
+        "ghMomentum": 90.23,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 77.2 shows momentum with corroborated signals across 2 sources.",
+      "stars": 102043,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993163",
+      "canonicalId": "terminal",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "terminal",
+          "rawValue": 24676,
+          "normalizedValue": 73.2,
+          "observedAt": "2026-03-07T00:52:24.362867+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "opencv",
+      "name": "opencv",
+      "quadrant": "tools",
+      "ring": "trial",
+      "description": "Open Source Computer Vision Library",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 77.13,
+      "signals": {
+        "ghMomentum": 94.02,
+        "ghPopularity": 86.47,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 77.1 shows momentum with corroborated signals across 2 sources.",
+      "stars": 86465,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993168",
+      "canonicalId": "opencv",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "opencv",
+          "rawValue": 73329,
+          "normalizedValue": 81.09,
+          "observedAt": "2026-03-07T00:52:30.962705+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "ant-design",
+      "name": "ant-design",
+      "quadrant": "languages",
+      "ring": "trial",
+      "description": "An enterprise-class UI design language and React UI library",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 76.25,
+      "signals": {
+        "ghMomentum": 94.71,
+        "ghPopularity": 97.68,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 76.2 shows momentum with corroborated signals across 2 sources.",
+      "stars": 97682,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993174",
+      "canonicalId": "ant-design",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "ant-design",
+          "rawValue": 5239,
+          "normalizedValue": 61.99,
+          "observedAt": "2026-03-07T00:52:26.498296+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "godot",
+      "name": "godot",
+      "quadrant": "platforms",
+      "ring": "trial",
+      "description": "Godot Engine – Multi-platform 2D and 3D game engine",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 75.02,
+      "signals": {
+        "ghMomentum": 93.27,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 75.0 shows momentum with corroborated signals across 2 sources.",
+      "stars": 107439,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993181",
+      "canonicalId": "godot",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "godot",
+          "rawValue": 2516,
+          "normalizedValue": 56.68,
+          "observedAt": "2026-03-07T00:52:23.121652+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "puppeteer",
+      "name": "puppeteer",
+      "quadrant": "tools",
+      "ring": "trial",
+      "description": "JavaScript API for Chrome and Firefox",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 73.94,
+      "signals": {
+        "ghMomentum": 89.83,
+        "ghPopularity": 93.73,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 73.9 shows momentum with corroborated signals across 2 sources.",
+      "stars": 93730,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993185",
+      "canonicalId": "puppeteer",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "puppeteer",
+          "rawValue": 8127,
+          "normalizedValue": 65.17,
+          "observedAt": "2026-03-07T00:52:28.463997+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "supabase",
+      "name": "supabase",
+      "quadrant": "platforms",
+      "ring": "trial",
+      "description": "The Postgres development platform. Supabase gives you a dedicated Postgres database to build your web, mobile, and AI applications.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 73.66,
+      "signals": {
+        "ghMomentum": 90.74,
+        "ghPopularity": 98.63,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 73.7 shows momentum with corroborated signals across 2 sources.",
+      "stars": 98631,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993191",
+      "canonicalId": "supabase",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "supabase",
+          "rawValue": 2365,
+          "normalizedValue": 56.23,
+          "observedAt": "2026-03-07T00:52:25.432644+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "n8n",
+      "name": "n8n",
+      "quadrant": "platforms",
+      "ring": "trial",
+      "description": "Fair-code workflow automation platform with native AI capabilities. Combine visual building with custom code, self-host or cloud, 400+ integrations.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 73.08,
+      "signals": {
+        "ghMomentum": 98.08,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 73.1 shows momentum with corroborated signals across 2 sources.",
+      "stars": 177922,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993198",
+      "canonicalId": "n8n",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "n8n",
+          "rawValue": 146,
+          "normalizedValue": 36.12,
+          "observedAt": "2026-03-07T00:52:14.228943+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "neovim",
+      "name": "neovim",
+      "quadrant": "techniques",
+      "ring": "trial",
+      "description": "Vim-fork focused on extensibility and usability",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 72.8,
+      "signals": {
+        "ghMomentum": 89.06,
+        "ghPopularity": 97.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 72.8 shows momentum with corroborated signals across 2 sources.",
+      "stars": 96998,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993205",
+      "canonicalId": "neovim",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "neovim",
+          "rawValue": 2536,
+          "normalizedValue": 56.74,
+          "observedAt": "2026-03-07T00:52:26.700038+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "deno",
+      "name": "deno",
+      "quadrant": "platforms",
+      "ring": "trial",
+      "description": "A modern runtime for JavaScript and TypeScript.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 72.45,
+      "signals": {
+        "ghMomentum": 89.27,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 72.5 shows momentum with corroborated signals across 2 sources.",
+      "stars": 106315,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993211",
+      "canonicalId": "deno",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "deno",
+          "rawValue": 1126,
+          "normalizedValue": 50.87,
+          "observedAt": "2026-03-07T00:52:23.273406+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "frp",
+      "name": "frp",
+      "quadrant": "languages",
+      "ring": "trial",
+      "description": "A fast reverse proxy to help you expose a local server behind a NAT or firewall to the internet.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 71.99,
+      "signals": {
+        "ghMomentum": 91.76,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 72.0 shows momentum with corroborated signals across 2 sources.",
+      "stars": 104934,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993216",
+      "canonicalId": "frp",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "frp",
+          "rawValue": 459,
+          "normalizedValue": 44.38,
+          "observedAt": "2026-03-07T00:52:23.803691+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "bitcoin",
+      "name": "bitcoin",
+      "quadrant": "techniques",
+      "ring": "trial",
+      "description": "Bitcoin Core integration/staging tree",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 71.84,
+      "signals": {
+        "ghMomentum": 93.44,
+        "ghPopularity": 88.37,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 71.8 shows momentum with corroborated signals across 2 sources.",
+      "stars": 88370,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993221",
+      "canonicalId": "bitcoin",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "bitcoin",
+          "rawValue": 1791,
+          "normalizedValue": 54.22,
+          "observedAt": "2026-03-07T00:52:29.587556+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "storybook",
+      "name": "storybook",
+      "quadrant": "techniques",
+      "ring": "trial",
+      "description": "Storybook is the industry standard workshop for building, documenting, and testing UI components in isolation",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 70.93,
+      "signals": {
+        "ghMomentum": 89.71,
+        "ghPopularity": 89.37,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 70.9 shows momentum with corroborated signals across 2 sources.",
+      "stars": 89369,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993228",
+      "canonicalId": "storybook",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "storybook",
+          "rawValue": 2168,
+          "normalizedValue": 55.6,
+          "observedAt": "2026-03-07T00:52:29.142760+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "tauri",
+      "name": "tauri",
+      "quadrant": "languages",
+      "ring": "trial",
+      "description": "Build smaller, faster, and more secure desktop and mobile applications with a web frontend.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 70.78,
+      "signals": {
+        "ghMomentum": 87.61,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 70.8 shows momentum with corroborated signals across 2 sources.",
+      "stars": 103712,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993234",
+      "canonicalId": "tauri",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "tauri",
+          "rawValue": 509,
+          "normalizedValue": 45.13,
+          "observedAt": "2026-03-07T00:52:24.156182+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "nvm",
+      "name": "nvm",
+      "quadrant": "techniques",
+      "ring": "assess",
+      "description": "Node Version Manager - POSIX-compliant bash script to manage multiple active node.js versions",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 70.76,
+      "signals": {
+        "ghMomentum": 89.89,
+        "ghPopularity": 92.07,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Assess because composite 70.8 is promising but evidence depth is still limited.",
+      "stars": 92070,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993240",
+      "canonicalId": "nvm",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "nvm",
+          "rawValue": 1174,
+          "normalizedValue": 51.17,
+          "observedAt": "2026-03-07T00:52:28.672472+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "hugo",
+      "name": "hugo",
+      "quadrant": "tools",
+      "ring": "trial",
+      "description": "The world’s fastest framework for building websites.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 69.43,
+      "signals": {
+        "ghMomentum": 89.04,
+        "ghPopularity": 86.94,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 69.4 shows momentum with corroborated signals across 2 sources.",
+      "stars": 86936,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993245",
+      "canonicalId": "hugo",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "hugo",
+          "rawValue": 1354,
+          "normalizedValue": 52.2,
+          "observedAt": "2026-03-07T00:52:30.575384+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "gin",
+      "name": "gin",
+      "quadrant": "platforms",
+      "ring": "trial",
+      "description": "Gin is a high-performance HTTP web framework written in Go. It provides a Martini-like API but with significantly better performance—up to 40 times faster—thanks to httprouter. Gin is designed for building REST APIs, web applications, and microservices.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 69.3,
+      "signals": {
+        "ghMomentum": 89.24,
+        "ghPopularity": 88.21,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 69.3 shows momentum with corroborated signals across 2 sources.",
+      "stars": 88209,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993251",
+      "canonicalId": "gin",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "gin",
+          "rawValue": 955,
+          "normalizedValue": 49.67,
+          "observedAt": "2026-03-07T00:52:29.735163+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "iptv",
+      "name": "iptv",
+      "quadrant": "languages",
+      "ring": "trial",
+      "description": "Collection of publicly available IPTV channels from all over the world",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 68.98,
+      "signals": {
+        "ghMomentum": 89.47,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 2,
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 1
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github",
+          "stackexchange"
+        ],
+        "metrics": [
+          "tag_activity"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "whyThisRing": "Trial because composite 69.0 shows momentum with corroborated signals across 2 sources.",
+      "stars": 112498,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993256",
+      "canonicalId": "iptv",
+      "entityType": "technology",
+      "evidence": [
+        {
+          "source": "stackexchange",
+          "metric": "tag_activity",
+          "subjectId": "iptv",
+          "rawValue": 95,
+          "normalizedValue": 33.04,
+          "observedAt": "2026-03-07T00:52:21.468833+00:00",
+          "freshnessDays": 1
+        }
+      ]
+    },
+    {
+      "id": "openclaw",
+      "name": "openclaw",
+      "quadrant": "platforms",
+      "ring": "assess",
+      "description": "Your own personal AI assistant. Any OS. Any Platform. The lobster way. 🦞 ",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 58.75,
       "signals": {
         "ghMomentum": 100.0,
         "ghPopularity": 100.0,
         "hnHeat": 0.0
       },
-      "stars": 111197,
+      "sourceCoverage": 1,
+      "sourceFreshness": {
+        "freshestDays": null,
+        "stalestDays": null
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github"
+        ],
+        "metrics": [],
+        "hasExternalAdoption": false,
+        "githubOnly": true
+      },
+      "whyThisRing": "Assess because composite 58.8 is promising but evidence depth is still limited.",
+      "stars": 270970,
       "confidence": 0.5,
       "isDeprecated": false,
       "replacement": null,
-      "updatedAt": "2026-03-06T15:56:51.547452"
+      "updatedAt": "2026-03-07T01:53:19.993263",
+      "canonicalId": "openclaw",
+      "entityType": "technology"
+    },
+    {
+      "id": "freecodecamp",
+      "name": "freeCodeCamp",
+      "quadrant": "languages",
+      "ring": "assess",
+      "description": "freeCodeCamp.org's open-source codebase and curriculum. Learn math, programming, and computer science for free.",
+      "moved": 0,
+      "trend": "stable",
+      "marketScore": 58.64,
+      "signals": {
+        "ghMomentum": 99.62,
+        "ghPopularity": 100.0,
+        "hnHeat": 0.0
+      },
+      "sourceCoverage": 1,
+      "sourceFreshness": {
+        "freshestDays": null,
+        "stalestDays": null
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github"
+        ],
+        "metrics": [],
+        "hasExternalAdoption": false,
+        "githubOnly": true
+      },
+      "whyThisRing": "Assess because composite 58.6 is promising but evidence depth is still limited.",
+      "stars": 437844,
+      "confidence": 0.5,
+      "isDeprecated": false,
+      "replacement": null,
+      "updatedAt": "2026-03-07T01:53:19.993267",
+      "canonicalId": "freecodecamp",
+      "entityType": "technology"
     }
   ],
   "meta": {
@@ -890,88 +2463,445 @@
       "repairedDescriptions": 0,
       "rejectedByStage": {
         "insufficientSources": 0,
-        "qualityGate": 7,
-        "aiFilter": 30
+        "qualityGate": 1,
+        "aiFilter": 36
+      },
+      "runMetrics": {
+        "sources": {
+          "github_trending": {
+            "records": 150,
+            "durationSeconds": 6.3473,
+            "failures": 0
+          },
+          "hackernews": {
+            "records": 161,
+            "durationSeconds": 66.3396,
+            "failures": 0
+          },
+          "stackexchange": {
+            "records": 57,
+            "durationSeconds": 22.6756,
+            "failures": 0
+          },
+          "deps_dev": {
+            "records": 0,
+            "durationSeconds": 4.8493,
+            "failures": 0
+          },
+          "pypistats": {
+            "records": 16,
+            "durationSeconds": 3.6843,
+            "failures": 0
+          }
+        }
       },
       "ringDistribution": {
-        "adopt": 18,
-        "trial": 11,
-        "assess": 4,
-        "hold": 4
+        "adopt": 5,
+        "trial": 37,
+        "assess": 1,
+        "hold": 0
       },
-      "topAdded": [
-        {
-          "id": "python",
-          "name": "Python",
-          "ring": "adopt",
-          "marketScore": 100.0
+      "ringQuality": {
+        "adopt": {
+          "count": 5,
+          "avgMarketScore": 89.64,
+          "githubOnlyRatio": 0.0,
+          "resourceLikeCount": 0,
+          "editoriallyWeakCount": 0,
+          "topSuspicious": [],
+          "status": "good"
         },
-        {
-          "id": "ollama",
-          "name": "ollama",
-          "ring": "adopt",
-          "marketScore": 100.0
+        "trial": {
+          "count": 37,
+          "avgMarketScore": 79.39,
+          "githubOnlyRatio": 0.1892,
+          "resourceLikeCount": 0,
+          "editoriallyWeakCount": 0,
+          "topSuspicious": [
+            {
+              "id": "react",
+              "name": "React",
+              "marketScore": 85.61,
+              "reasons": [
+                "githubOnly"
+              ]
+            },
+            {
+              "id": "javascript",
+              "name": "Javascript",
+              "marketScore": 84.53,
+              "reasons": [
+                "githubOnly"
+              ]
+            },
+            {
+              "id": "linux",
+              "name": "Linux",
+              "marketScore": 84.38,
+              "reasons": [
+                "githubOnly"
+              ]
+            },
+            {
+              "id": "tensorflow",
+              "name": "Tensorflow",
+              "marketScore": 82.71,
+              "reasons": [
+                "githubOnly"
+              ]
+            },
+            {
+              "id": "flutter",
+              "name": "Flutter",
+              "marketScore": 82.63,
+              "reasons": [
+                "githubOnly"
+              ]
+            }
+          ],
+          "status": "good"
         },
-        {
-          "id": "go",
-          "name": "go",
-          "ring": "adopt",
-          "marketScore": 100.0
+        "assess": {
+          "count": 1,
+          "avgMarketScore": 77.47,
+          "githubOnlyRatio": 0.0,
+          "resourceLikeCount": 0,
+          "editoriallyWeakCount": 0,
+          "topSuspicious": [],
+          "status": "good"
         },
-        {
-          "id": "rust",
-          "name": "rust",
-          "ring": "adopt",
-          "marketScore": 100.0
-        },
-        {
-          "id": "java-design-patterns",
-          "name": "Java-Design-Patterns",
-          "ring": "adopt",
-          "marketScore": 88.34
+        "hold": {
+          "count": 0,
+          "avgMarketScore": 0.0,
+          "githubOnlyRatio": 0.0,
+          "resourceLikeCount": 0,
+          "editoriallyWeakCount": 0,
+          "topSuspicious": [],
+          "status": "good"
         }
-      ],
+      },
+      "quadrantQuality": {
+        "platforms": {
+          "count": 10,
+          "avgMarketScore": 78.14,
+          "githubOnlyRatio": 0.1,
+          "resourceLikeCount": 0,
+          "editoriallyWeakCount": 0,
+          "topSuspicious": [
+            {
+              "id": "linux",
+              "name": "Linux",
+              "marketScore": 84.38,
+              "reasons": [
+                "githubOnly"
+              ]
+            }
+          ],
+          "status": "good"
+        },
+        "techniques": {
+          "count": 10,
+          "avgMarketScore": 78.09,
+          "githubOnlyRatio": 0.0,
+          "resourceLikeCount": 0,
+          "editoriallyWeakCount": 0,
+          "topSuspicious": [],
+          "status": "good"
+        },
+        "tools": {
+          "count": 13,
+          "avgMarketScore": 82.53,
+          "githubOnlyRatio": 0.3846,
+          "resourceLikeCount": 0,
+          "editoriallyWeakCount": 0,
+          "topSuspicious": [
+            {
+              "id": "react",
+              "name": "React",
+              "marketScore": 85.61,
+              "reasons": [
+                "githubOnly"
+              ]
+            },
+            {
+              "id": "tensorflow",
+              "name": "Tensorflow",
+              "marketScore": 82.71,
+              "reasons": [
+                "githubOnly"
+              ]
+            },
+            {
+              "id": "flutter",
+              "name": "Flutter",
+              "marketScore": 82.63,
+              "reasons": [
+                "githubOnly"
+              ]
+            },
+            {
+              "id": "angular",
+              "name": "Angular",
+              "marketScore": 81.93,
+              "reasons": [
+                "githubOnly"
+              ]
+            },
+            {
+              "id": "vscode",
+              "name": "Vscode",
+              "marketScore": 81.48,
+              "reasons": [
+                "githubOnly"
+              ]
+            }
+          ],
+          "status": "good"
+        },
+        "languages": {
+          "count": 10,
+          "avgMarketScore": 82.82,
+          "githubOnlyRatio": 0.1,
+          "resourceLikeCount": 0,
+          "editoriallyWeakCount": 0,
+          "topSuspicious": [
+            {
+              "id": "javascript",
+              "name": "Javascript",
+              "marketScore": 84.53,
+              "reasons": [
+                "githubOnly"
+              ]
+            }
+          ],
+          "status": "good"
+        }
+      },
+      "quadrantRingQuality": {
+        "platforms": {
+          "adopt": {
+            "count": 1,
+            "avgMarketScore": 92.5,
+            "githubOnlyRatio": 0.0,
+            "resourceLikeCount": 0,
+            "editoriallyWeakCount": 0,
+            "topSuspicious": [],
+            "status": "good"
+          },
+          "trial": {
+            "count": 9,
+            "avgMarketScore": 76.54,
+            "githubOnlyRatio": 0.1111,
+            "resourceLikeCount": 0,
+            "editoriallyWeakCount": 0,
+            "topSuspicious": [
+              {
+                "id": "linux",
+                "name": "Linux",
+                "marketScore": 84.38,
+                "reasons": [
+                  "githubOnly"
+                ]
+              }
+            ],
+            "status": "good"
+          },
+          "assess": {
+            "count": 0,
+            "avgMarketScore": 0.0,
+            "githubOnlyRatio": 0.0,
+            "resourceLikeCount": 0,
+            "editoriallyWeakCount": 0,
+            "topSuspicious": [],
+            "status": "missing"
+          },
+          "hold": {
+            "count": 0,
+            "avgMarketScore": 0.0,
+            "githubOnlyRatio": 0.0,
+            "resourceLikeCount": 0,
+            "editoriallyWeakCount": 0,
+            "topSuspicious": [],
+            "status": "missing"
+          }
+        },
+        "techniques": {
+          "adopt": {
+            "count": 0,
+            "avgMarketScore": 0.0,
+            "githubOnlyRatio": 0.0,
+            "resourceLikeCount": 0,
+            "editoriallyWeakCount": 0,
+            "topSuspicious": [],
+            "status": "missing"
+          },
+          "trial": {
+            "count": 9,
+            "avgMarketScore": 78.15,
+            "githubOnlyRatio": 0.0,
+            "resourceLikeCount": 0,
+            "editoriallyWeakCount": 0,
+            "topSuspicious": [],
+            "status": "good"
+          },
+          "assess": {
+            "count": 1,
+            "avgMarketScore": 77.47,
+            "githubOnlyRatio": 0.0,
+            "resourceLikeCount": 0,
+            "editoriallyWeakCount": 0,
+            "topSuspicious": [],
+            "status": "good"
+          },
+          "hold": {
+            "count": 0,
+            "avgMarketScore": 0.0,
+            "githubOnlyRatio": 0.0,
+            "resourceLikeCount": 0,
+            "editoriallyWeakCount": 0,
+            "topSuspicious": [],
+            "status": "missing"
+          }
+        },
+        "tools": {
+          "adopt": {
+            "count": 1,
+            "avgMarketScore": 98.08,
+            "githubOnlyRatio": 0.0,
+            "resourceLikeCount": 0,
+            "editoriallyWeakCount": 0,
+            "topSuspicious": [],
+            "status": "good"
+          },
+          "trial": {
+            "count": 12,
+            "avgMarketScore": 81.23,
+            "githubOnlyRatio": 0.4167,
+            "resourceLikeCount": 0,
+            "editoriallyWeakCount": 0,
+            "topSuspicious": [
+              {
+                "id": "react",
+                "name": "React",
+                "marketScore": 85.61,
+                "reasons": [
+                  "githubOnly"
+                ]
+              },
+              {
+                "id": "tensorflow",
+                "name": "Tensorflow",
+                "marketScore": 82.71,
+                "reasons": [
+                  "githubOnly"
+                ]
+              },
+              {
+                "id": "flutter",
+                "name": "Flutter",
+                "marketScore": 82.63,
+                "reasons": [
+                  "githubOnly"
+                ]
+              },
+              {
+                "id": "angular",
+                "name": "Angular",
+                "marketScore": 81.93,
+                "reasons": [
+                  "githubOnly"
+                ]
+              },
+              {
+                "id": "vscode",
+                "name": "Vscode",
+                "marketScore": 81.48,
+                "reasons": [
+                  "githubOnly"
+                ]
+              }
+            ],
+            "status": "good"
+          },
+          "assess": {
+            "count": 0,
+            "avgMarketScore": 0.0,
+            "githubOnlyRatio": 0.0,
+            "resourceLikeCount": 0,
+            "editoriallyWeakCount": 0,
+            "topSuspicious": [],
+            "status": "missing"
+          },
+          "hold": {
+            "count": 0,
+            "avgMarketScore": 0.0,
+            "githubOnlyRatio": 0.0,
+            "resourceLikeCount": 0,
+            "editoriallyWeakCount": 0,
+            "topSuspicious": [],
+            "status": "missing"
+          }
+        },
+        "languages": {
+          "adopt": {
+            "count": 3,
+            "avgMarketScore": 85.87,
+            "githubOnlyRatio": 0.0,
+            "resourceLikeCount": 0,
+            "editoriallyWeakCount": 0,
+            "topSuspicious": [],
+            "status": "good"
+          },
+          "trial": {
+            "count": 7,
+            "avgMarketScore": 81.51,
+            "githubOnlyRatio": 0.1429,
+            "resourceLikeCount": 0,
+            "editoriallyWeakCount": 0,
+            "topSuspicious": [
+              {
+                "id": "javascript",
+                "name": "Javascript",
+                "marketScore": 84.53,
+                "reasons": [
+                  "githubOnly"
+                ]
+              }
+            ],
+            "status": "good"
+          },
+          "assess": {
+            "count": 0,
+            "avgMarketScore": 0.0,
+            "githubOnlyRatio": 0.0,
+            "resourceLikeCount": 0,
+            "editoriallyWeakCount": 0,
+            "topSuspicious": [],
+            "status": "missing"
+          },
+          "hold": {
+            "count": 0,
+            "avgMarketScore": 0.0,
+            "githubOnlyRatio": 0.0,
+            "resourceLikeCount": 0,
+            "editoriallyWeakCount": 0,
+            "topSuspicious": [],
+            "status": "missing"
+          }
+        }
+      },
+      "topAdded": [],
       "topDropped": [],
-      "collected": 162,
-      "normalized": 162,
-      "candidatesCore": 3,
+      "collected": 164,
+      "normalized": 164,
+      "candidatesCore": 4,
       "candidatesWatchlist": 0,
-      "candidatesBorderline": 41,
+      "candidatesBorderline": 40,
       "classified": 44,
       "llmCalls": 7,
-      "qualified": 37,
-      "output": 37,
+      "qualified": 43,
+      "output": 43,
       "watchlist": 7
-    },
-    "shadowGate": {
-      "status": "pass",
-      "coreOverlap": 1.0,
-      "leaderCoverage": 1.0,
-      "watchlistRecall": 1.0,
-      "llmCallReduction": 0.8409,
-      "filteredCount": 0,
-      "addedCount": 0,
-      "filteredByRing": {},
-      "filteredSample": [],
-      "nextAction": "rollout-approved",
-      "leaderTransitionSummary": {
-        "candidateCount": 0,
-        "promotedCount": 0
-      },
-      "leaderState": {
-        "stableLeaders": [
-          "go",
-          "java-design-patterns",
-          "ollama",
-          "python",
-          "rust"
-        ],
-        "candidateChanges": {},
-        "promotedChanges": [],
-        "lastRunId": "2026-03-06T15:58:44.108154",
-        "promotionRuns": 3
-      },
-      "candidateChanges": {}
     }
   }
 }
