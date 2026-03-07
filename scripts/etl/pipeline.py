@@ -31,8 +31,8 @@ from etl.checkpoint import CheckpointStore
 from etl.history_store import HistoryStore
 from etl.description_quality import is_valid_description
 from etl.classifier import TechnologyClassifier, ClassificationResult
-from etl.market_scoring import calculate_confidence, score_technology, scale_signal_logarithmically
-from etl.ring_assignment import assign_rings
+from etl.market_scoring import calculate_confidence, score_technology_breakdown, scale_signal_logarithmically
+from etl.ring_policy import decide_ring
 from etl.sources.github_trending import GitHubTrendingSource
 from etl.sources.hackernews import HackerNewsSource
 from etl.sources.deps_dev import DepsDevSource
@@ -590,13 +590,6 @@ class RadarPipeline:
         return None
 
     def _apply_market_scoring(self, technologies: List[NormalizedTech]) -> List[NormalizedTech]:
-        # Supported external signals: GitHub adoption plus Hacker News buzz.
-        weights = {
-            "gh_momentum": self.config.scoring.weights.github_momentum,
-            "gh_popularity": self.config.scoring.weights.github_popularity,
-            "hn_heat": self.config.scoring.weights.hn_heat,
-        }
-
         previous_scores: Dict[str, float] = {}
         if self.previous_snapshot:
             for entry in self.previous_snapshot.get("technologies", []):
@@ -621,15 +614,21 @@ class RadarPipeline:
                 float(tech.signals.get("hn_heat", 0.0)),
             ]
             variance = pvariance(signal_values) if len(signal_values) > 1 else 0.0
-            source_count = len(set(tech.sources))
-            tech.market_score = score_technology(
+            score_summary = score_technology_breakdown(
                 tech.signals,
-                weights=weights,
-                source_count=source_count,
+                evidence=getattr(tech, "evidence", []),
                 github_stars=float(tech.stars),
                 github_forks=float(tech.forks),
             )
-            tech.signals["score_confidence"] = calculate_confidence(source_count, variance)
+            tech.market_score = score_summary.composite
+            tech.signals["adoption_score"] = score_summary.adoption
+            tech.signals["mindshare_score"] = score_summary.mindshare
+            tech.signals["health_score"] = score_summary.health
+            tech.signals["risk_score"] = score_summary.risk
+            tech.signals["source_coverage"] = float(score_summary.source_coverage)
+            tech.signals["has_external_adoption"] = 1.0 if score_summary.has_external_adoption else 0.0
+            tech.signals["github_only"] = 1.0 if score_summary.github_only else 0.0
+            tech.signals["score_confidence"] = calculate_confidence(score_summary.source_coverage, variance)
 
             tech_id = tech.name.lower().replace(" ", "-")
             prev_score = previous_scores.get(tech_id)
@@ -909,23 +908,6 @@ class RadarPipeline:
                 if tech_id:
                     previous_map[str(tech_id)] = tech
 
-        ring_inputs: List[Dict[str, Any]] = []
-        for item in items:
-            tech_id = item.name.lower().replace(" ", "-")
-            previous_entry = previous_map.get(tech_id)
-            market_score = float(getattr(item, "market_score", 0.0))
-            trend_delta = 0.0
-            if previous_entry is not None:
-                previous_market_score = float(previous_entry.get("marketScore", 0.0))
-                trend_delta = market_score - previous_market_score
-            ring_inputs.append(
-                {
-                    "id": tech_id,
-                    "market_score": market_score,
-                    "trend_delta": trend_delta,
-                }
-            )
-
         thresholds = {
             "adopt": self.config.scoring.thresholds.adopt,
             "trial": self.config.scoring.thresholds.trial,
@@ -936,27 +918,38 @@ class RadarPipeline:
             "demote_delta": self.config.scoring.hysteresis.demote_delta,
             "cooldown_weeks": self.config.scoring.hysteresis.cooldown_weeks,
         }
-        guardrail = {
-            "enabled": self.config.distribution_guardrail.enabled,
-            "max_ring_ratio": self.config.distribution_guardrail.max_ring_ratio,
-            "min_ring_count": self.config.distribution.min_per_ring,
-        }
-
-        assigned = assign_rings(
-            ring_inputs,
-            previous=previous_map,
-            thresholds=thresholds,
-            hysteresis=hysteresis,
-            guardrail=guardrail,
-        )
-        assigned_by_id = {entry["id"]: entry for entry in assigned}
-
         for item in items:
             tech_id = item.name.lower().replace(" ", "-")
-            assignment = assigned_by_id.get(tech_id, {})
-            ring = assignment.get("ring", item.ring)
-            trend_delta = float(assignment.get("trend_delta", 0.0))
-            prev_ring = assignment.get("previous_ring")
+            previous_entry = previous_map.get(tech_id)
+            prev_ring = previous_entry.get("ring") if isinstance(previous_entry, dict) else None
+            market_score = float(getattr(item, "market_score", 0.0))
+            trend_delta = 0.0
+            if previous_entry is not None:
+                previous_market_score = float(previous_entry.get("marketScore", 0.0))
+                trend_delta = market_score - previous_market_score
+
+            signals = getattr(item, "signals", {}) or {}
+            trial_editorial_exception = is_trial_ring_editorially_eligible(
+                item.name,
+                item.description,
+                getattr(item, "topics", []),
+            )
+            ring = decide_ring(
+                {
+                    "adoption": float(signals.get("adoption_score", 0.0) or 0.0),
+                    "mindshare": float(signals.get("mindshare_score", 0.0) or 0.0),
+                    "health": float(signals.get("health_score", 0.0) or 0.0),
+                    "risk": float(signals.get("risk_score", 0.0) or 0.0),
+                    "composite": market_score,
+                },
+                source_coverage=max(1, int(round(float(signals.get("source_coverage", 1.0) or 1.0)))),
+                has_external_adoption=bool(float(signals.get("has_external_adoption", 0.0) or 0.0)),
+                github_only=bool(float(signals.get("github_only", 0.0) or 0.0)),
+                editorial_exception=trial_editorial_exception,
+                previous_ring=prev_ring if isinstance(prev_ring, str) else None,
+                thresholds=thresholds,
+                hysteresis=hysteresis,
+            )
 
             if ring in {"adopt", "trial"} and is_resource_like_repository(item.name, item.description):
                 ring = "assess"

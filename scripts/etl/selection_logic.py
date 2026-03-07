@@ -3,11 +3,25 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 
-from etl.ai_filter import FilteredItem, StrategicValue, is_resource_like_repository
+from etl.ai_filter import (
+    FilteredItem,
+    StrategicValue,
+    is_resource_like_repository,
+    is_strong_ring_editorially_eligible,
+    is_trial_ring_editorially_eligible,
+)
 from etl.classifier import ClassificationResult
 from etl.candidate_selector import CandidateSelection
 
 logger = logging.getLogger(__name__)
+
+
+def _selection_signal_bonus(signals: Any) -> float:
+    if not isinstance(signals, dict):
+        return 0.0
+    source_coverage = float(signals.get("source_coverage", 0.0) or 0.0)
+    has_external_adoption = float(signals.get("has_external_adoption", 0.0) or 0.0)
+    return (source_coverage * 1.5) + (has_external_adoption * 4.0)
 
 
 def strategic_filter(
@@ -35,6 +49,7 @@ def strategic_filter(
     rejected_low_sources = 0
     rejected_quality_gate = 0
     for tech, classification in classified_pairs:
+        effective_classification = classification
         if len(tech.sources) < min_sources:
             logger.debug(
                 "Filtering out %s: only %s sources (min: %s)",
@@ -54,15 +69,52 @@ def strategic_filter(
             rejected_quality_gate += 1
             continue
 
-        if classification.ring in {"adopt", "trial"} and is_resource_like_repository(tech.name, classification.description or tech.description):
-            logger.debug(
-                "Filtering out %s: resource-like repository is not eligible for strong editorial rings",
+        if classification.ring in {"adopt", "trial"}:
+            if is_resource_like_repository(tech.name, classification.description or tech.description):
+                logger.debug(
+                    "Filtering out %s: resource-like repository is not eligible for strong editorial rings",
+                    tech.name,
+                )
+                rejected_quality_gate += 1
+                continue
+            if classification.ring == "adopt" and not is_strong_ring_editorially_eligible(
                 tech.name,
-            )
-            rejected_quality_gate += 1
-            continue
+                classification.description or tech.description,
+                getattr(tech, "topics", []),
+            ):
+                logger.debug(
+                    "Downgrading %s to assess: repository is not eligible for strong editorial rings",
+                    tech.name,
+                )
+                effective_classification = ClassificationResult(
+                    name=classification.name,
+                    quadrant=classification.quadrant,
+                    ring="assess",
+                    description=classification.description,
+                    confidence=classification.confidence,
+                    trend=classification.trend,
+                    strategic_value=classification.strategic_value,
+                )
+            elif classification.ring == "trial" and not is_trial_ring_editorially_eligible(
+                tech.name,
+                classification.description or tech.description,
+                getattr(tech, "topics", []),
+            ):
+                logger.debug(
+                    "Downgrading %s to assess: repository is not eligible for editorial trial ring",
+                    tech.name,
+                )
+                effective_classification = ClassificationResult(
+                    name=classification.name,
+                    quadrant=classification.quadrant,
+                    ring="assess",
+                    description=classification.description,
+                    confidence=classification.confidence,
+                    trend=classification.trend,
+                    strategic_value=classification.strategic_value,
+                )
 
-        qualified_techs.append((tech, classification))
+        qualified_techs.append((tech, effective_classification))
 
     logger.info(
         "Phase 5 - %s technologies passed quality gates out of %s classified",
@@ -110,7 +162,10 @@ def strategic_filter(
     selected_ids: Set[str] = set()
 
     def _score(item: FilteredItem) -> float:
-        return float(getattr(item, "market_score", 0.0)) * float(item.confidence)
+        return (
+            float(getattr(item, "market_score", 0.0)) * float(item.confidence)
+            + _selection_signal_bonus(getattr(item, "signals", {}))
+        )
 
     min_per_quadrant = max(1, int(getattr(pipeline.config.distribution, "min_per_quadrant", 1)))
     max_per_quadrant = max(min_per_quadrant, int(getattr(pipeline.config.distribution, "max_per_quadrant", target_max)))
@@ -140,7 +195,7 @@ def strategic_filter(
         qualified_techs,
         key=lambda pair: (
             1 if pipeline._normalize_id(pair[1].name) in previous_main_ids else 0,
-            pair[0].market_score * pair[1].confidence,
+            pair[0].market_score * pair[1].confidence + _selection_signal_bonus(pair[0].signals),
         ),
         reverse=True,
     )
@@ -354,7 +409,19 @@ def build_watchlist_items(
                 },
             )
 
-            if item.ring == "adopt":
+            if item.ring == "adopt" and not is_strong_ring_editorially_eligible(
+                name,
+                description,
+                [],
+            ):
+                item.ring = "assess"
+            elif item.ring == "trial" and not is_trial_ring_editorially_eligible(
+                name,
+                description,
+                [],
+            ):
+                item.ring = "assess"
+            elif item.ring == "adopt":
                 item.ring = "trial"
 
             watchlist.append(item)
@@ -376,7 +443,19 @@ def build_watchlist_items(
             continue
 
         item = pipeline._build_filtered_item(tech, classification, confidence_floor=0.5)
-        if item.ring == "adopt":
+        if item.ring == "adopt" and not is_strong_ring_editorially_eligible(
+            tech.name,
+            classification.description or tech.description,
+            getattr(tech, "topics", []),
+        ):
+            item.ring = "assess"
+        elif item.ring == "trial" and not is_trial_ring_editorially_eligible(
+            tech.name,
+            classification.description or tech.description,
+            getattr(tech, "topics", []),
+        ):
+            item.ring = "assess"
+        elif item.ring == "adopt":
             item.ring = "trial"
         if tech.trend_delta >= 0:
             item.trend = "up"

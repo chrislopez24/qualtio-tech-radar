@@ -1039,6 +1039,107 @@ class TestPipelineFlow:
         assert assigned_by_name["You-Dont-Know-JS"].ring == "assess"
         assert assigned_by_name["Kubernetes"].ring == "trial"
 
+    def test_apply_market_scoring_attaches_evidence_subscores_and_coverage(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.evidence import EvidenceRecord
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        technologies = [
+            NormalizedTech(
+                name="React",
+                description="UI library",
+                stars=230000,
+                forks=47000,
+                language="JavaScript",
+                topics=["ui", "framework"],
+                url="https://github.com/facebook/react",
+                sources=["github", "hackernews"],
+                signals={"gh_momentum": 95.0, "gh_popularity": 95.0, "hn_heat": 70.0},
+                evidence=[
+                    EvidenceRecord(
+                        source="deps_dev",
+                        metric="reverse_dependents",
+                        subject_id="npm:react",
+                        raw_value=850000,
+                        normalized_value=97.0,
+                        observed_at="2026-03-07T00:00:00Z",
+                        freshness_days=1,
+                    ),
+                    EvidenceRecord(
+                        source="stackexchange",
+                        metric="tag_activity",
+                        subject_id="reactjs",
+                        raw_value=240000,
+                        normalized_value=89.0,
+                        observed_at="2026-03-07T00:00:00Z",
+                        freshness_days=1,
+                    ),
+                ],
+            )
+        ]
+
+        scored = pipeline._apply_market_scoring(technologies)
+
+        signals = scored[0].signals
+        assert signals["adoption_score"] > 80.0
+        assert signals["mindshare_score"] > 70.0
+        assert signals["source_coverage"] >= 3
+        assert signals["has_external_adoption"] == 1.0
+
+    def test_assign_market_rings_uses_evidence_policy_for_adopt_gate(self):
+        from etl.pipeline import RadarPipeline
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        github_only = MockFilteredItem(
+            name="HotRepo",
+            description="Popular GitHub project",
+            stars=180000,
+            quadrant="tools",
+            ring="adopt",
+            confidence=0.9,
+            trend="up",
+            strategic_value="medium",
+        )
+        setattr(github_only, "market_score", 86.0)
+        setattr(github_only, "signals", {
+            "source_coverage": 1.0,
+            "has_external_adoption": 0.0,
+            "github_only": 1.0,
+        })
+
+        corroborated = MockFilteredItem(
+            name="React",
+            description="UI library",
+            stars=230000,
+            quadrant="tools",
+            ring="adopt",
+            confidence=0.95,
+            trend="up",
+            strategic_value="high",
+        )
+        setattr(corroborated, "market_score", 86.0)
+        setattr(corroborated, "signals", {
+            "source_coverage": 3.0,
+            "has_external_adoption": 1.0,
+            "github_only": 0.0,
+        })
+
+        assigned = pipeline._assign_market_rings([github_only, corroborated])
+        assigned_by_name = {item.name: item for item in assigned}
+
+        assert assigned_by_name["HotRepo"].ring != "adopt"
+        assert assigned_by_name["React"].ring == "adopt"
+
     def test_strategic_filter_backfills_to_target_min_when_quadrant_caps_block(self):
         from etl.pipeline import RadarPipeline, NormalizedTech
         from etl.classifier import ClassificationResult
