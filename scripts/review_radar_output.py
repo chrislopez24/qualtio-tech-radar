@@ -94,6 +94,18 @@ def _extract_signal_values(item: Dict[str, Any]) -> Dict[str, float]:
 
 
 def _is_github_only_signal(item: Dict[str, Any]) -> bool:
+    evidence_summary = item.get("evidenceSummary")
+    if isinstance(evidence_summary, dict) and "githubOnly" in evidence_summary:
+        return bool(evidence_summary.get("githubOnly"))
+
+    source_coverage = item.get("sourceCoverage")
+    if source_coverage is not None:
+        try:
+            if int(source_coverage) > 1:
+                return False
+        except (TypeError, ValueError):
+            pass
+
     signal_values = _extract_signal_values(item)
     has_github_signal = signal_values["ghMomentum"] > 0 or signal_values["ghPopularity"] > 0
     has_hn_signal = signal_values["hnHeat"] > 0

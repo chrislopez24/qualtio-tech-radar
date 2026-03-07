@@ -32,6 +32,18 @@ def _empty_snapshot() -> dict[str, Any]:
 
 
 def is_github_only_signal(entry: dict[str, Any]) -> bool:
+    evidence_summary = entry.get("evidenceSummary")
+    if isinstance(evidence_summary, dict) and "githubOnly" in evidence_summary:
+        return bool(evidence_summary.get("githubOnly"))
+
+    source_coverage = entry.get("sourceCoverage")
+    if source_coverage is not None:
+        try:
+            if int(source_coverage) > 1:
+                return False
+        except Exception:
+            pass
+
     signals = entry.get("signals", {})
     if not isinstance(signals, dict):
         return False

@@ -705,3 +705,31 @@ def test_shadow_eval_allows_trial_github_only_ratio_at_threshold():
 
     assert report["trial_github_only_ratio"] == 0.5
     assert merged["gate_status"] == "warn"
+
+
+def test_shadow_eval_respects_source_coverage_when_detecting_github_only_entries():
+    from etl.shadow_eval import compare_outputs
+
+    baseline = {"technologies": [{"id": "django"}]}
+    optimized = {
+        "technologies": [
+            {
+                "id": "django",
+                "quadrant": "tools",
+                "ring": "adopt",
+                "signals": {"ghMomentum": 92, "ghPopularity": 95, "hnHeat": 0},
+                "sourceCoverage": 3,
+                "evidenceSummary": {
+                    "sources": ["github", "stackexchange", "pypistats"],
+                    "metrics": ["downloads_last_month", "tag_activity"],
+                    "hasExternalAdoption": True,
+                    "githubOnly": False,
+                },
+            }
+        ]
+    }
+
+    report = compare_outputs(baseline, optimized)
+
+    assert report["github_only_count"] == 0
+    assert report["adopt_github_only_count"] == 0

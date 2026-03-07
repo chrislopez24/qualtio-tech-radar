@@ -202,6 +202,18 @@ def _signal_value(entry: Dict[str, Any], *keys: str) -> float:
 
 
 def _is_github_only_entry(entry: Dict[str, Any]) -> bool:
+    evidence_summary = entry.get("evidenceSummary")
+    if isinstance(evidence_summary, dict) and "githubOnly" in evidence_summary:
+        return bool(evidence_summary.get("githubOnly"))
+
+    source_coverage = entry.get("sourceCoverage")
+    if source_coverage is not None:
+        try:
+            if int(source_coverage) > 1:
+                return False
+        except Exception:
+            pass
+
     gh_momentum = _signal_value(entry, "ghMomentum", "gh_momentum")
     gh_popularity = _signal_value(entry, "ghPopularity", "gh_popularity")
     hn_heat = _signal_value(entry, "hnHeat", "hn_heat")

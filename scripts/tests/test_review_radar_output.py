@@ -305,3 +305,37 @@ def test_review_summary_allows_trial_github_only_ratio_below_threshold():
 
     assert summary["publishReadiness"]["status"] == "warn"
     assert summary["suspiciousItems"]["trialGithubOnlyRatio"] == 0.5
+
+
+def test_review_summary_respects_evidence_summary_for_non_github_only_items():
+    from review_radar_output import build_review_summary
+
+    payload = {
+        "updatedAt": "2026-03-06T12:00:00Z",
+        "technologies": [
+            {
+                "id": "django",
+                "name": "Django",
+                "quadrant": "tools",
+                "ring": "adopt",
+                "trend": "up",
+                "marketScore": 98.0,
+                "description": "Framework",
+                "signals": {"ghMomentum": 90, "ghPopularity": 88, "hnHeat": 0},
+                "sourceCoverage": 3,
+                "evidenceSummary": {
+                    "sources": ["github", "stackexchange", "pypistats"],
+                    "metrics": ["downloads_last_month", "tag_activity"],
+                    "hasExternalAdoption": True,
+                    "githubOnly": False,
+                },
+            }
+        ],
+        "watchlist": [],
+        "meta": {"pipeline": {}, "shadowGate": {"status": "warn"}},
+    }
+
+    summary = build_review_summary(payload, input_name="data.ai.json")
+
+    assert summary["suspiciousItems"]["githubOnlySignals"] == []
+    assert summary["publishReadiness"]["status"] == "pass"
