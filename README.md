@@ -1,6 +1,6 @@
 # Qualtio Tech Radar
 
-AI-powered Technology Radar with automated weekly updates from GitHub, Hacker News, Stack Exchange, deps.dev, PyPI Stats, and OSV. Rings are assigned by evidence-based scoring plus editorial gates so strong rings require corroborated adoption instead of raw repo popularity.
+AI-powered Technology Radar with automated weekly updates from GitHub, Hacker News, deps.dev, PyPI Stats, and OSV. Rings are assigned by evidence-based scoring plus editorial gates so strong rings require corroborated adoption instead of raw repo popularity.
 
 ![Tech Radar Preview](./docs/preview.png)
 
@@ -30,7 +30,7 @@ AI-powered Technology Radar with automated weekly updates from GitHub, Hacker Ne
   - Selective LLM classification (70%+ call reduction)
   - Drift-aware decision caching
   - Shadow quality evaluation
-  - Evidence source adapters (`deps.dev`, `Stack Exchange`, `PyPI Stats`, `OSV`)
+  - Evidence source adapters (`deps.dev`, `PyPI Stats`, `OSV`)
   - Source registry + run metrics
   - Candidate selection (core/watchlist/borderline)
 
@@ -72,7 +72,6 @@ SYNTHETIC_MODEL=hf:MiniMaxAI/MiniMax-M2.5
 
 # Optional but recommended for source reliability
 GH_TOKEN=your_github_token_here
-STACKEXCHANGE_KEY=your_stackexchange_key_here
 ```
 
 ### 3. Run Development Server
@@ -119,7 +118,7 @@ The static site will be generated in the `dist/` folder.
 
 ## Data Pipeline (ETL)
 
-The ETL pipeline collects external technology signals from GitHub, Hacker News, Stack Exchange, deps.dev, PyPI Stats, and OSV, classifies them using AI, and generates the radar data files. It does not perform a secondary repository deep-scan pass.
+The ETL pipeline collects external technology signals from GitHub, Hacker News, deps.dev, PyPI Stats, and OSV, classifies them using AI, and generates the radar data files. It does not perform a secondary repository deep-scan pass.
 
 ### Quick Start
 
@@ -130,7 +129,7 @@ python scripts/main.py
 ```
 
 This will:
-1. Fetch external signals plus evidence records from GitHub, Hacker News, Stack Exchange, deps.dev, PyPI Stats, and OSV
+1. Fetch external signals plus evidence records from GitHub, Hacker News, deps.dev, PyPI Stats, and OSV
 2. Compute evidence-based sub-scores (`adoption`, `mindshare`, `health`, `risk`) per technology
 3. Assign rings using policy gates, hysteresis, and editorial guardrails
 4. Classify quadrants/descriptions with Synthetic API support
@@ -147,13 +146,11 @@ Environment used by the pipeline:
 | `SYNTHETIC_MODEL` | Model to use (default: `hf:MiniMaxAI/MiniMax-M2.5`) | No |
 | `SYNTHETIC_API_URL` | Synthetic API endpoint (default: `https://api.synthetic.new/v1`) | No |
 | `GH_TOKEN` | GitHub personal access token for higher GitHub API quota | No |
-| `STACKEXCHANGE_KEY` | Stack Exchange API key for mindshare coverage stability | No, but strongly recommended for production |
 
 Use `SYNTHETIC_MODEL` to switch models (for example, `hf:moonshotai/Kimi-K2.5` for evaluation runs). Keep `SYNTHETIC_API_URL` unchanged unless your environment explicitly requires a different endpoint.
 
 Source-specific notes:
 - `deps.dev`, `PyPI Stats`, and `OSV` work without API keys.
-- `Stack Exchange` is public, but keyless access is fragile on shared IPs and can be throttled for hours. Production runs should set `STACKEXCHANGE_KEY`.
 - `PyPI Stats` is best-effort and can return `429` under bursty access. The ETL uses persistent cache plus explicit package mapping to keep it useful without over-querying.
 - `deps.dev` evidence is only attached for curated canonical package mappings, not by naive repo-name fallback.
 
@@ -169,8 +166,6 @@ sources:
     enabled: true
   deps_dev:
     enabled: true
-  stackexchange:
-    enabled: true
   pypistats:
     enabled: true
   osv:
@@ -179,7 +174,7 @@ sources:
 
 Or via CLI:
 ```bash
-python scripts/main.py --sources github_trending,hackernews,deps_dev,stackexchange,pypistats,osv
+python scripts/main.py --sources github_trending,hackernews,deps_dev,pypistats,osv
 ```
 
 ### Pipeline Options

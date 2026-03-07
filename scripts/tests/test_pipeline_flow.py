@@ -1962,6 +1962,79 @@ class TestPipelineFlow:
             assert call_count[0] <= 1, \
                 f"Expected at most 1 LLM call, got {call_count[0]}"
 
+    def test_classify_borderline_batch_skips_llm_for_editorial_or_strong_evidence_cases(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+        from etl.config import ETLConfig
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.AITechnologyFilter'), \
+             patch('etl.pipeline.TechnologyClassifier') as mock_classifier:
+
+            classifier = mock_classifier.return_value
+            classifier.classify_batch.return_value = [
+                ClassificationResult(
+                    name="EdgeTool",
+                    quadrant="tools",
+                    ring="trial",
+                    description="Edge tool",
+                    confidence=0.7,
+                    trend="stable",
+                )
+            ]
+
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        editorial_weak = NormalizedTech(
+            name="awesome-python",
+            description="A curated list of Python frameworks and libraries.",
+            stars=280000,
+            forks=25000,
+            language="Python",
+            topics=["awesome-list"],
+            url="https://github.com/vinta/awesome-python",
+            sources=["github"],
+            signals={"score_confidence": 0.3},
+        )
+        evidence_strong = NormalizedTech(
+            name="TypeScript",
+            description="Typed superset of JavaScript",
+            stars=100000,
+            forks=13000,
+            language="TypeScript",
+            topics=["language"],
+            url="https://github.com/microsoft/TypeScript",
+            sources=["github", "hackernews", "deps_dev", "osv"],
+            signals={
+                "score_confidence": 0.85,
+                "source_coverage": 4.0,
+                "has_external_adoption": 1.0,
+            },
+        )
+        unresolved = NormalizedTech(
+            name="EdgeTool",
+            description="Tool with unclear category",
+            stars=1800,
+            forks=210,
+            language="Python",
+            topics=["tool"],
+            url="https://github.com/example/edge-tool",
+            sources=["github"],
+            signals={"score_confidence": 0.4},
+        )
+
+        result = pipeline._classify_borderline_batch(
+            [editorial_weak, evidence_strong, unresolved],
+            budget_remaining=3,
+        )
+
+        assert len(result) == 3
+        assert classifier.classify_batch.call_count == 1
+        batch = classifier.classify_batch.call_args.args[0]
+        assert len(batch) == 1
+        assert batch[0]["name"] == "EdgeTool"
+
     def test_pipeline_enforces_llm_budget(self):
         """Pipeline should enforce max_calls_per_run budget"""
         from etl.pipeline import RadarPipeline

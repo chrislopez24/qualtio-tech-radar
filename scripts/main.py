@@ -36,7 +36,6 @@ SUPPORTED_SOURCE_NAMES = {
     "github_trending",
     "hackernews",
     "deps_dev",
-    "stackexchange",
     "pypistats",
     "osv",
 }
@@ -195,7 +194,6 @@ def main():
             config.sources.github_trending.enabled = "github_trending" in source_names
             config.sources.hackernews.enabled = "hackernews" in source_names
             config.sources.deps_dev.enabled = "deps_dev" in source_names
-            config.sources.stackexchange.enabled = "stackexchange" in source_names
             config.sources.pypistats.enabled = "pypistats" in source_names
             config.sources.osv.enabled = "osv" in source_names
 

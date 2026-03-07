@@ -842,12 +842,23 @@ class RadarPipeline:
         if not self.classifier:
             return self._fallback_classification(borderline_techs)
 
+        deterministic_techs: List[NormalizedTech] = []
+        llm_candidates: List[NormalizedTech] = []
+        for tech in borderline_techs:
+            if self._should_use_deterministic_borderline_classification(tech):
+                deterministic_techs.append(tech)
+            else:
+                llm_candidates.append(tech)
+
+        if not llm_candidates:
+            return self._fallback_classification(borderline_techs)
+
         # Respect budget - prioritize by uncertainty (lower confidence first)
-        prioritized = sorted(borderline_techs, key=lambda t: t.signals.get("score_confidence", 0.5))
+        prioritized = sorted(llm_candidates, key=lambda t: t.signals.get("score_confidence", 0.5))
         to_classify = prioritized[:budget_remaining]
 
-        if len(to_classify) < len(borderline_techs):
-            logger.warning(f"Budget limited: classifying {len(to_classify)} of {len(borderline_techs)} "
+        if len(to_classify) < len(llm_candidates):
+            logger.warning(f"Budget limited: classifying {len(to_classify)} of {len(llm_candidates)} "
                           f"borderline candidates via LLM")
 
         tech_dicts = [
@@ -865,7 +876,7 @@ class RadarPipeline:
             llm_classifications = self.classifier.classify_batch(tech_dicts)
 
             # For items that exceeded budget, use fallback
-            fallback_techs = [t for t in borderline_techs if t not in to_classify]
+            fallback_techs = deterministic_techs + [t for t in llm_candidates if t not in to_classify]
             if fallback_techs:
                 fallback_classifications = self._fallback_classification(fallback_techs)
                 # Merge results
@@ -875,6 +886,19 @@ class RadarPipeline:
         except Exception as e:
             logger.warning(f"AI classification failed: {e}, using fallback for borderline")
             return self._fallback_classification(borderline_techs)
+
+    def _should_use_deterministic_borderline_classification(self, tech: NormalizedTech) -> bool:
+        if is_resource_like_repository(tech.name, tech.description):
+            return True
+        if not is_trial_ring_editorially_eligible(tech.name, tech.description, getattr(tech, "topics", [])):
+            return True
+
+        signals = getattr(tech, "signals", {}) or {}
+        source_coverage = int(round(float(signals.get("source_coverage", 0.0) or 0.0)))
+        score_confidence = float(signals.get("score_confidence", 0.0) or 0.0)
+        has_external_adoption = bool(float(signals.get("has_external_adoption", 0.0) or 0.0))
+
+        return has_external_adoption and source_coverage >= 3 and score_confidence >= 0.7
 
     def _classify_ai(self, technologies: List[NormalizedTech]) -> List[ClassificationResult]:
         """Phase 4: AI Classification (legacy - used for non-selective mode)"""

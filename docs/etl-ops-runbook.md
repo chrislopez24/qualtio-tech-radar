@@ -8,7 +8,7 @@
 
 ## Manual Execution
 
-The production ETL run is driven by GitHub, Hacker News, Stack Exchange, deps.dev, PyPI Stats, and OSV. There is no separate repository deep-scan step to configure or troubleshoot.
+The production ETL run is driven by GitHub, Hacker News, deps.dev, PyPI Stats, and OSV. There is no separate repository deep-scan step to configure or troubleshoot.
 
 ### Trigger Pipeline
 
@@ -57,10 +57,6 @@ cat artifacts/shadow_eval.json
 # GitHub Token
 ghe secret set GH_TOKEN --repo chrislopez24/qualtio-tech-radar
 # Paste: ghp_xxx
-
-# Stack Exchange API key (recommended for stable mindshare coverage)
-ghe secret set STACKEXCHANGE_KEY --repo chrislopez24/qualtio-tech-radar
-# Paste: stackexchange_key_xxx
 
 # AI API Key
 ghe secret set SYNTHETIC_API_KEY --repo chrislopez24/qualtio-tech-radar
@@ -194,14 +190,13 @@ Metrics compared against baseline:
 The ETL now supports public evidence sources directly from `scripts/config.yaml` or `--sources`:
 
 ```bash
-python scripts/main.py --sources github_trending,hackernews,deps_dev,stackexchange,pypistats,osv
+python scripts/main.py --sources github_trending,hackernews,deps_dev,pypistats,osv
 ```
 
-Default production config keeps all six enabled.
+Default production config keeps five enabled (`stackexchange` disabled).
 
 Operational notes:
 - `deps.dev`: best effort package dependents
-- `stackexchange`: mindshare corroboration; without `STACKEXCHANGE_KEY` shared-IP throttling can block coverage for hours
 - `pypistats`: Python-only adoption evidence; best-effort, daily-updated, can return `429`
 - `osv`: vulnerability pressure
 - `deps.dev` and `pypistats` use explicit canonical package mappings to avoid repo-name false positives
@@ -210,7 +205,6 @@ If one of these degrades, the run should still complete and the failure is visib
 
 Production guidance:
 - `SYNTHETIC_API_KEY` is required.
-- `STACKEXCHANGE_KEY` is strongly recommended for any scheduled/CI ETL run.
 - `GH_TOKEN` is recommended for GitHub quota headroom.
 - `deps.dev`, `pypistats`, and `osv` do not require API keys.
 
