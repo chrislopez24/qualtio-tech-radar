@@ -47,7 +47,7 @@ from etl.sources.osv_source import OSVSource
 from etl.candidate_selector import select_candidates, CandidateSelection
 from etl.llm_cache import LLMDecisionCache
 from etl.quadrant_logic import infer_quadrant, quadrant_affinity
-from etl.selection_logic import strategic_filter, build_watchlist_items
+from etl.selection_logic import strategic_filter, build_watchlist_items, rebalance_soft_ring_targets
 from etl.evidence import EvidenceRecord
 
 logger = logging.getLogger(__name__)
@@ -349,6 +349,7 @@ class RadarPipeline:
             "rejected_ai_filter": 0,
         }
         self._last_llm_calls: int = 0
+        self._last_selection_candidates: List[FilteredItem] = []
         self.run_metrics = RunMetrics()
         
         self._init_components()
@@ -930,21 +931,11 @@ class RadarPipeline:
         """Fallback classification without AI"""
         results = []
         for tech in technologies:
-            if tech.stars > 10000 or tech.hn_mentions > 50:
-                ring = 'adopt'
-            elif tech.stars > 1000 or tech.hn_mentions > 10:
-                ring = 'trial'
-            elif tech.stars > 100 or tech.hn_mentions > 5:
-                ring = 'assess'
-            else:
-                ring = 'hold'
-
             quadrant = self._infer_quadrant(tech)
 
             results.append(ClassificationResult(
                 name=tech.name,
                 quadrant=quadrant,
-                ring=ring,
                 description=tech.description or f"{tech.name} technology with measurable adoption and market momentum signals.",
                 confidence=0.5,
                 trend='stable'
@@ -973,6 +964,62 @@ class RadarPipeline:
             return StrategicValue.LOW
         return StrategicValue.MEDIUM
 
+    def _coerce_evidence_records(self, raw_records: Any) -> List[EvidenceRecord]:
+        records: List[EvidenceRecord] = []
+        for raw in raw_records if isinstance(raw_records, list) else []:
+            if isinstance(raw, EvidenceRecord):
+                records.append(raw)
+                continue
+            if not isinstance(raw, dict):
+                continue
+            try:
+                records.append(
+                    EvidenceRecord(
+                        source=str(raw.get("source", "")),
+                        metric=str(raw.get("metric", "")),
+                        subject_id=str(raw.get("subjectId") or raw.get("subject_id") or ""),
+                        raw_value=raw.get("rawValue", raw.get("raw_value", 0.0)),
+                        normalized_value=float(raw.get("normalizedValue", raw.get("normalized_value", 0.0)) or 0.0),
+                        observed_at=str(raw.get("observedAt", raw.get("observed_at", datetime.now().isoformat()))),
+                        freshness_days=int(raw.get("freshnessDays", raw.get("freshness_days", 1)) or 1),
+                    )
+                )
+            except Exception:
+                continue
+        return records
+
+    def _signal_evidence_fallback(self, name: str, signals: Dict[str, Any]) -> List[EvidenceRecord]:
+        if not isinstance(signals, dict):
+            return []
+
+        tech_id = self._normalize_id(name)
+        observed_at = datetime.now().isoformat()
+        synthetic: List[EvidenceRecord] = []
+
+        def _append_if_positive(source: str, metric: str, signal_key: str, subject_prefix: str) -> None:
+            try:
+                value = float(signals.get(signal_key, 0.0) or 0.0)
+            except Exception:
+                value = 0.0
+            if value <= 0.0:
+                return
+            synthetic.append(
+                EvidenceRecord(
+                    source=source,
+                    metric=metric,
+                    subject_id=f"{subject_prefix}:{tech_id}",
+                    raw_value=round(value, 2),
+                    normalized_value=max(0.0, min(100.0, round(value, 2))),
+                    observed_at=observed_at,
+                    freshness_days=1,
+                )
+            )
+
+        _append_if_positive("github", "gh_momentum", "gh_momentum", "github")
+        _append_if_positive("github", "gh_popularity", "gh_popularity", "github")
+        _append_if_positive("hackernews", "hn_heat", "hn_heat", "hn")
+        return synthetic
+
     def _build_filtered_item(
         self,
         tech: NormalizedTech,
@@ -984,10 +1031,11 @@ class RadarPipeline:
             description=classification.description,
             stars=tech.stars,
             quadrant=classification.quadrant,
-            ring=classification.ring,
+            ring="trial",
             confidence=max(confidence_floor, classification.confidence),
             trend=classification.trend,
             strategic_value=self._to_strategic_value(getattr(classification, "strategic_value", "medium")),
+            suspicion_flags=list(getattr(classification, "suspicion_flags", []) or []),
             is_deprecated=False,
             replacement=None,
         )
@@ -998,10 +1046,14 @@ class RadarPipeline:
         setattr(item, "topics", getattr(tech, "topics", []))
         setattr(item, "canonical_id", getattr(classification, "canonical_id", None) or getattr(tech, "canonical_id", None))
         setattr(item, "entity_type", getattr(classification, "entity_type", None) or getattr(tech, "entity_type", "technology"))
+        signals = getattr(tech, "signals", {}) if isinstance(getattr(tech, "signals", {}), dict) else {}
+        evidence = list(getattr(classification, "evidence", None) or getattr(tech, "evidence", []) or [])
+        if not evidence:
+            evidence = self._signal_evidence_fallback(classification.name, signals)
         setattr(
             item,
             "evidence",
-            list(getattr(classification, "evidence", None) or getattr(tech, "evidence", []) or []),
+            evidence,
         )
         return item
 
@@ -1180,7 +1232,53 @@ class RadarPipeline:
                 "stalestDays": max(freshness_days),
             }
 
-        def _why_this_ring(ring: str, market_score: float, raw_signals: Dict[str, Any], evidence_summary: Dict[str, Any], source_coverage: int) -> str:
+        def _normalize_editorial_flag(flag: Any) -> str:
+            normalized = str(flag or "").strip()
+            if not normalized:
+                return ""
+            parts = [part for part in re.split(r"[^a-zA-Z0-9]+", normalized) if part]
+            if not parts:
+                return ""
+            first = parts[0].lower()
+            rest = [part[:1].upper() + part[1:].lower() for part in parts[1:]]
+            normalized_flag = f"{first}{''.join(rest)}"
+            if normalized_flag == "missingevidence":
+                return "missingEvidence"
+            return normalized_flag
+
+        def _append_unique_flags(flags: List[str], extra_flags: List[Any]) -> None:
+            for raw_flag in extra_flags:
+                flag = _normalize_editorial_flag(raw_flag)
+                if flag and flag not in flags:
+                    flags.append(flag)
+
+        def _editorial_status(
+            raw_signals: Dict[str, Any],
+            evidence: List[EvidenceRecord],
+            suspicion_flags: List[Any],
+        ) -> tuple[str, List[str]]:
+            flags: List[str] = []
+            _append_unique_flags(flags, suspicion_flags)
+            source_coverage = _source_coverage(raw_signals, evidence)
+            if source_coverage > 0 and not evidence:
+                _append_unique_flags(flags, ["missingEvidence"])
+            status = "invalid" if flags else "clean"
+            return status, flags
+
+        def _why_this_ring(
+            ring: str,
+            market_score: float,
+            raw_signals: Dict[str, Any],
+            evidence_summary: Dict[str, Any],
+            source_coverage: int,
+            editorial_status: str,
+            editorial_flags: List[str],
+        ) -> str:
+            if editorial_status == "invalid" and "missingEvidence" in editorial_flags:
+                return (
+                    f"{ring.capitalize()} candidate scored {market_score:.1f}, but publication is blocked "
+                    f"because source coverage is claimed across {source_coverage} sources without atomic evidence."
+                )
             reason = "corroborated signals"
             if evidence_summary.get("hasExternalAdoption"):
                 reason = "external adoption evidence"
@@ -1216,9 +1314,11 @@ class RadarPipeline:
                     "hnHeat": round(float(raw_signals.get("hn_heat", 0.0)), 2),
                 }
                 evidence = list(getattr(item, "evidence", []) or [])
+                suspicion_flags = list(getattr(item, "suspicion_flags", []) or [])
                 source_coverage = _source_coverage(raw_signals, evidence)
                 evidence_summary = _evidence_summary(raw_signals, evidence)
                 source_freshness = _source_freshness(raw_signals, evidence)
+                editorial_status, editorial_flags = _editorial_status(raw_signals, evidence, suspicion_flags)
                 market_score = round(float(getattr(item, 'market_score', 0.0)), 2)
 
                 payload.append({
@@ -1234,7 +1334,17 @@ class RadarPipeline:
                     'sourceCoverage': source_coverage,
                     'sourceFreshness': source_freshness,
                     'evidenceSummary': evidence_summary,
-                    'whyThisRing': _why_this_ring(item.ring, market_score, raw_signals, evidence_summary, source_coverage),
+                    'whyThisRing': _why_this_ring(
+                        item.ring,
+                        market_score,
+                        raw_signals,
+                        evidence_summary,
+                        source_coverage,
+                        editorial_status,
+                        editorial_flags,
+                    ),
+                    'editorialStatus': editorial_status,
+                    'editorialFlags': editorial_flags,
                     'stars': item.stars,
                     'confidence': item.confidence,
                     'isDeprecated': bool(getattr(item, 'is_deprecated', False)),
@@ -1290,6 +1400,7 @@ class RadarPipeline:
             ring = str(entry.get("ring", ""))
             if ring in ring_distribution:
                 ring_distribution[ring] += 1
+        ring_fill_status, underfilled_rings = self._soft_ring_fill_status(ring_distribution)
 
         quality = build_artifact_quality(technologies)
 
@@ -1340,6 +1451,8 @@ class RadarPipeline:
                     },
                     'runMetrics': self.run_metrics.to_dict(),
                     'ringDistribution': ring_distribution,
+                    'ringFillStatus': ring_fill_status,
+                    'underfilledRings': underfilled_rings,
                     'ringQuality': quality["ringQuality"],
                     'quadrantQuality': quality["quadrantQuality"],
                     'quadrantRingQuality': quality["quadrantRingQuality"],
@@ -1381,6 +1494,58 @@ class RadarPipeline:
         return github_only and not has_external_adoption and hn_heat <= 0.0 and (
             market_score < 60.0 or not editorially_plausible
         )
+
+    def _is_editorially_valid_for_selection(self, item: FilteredItem) -> bool:
+        editorial_status = str(getattr(item, "editorial_status", "") or getattr(item, "editorialStatus", "")).strip().lower()
+        if editorial_status == "invalid":
+            return False
+
+        raw_signals = getattr(item, "signals", {}) or {}
+        if not isinstance(raw_signals, dict):
+            raw_signals = {}
+
+        source_coverage_raw = raw_signals.get("source_coverage")
+        if source_coverage_raw is None:
+            gh_momentum = float(raw_signals.get("gh_momentum", 0.0) or 0.0)
+            gh_popularity = float(raw_signals.get("gh_popularity", 0.0) or 0.0)
+            hn_heat = float(raw_signals.get("hn_heat", 0.0) or 0.0)
+            source_coverage = int((gh_momentum > 0.0 or gh_popularity > 0.0) + (hn_heat > 0.0))
+        else:
+            source_coverage = int(round(float(source_coverage_raw or 0.0)))
+        evidence = list(getattr(item, "evidence", []) or [])
+        if source_coverage > 0 and not evidence:
+            return False
+
+        if not evidence and source_coverage <= 0:
+            return True
+
+        normalized_flags = {
+            "".join(ch for ch in str(flag or "").strip().lower() if ch.isalnum())
+            for flag in (list(getattr(item, "suspicion_flags", []) or []) + list(getattr(item, "editorialFlags", []) or []))
+            if str(flag or "").strip()
+        }
+        return not normalized_flags
+
+    def _soft_ring_fill_status(self, ring_distribution: Dict[str, int]) -> tuple[Dict[str, Dict[str, Any]], List[str]]:
+        target_per_ring = max(0, int(getattr(self.config.distribution, "target_per_ring", 0) or 0))
+        max_per_ring = max(target_per_ring, int(getattr(self.config.distribution, "max_per_ring", target_per_ring) or 0))
+        ring_order = ("adopt", "trial", "assess", "hold")
+        ring_fill_status: Dict[str, Dict[str, Any]] = {}
+        underfilled_rings: List[str] = []
+
+        for ring in ring_order:
+            actual = int(ring_distribution.get(ring, 0))
+            underfilled = target_per_ring > 0 and actual < target_per_ring
+            ring_fill_status[ring] = {
+                "actual": actual,
+                "target": target_per_ring,
+                "max": max_per_ring,
+                "underfilled": underfilled,
+            }
+            if underfilled:
+                underfilled_rings.append(ring)
+
+        return ring_fill_status, underfilled_rings
 
     def _ensure_ring_presence(self, items: List[FilteredItem]) -> List[FilteredItem]:
         def _item_market_score(item: FilteredItem) -> float:
@@ -1513,6 +1678,13 @@ class RadarPipeline:
         self._save_checkpoint("filter", cursor=len(filtered_items or []))
 
         filtered_items = self._assign_market_rings(filtered_items)
+        reserve_candidates = self._assign_market_rings(list(getattr(self, "_last_selection_candidates", []) or []))
+        filtered_items = rebalance_soft_ring_targets(
+            self,
+            filtered_items,
+            reserve_candidates,
+            RADAR_QUADRANTS,
+        )
         removed_low_quality_main = len(filtered_items)
         filtered_items = [item for item in filtered_items if not self._is_low_quality_assess_item(item)]
         removed_low_quality_main -= len(filtered_items)

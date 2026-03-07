@@ -138,6 +138,8 @@ class DistributionConfig(BaseModel):
     min_per_quadrant: int = Field(ge=1, default=2)
     max_per_quadrant: int = Field(ge=1, default=5)
     min_per_ring: int = Field(ge=0, default=1)
+    target_per_ring: int = Field(ge=0, default=10)
+    max_per_ring: int = Field(ge=0, default=15)
 
 
 class MinStarsConfig(BaseModel):

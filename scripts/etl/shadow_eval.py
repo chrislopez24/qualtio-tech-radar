@@ -237,6 +237,17 @@ def _extract_source_coverage(entry: Dict[str, Any]) -> int:
     return coverage
 
 
+def _has_missing_evidence(entry: Dict[str, Any]) -> bool:
+    flags = {str(flag) for flag in entry.get("editorialFlags", []) if flag}
+    if "missingEvidence" in flags:
+        return True
+
+    source_coverage = _extract_source_coverage(entry)
+    evidence = entry.get("evidence")
+    has_evidence = isinstance(evidence, list) and len(evidence) > 0
+    return source_coverage > 0 and not has_evidence
+
+
 def _quadrants_missing_source_coverage(technologies: List[Dict[str, Any]]) -> List[str]:
     quadrants = {
         str(entry.get("quadrant", ""))
@@ -253,6 +264,8 @@ def _compute_github_bias_metrics(technologies: List[Dict[str, Any]]) -> Dict[str
             "github_only_count": 0,
             "github_only_strong_ring_count": 0,
             "github_only_strong_ring_sample": [],
+            "adopt_github_only_count": 0,
+            "trial_github_only_ratio": 0.0,
             "editorial_recommendations": [],
         }
 
@@ -305,9 +318,22 @@ def _compute_github_bias_metrics(technologies: List[Dict[str, Any]]) -> Dict[str
     }
 
 
+def _count_editorial_flags(entries: List[Dict[str, Any]]) -> Dict[str, int]:
+    missing_evidence = 0
+    quadrant_override = 0
+    for entry in entries:
+        flags = {str(flag) for flag in entry.get("editorialFlags", []) if flag}
+        missing_evidence += int("missingEvidence" in flags)
+        quadrant_override += int("quadrantMismatch" in flags)
+    return {
+        "missing_evidence_count": missing_evidence,
+        "quadrant_override_count": quadrant_override,
+    }
+
+
 def _extract_metric_inputs(baseline: Dict[str, Any], optimized: Dict[str, Any]) -> Dict[str, Any]:
     """Extract deterministic metric-computation inputs from pipeline outputs."""
-    def _filter_resource_like(entries: Any) -> List[Dict[str, Any]]:
+    def _filter_entries(entries: Any, *, drop_missing_evidence: bool = False) -> List[Dict[str, Any]]:
         filtered: List[Dict[str, Any]] = []
         for entry in entries if isinstance(entries, list) else []:
             if not isinstance(entry, dict):
@@ -316,13 +342,21 @@ def _extract_metric_inputs(baseline: Dict[str, Any], optimized: Dict[str, Any]) 
             description = str(entry.get("description") or "")
             if is_resource_like_repository(name, description):
                 continue
+            if drop_missing_evidence and _has_missing_evidence(entry):
+                continue
             filtered.append(entry)
         return filtered
 
-    baseline_techs = _filter_resource_like(baseline.get("technologies", []))
-    optimized_techs = _filter_resource_like(optimized.get("technologies", []))
-    baseline_watchlist_techs = _filter_resource_like(baseline.get("watchlist", []))
-    optimized_watchlist_techs = _filter_resource_like(optimized.get("watchlist", []))
+    baseline_techs = _filter_entries(baseline.get("technologies", []), drop_missing_evidence=False)
+    optimized_techs = _filter_entries(optimized.get("technologies", []), drop_missing_evidence=False)
+
+    baseline_watchlist_raw = baseline.get("watchlist", [])
+    optimized_watchlist_raw = optimized.get("watchlist", [])
+    baseline_watchlist_had_explicit_entries = isinstance(baseline_watchlist_raw, list) and len(baseline_watchlist_raw) > 0
+    optimized_watchlist_had_explicit_entries = isinstance(optimized_watchlist_raw, list) and len(optimized_watchlist_raw) > 0
+
+    baseline_watchlist_techs = _filter_entries(baseline_watchlist_raw, drop_missing_evidence=True)
+    optimized_watchlist_techs = _filter_entries(optimized_watchlist_raw, drop_missing_evidence=True)
 
     baseline_ids = {str(t.get("id")) for t in baseline_techs if t.get("id")}
     optimized_ids = {str(t.get("id")) for t in optimized_techs if t.get("id")}
@@ -333,9 +367,9 @@ def _extract_metric_inputs(baseline: Dict[str, Any], optimized: Dict[str, Any]) 
     baseline_watchlist = {str(t.get("id")) for t in baseline_watchlist_techs if t.get("id")}
     optimized_watchlist = {str(t.get("id")) for t in optimized_watchlist_techs if t.get("id")}
 
-    if not baseline_watchlist:
+    if not baseline_watchlist and not baseline_watchlist_had_explicit_entries:
         baseline_watchlist = {str(t.get("id")) for t in baseline_techs if t.get("trend") == "up" and t.get("id")}
-    if not optimized_watchlist:
+    if not optimized_watchlist and not optimized_watchlist_had_explicit_entries:
         optimized_watchlist = {str(t.get("id")) for t in optimized_techs if t.get("trend") == "up" and t.get("id")}
 
     baseline_ring_map = {
@@ -514,6 +548,7 @@ def compare_outputs(baseline: Dict[str, Any], optimized: Dict[str, Any]) -> Dict
         filtered_by_ring[ring] = filtered_by_ring.get(ring, 0) + 1
 
     optimized_bias = _compute_github_bias_metrics(optimized_techs)
+    editorial_flag_counts = _count_editorial_flags(optimized_techs)
 
     report = {
         "core_overlap": round(core_overlap, 4),
@@ -538,6 +573,8 @@ def compare_outputs(baseline: Dict[str, Any], optimized: Dict[str, Any]) -> Dict
         "trial_github_only_ratio": optimized_bias["trial_github_only_ratio"],
         "quadrants_missing_source_coverage": _quadrants_missing_source_coverage(optimized_techs),
         "editorial_recommendations": optimized_bias["editorial_recommendations"],
+        "missing_evidence_count": editorial_flag_counts["missing_evidence_count"],
+        "quadrant_override_count": editorial_flag_counts["quadrant_override_count"],
     }
 
     logger.info(
@@ -580,7 +617,11 @@ def classify_quality_gate(
     candidate_changes = (leader_state or {}).get("candidate_changes") or {}
     promoted_changes = (leader_state or {}).get("promoted_changes") or []
 
-    if report.get("adopt_github_only_count", 0):
+    if int(report.get("missing_evidence_count", 0) or 0) > 0:
+        status = "fail"
+        next_action = "remove-missing-evidence-items"
+        next_action_message = "Remove or repair items with missing evidence before rollout."
+    elif report.get("adopt_github_only_count", 0):
         status = "fail"
         next_action = "remove-github-only-adopt"
         next_action_message = "Remove GitHub-only items from adopt before rollout."

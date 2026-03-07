@@ -12,6 +12,8 @@ from etl.ai_filter import (
 QUADRANT_NAMES = ("platforms", "techniques", "tools", "languages")
 RING_NAMES = ("adopt", "trial", "assess", "hold")
 
+EDITORIAL_FAILURE_STATUSES = {"invalid", "editorial-failed"}
+
 
 def _missing_snapshot() -> dict[str, Any]:
     return {
@@ -54,6 +56,12 @@ def is_github_only_signal(entry: dict[str, Any]) -> bool:
     return has_github_signal and hn_heat <= 0.0
 
 
+def _append_unique_reasons(reasons: list[str], new_reasons: list[str]) -> None:
+    for reason in new_reasons:
+        if reason and reason not in reasons:
+            reasons.append(reason)
+
+
 def quality_snapshot(entries: list[dict[str, Any]], *, strong_ring: str | None = None) -> dict[str, Any]:
     count = len(entries)
     if count == 0:
@@ -69,6 +77,10 @@ def quality_snapshot(entries: list[dict[str, Any]], *, strong_ring: str | None =
         description = str(entry.get("description", ""))
         entry_id = str(entry.get("id", ""))
         effective_ring = strong_ring or str(entry.get("ring", ""))
+        editorial_flags = [str(flag) for flag in entry.get("editorialFlags", []) if flag]
+        editorial_status = str(entry.get("editorialStatus", ""))
+        is_editorially_weak = False
+
         if is_github_only_signal(entry):
             github_only_entries.append(entry)
             reasons.append("githubOnly")
@@ -80,15 +92,24 @@ def quality_snapshot(entries: list[dict[str, Any]], *, strong_ring: str | None =
             description,
             [],
         ):
-            editorially_weak_count += 1
+            is_editorially_weak = True
             reasons.append("editoriallyWeak")
         elif effective_ring == "trial" and not is_trial_ring_editorially_eligible(
             str(entry.get("name", "")),
             description,
             [],
         ):
-            editorially_weak_count += 1
+            is_editorially_weak = True
             reasons.append("editoriallyWeak")
+
+        if editorial_flags:
+            is_editorially_weak = True
+            _append_unique_reasons(reasons, editorial_flags)
+        elif editorial_status in EDITORIAL_FAILURE_STATUSES:
+            is_editorially_weak = True
+
+        if is_editorially_weak:
+            editorially_weak_count += 1
 
         if reasons:
             top_suspicious.append(

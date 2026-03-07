@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch, MagicMock
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from etl.config import ETLConfig, ClassificationConfig, FilteringConfig
+from etl.config import ETLConfig, ClassificationConfig, FilteringConfig, DistributionConfig
 
 
 @dataclass
@@ -58,6 +58,7 @@ class TestPipelineFlow:
     def test_pipeline_executes_all_phases_in_order(self):
         """Pipeline should execute all phases in correct order and produce output"""
         from etl.pipeline import RadarPipeline
+        from etl.evidence import EvidenceRecord
 
         config = ETLConfig(filtering=FilteringConfig(min_sources=1))
         config.distribution.min_per_quadrant = 1
@@ -141,7 +142,48 @@ class TestPipelineFlow:
                 ),
             ]
 
+            for item, subject_id in zip(mock_filter.return_value.filter.return_value, ["npm:react", "rust"]):
+                setattr(item, "signals", {"source_coverage": 2.0, "has_external_adoption": 1.0, "github_only": 0.0})
+                setattr(item, "evidence", [
+                    EvidenceRecord(
+                        source="deps_dev",
+                        metric="reverse_dependents",
+                        subject_id=subject_id,
+                        raw_value=1000,
+                        normalized_value=80.0,
+                        observed_at="2026-03-07T00:00:00Z",
+                        freshness_days=1,
+                    )
+                ])
+
             pipeline = RadarPipeline(config=config)
+
+            def attach_evidence(technologies):
+                evidence_map = {
+                    "react": EvidenceRecord(
+                        source="deps_dev",
+                        metric="reverse_dependents",
+                        subject_id="npm:react",
+                        raw_value=1000,
+                        normalized_value=80.0,
+                        observed_at="2026-03-07T00:00:00Z",
+                        freshness_days=1,
+                    ),
+                    "rust": EvidenceRecord(
+                        source="deps_dev",
+                        metric="reverse_dependents",
+                        subject_id="cargo:rust",
+                        raw_value=1000,
+                        normalized_value=80.0,
+                        observed_at="2026-03-07T00:00:00Z",
+                        freshness_days=1,
+                    ),
+                }
+                for tech in technologies:
+                    tech.evidence = [evidence_map[tech.name.lower()]]
+                return technologies
+
+            pipeline._attach_external_evidence = attach_evidence
             output = pipeline.run()
 
             assert "technologies" in output
@@ -1204,7 +1246,51 @@ class TestPipelineFlow:
         assert watchlist
         assert {item.name for item in watchlist} == {"Keep Me"}
 
-    def test_build_watchlist_downgrades_editorially_ineligible_strong_ring_items(self):
+    def test_build_watchlist_hydrates_signal_evidence_for_previous_items(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.candidate_selector import CandidateSelection
+
+        config = ETLConfig(filtering=FilteringConfig(min_sources=1))
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=config)
+
+        pipeline.previous_snapshot = {
+            "watchlist": [
+                {
+                    "id": "legacy-go",
+                    "name": "Go",
+                    "quadrant": "languages",
+                    "ring": "trial",
+                    "description": "Go language watchlist entry",
+                    "confidence": 0.8,
+                    "sourceCoverage": 2,
+                    "signals": {
+                        "ghMomentum": 90.0,
+                        "ghPopularity": 90.0,
+                        "hnHeat": 20.0,
+                    },
+                }
+            ]
+        }
+
+        selection = CandidateSelection(core_ids=[], watchlist_ids=[], borderline_ids=[])
+        watchlist = pipeline._build_watchlist_items(
+            technologies=[
+                NormalizedTech("Current", "Current", 1000, 10, None, ["tool"], "", 2, ["github"], {}, 40.0)
+            ],
+            classifications=[],
+            candidate_selection=selection,
+        )
+
+        go_items = [item for item in watchlist if item.name == "Go"]
+        assert go_items
+        assert len(getattr(go_items[0], "evidence", []) or []) >= 1
+
+    def test_build_watchlist_preserves_placeholder_ring_until_market_assignment(self):
         from etl.pipeline import RadarPipeline, NormalizedTech
         from etl.classifier import ClassificationResult
         from etl.candidate_selector import CandidateSelection
@@ -1251,7 +1337,109 @@ class TestPipelineFlow:
 
         assert watchlist
         assert watchlist[0].name == "Java-Design-Patterns"
-        assert watchlist[0].ring == "assess"
+        assert watchlist[0].ring == "trial"
+
+        assigned = pipeline._assign_market_rings(watchlist)
+
+        assert assigned[0].ring == "assess"
+
+    def test_strategic_filter_ignores_contradictory_upstream_rings_before_market_assignment(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+        from etl.evidence import EvidenceRecord
+
+        config = ETLConfig(filtering=FilteringConfig(min_sources=1))
+        config.distribution.target_total = 1
+        config.distribution.min_per_quadrant = 1
+        config.distribution.max_per_quadrant = 1
+        config.quality_gates.min_hn_mentions.assess = 999
+        config.quality_gates.min_hn_mentions.trial = 0
+        config.quality_gates.min_hn_mentions.adopt = 999
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter:
+            mock_filter.return_value.filter.side_effect = lambda items: items
+            pipeline = RadarPipeline(config=config)
+
+        tech = NormalizedTech(
+            name="React",
+            description="UI library for building interfaces",
+            stars=220000,
+            forks=56000,
+            language="JavaScript",
+            topics=["ui", "framework"],
+            url="https://github.com/facebook/react",
+            hn_mentions=0,
+            sources=["github"],
+            signals={
+                "gh_momentum": 90.0,
+                "gh_popularity": 95.0,
+                "hn_heat": 0.0,
+                "source_coverage": 3.0,
+                "has_external_adoption": 1.0,
+                "github_only": 0.0,
+            },
+            market_score=88.0,
+            evidence=[
+                EvidenceRecord(
+                    source="deps_dev",
+                    metric="reverse_dependents",
+                    subject_id="npm:react",
+                    raw_value=1000,
+                    normalized_value=80.0,
+                    observed_at="2026-03-07T00:00:00Z",
+                    freshness_days=1,
+                )
+            ],
+        )
+
+        classifications = [
+            ClassificationResult("React", "tools", "adopt", "UI library", 0.9, "up", strategic_value="high")
+        ]
+
+        filtered = pipeline._strategic_filter([tech], classifications)
+
+        assert filtered
+        assert filtered[0].ring == "trial"
+
+    def test_watchlist_ignores_contradictory_upstream_rings_before_market_assignment(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+        from etl.candidate_selector import CandidateSelection
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        technologies = [
+            NormalizedTech(
+                "React",
+                "UI library for interfaces",
+                220000,
+                56000,
+                "JavaScript",
+                ["ui", "framework"],
+                "https://github.com/facebook/react",
+                5,
+                ["github"],
+                {"score_confidence": 0.9},
+                88.0,
+                2.0,
+            )
+        ]
+        classifications = [
+            ClassificationResult("React", "tools", "hold", "UI library", 0.9, "up", strategic_value="high")
+        ]
+        selection = CandidateSelection(core_ids=[], watchlist_ids=["react"], borderline_ids=[])
+
+        watchlist = pipeline._build_watchlist_items(technologies, classifications, selection)
+
+        assert watchlist
+        assert watchlist[0].ring == "trial"
 
     def test_assign_market_rings_does_not_double_count_new_items_without_baseline(self):
         from etl.pipeline import RadarPipeline
@@ -1279,6 +1467,84 @@ class TestPipelineFlow:
         assigned = pipeline._assign_market_rings([item])
 
         assert assigned[0].ring == "trial"
+
+    def test_build_filtered_item_keeps_default_ring_until_market_assignment(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        tech = NormalizedTech(
+            name="PyTorch",
+            description="Deep learning framework.",
+            stars=85000,
+            forks=22000,
+            language="Python",
+            topics=["ml", "framework"],
+            url="https://github.com/pytorch/pytorch",
+            sources=["github"],
+            signals={
+                "gh_momentum": 88.0,
+                "gh_popularity": 90.0,
+                "hn_heat": 18.0,
+                "adoption_score": 70.0,
+                "mindshare_score": 75.0,
+                "health_score": 80.0,
+                "risk_score": 20.0,
+                "source_coverage": 3.0,
+                "has_external_adoption": 1.0,
+                "github_only": 0.0,
+            },
+        )
+        tech.market_score = 82.0
+
+        classification = ClassificationResult(
+            name="PyTorch",
+            quadrant="tools",
+            ring="hold",
+            description="Deep learning framework.",
+            confidence=0.82,
+            trend="up",
+            strategic_value="high",
+        )
+
+        item = pipeline._build_filtered_item(tech, classification)
+        assert item.ring == "trial"
+
+        assigned = pipeline._assign_market_rings([item])
+
+        assert assigned[0].ring == "adopt"
+
+    def test_pipeline_fallback_classification_leaves_ring_as_default_placeholder(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        results = pipeline._fallback_classification([
+            NormalizedTech(
+                name="React",
+                description="UI library",
+                stars=220000,
+                forks=56000,
+                language="JavaScript",
+                topics=["ui", "framework"],
+                url="https://github.com/facebook/react",
+                hn_mentions=120,
+                sources=["github", "hackernews"],
+                signals={},
+            )
+        ])
+
+        assert len(results) == 1
+        assert results[0].ring == "trial"
 
     def test_assign_market_rings_respects_editorial_trial_ceiling(self):
         from etl.pipeline import RadarPipeline
@@ -1867,9 +2133,12 @@ class TestPipelineFlow:
             ]
 
             filtered = pipeline._strategic_filter(technologies, classifications)
+            filtered_by_name = {item.name: item for item in filtered}
             quadrants = {item.quadrant for item in filtered}
 
-            assert {"tools", "platforms", "languages", "techniques"}.issubset(quadrants)
+            assert "Rust" in filtered_by_name
+            assert filtered_by_name["Rust"].quadrant == "languages"
+            assert {"languages", "platforms", "techniques"}.issubset(quadrants)
 
     def test_pipeline_does_not_expose_google_trends_source(self):
         from etl.pipeline import RadarPipeline
@@ -2249,6 +2518,423 @@ class TestPipelineFlow:
         else:
             # If no classifier, budget is automatically respected (0 calls)
             pass
+
+    def test_distribution_config_exposes_soft_ring_targets(self):
+        config = ETLConfig()
+
+        assert getattr(config.distribution, "target_per_ring", None) == 10
+        assert getattr(config.distribution, "max_per_ring", None) == 15
+
+    def test_generate_output_reports_underfilled_rings_for_soft_targets(self):
+        from types import SimpleNamespace
+        from etl.pipeline import RadarPipeline
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        pipeline.config.distribution = DistributionConfig(
+            target_total=40,
+            min_per_quadrant=2,
+            max_per_quadrant=12,
+            min_per_ring=8,
+            target_per_ring=10,
+            max_per_ring=15,
+        )
+
+        output = pipeline._generate_output([  # type: ignore[arg-type]
+            MockFilteredItem(
+                name="React",
+                description="UI library for interfaces",
+                stars=220000,
+                quadrant="tools",
+                ring="adopt",
+                confidence=0.95,
+                trend="up",
+                strategic_value=MockStrategicValue.HIGH,
+            ),
+            MockFilteredItem(
+                name="TypeScript",
+                description="Typed programming language",
+                stars=98000,
+                quadrant="languages",
+                ring="trial",
+                confidence=0.9,
+                trend="up",
+                strategic_value=MockStrategicValue.HIGH,
+            ),
+        ])
+
+        pipeline_meta = output["meta"]["pipeline"]
+
+        assert pipeline_meta["underfilledRings"] == ["adopt", "trial", "assess", "hold"]
+        assert pipeline_meta["ringFillStatus"]["hold"] == {
+            "actual": 0,
+            "target": 10,
+            "max": 15,
+            "underfilled": True,
+        }
+        assert pipeline_meta["ringFillStatus"]["adopt"]["actual"] == 1
+        assert pipeline_meta["ringFillStatus"]["trial"]["actual"] == 1
+
+    def test_strategic_filter_prefers_soft_ring_targets_without_using_invalid_items(self):
+        from etl.evidence import EvidenceRecord
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+
+        config = ETLConfig(filtering=FilteringConfig(min_sources=1))
+        config.quality_gates.min_hn_mentions.assess = 0
+        config.quality_gates.min_hn_mentions.trial = 0
+        config.quality_gates.min_hn_mentions.adopt = 0
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter:
+            mock_filter.return_value.filter.side_effect = lambda items: items
+            pipeline = RadarPipeline(config=config)
+
+        pipeline.config.distribution = DistributionConfig(
+            target_total=5,
+            min_per_quadrant=1,
+            max_per_quadrant=5,
+            min_per_ring=0,
+            target_per_ring=1,
+            max_per_ring=2,
+        )
+
+        def evidence(subject_id: str) -> list[EvidenceRecord]:
+            return [
+                EvidenceRecord(
+                    source="deps_dev",
+                    metric="reverse_dependents",
+                    subject_id=subject_id,
+                    raw_value=1000,
+                    normalized_value=80.0,
+                    observed_at="2026-03-07T00:00:00Z",
+                    freshness_days=1,
+                )
+            ]
+
+        technologies = [
+            NormalizedTech(
+                name="React",
+                description="UI library for building interfaces",
+                stars=220000,
+                forks=56000,
+                language="JavaScript",
+                topics=["ui", "framework"],
+                url="https://github.com/facebook/react",
+                hn_mentions=120,
+                sources=["github", "hackernews"],
+                signals={"gh_popularity": 95.0, "gh_momentum": 90.0, "hn_heat": 80.0, "source_coverage": 3.0, "has_external_adoption": 1.0, "github_only": 0.0},
+                market_score=86.0,
+                evidence=evidence("npm:react"),
+            ),
+            NormalizedTech(
+                name="Kubernetes",
+                description="Container orchestration platform",
+                stars=118000,
+                forks=39000,
+                language="Go",
+                topics=["containers", "platform"],
+                url="https://github.com/kubernetes/kubernetes",
+                hn_mentions=75,
+                sources=["github", "hackernews"],
+                signals={"gh_popularity": 90.0, "gh_momentum": 82.0, "hn_heat": 64.0, "source_coverage": 3.0, "has_external_adoption": 1.0, "github_only": 0.0},
+                market_score=72.0,
+                evidence=evidence("go:kubernetes"),
+            ),
+            NormalizedTech(
+                name="TypeScript",
+                description="Typed programming language",
+                stars=98000,
+                forks=12000,
+                language="TypeScript",
+                topics=["language"],
+                url="https://github.com/microsoft/typescript",
+                hn_mentions=24,
+                sources=["github", "hackernews"],
+                signals={"gh_popularity": 84.0, "gh_momentum": 70.0, "hn_heat": 35.0, "source_coverage": 3.0, "has_external_adoption": 1.0, "github_only": 0.0},
+                market_score=55.0,
+                evidence=evidence("npm:typescript"),
+            ),
+            NormalizedTech(
+                name="DDD",
+                description="Architecture technique for domain modeling",
+                stars=18000,
+                forks=1200,
+                language=None,
+                topics=["architecture"],
+                url="https://example.com/ddd",
+                hn_mentions=8,
+                sources=["github", "hackernews"],
+                signals={"gh_popularity": 52.0, "gh_momentum": 40.0, "hn_heat": 18.0, "source_coverage": 2.0, "has_external_adoption": 0.0, "github_only": 0.0},
+                market_score=48.0,
+                evidence=evidence("ddd"),
+            ),
+            NormalizedTech(
+                name="Tutorial Repo",
+                description="Collection of tutorials and examples for learning tools",
+                stars=14000,
+                forks=2400,
+                language="Python",
+                topics=["examples", "tutorials"],
+                url="https://github.com/example/tutorial-repo",
+                hn_mentions=4,
+                sources=["github", "hackernews"],
+                signals={"gh_popularity": 45.0, "gh_momentum": 28.0, "hn_heat": 12.0, "source_coverage": 2.0, "has_external_adoption": 0.0, "github_only": 0.0},
+                market_score=18.0,
+                evidence=[],
+            ),
+        ]
+        classifications = [
+            ClassificationResult("React", "tools", "adopt", "UI library for building interfaces", 0.95, "up", strategic_value="high"),
+            ClassificationResult("Kubernetes", "platforms", "trial", "Container orchestration platform", 0.9, "up", strategic_value="high"),
+            ClassificationResult("TypeScript", "languages", "assess", "Typed programming language", 0.88, "up", strategic_value="high"),
+            ClassificationResult("DDD", "techniques", "assess", "Architecture technique for domain modeling", 0.8, "stable", strategic_value="medium"),
+            ClassificationResult("Tutorial Repo", "tools", "hold", "Collection of tutorials and examples for learning tools", 0.7, "stable", strategic_value="low"),
+        ]
+
+        filtered = pipeline._strategic_filter(technologies, classifications)
+        assigned = pipeline._assign_market_rings(filtered)
+        output = pipeline._generate_output(assigned)
+
+        names = {entry["name"] for entry in output["technologies"]}
+        pipeline_meta = output["meta"]["pipeline"]
+
+        assert "Tutorial Repo" not in names
+        assert pipeline_meta["ringDistribution"]["hold"] == 0
+        assert "hold" in pipeline_meta["underfilledRings"]
+        assert pipeline_meta["ringFillStatus"]["hold"]["underfilled"] is True
+
+    def test_editorial_selection_validity_rejects_semantically_invalid_items(self):
+        from etl.ai_filter import FilteredItem, StrategicValue
+        from etl.evidence import EvidenceRecord
+        from etl.pipeline import RadarPipeline
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        item = FilteredItem(
+            name="PyTorch",
+            description="Deep learning framework",
+            stars=120000,
+            quadrant="tools",
+            ring="hold",
+            confidence=0.9,
+            trend="up",
+            strategic_value=StrategicValue.HIGH,
+        )
+        setattr(item, "signals", {"source_coverage": 2.0})
+        setattr(item, "evidence", [
+            EvidenceRecord(
+                source="deps_dev",
+                metric="reverse_dependents",
+                subject_id="pypi:pytorch",
+                raw_value=250000,
+                normalized_value=94.0,
+                observed_at="2026-03-07T00:00:00Z",
+                freshness_days=1,
+            )
+        ])
+        item.suspicion_flags = ["quadrant_mismatch"]
+
+        assert pipeline._is_editorially_valid_for_selection(item) is False
+
+    def test_build_filtered_item_backfills_signal_evidence_when_external_evidence_is_missing(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        tech = NormalizedTech(
+            name="Go",
+            description="Go language",
+            stars=130000,
+            forks=18000,
+            language="Go",
+            topics=["language"],
+            url="https://github.com/golang/go",
+            hn_mentions=100,
+            sources=["github", "hackernews"],
+            signals={
+                "gh_popularity": 94.92,
+                "gh_momentum": 93.74,
+                "hn_heat": 100.0,
+                "source_coverage": 2.0,
+            },
+            market_score=82.67,
+            evidence=[],
+        )
+        classification = ClassificationResult(
+            "Go",
+            "languages",
+            "trial",
+            "The Go programming language",
+            0.9,
+            "up",
+            strategic_value="high",
+        )
+
+        item = pipeline._build_filtered_item(tech, classification, confidence_floor=0.5)
+
+        assert len(item.evidence) == 3
+        assert {record.source for record in item.evidence} == {"github", "hackernews"}
+        assert pipeline._is_editorially_valid_for_selection(item) is True
+
+    def test_strategic_filter_does_not_backfill_items_that_would_publish_as_missing_evidence(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+
+        config = ETLConfig(filtering=FilteringConfig(min_sources=1))
+        config.distribution.target_total = 4
+        config.distribution.min_per_quadrant = 1
+        config.distribution.max_per_quadrant = 4
+        config.quality_gates.min_hn_mentions.assess = 0
+        config.quality_gates.min_hn_mentions.trial = 0
+        config.quality_gates.min_hn_mentions.adopt = 0
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter:
+            mock_filter.return_value.filter.return_value = []
+            pipeline = RadarPipeline(config=config)
+
+        technologies = [
+            NormalizedTech(
+                name="Go",
+                description="The Go programming language",
+                stars=132943,
+                forks=18000,
+                language="Go",
+                topics=["language"],
+                url="https://github.com/golang/go",
+                hn_mentions=100,
+                sources=["github", "hackernews"],
+                signals={"gh_popularity": 0.0, "gh_momentum": 0.0, "hn_heat": 0.0, "source_coverage": 2.0, "has_external_adoption": 0.0, "github_only": 0.0},
+                market_score=82.67,
+                evidence=[],
+            ),
+            NormalizedTech(
+                name="React",
+                description="UI library",
+                stars=220000,
+                forks=56000,
+                language="JavaScript",
+                topics=["ui", "framework"],
+                url="https://github.com/facebook/react",
+                hn_mentions=120,
+                sources=["github", "hackernews"],
+                signals={"gh_popularity": 0.0, "gh_momentum": 0.0, "hn_heat": 0.0, "source_coverage": 3.0, "has_external_adoption": 1.0, "github_only": 0.0},
+                market_score=86.0,
+                evidence=[],
+            ),
+            NormalizedTech(
+                name="Kubernetes",
+                description="Container orchestration platform",
+                stars=118000,
+                forks=39000,
+                language="Go",
+                topics=["containers", "platform"],
+                url="https://github.com/kubernetes/kubernetes",
+                hn_mentions=75,
+                sources=["github", "hackernews"],
+                signals={"gh_popularity": 0.0, "gh_momentum": 0.0, "hn_heat": 0.0, "source_coverage": 3.0, "has_external_adoption": 1.0, "github_only": 0.0},
+                market_score=72.0,
+                evidence=[],
+            ),
+            NormalizedTech(
+                name="DDD",
+                description="Architecture technique for domain modeling",
+                stars=18000,
+                forks=1200,
+                language=None,
+                topics=["architecture"],
+                url="https://example.com/ddd",
+                hn_mentions=8,
+                sources=["github", "hackernews"],
+                signals={"gh_popularity": 0.0, "gh_momentum": 0.0, "hn_heat": 0.0, "source_coverage": 2.0, "has_external_adoption": 0.0, "github_only": 0.0},
+                market_score=48.0,
+                evidence=[],
+            ),
+        ]
+        classifications = [
+            ClassificationResult("Go", "languages", "trial", "The Go programming language", 0.9, "up", strategic_value="high"),
+            ClassificationResult("React", "tools", "adopt", "UI library", 0.95, "up", strategic_value="high"),
+            ClassificationResult("Kubernetes", "platforms", "trial", "Container orchestration platform", 0.9, "up", strategic_value="high"),
+            ClassificationResult("DDD", "techniques", "assess", "Architecture technique for domain modeling", 0.8, "stable", strategic_value="medium"),
+        ]
+
+        filtered = pipeline._strategic_filter(technologies, classifications)
+
+        assert {item.name for item in filtered} == set()
+
+    def test_soft_ring_rebalance_preserves_all_quadrants_when_backfilling_missing_ring(self):
+        from etl.ai_filter import FilteredItem, StrategicValue
+        from etl.pipeline import RadarPipeline
+        from etl.selection_logic import rebalance_soft_ring_targets
+
+        config = ETLConfig()
+        config.distribution = DistributionConfig(
+            target_total=5,
+            min_per_quadrant=1,
+            max_per_quadrant=4,
+            min_per_ring=0,
+            target_per_ring=1,
+            max_per_ring=1,
+        )
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=config)
+
+        def make_item(name, description, stars, quadrant, ring, confidence, trend, strategic_value):
+            item = FilteredItem(name, description, stars, quadrant, ring, confidence, trend, strategic_value)
+            setattr(item, "market_score", 0.0)
+            setattr(item, "signals", {})
+            setattr(item, "evidence", [])
+            item.suspicion_flags = []
+            return item
+
+        selected = [
+            make_item("React", "UI library", 220000, "tools", "adopt", 0.95, "up", StrategicValue.HIGH),
+            make_item("Kubernetes", "Platform", 118000, "platforms", "adopt", 0.92, "up", StrategicValue.HIGH),
+            make_item("TypeScript", "Typed language", 98000, "languages", "adopt", 0.9, "up", StrategicValue.HIGH),
+            make_item("DDD", "Architecture technique", 18000, "techniques", "trial", 0.8, "stable", StrategicValue.MEDIUM),
+        ]
+        reserve = [
+            make_item("Nomad", "Scheduler platform tool", 45000, "tools", "hold", 0.7, "stable", StrategicValue.MEDIUM),
+        ]
+
+        for index, item in enumerate(selected + reserve, start=1):
+            setattr(item, "market_score", 90.0 - index)
+            setattr(item, "signals", {"source_coverage": 2.0, "has_external_adoption": 1.0, "github_only": 0.0})
+            setattr(item, "evidence", [object()])
+            item.suspicion_flags = []
+
+        rebalanced = rebalance_soft_ring_targets(
+            pipeline,
+            selected,
+            reserve,
+            ("techniques", "platforms", "tools", "languages"),
+        )
+
+        assert {item.quadrant for item in rebalanced} == {"tools", "platforms", "languages", "techniques"}
+        assert {item.name for item in rebalanced} == {"Nomad", "Kubernetes", "TypeScript", "DDD"}
+        assert sum(1 for item in rebalanced if item.ring == "hold") == 1
 
 
 @dataclass

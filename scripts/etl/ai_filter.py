@@ -257,11 +257,14 @@ class FilteredItem:
     confidence: float
     trend: str
     strategic_value: StrategicValue
+    suspicion_flags: List[str] = None
     is_deprecated: bool = False
     replacement: Optional[str] = None
     merged_names: Optional[List[str]] = None
     
     def __post_init__(self):
+        if self.suspicion_flags is None:
+            self.suspicion_flags = []
         if self.merged_names is None:
             self.merged_names = []
 
@@ -699,6 +702,7 @@ Consider the strategic value for a tech radar."""
                 confidence=item.confidence,
                 trend=item.trend,
                 strategic_value=strategic_value,
+                suspicion_flags=list(getattr(item, 'suspicion_flags', []) or []),
                 is_deprecated=is_deprecated,
                 replacement=replacement,
                 merged_names=getattr(item, 'merged_names', [])

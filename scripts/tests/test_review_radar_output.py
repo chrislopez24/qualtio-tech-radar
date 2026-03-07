@@ -257,6 +257,40 @@ def test_review_summary_fails_publish_readiness_for_github_only_adopt_and_missin
     assert summary["suspiciousItems"]["missingSourceCoverageByQuadrant"] == ["tools"]
 
 
+def test_review_summary_surfaces_missing_evidence_and_quadrant_override_failures():
+    from review_radar_output import build_review_summary
+
+    payload = {
+        "updatedAt": "2026-03-06T12:00:00Z",
+        "technologies": [
+            {
+                "id": "pytorch",
+                "name": "PyTorch",
+                "quadrant": "tools",
+                "ring": "trial",
+                "trend": "up",
+                "marketScore": 82.3,
+                "description": "Deep learning framework",
+                "sourceCoverage": 2,
+                "editorialStatus": "invalid",
+                "editorialFlags": ["quadrantMismatch", "missingEvidence"],
+            }
+        ],
+        "watchlist": [],
+        "meta": {"pipeline": {}, "shadowGate": {"status": "warn"}},
+    }
+
+    summary = build_review_summary(payload, input_name="data.ai.json")
+    suspicious = summary["suspiciousItems"]
+
+    assert suspicious["missingEvidenceCount"] == 1
+    assert suspicious["quadrantOverrideCount"] == 1
+    assert suspicious["editoriallyInvalid"][0]["id"] == "pytorch"
+    assert suspicious["editorialRecommendations"]
+    assert summary["publishReadiness"]["status"] == "fail"
+    assert "Missing evidence invalidates one or more published items." in summary["publishReadiness"]["reasons"]
+
+
 def test_review_summary_allows_trial_github_only_ratio_below_threshold():
     from review_radar_output import build_review_summary
 

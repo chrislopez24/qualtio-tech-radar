@@ -7,21 +7,21 @@ from etl.classifier import ClassificationResult, TechnologyClassifier
 
 def test_classifier_parses_structured_json_response():
     """Test that classifier can parse JSON object responses from AI"""
-    classifier = TechnologyClassifier()
+    classifier = TechnologyClassifier(api_key="test-key")
     
     mock_response = '''{"name": "React", "quadrant": "platforms", "ring": "adopt", "description": "UI library", "confidence": 0.9, "trend": "up"}'''
     
     result = classifier._parse_response(mock_response, "React")
     
     assert result.quadrant in {"platforms", "techniques", "tools", "languages"}
-    assert result.ring in {"adopt", "trial", "assess", "hold"}
+    assert result.ring == "trial"
     assert result.confidence >= 0.0
     assert result.confidence <= 1.0
 
 
 def test_classifier_fallback_markdown_json():
     """Test that classifier falls back to parsing markdown fenced JSON"""
-    classifier = TechnologyClassifier()
+    classifier = TechnologyClassifier(api_key="test-key")
     
     markdown_response = '''
 Here is the classification:
@@ -37,7 +37,6 @@ Here is the classification:
 }
 ```
 '''
-    
     result = classifier._parse_response(markdown_response, "Rust")
     
     assert result.quadrant == "languages"
@@ -47,7 +46,7 @@ Here is the classification:
 
 def test_classifier_invalid_json_returns_fallback():
     """Test that invalid JSON returns fallback classification"""
-    classifier = TechnologyClassifier()
+    classifier = TechnologyClassifier(api_key="test-key")
     
     invalid_response = "This is not JSON at all"
     
@@ -59,7 +58,7 @@ def test_classifier_invalid_json_returns_fallback():
 
 def test_classifier_validates_quadrant():
     """Test that invalid quadrant values are normalized"""
-    classifier = TechnologyClassifier()
+    classifier = TechnologyClassifier(api_key="test-key")
     
     response = '{"name": "Test", "quadrant": "programming", "ring": "adopt", "description": "test", "confidence": 0.5, "trend": "stable"}'
     
@@ -70,7 +69,7 @@ def test_classifier_validates_quadrant():
 
 def test_classifier_has_rationale_field():
     """Test that classification result includes rationale"""
-    classifier = TechnologyClassifier()
+    classifier = TechnologyClassifier(api_key="test-key")
     
     response = '{"name": "Go", "quadrant": "languages", "ring": "adopt", "description": "Programming language", "confidence": 0.95, "trend": "stable", "rationale": "High adoption and stable community"}'
     
@@ -81,7 +80,7 @@ def test_classifier_has_rationale_field():
 
 def test_classifier_schema_validation():
     """Test that classifier validates required fields"""
-    classifier = TechnologyClassifier()
+    classifier = TechnologyClassifier(api_key="test-key")
     
     incomplete_response = '{"name": "Test"}'
     
@@ -91,22 +90,27 @@ def test_classifier_schema_validation():
     assert result.quadrant in {"platforms", "techniques", "tools", "languages"}
 
 
-def test_classifier_ring_normalization():
-    """Test that ring values are normalized correctly"""
-    classifier = TechnologyClassifier()
-    
-    response = '{"name": "Test", "quadrant": "tools", "ring": "production_ready", "description": "test", "confidence": 0.5, "trend": "up"}'
-    
-    result = classifier._parse_response(response, "Test")
-    
-    assert result.ring in {"adopt", "trial", "assess", "hold"}
+def test_classifier_ignores_llm_ring_and_keeps_semantic_fields_only():
+    """Classifier should keep semantic fields while defaulting ring in code."""
+    classifier = TechnologyClassifier(api_key="test-key")
+
+    response = '{"name":"PyTorch","quadrant":"languages","ring":"hold","description":"Deep learning framework","confidence":0.82,"trend":"up","rationale":"Popular ML framework","strategic_value":"high","suspicion_flags":["quadrant_mismatch"]}'
+
+    result = classifier._parse_response(response, "PyTorch")
+
+    assert result.quadrant == "languages"
+    assert result.description == "Deep learning framework"
+    assert result.ring == "trial"
+    assert result.rationale == "Popular ML framework"
+    assert result.strategic_value == "high"
+    assert getattr(result, "suspicion_flags") == ["quadrant_mismatch"]
 
 
 def test_classifier_trend_normalization():
     """Test that trend values are normalized correctly"""
-    classifier = TechnologyClassifier()
+    classifier = TechnologyClassifier(api_key="test-key")
     
-    response = '{"name": "Test", "quadrant": "tools", "ring": "trial", "description": "test", "confidence": 0.5, "trend": "growing"}'
+    response = '{"name": "Test", "quadrant": "tools", "description": "test", "confidence": 0.5, "trend": "growing"}'
     
     result = classifier._parse_response(response, "Test")
     
@@ -115,12 +119,12 @@ def test_classifier_trend_normalization():
 
 def test_classifier_handles_none_content_from_llm():
     """Classifier should gracefully fallback when LLM content is None"""
-    classifier = TechnologyClassifier()
+    classifier = TechnologyClassifier(api_key="test-key")
 
     result = classifier._parse_response(None, "React")  # type: ignore[arg-type]
 
     assert result.name == "React"
-    assert result.ring in {"adopt", "trial", "assess", "hold"}
+    assert result.ring == "trial"
 
 
 def test_classifier_logs_request_metrics():
@@ -163,7 +167,7 @@ def test_classifier_returns_semantic_decision_with_strategic_value():
 
     classifier = TechnologyClassifier(api_key="test-key")
     result = classifier._parse_response(
-        '{"name":"React","quadrant":"tools","ring":"adopt","description":"UI","confidence":0.9,"trend":"up","strategic_value":"high","rationale":"Widely adopted UI library with strong community"}',
+        '{"name":"React","quadrant":"tools","description":"UI","confidence":0.9,"trend":"up","strategic_value":"high","rationale":"Widely adopted UI library with strong community"}',
         "React",
     )
     assert hasattr(result, "rationale")
@@ -171,6 +175,7 @@ def test_classifier_returns_semantic_decision_with_strategic_value():
     assert hasattr(result, "strategic_value")
     assert result.strategic_value == "high"
     assert result.rationale == "Widely adopted UI library with strong community"
+    assert result.ring == "trial"
 
 
 def test_classifier_uses_8000_token_budget():

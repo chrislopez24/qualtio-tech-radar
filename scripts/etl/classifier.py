@@ -19,12 +19,12 @@ logger = logging.getLogger(__name__)
 class ClassificationSchema(BaseModel):
     name: str
     quadrant: str
-    ring: str
     description: str
     confidence: float = Field(ge=0.0, le=1.0)
     trend: str
     rationale: Optional[str] = None
     strategic_value: str = "medium"
+    suspicion_flags: list[str] = Field(default_factory=list)
 
     @field_validator('quadrant')
     @classmethod
@@ -35,16 +35,6 @@ class ClassificationSchema(BaseModel):
             if q in v_lower:
                 return q
         return 'tools'
-
-    @field_validator('ring')
-    @classmethod
-    def validate_ring(cls, v):
-        valid = {'adopt', 'trial', 'assess', 'hold'}
-        v_lower = v.lower().strip()
-        for r in valid:
-            if r in v_lower:
-                return r
-        return 'trial'
 
     @field_validator('trend')
     @classmethod
@@ -71,12 +61,13 @@ class ClassificationSchema(BaseModel):
 class ClassificationResult:
     name: str
     quadrant: str
-    ring: str
-    description: str
-    confidence: float
-    trend: str
+    ring: str = "trial"
+    description: str = ""
+    confidence: float = 0.5
+    trend: str = "stable"
     rationale: str = ""
     strategic_value: str = "medium"
+    suspicion_flags: list[str] = field(default_factory=list)
     raw_response: str = ""
     canonical_id: str | None = None
     entity_type: str = "technology"
@@ -96,19 +87,13 @@ class TechnologyClassifier:
     }
 
     SYSTEM_PROMPT = """You are a technology analyst specializing in tech radar categorization.
-Your task is to classify technologies into the appropriate quadrant and ring based on their popularity and maturity.
+Your task is to classify technologies into the appropriate semantic quadrant and provide concise analyst rationale.
 
 Quadrants:
 - platforms: Infrastructure, cloud, and runtime platforms
 - techniques: Development methodologies, patterns, and practices
 - tools: Libraries, frameworks, and development tools
 - languages: Programming languages
-
-Rings:
-- adopt: Proven technologies widely used in production
-- trial: Emerging technologies being validated in production
-- assess: Technologies being explored/researched
-- hold: Technologies in decline or with issues
 
 Trends:
 - up: Growing in popularity
@@ -119,12 +104,12 @@ Trends:
 Provide a JSON response with:
 - name: technology name
 - quadrant: recommended quadrant
-- ring: recommended ring  
 - description: brief description (50-100 words)
 - confidence: confidence score (0-1)
 - trend: trend direction (up/down/stable/new)
 - rationale: explanation for the classification
-- strategic_value: strategic importance (high/medium/low)"""
+- strategic_value: strategic importance (high/medium/low)
+- suspicion_flags: optional list of semantic concerns such as quadrant_mismatch or ambiguous_name"""
 
     def __init__(
         self,
@@ -248,10 +233,8 @@ GitHub Stars: {stars}
 Hacker News Mentions: {hn_mentions}
 
 Consider:
-- High stars (>10k) and mentions suggest 'adopt' ring
-- Medium stars (1k-10k) suggest 'trial' ring
-- Low stars but growing suggest 'assess' ring
-- Declining activity suggests 'hold' ring
+- Use stars and mentions as context for maturity, confidence, trend, and rationale
+- Do not assign a ring; ring is handled deterministically downstream in code
 
 Respond with JSON only."""
 
@@ -350,23 +333,23 @@ Respond with JSON only."""
             validated = ClassificationSchema(
                 name=data.get('name', name),
                 quadrant=data.get('quadrant', 'tools'),
-                ring=data.get('ring', 'trial'),
                 description=data.get('description', ''),
                 confidence=float(data.get('confidence', 0.5)),
                 trend=data.get('trend', 'stable'),
                 rationale=data.get('rationale', ''),
-                strategic_value=data.get('strategic_value', 'medium')
+                strategic_value=data.get('strategic_value', 'medium'),
+                suspicion_flags=data.get('suspicion_flags', []),
             )
             
             return ClassificationResult(
                 name=validated.name,
                 quadrant=validated.quadrant,
-                ring=validated.ring,
                 description=validated.description,
                 confidence=validated.confidence,
                 trend=validated.trend,
                 rationale=validated.rationale or "",
                 strategic_value=validated.strategic_value,
+                suspicion_flags=list(validated.suspicion_flags),
                 raw_response=content or ""
             )
             
@@ -412,19 +395,15 @@ Respond with JSON only."""
         hn_mentions: int,
         description: str
     ) -> ClassificationResult:
-        """Fallback classification based on heuristics"""
-        
+        """Fallback classification based on semantic heuristics only."""
+
         if stars > 10000 or hn_mentions > 50:
-            ring = 'adopt'
             strategic_value = 'high'
         elif stars > 1000 or hn_mentions > 10:
-            ring = 'trial'
             strategic_value = 'medium'
         elif stars > 100 or hn_mentions > 5:
-            ring = 'assess'
             strategic_value = 'medium'
         else:
-            ring = 'hold'
             strategic_value = 'low'
 
         # Use infer_quadrant instead of hardcoded 'tools'
@@ -434,7 +413,6 @@ Respond with JSON only."""
         return ClassificationResult(
             name=name,
             quadrant=inferred_quadrant,
-            ring=ring,
             description=description or f"{name} - technology with {stars} stars",
             confidence=0.5,
             trend='stable',

@@ -82,6 +82,10 @@ def _summarize_item(item: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def _editorial_flags(item: Dict[str, Any]) -> List[str]:
+    return [str(flag) for flag in item.get("editorialFlags", []) if flag]
+
+
 def _extract_signal_values(item: Dict[str, Any]) -> Dict[str, float]:
     signals = item.get("signals", {})
     if not isinstance(signals, dict):
@@ -148,11 +152,22 @@ def build_review_summary(payload: Dict[str, Any], input_name: str) -> Dict[str, 
     github_only_strong_rings = []
     trial_items = []
     trial_github_only = []
+    editorially_invalid = []
+    missing_evidence_count = 0
+    quadrant_override_count = 0
     for item in technologies:
         ring = str(item.get("ring", ""))
         score = _safe_float(item.get("marketScore"))
         signal_names = _non_zero_signal_names(item)
         github_only = _is_github_only_signal(item)
+        editorial_flags = _editorial_flags(item)
+
+        missing_evidence_count += int("missingEvidence" in editorial_flags)
+        quadrant_override_count += int("quadrantMismatch" in editorial_flags)
+        if str(item.get("editorialStatus", "")).lower() == "invalid":
+            summarized = _summarize_item(item)
+            summarized["reasons"] = editorial_flags
+            editorially_invalid.append(summarized)
 
         if (ring == "adopt" and score < 80.0) or (ring == "trial" and score < 60.0):
             low_signal_strong_rings.append(_summarize_item(item))
@@ -206,6 +221,14 @@ def build_review_summary(payload: Dict[str, Any], input_name: str) -> Dict[str, 
         editorial_recommendations.append(
             "Strong rings include low-score entries; revisit ring thresholds and promotion logic."
         )
+    if missing_evidence_count:
+        editorial_recommendations.append(
+            "Missing evidence flags are present; repair or remove invalid items before publication."
+        )
+    if quadrant_override_count:
+        editorial_recommendations.append(
+            "Quadrant mismatch flags are present; review semantic classification overrides before publication."
+        )
     if missing_source_coverage_by_quadrant:
         editorial_recommendations.append(
             "Some quadrants still lack multi-source corroboration; review source coverage before publication."
@@ -213,6 +236,9 @@ def build_review_summary(payload: Dict[str, Any], input_name: str) -> Dict[str, 
 
     publish_status = "pass"
     publish_reasons: List[str] = []
+    if missing_evidence_count:
+        publish_status = "fail"
+        publish_reasons.append("Missing evidence invalidates one or more published items.")
     if any(item.get("ring") == "adopt" for item in github_only_strong_rings):
         publish_status = "fail"
         publish_reasons.append("Adopt contains GitHub-only items.")
@@ -253,6 +279,9 @@ def build_review_summary(payload: Dict[str, Any], input_name: str) -> Dict[str, 
             "githubOnlyStrongRings": github_only_strong_rings[:10],
             "githubOnlyRatio": round(github_only_ratio, 4),
             "trialGithubOnlyRatio": round(trial_github_only_ratio, 4),
+            "missingEvidenceCount": missing_evidence_count,
+            "quadrantOverrideCount": quadrant_override_count,
+            "editoriallyInvalid": editorially_invalid[:10],
             "missingSourceCoverageByQuadrant": missing_source_coverage_by_quadrant,
             "editorialRecommendations": editorial_recommendations,
         },
@@ -312,6 +341,12 @@ def render_markdown(summary: Dict[str, Any]) -> str:
     )
     suspicious_lines.append(f"- GitHub-only ratio: {suspicious.get('githubOnlyRatio', 0.0)}")
     suspicious_lines.append(f"- Trial GitHub-only ratio: {suspicious.get('trialGithubOnlyRatio', 0.0)}")
+    suspicious_lines.append(f"- Missing evidence count: {suspicious.get('missingEvidenceCount', 0)}")
+    suspicious_lines.append(f"- Quadrant override count: {suspicious.get('quadrantOverrideCount', 0)}")
+    suspicious_lines.extend(
+        f"- Editorially invalid: `{item['name']}` reasons `{', '.join(item.get('reasons', []))}`"
+        for item in suspicious.get("editoriallyInvalid", [])
+    )
     suspicious_lines.extend(
         f"- Missing source coverage quadrant: `{quadrant}`"
         for quadrant in suspicious.get("missingSourceCoverageByQuadrant", [])
@@ -327,6 +362,9 @@ def render_markdown(summary: Dict[str, Any]) -> str:
         and not suspicious.get("resourceLikeStrongRings", [])
         and not suspicious.get("githubOnlySignals", [])
         and not suspicious.get("githubOnlyStrongRings", [])
+        and suspicious.get("missingEvidenceCount", 0) == 0
+        and suspicious.get("quadrantOverrideCount", 0) == 0
+        and not suspicious.get("editoriallyInvalid", [])
         and not suspicious.get("missingSourceCoverageByQuadrant", [])
         and not suspicious.get("editorialRecommendations", [])
     ):

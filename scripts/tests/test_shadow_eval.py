@@ -93,6 +93,29 @@ def test_shadow_eval_reports_github_bias_and_editorial_recommendations():
     assert report["editorial_recommendations"]
 
 
+def test_shadow_eval_flags_missing_evidence_and_quadrant_override_failures():
+    from etl.shadow_eval import compare_outputs
+
+    optimized = {
+        "technologies": [
+            {
+                "id": "pytorch",
+                "name": "PyTorch",
+                "ring": "trial",
+                "quadrant": "tools",
+                "sourceCoverage": 2,
+                "editorialStatus": "invalid",
+                "editorialFlags": ["quadrantMismatch", "missingEvidence"],
+            }
+        ]
+    }
+
+    report = compare_outputs({"technologies": []}, optimized)
+
+    assert report["missing_evidence_count"] == 1
+    assert report["quadrant_override_count"] == 1
+
+
 def test_shadow_eval_ignores_resource_like_repos_in_overlap_and_watchlist_metrics():
     from etl.shadow_eval import compare_outputs
 
@@ -580,6 +603,48 @@ def test_extract_metric_inputs_computes_id_sets_and_diffs():
     assert inputs["optimized_ids"] == {"react", "bun"}
     assert inputs["missing_from_optimized"] == ["kubernetes"]
     assert inputs["added_in_optimized"] == ["bun"]
+
+
+def test_extract_metric_inputs_ignores_explicit_watchlist_entries_with_missing_evidence():
+    from etl.shadow_eval import _extract_metric_inputs
+
+    baseline = {
+        "technologies": [{"id": "react", "ring": "trial"}],
+        "watchlist": [
+            {"id": "go", "sourceCoverage": 2, "editorialFlags": ["missingEvidence"]},
+            {"id": "python", "sourceCoverage": 2, "editorialFlags": ["missingEvidence"]},
+        ],
+    }
+    optimized = {
+        "technologies": [{"id": "react", "ring": "trial"}],
+        "watchlist": [],
+    }
+
+    inputs = _extract_metric_inputs(baseline, optimized)
+
+    assert inputs["baseline_watchlist"] == set()
+    assert inputs["optimized_watchlist"] == set()
+
+
+def test_shadow_eval_does_not_count_missing_evidence_without_explicit_flags():
+    from etl.shadow_eval import compare_outputs
+
+    baseline = {"technologies": [{"id": "react"}]}
+    optimized = {
+        "technologies": [
+            {
+                "id": "react",
+                "ring": "trial",
+                "sourceCoverage": 2,
+                "signals": {"ghMomentum": 92, "ghPopularity": 95, "hnHeat": 24},
+    # No editorialFlags should not count as missingEvidence in quality gate counts.
+            }
+        ]
+    }
+
+    report = compare_outputs(baseline, optimized)
+
+    assert report["missing_evidence_count"] == 0
 
 
 def test_apply_leader_policy_promotes_added_and_removed_candidates():

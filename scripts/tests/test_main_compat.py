@@ -403,6 +403,19 @@ def test_main_applies_max_technologies_to_distribution_target(tmp_path):
     assert not hasattr(passed_config, "deep_scan")
 
 
+def test_main_defaults_support_market_faithful_base_radar_targets():
+    from etl.config import load_etl_config
+
+    config = load_etl_config("scripts/config.yaml")
+
+    assert config.distribution.target_total == 40
+    assert config.distribution.min_per_quadrant == 2
+    assert config.distribution.max_per_quadrant == 12
+    assert config.distribution.min_per_ring == 8
+    assert config.distribution.target_per_ring == 10
+    assert config.distribution.max_per_ring == 15
+
+
 def test_main_rejects_invalid_sources_argument(tmp_path, capsys):
     from main import main
     from etl.config import ETLConfig, OutputConfig

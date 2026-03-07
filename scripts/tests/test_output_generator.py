@@ -190,6 +190,136 @@ def test_output_serializes_optional_canonical_fields_and_evidence():
     assert tech["evidence"][0]["subjectId"] == "npm:typescript"
 
 
+def test_output_marks_item_invalid_when_source_coverage_has_no_evidence():
+    from types import SimpleNamespace
+    from etl.pipeline import RadarPipeline
+
+    pipeline = RadarPipeline()
+    output = pipeline._generate_output([
+        SimpleNamespace(
+            name="Python",
+            description="Programming language",
+            stars=0,
+            quadrant="languages",
+            ring="adopt",
+            confidence=0.9,
+            trend="stable",
+            moved=0,
+            market_score=85.0,
+            signals={
+                "gh_momentum": 50.0,
+                "gh_popularity": 70.0,
+                "hn_heat": 0.0,
+                "source_coverage": 2.0,
+            },
+            evidence=[],
+            is_deprecated=False,
+            replacement=None,
+        )
+    ])
+
+    tech = output["technologies"][0]
+    assert tech["sourceCoverage"] == 2
+    assert tech["editorialStatus"] == "invalid"
+    assert "missingEvidence" in tech["editorialFlags"]
+
+
+def test_sanitize_for_public_keeps_editorial_contract_fields():
+    sanitized = sanitize_for_public(
+        {
+            "id": "python",
+            "name": "Python",
+            "quadrant": "languages",
+            "ring": "adopt",
+            "description": "Programming language",
+            "moved": 0,
+            "editorialStatus": "invalid",
+            "editorialFlags": ["missingEvidence"],
+        }
+    )
+
+    assert sanitized["editorialStatus"] == "invalid"
+    assert sanitized["editorialFlags"] == ["missingEvidence"]
+
+
+def test_quality_snapshot_counts_quadrant_mismatch_and_missing_evidence_as_editorially_weak():
+    from etl.artifact_quality import quality_snapshot
+
+    snapshot = quality_snapshot(
+        [
+            {
+                "id": "pytorch",
+                "name": "PyTorch",
+                "quadrant": "languages",
+                "ring": "trial",
+                "description": "Deep learning framework",
+                "marketScore": 82.3,
+                "sourceCoverage": 2,
+                "editorialStatus": "invalid",
+                "editorialFlags": ["quadrantMismatch", "missingEvidence"],
+            }
+        ],
+        strong_ring="trial",
+    )
+
+    assert snapshot["editoriallyWeakCount"] == 1
+    assert snapshot["topSuspicious"][0]["reasons"] == ["quadrantMismatch", "missingEvidence"]
+    assert snapshot["status"] == "bad"
+
+
+def test_pipeline_output_propagates_semantic_suspicion_flags_into_editorial_quality():
+    from types import SimpleNamespace
+    from etl.pipeline import RadarPipeline
+    from etl.classifier import ClassificationResult
+    from etl.evidence import EvidenceRecord
+
+    pipeline = RadarPipeline()
+    item = pipeline._build_filtered_item(
+        SimpleNamespace(
+            stars=150000,
+            market_score=82.3,
+            signals={"gh_momentum": 75.0, "gh_popularity": 88.0, "hn_heat": 25.0},
+            moved=0,
+            sources=["github", "hackernews"],
+            topics=[],
+            evidence=[
+                EvidenceRecord(
+                    source="deps_dev",
+                    metric="reverse_dependents",
+                    subject_id="pypi:pytorch",
+                    raw_value=250000,
+                    normalized_value=94.0,
+                    observed_at="2026-03-07T00:00:00Z",
+                    freshness_days=1,
+                )
+            ],
+            canonical_id=None,
+            entity_type="technology",
+        ),
+        ClassificationResult(
+            name="PyTorch",
+            quadrant="languages",
+            description="Deep learning framework",
+            confidence=0.9,
+            trend="up",
+            strategic_value="high",
+            suspicion_flags=["quadrant_mismatch"],
+        ),
+    )
+    item.ring = "trial"
+
+    output = pipeline._generate_output([item], [])
+
+    tech = output["technologies"][0]
+    assert tech["editorialStatus"] == "invalid"
+    assert tech["editorialFlags"] == ["quadrantMismatch"]
+
+    ring_quality = output["meta"]["pipeline"]["ringQuality"]["trial"]
+    assert ring_quality["editoriallyWeakCount"] == 1
+    assert ring_quality["status"] == "bad"
+    assert ring_quality["topSuspicious"][0]["reasons"] == ["quadrantMismatch"]
+
+
 def test_output_generator_generates_optional_provenance_fields(tmp_path):
     """Test that optional provenance fields are generated in public output."""
     output_dir = tmp_path / "data"
@@ -322,18 +452,32 @@ def test_pipeline_output_includes_compact_explainability_metadata():
         "avgMarketScore": 88.4,
         "githubOnlyRatio": 0.0,
         "resourceLikeCount": 0,
-        "editoriallyWeakCount": 0,
-        "topSuspicious": [],
-        "status": "good",
+        "editoriallyWeakCount": 1,
+        "topSuspicious": [
+            {
+                "id": "react",
+                "name": "React",
+                "marketScore": 88.4,
+                "reasons": ["missingEvidence"],
+            }
+        ],
+        "status": "bad",
     }
     assert pipeline_meta["ringQuality"]["trial"] == {
         "count": 1,
         "avgMarketScore": 79.1,
         "githubOnlyRatio": 0.0,
         "resourceLikeCount": 0,
-        "editoriallyWeakCount": 0,
-        "topSuspicious": [],
-        "status": "good",
+        "editoriallyWeakCount": 1,
+        "topSuspicious": [
+            {
+                "id": "svelte",
+                "name": "Svelte",
+                "marketScore": 79.1,
+                "reasons": ["missingEvidence"],
+            }
+        ],
+        "status": "bad",
     }
     assert pipeline_meta["ringQuality"]["assess"] == {
         "count": 0,
@@ -358,17 +502,58 @@ def test_pipeline_output_includes_compact_explainability_metadata():
         "avgMarketScore": 83.75,
         "githubOnlyRatio": 0.0,
         "resourceLikeCount": 0,
-        "editoriallyWeakCount": 0,
-        "topSuspicious": [],
-        "status": "good",
+        "editoriallyWeakCount": 2,
+        "topSuspicious": [
+            {
+                "id": "react",
+                "name": "React",
+                "marketScore": 88.4,
+                "reasons": ["missingEvidence"],
+            },
+            {
+                "id": "svelte",
+                "name": "Svelte",
+                "marketScore": 79.1,
+                "reasons": ["missingEvidence"],
+            },
+        ],
+        "status": "warn",
     }
     assert pipeline_meta["quadrantQuality"]["platforms"]["status"] == "missing"
     assert pipeline_meta["quadrantQuality"]["techniques"]["status"] == "missing"
     assert pipeline_meta["quadrantQuality"]["languages"]["status"] == "missing"
-    assert pipeline_meta["quadrantRingQuality"]["tools"]["adopt"]["count"] == 1
-    assert pipeline_meta["quadrantRingQuality"]["tools"]["adopt"]["status"] == "good"
-    assert pipeline_meta["quadrantRingQuality"]["tools"]["trial"]["count"] == 1
-    assert pipeline_meta["quadrantRingQuality"]["tools"]["trial"]["status"] == "good"
+    assert pipeline_meta["quadrantRingQuality"]["tools"]["adopt"] == {
+        "count": 1,
+        "avgMarketScore": 88.4,
+        "githubOnlyRatio": 0.0,
+        "resourceLikeCount": 0,
+        "editoriallyWeakCount": 1,
+        "topSuspicious": [
+            {
+                "id": "react",
+                "name": "React",
+                "marketScore": 88.4,
+                "reasons": ["missingEvidence"],
+            }
+        ],
+        "status": "bad",
+    }
+    assert pipeline_meta["quadrantRingQuality"]["tools"]["trial"] == {
+        "count": 1,
+        "avgMarketScore": 79.1,
+        "githubOnlyRatio": 0.0,
+        "resourceLikeCount": 0,
+        "editoriallyWeakCount": 1,
+        "topSuspicious": [
+            {
+                "id": "svelte",
+                "name": "Svelte",
+                "marketScore": 79.1,
+                "reasons": ["missingEvidence"],
+            }
+        ],
+        "status": "bad",
+    }
     assert pipeline_meta["quadrantRingQuality"]["platforms"]["adopt"]["status"] == "missing"
 
 
