@@ -1,284 +1,6 @@
 {
   "snapshots": [
     {
-      "updatedAt": "2026-03-07T16:52:19.408974",
-      "technologies": [],
-      "watchlist": [],
-      "meta": {
-        "pipeline": {
-          "droppedInvalidDescriptions": 0,
-          "repairedDescriptions": 0,
-          "rejectedByStage": {
-            "insufficientSources": 0,
-            "qualityGate": 0,
-            "aiFilter": 0
-          },
-          "runMetrics": {
-            "sources": {
-              "github_trending": {
-                "records": 0,
-                "durationSeconds": 0.0,
-                "failures": 0
-              },
-              "hackernews": {
-                "records": 0,
-                "durationSeconds": 0.0,
-                "failures": 0
-              }
-            }
-          },
-          "ringDistribution": {
-            "adopt": 0,
-            "trial": 0,
-            "assess": 0,
-            "hold": 0
-          },
-          "ringQuality": {
-            "adopt": {
-              "count": 0,
-              "avgMarketScore": 0.0,
-              "githubOnlyRatio": 0.0,
-              "resourceLikeCount": 0,
-              "editoriallyWeakCount": 0,
-              "topSuspicious": [],
-              "status": "good"
-            },
-            "trial": {
-              "count": 0,
-              "avgMarketScore": 0.0,
-              "githubOnlyRatio": 0.0,
-              "resourceLikeCount": 0,
-              "editoriallyWeakCount": 0,
-              "topSuspicious": [],
-              "status": "good"
-            },
-            "assess": {
-              "count": 0,
-              "avgMarketScore": 0.0,
-              "githubOnlyRatio": 0.0,
-              "resourceLikeCount": 0,
-              "editoriallyWeakCount": 0,
-              "topSuspicious": [],
-              "status": "good"
-            },
-            "hold": {
-              "count": 0,
-              "avgMarketScore": 0.0,
-              "githubOnlyRatio": 0.0,
-              "resourceLikeCount": 0,
-              "editoriallyWeakCount": 0,
-              "topSuspicious": [],
-              "status": "good"
-            }
-          },
-          "quadrantQuality": {
-            "platforms": {
-              "count": 0,
-              "avgMarketScore": 0.0,
-              "githubOnlyRatio": 0.0,
-              "resourceLikeCount": 0,
-              "editoriallyWeakCount": 0,
-              "topSuspicious": [],
-              "status": "missing"
-            },
-            "techniques": {
-              "count": 0,
-              "avgMarketScore": 0.0,
-              "githubOnlyRatio": 0.0,
-              "resourceLikeCount": 0,
-              "editoriallyWeakCount": 0,
-              "topSuspicious": [],
-              "status": "missing"
-            },
-            "tools": {
-              "count": 0,
-              "avgMarketScore": 0.0,
-              "githubOnlyRatio": 0.0,
-              "resourceLikeCount": 0,
-              "editoriallyWeakCount": 0,
-              "topSuspicious": [],
-              "status": "missing"
-            },
-            "languages": {
-              "count": 0,
-              "avgMarketScore": 0.0,
-              "githubOnlyRatio": 0.0,
-              "resourceLikeCount": 0,
-              "editoriallyWeakCount": 0,
-              "topSuspicious": [],
-              "status": "missing"
-            }
-          },
-          "quadrantRingQuality": {
-            "platforms": {
-              "adopt": {
-                "count": 0,
-                "avgMarketScore": 0.0,
-                "githubOnlyRatio": 0.0,
-                "resourceLikeCount": 0,
-                "editoriallyWeakCount": 0,
-                "topSuspicious": [],
-                "status": "missing"
-              },
-              "trial": {
-                "count": 0,
-                "avgMarketScore": 0.0,
-                "githubOnlyRatio": 0.0,
-                "resourceLikeCount": 0,
-                "editoriallyWeakCount": 0,
-                "topSuspicious": [],
-                "status": "missing"
-              },
-              "assess": {
-                "count": 0,
-                "avgMarketScore": 0.0,
-                "githubOnlyRatio": 0.0,
-                "resourceLikeCount": 0,
-                "editoriallyWeakCount": 0,
-                "topSuspicious": [],
-                "status": "missing"
-              },
-              "hold": {
-                "count": 0,
-                "avgMarketScore": 0.0,
-                "githubOnlyRatio": 0.0,
-                "resourceLikeCount": 0,
-                "editoriallyWeakCount": 0,
-                "topSuspicious": [],
-                "status": "missing"
-              }
-            },
-            "techniques": {
-              "adopt": {
-                "count": 0,
-                "avgMarketScore": 0.0,
-                "githubOnlyRatio": 0.0,
-                "resourceLikeCount": 0,
-                "editoriallyWeakCount": 0,
-                "topSuspicious": [],
-                "status": "missing"
-              },
-              "trial": {
-                "count": 0,
-                "avgMarketScore": 0.0,
-                "githubOnlyRatio": 0.0,
-                "resourceLikeCount": 0,
-                "editoriallyWeakCount": 0,
-                "topSuspicious": [],
-                "status": "missing"
-              },
-              "assess": {
-                "count": 0,
-                "avgMarketScore": 0.0,
-                "githubOnlyRatio": 0.0,
-                "resourceLikeCount": 0,
-                "editoriallyWeakCount": 0,
-                "topSuspicious": [],
-                "status": "missing"
-              },
-              "hold": {
-                "count": 0,
-                "avgMarketScore": 0.0,
-                "githubOnlyRatio": 0.0,
-                "resourceLikeCount": 0,
-                "editoriallyWeakCount": 0,
-                "topSuspicious": [],
-                "status": "missing"
-              }
-            },
-            "tools": {
-              "adopt": {
-                "count": 0,
-                "avgMarketScore": 0.0,
-                "githubOnlyRatio": 0.0,
-                "resourceLikeCount": 0,
-                "editoriallyWeakCount": 0,
-                "topSuspicious": [],
-                "status": "missing"
-              },
-              "trial": {
-                "count": 0,
-                "avgMarketScore": 0.0,
-                "githubOnlyRatio": 0.0,
-                "resourceLikeCount": 0,
-                "editoriallyWeakCount": 0,
-                "topSuspicious": [],
-                "status": "missing"
-              },
-              "assess": {
-                "count": 0,
-                "avgMarketScore": 0.0,
-                "githubOnlyRatio": 0.0,
-                "resourceLikeCount": 0,
-                "editoriallyWeakCount": 0,
-                "topSuspicious": [],
-                "status": "missing"
-              },
-              "hold": {
-                "count": 0,
-                "avgMarketScore": 0.0,
-                "githubOnlyRatio": 0.0,
-                "resourceLikeCount": 0,
-                "editoriallyWeakCount": 0,
-                "topSuspicious": [],
-                "status": "missing"
-              }
-            },
-            "languages": {
-              "adopt": {
-                "count": 0,
-                "avgMarketScore": 0.0,
-                "githubOnlyRatio": 0.0,
-                "resourceLikeCount": 0,
-                "editoriallyWeakCount": 0,
-                "topSuspicious": [],
-                "status": "missing"
-              },
-              "trial": {
-                "count": 0,
-                "avgMarketScore": 0.0,
-                "githubOnlyRatio": 0.0,
-                "resourceLikeCount": 0,
-                "editoriallyWeakCount": 0,
-                "topSuspicious": [],
-                "status": "missing"
-              },
-              "assess": {
-                "count": 0,
-                "avgMarketScore": 0.0,
-                "githubOnlyRatio": 0.0,
-                "resourceLikeCount": 0,
-                "editoriallyWeakCount": 0,
-                "topSuspicious": [],
-                "status": "missing"
-              },
-              "hold": {
-                "count": 0,
-                "avgMarketScore": 0.0,
-                "githubOnlyRatio": 0.0,
-                "resourceLikeCount": 0,
-                "editoriallyWeakCount": 0,
-                "topSuspicious": [],
-                "status": "missing"
-              }
-            }
-          },
-          "topAdded": [],
-          "topDropped": [],
-          "collected": 0,
-          "normalized": 0,
-          "candidatesCore": 0,
-          "candidatesWatchlist": 0,
-          "candidatesBorderline": 0,
-          "classified": 0,
-          "llmCalls": 0,
-          "qualified": 0,
-          "output": 0,
-          "watchlist": 0
-        }
-      }
-    },
-    {
       "updatedAt": "2026-03-07T16:53:27.242612",
       "technologies": [
         {
@@ -11432,6 +11154,1358 @@
           "qualified": 3,
           "output": 3,
           "watchlist": 0
+        }
+      }
+    },
+    {
+      "updatedAt": "2026-03-07T16:41:37.470286",
+      "technologies": [
+        {
+          "id": "python",
+          "name": "Python",
+          "quadrant": "languages",
+          "ring": "trial",
+          "description": "Python is a high-level, interpreted programming language known for its readability and versatility. It supports multiple programming paradigms and has extensive libraries for data science, machine learning, web development, and automation. One of the most widely adopted languages globally.",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 73.79,
+          "signals": {
+            "ghMomentum": 99.24,
+            "ghPopularity": 98.91,
+            "hnHeat": 38.5
+          },
+          "sourceCoverage": 2,
+          "sourceFreshness": {
+            "freshestDays": null,
+            "stalestDays": null
+          },
+          "evidenceSummary": {
+            "sources": [
+              "github",
+              "hackernews"
+            ],
+            "metrics": [],
+            "hasExternalAdoption": false,
+            "githubOnly": false
+          },
+          "whyThisRing": "Trial because composite 73.8 shows momentum with corroborated signals across 2 sources.",
+          "stars": 218406,
+          "confidence": 0.95,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-03-07T16:41:37.469324",
+          "canonicalId": "python",
+          "entityType": "technology"
+        },
+        {
+          "id": "typescript",
+          "name": "TypeScript",
+          "quadrant": "techniques",
+          "ring": "trial",
+          "description": "TypeScript is a superset of JavaScript that compiles to clean JavaScript output.",
+          "moved": 1,
+          "trend": "up",
+          "marketScore": 83.22,
+          "signals": {
+            "ghMomentum": 91.6,
+            "ghPopularity": 93.25,
+            "hnHeat": 47.5
+          },
+          "sourceCoverage": 4,
+          "sourceFreshness": {
+            "freshestDays": 1,
+            "stalestDays": 1
+          },
+          "evidenceSummary": {
+            "sources": [
+              "github",
+              "hackernews",
+              "deps_dev",
+              "osv"
+            ],
+            "metrics": [
+              "default_version",
+              "known_vulnerabilities",
+              "reverse_dependents"
+            ],
+            "hasExternalAdoption": true,
+            "githubOnly": false
+          },
+          "whyThisRing": "Trial because composite 83.2 shows momentum with external adoption evidence across 4 sources.",
+          "stars": 108047,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-03-07T16:41:37.469356",
+          "canonicalId": "typescript",
+          "entityType": "technology",
+          "evidence": [
+            {
+              "source": "deps_dev",
+              "metric": "reverse_dependents",
+              "subjectId": "npm:typescript",
+              "rawValue": 42809,
+              "normalizedValue": 77.19,
+              "observedAt": "2026-03-07T16:41:03.088633+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "default_version",
+              "subjectId": "npm:typescript@5.9.3",
+              "rawValue": "5.9.3",
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:03.088651+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "osv",
+              "metric": "known_vulnerabilities",
+              "subjectId": "npm:typescript@5.9.3",
+              "rawValue": 0,
+              "normalizedValue": 0.0,
+              "observedAt": "2026-03-07T16:41:05.232468+00:00",
+              "freshnessDays": 1
+            }
+          ]
+        },
+        {
+          "id": "go",
+          "name": "go",
+          "quadrant": "platforms",
+          "ring": "trial",
+          "description": "The Go programming language",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 82.67,
+          "signals": {
+            "ghMomentum": 93.74,
+            "ghPopularity": 94.92,
+            "hnHeat": 100.0
+          },
+          "sourceCoverage": 2,
+          "sourceFreshness": {
+            "freshestDays": null,
+            "stalestDays": null
+          },
+          "evidenceSummary": {
+            "sources": [
+              "github",
+              "hackernews"
+            ],
+            "metrics": [],
+            "hasExternalAdoption": false,
+            "githubOnly": false
+          },
+          "whyThisRing": "Trial because composite 82.7 shows momentum with corroborated signals across 2 sources.",
+          "stars": 132942,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-03-07T16:41:37.469379",
+          "canonicalId": "go",
+          "entityType": "technology"
+        },
+        {
+          "id": "transformers",
+          "name": "transformers",
+          "quadrant": "tools",
+          "ring": "adopt",
+          "description": "🤗 Transformers is the leading model-definition framework for state-of-the-art machine learning models across text, vision, audio, and multimodal domains. It provides APIs for both inference and training, supporting architectures like BERT, GPT, and their variants. Has become the de facto standard for transformer-based ML development.",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 83.69,
+          "signals": {
+            "ghMomentum": 96.19,
+            "ghPopularity": 96.28,
+            "hnHeat": 0.0
+          },
+          "sourceCoverage": 4,
+          "sourceFreshness": {
+            "freshestDays": 1,
+            "stalestDays": 1
+          },
+          "evidenceSummary": {
+            "sources": [
+              "github",
+              "pypistats",
+              "deps_dev",
+              "osv"
+            ],
+            "metrics": [
+              "default_version",
+              "downloads_last_month",
+              "known_vulnerabilities",
+              "reverse_dependents"
+            ],
+            "hasExternalAdoption": true,
+            "githubOnly": false
+          },
+          "whyThisRing": "Adopt because composite 83.7 is backed by external adoption evidence across 4 sources.",
+          "stars": 157520,
+          "confidence": 0.95,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-03-07T16:41:37.469402",
+          "canonicalId": "transformers",
+          "entityType": "technology",
+          "evidence": [
+            {
+              "source": "pypistats",
+              "metric": "downloads_last_month",
+              "subjectId": "transformers",
+              "rawValue": 112373909,
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:02.235479+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "reverse_dependents",
+              "subjectId": "pypi:transformers",
+              "rawValue": 6588,
+              "normalizedValue": 63.65,
+              "observedAt": "2026-03-07T16:41:03.386500+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "default_version",
+              "subjectId": "pypi:transformers@5.3.0",
+              "rawValue": "5.3.0",
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:03.386516+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "osv",
+              "metric": "known_vulnerabilities",
+              "subjectId": "pypi:transformers@5.3.0",
+              "rawValue": 0,
+              "normalizedValue": 0.0,
+              "observedAt": "2026-03-07T16:41:05.232434+00:00",
+              "freshnessDays": 1
+            }
+          ]
+        },
+        {
+          "id": "yt-dlp",
+          "name": "yt-dlp",
+          "quadrant": "tools",
+          "ring": "adopt",
+          "description": "A feature-rich command-line audio/video downloader forked from youtube-dl. Supports hundreds of websites, offers high-quality extraction, and is actively maintained with frequent updates. Widely used for downloading and archiving media content.",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 82.83,
+          "signals": {
+            "ghMomentum": 93.2,
+            "ghPopularity": 95.89,
+            "hnHeat": 0.0
+          },
+          "sourceCoverage": 4,
+          "sourceFreshness": {
+            "freshestDays": 1,
+            "stalestDays": 1
+          },
+          "evidenceSummary": {
+            "sources": [
+              "github",
+              "pypistats",
+              "deps_dev",
+              "osv"
+            ],
+            "metrics": [
+              "default_version",
+              "downloads_last_month",
+              "known_vulnerabilities",
+              "reverse_dependents"
+            ],
+            "hasExternalAdoption": true,
+            "githubOnly": false
+          },
+          "whyThisRing": "Adopt because composite 82.8 is backed by external adoption evidence across 4 sources.",
+          "stars": 150042,
+          "confidence": 0.95,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-03-07T16:41:37.469422",
+          "canonicalId": "yt-dlp",
+          "entityType": "technology",
+          "evidence": [
+            {
+              "source": "pypistats",
+              "metric": "downloads_last_month",
+              "subjectId": "yt-dlp",
+              "rawValue": 10254538,
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:02.281971+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "reverse_dependents",
+              "subjectId": "pypi:yt-dlp",
+              "rawValue": 14,
+              "normalizedValue": 19.6,
+              "observedAt": "2026-03-07T16:41:03.814369+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "default_version",
+              "subjectId": "pypi:yt-dlp@2026.3.3.162408.dev0",
+              "rawValue": "2026.3.3.162408.dev0",
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:03.814385+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "osv",
+              "metric": "known_vulnerabilities",
+              "subjectId": "pypi:yt-dlp@2026.3.3.162408.dev0",
+              "rawValue": 0,
+              "normalizedValue": 0.0,
+              "observedAt": "2026-03-07T16:41:05.232441+00:00",
+              "freshnessDays": 1
+            }
+          ]
+        },
+        {
+          "id": "langchain",
+          "name": "langchain",
+          "quadrant": "tools",
+          "ring": "adopt",
+          "description": "A comprehensive framework for building applications powered by large language models. Provides tools for chaining LLM calls, building agents, memory management, and integrating various AI services. Widely adopted for rapid LLM application development.",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 82.81,
+          "signals": {
+            "ghMomentum": 93.86,
+            "ghPopularity": 94.65,
+            "hnHeat": 0.0
+          },
+          "sourceCoverage": 4,
+          "sourceFreshness": {
+            "freshestDays": 1,
+            "stalestDays": 1
+          },
+          "evidenceSummary": {
+            "sources": [
+              "github",
+              "pypistats",
+              "deps_dev",
+              "osv"
+            ],
+            "metrics": [
+              "default_version",
+              "downloads_last_month",
+              "known_vulnerabilities",
+              "reverse_dependents"
+            ],
+            "hasExternalAdoption": true,
+            "githubOnly": false
+          },
+          "whyThisRing": "Adopt because composite 82.8 is backed by external adoption evidence across 4 sources.",
+          "stars": 128544,
+          "confidence": 0.95,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-03-07T16:41:37.469439",
+          "canonicalId": "langchain",
+          "entityType": "technology",
+          "evidence": [
+            {
+              "source": "pypistats",
+              "metric": "downloads_last_month",
+              "subjectId": "langchain",
+              "rawValue": 222679849,
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:02.331793+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "reverse_dependents",
+              "subjectId": "pypi:langchain",
+              "rawValue": 2238,
+              "normalizedValue": 55.83,
+              "observedAt": "2026-03-07T16:41:03.962936+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "default_version",
+              "subjectId": "pypi:langchain@1.2.10",
+              "rawValue": "1.2.10",
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:03.962952+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "osv",
+              "metric": "known_vulnerabilities",
+              "subjectId": "pypi:langchain@1.2.10",
+              "rawValue": 0,
+              "normalizedValue": 0.0,
+              "observedAt": "2026-03-07T16:41:05.232459+00:00",
+              "freshnessDays": 1
+            }
+          ]
+        },
+        {
+          "id": "react",
+          "name": "react",
+          "quadrant": "tools",
+          "ring": "trial",
+          "description": "A JavaScript library for building user interfaces, developed by Meta. It uses a component-based architecture and virtual DOM for efficient rendering. React is the most popular frontend library, powering millions of websites and applications across web and native platforms.",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 74.18,
+          "signals": {
+            "ghMomentum": 99.86,
+            "ghPopularity": 99.79,
+            "hnHeat": 0.0
+          },
+          "sourceCoverage": 3,
+          "sourceFreshness": {
+            "freshestDays": 1,
+            "stalestDays": 1
+          },
+          "evidenceSummary": {
+            "sources": [
+              "github",
+              "deps_dev",
+              "osv"
+            ],
+            "metrics": [
+              "default_version",
+              "known_vulnerabilities",
+              "reverse_dependents"
+            ],
+            "hasExternalAdoption": true,
+            "githubOnly": false
+          },
+          "whyThisRing": "Trial because composite 74.2 shows momentum with external adoption evidence across 3 sources.",
+          "stars": 243694,
+          "confidence": 0.95,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-03-07T16:41:37.469456",
+          "canonicalId": "react",
+          "entityType": "technology",
+          "evidence": [
+            {
+              "source": "deps_dev",
+              "metric": "reverse_dependents",
+              "subjectId": "npm:react",
+              "rawValue": 20677,
+              "normalizedValue": 71.93,
+              "observedAt": "2026-03-07T16:41:03.239198+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "default_version",
+              "subjectId": "npm:react@19.2.4",
+              "rawValue": "19.2.4",
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:03.239213+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "osv",
+              "metric": "known_vulnerabilities",
+              "subjectId": "npm:react@19.2.4",
+              "rawValue": 0,
+              "normalizedValue": 0.0,
+              "observedAt": "2026-03-07T16:41:05.232412+00:00",
+              "freshnessDays": 1
+            }
+          ]
+        },
+        {
+          "id": "next.js",
+          "name": "next.js",
+          "quadrant": "tools",
+          "ring": "assess",
+          "description": "The React Framework for production - enables server-side rendering, static site generation, and API routes. Built on React, it provides a comprehensive solution for building fast, SEO-friendly web applications with features like file-based routing, image optimization, and middleware support.",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 63.61,
+          "signals": {
+            "ghMomentum": 95.3,
+            "ghPopularity": 95.23,
+            "hnHeat": 0.0
+          },
+          "sourceCoverage": 3,
+          "sourceFreshness": {
+            "freshestDays": 1,
+            "stalestDays": 1
+          },
+          "evidenceSummary": {
+            "sources": [
+              "github",
+              "deps_dev",
+              "osv"
+            ],
+            "metrics": [
+              "default_version",
+              "known_vulnerabilities",
+              "reverse_dependents"
+            ],
+            "hasExternalAdoption": true,
+            "githubOnly": false
+          },
+          "whyThisRing": "Assess because composite 63.6 is promising but evidence depth is still limited.",
+          "stars": 138193,
+          "confidence": 0.95,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-03-07T16:41:37.469476",
+          "canonicalId": "next.js",
+          "entityType": "technology",
+          "evidence": [
+            {
+              "source": "deps_dev",
+              "metric": "reverse_dependents",
+              "subjectId": "npm:next",
+              "rawValue": 849,
+              "normalizedValue": 48.82,
+              "observedAt": "2026-03-07T16:41:03.660253+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "default_version",
+              "subjectId": "npm:next@16.1.6",
+              "rawValue": "16.1.6",
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:03.660269+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "osv",
+              "metric": "known_vulnerabilities",
+              "subjectId": "npm:next@16.1.6",
+              "rawValue": 0,
+              "normalizedValue": 0.0,
+              "observedAt": "2026-03-07T16:41:05.232455+00:00",
+              "freshnessDays": 1
+            }
+          ]
+        },
+        {
+          "id": "pytorch",
+          "name": "pytorch",
+          "quadrant": "languages",
+          "ring": "adopt",
+          "description": "Tensors and Dynamic neural networks in Python with strong GPU acceleration",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 82.33,
+          "signals": {
+            "ghMomentum": 93.03,
+            "ghPopularity": 92.47,
+            "hnHeat": 0.0
+          },
+          "sourceCoverage": 4,
+          "sourceFreshness": {
+            "freshestDays": 1,
+            "stalestDays": 1
+          },
+          "evidenceSummary": {
+            "sources": [
+              "github",
+              "pypistats",
+              "deps_dev",
+              "osv"
+            ],
+            "metrics": [
+              "default_version",
+              "downloads_last_month",
+              "known_vulnerabilities",
+              "reverse_dependents"
+            ],
+            "hasExternalAdoption": true,
+            "githubOnly": false
+          },
+          "whyThisRing": "Adopt because composite 82.3 is backed by external adoption evidence across 4 sources.",
+          "stars": 98020,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-03-07T16:41:37.469490",
+          "canonicalId": "pytorch",
+          "entityType": "technology",
+          "evidence": [
+            {
+              "source": "pypistats",
+              "metric": "downloads_last_month",
+              "subjectId": "torch",
+              "rawValue": 74313910,
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:02.522385+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "reverse_dependents",
+              "subjectId": "pypi:torch",
+              "rawValue": 19820,
+              "normalizedValue": 71.62,
+              "observedAt": "2026-03-07T16:41:04.537041+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "default_version",
+              "subjectId": "pypi:torch@2.10.0",
+              "rawValue": "2.10.0",
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:04.537056+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "osv",
+              "metric": "known_vulnerabilities",
+              "subjectId": "pypi:torch@2.10.0",
+              "rawValue": 0,
+              "normalizedValue": 0.0,
+              "observedAt": "2026-03-07T16:41:05.232471+00:00",
+              "freshnessDays": 1
+            }
+          ]
+        },
+        {
+          "id": "open-webui",
+          "name": "open-webui",
+          "quadrant": "languages",
+          "ring": "trial",
+          "description": "User-friendly AI Interface (Supports Ollama, OpenAI API, ...)",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 78.06,
+          "signals": {
+            "ghMomentum": 93.29,
+            "ghPopularity": 94.49,
+            "hnHeat": 0.0
+          },
+          "sourceCoverage": 4,
+          "sourceFreshness": {
+            "freshestDays": 1,
+            "stalestDays": 1
+          },
+          "evidenceSummary": {
+            "sources": [
+              "github",
+              "pypistats",
+              "deps_dev",
+              "osv"
+            ],
+            "metrics": [
+              "default_version",
+              "downloads_last_month",
+              "known_vulnerabilities",
+              "reverse_dependents"
+            ],
+            "hasExternalAdoption": true,
+            "githubOnly": false
+          },
+          "whyThisRing": "Trial because composite 78.1 shows momentum with external adoption evidence across 4 sources.",
+          "stars": 126079,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-03-07T16:41:37.469507",
+          "canonicalId": "open-webui",
+          "entityType": "technology",
+          "evidence": [
+            {
+              "source": "pypistats",
+              "metric": "downloads_last_month",
+              "subjectId": "open-webui",
+              "rawValue": 1326828,
+              "normalizedValue": 87.47,
+              "observedAt": "2026-03-07T16:41:02.378361+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "reverse_dependents",
+              "subjectId": "pypi:open-webui",
+              "rawValue": 2,
+              "normalizedValue": 7.95,
+              "observedAt": "2026-03-07T16:41:04.098967+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "default_version",
+              "subjectId": "pypi:open-webui@0.8.8",
+              "rawValue": "0.8.8",
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:04.098983+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "osv",
+              "metric": "known_vulnerabilities",
+              "subjectId": "pypi:open-webui@0.8.8",
+              "rawValue": 0,
+              "normalizedValue": 0.0,
+              "observedAt": "2026-03-07T16:41:05.232464+00:00",
+              "freshnessDays": 1
+            }
+          ]
+        },
+        {
+          "id": "youtube-dl",
+          "name": "youtube-dl",
+          "quadrant": "languages",
+          "ring": "trial",
+          "description": "Command-line program to download videos from YouTube.com and other video sites",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 75.46,
+          "signals": {
+            "ghMomentum": 92.43,
+            "ghPopularity": 95.32,
+            "hnHeat": 0.0
+          },
+          "sourceCoverage": 4,
+          "sourceFreshness": {
+            "freshestDays": 1,
+            "stalestDays": 1
+          },
+          "evidenceSummary": {
+            "sources": [
+              "github",
+              "pypistats",
+              "deps_dev",
+              "osv"
+            ],
+            "metrics": [
+              "default_version",
+              "downloads_last_month",
+              "known_vulnerabilities",
+              "reverse_dependents"
+            ],
+            "hasExternalAdoption": true,
+            "githubOnly": false
+          },
+          "whyThisRing": "Trial because composite 75.5 shows momentum with external adoption evidence across 4 sources.",
+          "stars": 139812,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-03-07T16:41:37.469522",
+          "canonicalId": "youtube-dl",
+          "entityType": "technology",
+          "evidence": [
+            {
+              "source": "pypistats",
+              "metric": "downloads_last_month",
+              "subjectId": "youtube-dl",
+              "rawValue": 224816,
+              "normalizedValue": 76.45,
+              "observedAt": "2026-03-07T16:41:02.426989+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "reverse_dependents",
+              "subjectId": "pypi:youtube-dl",
+              "rawValue": 333,
+              "normalizedValue": 42.06,
+              "observedAt": "2026-03-07T16:41:04.263098+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "default_version",
+              "subjectId": "pypi:youtube-dl@2021.12.17",
+              "rawValue": "2021.12.17",
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:04.263116+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "osv",
+              "metric": "known_vulnerabilities",
+              "subjectId": "pypi:youtube-dl@2021.12.17",
+              "rawValue": 1,
+              "normalizedValue": 20.0,
+              "observedAt": "2026-03-07T16:41:05.232451+00:00",
+              "freshnessDays": 1
+            }
+          ]
+        },
+        {
+          "id": "langflow",
+          "name": "langflow",
+          "quadrant": "platforms",
+          "ring": "trial",
+          "description": "Langflow is a powerful tool for building and deploying AI-powered agents and workflows.",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 71.75,
+          "signals": {
+            "ghMomentum": 92.04,
+            "ghPopularity": 95.64,
+            "hnHeat": 0.0
+          },
+          "sourceCoverage": 4,
+          "sourceFreshness": {
+            "freshestDays": 1,
+            "stalestDays": 1
+          },
+          "evidenceSummary": {
+            "sources": [
+              "github",
+              "pypistats",
+              "deps_dev",
+              "osv"
+            ],
+            "metrics": [
+              "default_version",
+              "downloads_last_month",
+              "known_vulnerabilities",
+              "reverse_dependents"
+            ],
+            "hasExternalAdoption": true,
+            "githubOnly": false
+          },
+          "whyThisRing": "Trial because composite 71.8 shows momentum with external adoption evidence across 4 sources.",
+          "stars": 145340,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-03-07T16:41:37.469538",
+          "canonicalId": "langflow",
+          "entityType": "technology",
+          "evidence": [
+            {
+              "source": "pypistats",
+              "metric": "downloads_last_month",
+              "subjectId": "langflow",
+              "rawValue": 85844,
+              "normalizedValue": 70.48,
+              "observedAt": "2026-03-07T16:41:02.473824+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "reverse_dependents",
+              "subjectId": "pypi:langflow",
+              "rawValue": 0,
+              "normalizedValue": 0.0,
+              "observedAt": "2026-03-07T16:41:04.402730+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "default_version",
+              "subjectId": "pypi:langflow@1.8.0",
+              "rawValue": "1.8.0",
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:04.402745+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "osv",
+              "metric": "known_vulnerabilities",
+              "subjectId": "pypi:langflow@1.8.0",
+              "rawValue": 0,
+              "normalizedValue": 0.0,
+              "observedAt": "2026-03-07T16:41:05.232446+00:00",
+              "freshnessDays": 1
+            }
+          ]
+        }
+      ],
+      "watchlist": [
+        {
+          "id": "django",
+          "name": "django",
+          "quadrant": "tools",
+          "ring": "trial",
+          "description": "The Web framework for perfectionists with deadlines.",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 82.23,
+          "signals": {
+            "ghMomentum": 92.96,
+            "ghPopularity": 91.51,
+            "hnHeat": 0.0
+          },
+          "sourceCoverage": 4,
+          "sourceFreshness": {
+            "freshestDays": 1,
+            "stalestDays": 1
+          },
+          "evidenceSummary": {
+            "sources": [
+              "github",
+              "pypistats",
+              "deps_dev",
+              "osv"
+            ],
+            "metrics": [
+              "default_version",
+              "downloads_last_month",
+              "known_vulnerabilities",
+              "reverse_dependents"
+            ],
+            "hasExternalAdoption": true,
+            "githubOnly": false
+          },
+          "whyThisRing": "Trial because composite 82.2 shows momentum with external adoption evidence across 4 sources.",
+          "stars": 87005,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-03-07T16:41:37.469558",
+          "canonicalId": "django",
+          "entityType": "technology",
+          "evidence": [
+            {
+              "source": "pypistats",
+              "metric": "downloads_last_month",
+              "subjectId": "django",
+              "rawValue": 38969669,
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:02.569093+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "reverse_dependents",
+              "subjectId": "pypi:django",
+              "rawValue": 10390,
+              "normalizedValue": 66.94,
+              "observedAt": "2026-03-07T16:41:04.675244+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "default_version",
+              "subjectId": "pypi:django@6.0.3",
+              "rawValue": "6.0.3",
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:04.675260+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "osv",
+              "metric": "known_vulnerabilities",
+              "subjectId": "pypi:django@6.0.3",
+              "rawValue": 0,
+              "normalizedValue": 0.0,
+              "observedAt": "2026-03-07T16:41:05.232480+00:00",
+              "freshnessDays": 1
+            }
+          ]
+        },
+        {
+          "id": "fastapi",
+          "name": "fastapi",
+          "quadrant": "tools",
+          "ring": "trial",
+          "description": "FastAPI framework, high performance, easy to learn, fast to code, ready for production",
+          "moved": 0,
+          "trend": "stable",
+          "marketScore": 81.49,
+          "signals": {
+            "ghMomentum": 89.79,
+            "ghPopularity": 92.3,
+            "hnHeat": 0.0
+          },
+          "sourceCoverage": 4,
+          "sourceFreshness": {
+            "freshestDays": 1,
+            "stalestDays": 1
+          },
+          "evidenceSummary": {
+            "sources": [
+              "github",
+              "pypistats",
+              "deps_dev",
+              "osv"
+            ],
+            "metrics": [
+              "default_version",
+              "downloads_last_month",
+              "known_vulnerabilities",
+              "reverse_dependents"
+            ],
+            "hasExternalAdoption": true,
+            "githubOnly": false
+          },
+          "whyThisRing": "Trial because composite 81.5 shows momentum with external adoption evidence across 4 sources.",
+          "stars": 95976,
+          "confidence": 0.5,
+          "isDeprecated": false,
+          "replacement": null,
+          "updatedAt": "2026-03-07T16:41:37.469573",
+          "canonicalId": "fastapi",
+          "entityType": "technology",
+          "evidence": [
+            {
+              "source": "pypistats",
+              "metric": "downloads_last_month",
+              "subjectId": "fastapi",
+              "rawValue": 290283999,
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:02.617698+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "reverse_dependents",
+              "subjectId": "pypi:fastapi",
+              "rawValue": 12132,
+              "normalizedValue": 68.07,
+              "observedAt": "2026-03-07T16:41:04.813371+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "deps_dev",
+              "metric": "default_version",
+              "subjectId": "pypi:fastapi@0.135.1",
+              "rawValue": "0.135.1",
+              "normalizedValue": 100.0,
+              "observedAt": "2026-03-07T16:41:04.813385+00:00",
+              "freshnessDays": 1
+            },
+            {
+              "source": "osv",
+              "metric": "known_vulnerabilities",
+              "subjectId": "pypi:fastapi@0.135.1",
+              "rawValue": 0,
+              "normalizedValue": 0.0,
+              "observedAt": "2026-03-07T16:41:05.232475+00:00",
+              "freshnessDays": 1
+            }
+          ]
+        }
+      ],
+      "meta": {
+        "pipeline": {
+          "droppedInvalidDescriptions": 0,
+          "repairedDescriptions": 0,
+          "rejectedByStage": {
+            "insufficientSources": 0,
+            "qualityGate": 1,
+            "aiFilter": 8
+          },
+          "runMetrics": {
+            "sources": {
+              "github_trending": {
+                "records": 150,
+                "durationSeconds": 5.8776,
+                "failures": 0
+              },
+              "hackernews": {
+                "records": 124,
+                "durationSeconds": 19.6562,
+                "failures": 0
+              },
+              "pypistats": {
+                "records": 9,
+                "durationSeconds": 0.7894,
+                "failures": 0
+              },
+              "deps_dev": {
+                "records": 24,
+                "durationSeconds": 2.1958,
+                "failures": 0
+              },
+              "osv": {
+                "records": 12,
+                "durationSeconds": 0.4182,
+                "failures": 0
+              }
+            }
+          },
+          "ringDistribution": {
+            "adopt": 4,
+            "trial": 7,
+            "assess": 1,
+            "hold": 0
+          },
+          "ringQuality": {
+            "adopt": {
+              "count": 4,
+              "avgMarketScore": 82.91,
+              "githubOnlyRatio": 0.0,
+              "resourceLikeCount": 0,
+              "editoriallyWeakCount": 0,
+              "topSuspicious": [],
+              "status": "good"
+            },
+            "trial": {
+              "count": 7,
+              "avgMarketScore": 77.02,
+              "githubOnlyRatio": 0.0,
+              "resourceLikeCount": 0,
+              "editoriallyWeakCount": 0,
+              "topSuspicious": [],
+              "status": "good"
+            },
+            "assess": {
+              "count": 1,
+              "avgMarketScore": 63.61,
+              "githubOnlyRatio": 0.0,
+              "resourceLikeCount": 0,
+              "editoriallyWeakCount": 0,
+              "topSuspicious": [],
+              "status": "good"
+            },
+            "hold": {
+              "count": 0,
+              "avgMarketScore": 0.0,
+              "githubOnlyRatio": 0.0,
+              "resourceLikeCount": 0,
+              "editoriallyWeakCount": 0,
+              "topSuspicious": [],
+              "status": "good"
+            }
+          },
+          "quadrantQuality": {
+            "platforms": {
+              "count": 2,
+              "avgMarketScore": 77.21,
+              "githubOnlyRatio": 0.0,
+              "resourceLikeCount": 0,
+              "editoriallyWeakCount": 0,
+              "topSuspicious": [],
+              "status": "good"
+            },
+            "techniques": {
+              "count": 1,
+              "avgMarketScore": 83.22,
+              "githubOnlyRatio": 0.0,
+              "resourceLikeCount": 0,
+              "editoriallyWeakCount": 0,
+              "topSuspicious": [],
+              "status": "good"
+            },
+            "tools": {
+              "count": 5,
+              "avgMarketScore": 77.42,
+              "githubOnlyRatio": 0.0,
+              "resourceLikeCount": 0,
+              "editoriallyWeakCount": 0,
+              "topSuspicious": [],
+              "status": "good"
+            },
+            "languages": {
+              "count": 4,
+              "avgMarketScore": 77.41,
+              "githubOnlyRatio": 0.0,
+              "resourceLikeCount": 0,
+              "editoriallyWeakCount": 0,
+              "topSuspicious": [],
+              "status": "good"
+            }
+          },
+          "quadrantRingQuality": {
+            "platforms": {
+              "adopt": {
+                "count": 0,
+                "avgMarketScore": 0.0,
+                "githubOnlyRatio": 0.0,
+                "resourceLikeCount": 0,
+                "editoriallyWeakCount": 0,
+                "topSuspicious": [],
+                "status": "missing"
+              },
+              "trial": {
+                "count": 2,
+                "avgMarketScore": 77.21,
+                "githubOnlyRatio": 0.0,
+                "resourceLikeCount": 0,
+                "editoriallyWeakCount": 0,
+                "topSuspicious": [],
+                "status": "good"
+              },
+              "assess": {
+                "count": 0,
+                "avgMarketScore": 0.0,
+                "githubOnlyRatio": 0.0,
+                "resourceLikeCount": 0,
+                "editoriallyWeakCount": 0,
+                "topSuspicious": [],
+                "status": "missing"
+              },
+              "hold": {
+                "count": 0,
+                "avgMarketScore": 0.0,
+                "githubOnlyRatio": 0.0,
+                "resourceLikeCount": 0,
+                "editoriallyWeakCount": 0,
+                "topSuspicious": [],
+                "status": "missing"
+              }
+            },
+            "techniques": {
+              "adopt": {
+                "count": 0,
+                "avgMarketScore": 0.0,
+                "githubOnlyRatio": 0.0,
+                "resourceLikeCount": 0,
+                "editoriallyWeakCount": 0,
+                "topSuspicious": [],
+                "status": "missing"
+              },
+              "trial": {
+                "count": 1,
+                "avgMarketScore": 83.22,
+                "githubOnlyRatio": 0.0,
+                "resourceLikeCount": 0,
+                "editoriallyWeakCount": 0,
+                "topSuspicious": [],
+                "status": "good"
+              },
+              "assess": {
+                "count": 0,
+                "avgMarketScore": 0.0,
+                "githubOnlyRatio": 0.0,
+                "resourceLikeCount": 0,
+                "editoriallyWeakCount": 0,
+                "topSuspicious": [],
+                "status": "missing"
+              },
+              "hold": {
+                "count": 0,
+                "avgMarketScore": 0.0,
+                "githubOnlyRatio": 0.0,
+                "resourceLikeCount": 0,
+                "editoriallyWeakCount": 0,
+                "topSuspicious": [],
+                "status": "missing"
+              }
+            },
+            "tools": {
+              "adopt": {
+                "count": 3,
+                "avgMarketScore": 83.11,
+                "githubOnlyRatio": 0.0,
+                "resourceLikeCount": 0,
+                "editoriallyWeakCount": 0,
+                "topSuspicious": [],
+                "status": "good"
+              },
+              "trial": {
+                "count": 1,
+                "avgMarketScore": 74.18,
+                "githubOnlyRatio": 0.0,
+                "resourceLikeCount": 0,
+                "editoriallyWeakCount": 0,
+                "topSuspicious": [],
+                "status": "good"
+              },
+              "assess": {
+                "count": 1,
+                "avgMarketScore": 63.61,
+                "githubOnlyRatio": 0.0,
+                "resourceLikeCount": 0,
+                "editoriallyWeakCount": 0,
+                "topSuspicious": [],
+                "status": "good"
+              },
+              "hold": {
+                "count": 0,
+                "avgMarketScore": 0.0,
+                "githubOnlyRatio": 0.0,
+                "resourceLikeCount": 0,
+                "editoriallyWeakCount": 0,
+                "topSuspicious": [],
+                "status": "missing"
+              }
+            },
+            "languages": {
+              "adopt": {
+                "count": 1,
+                "avgMarketScore": 82.33,
+                "githubOnlyRatio": 0.0,
+                "resourceLikeCount": 0,
+                "editoriallyWeakCount": 0,
+                "topSuspicious": [],
+                "status": "good"
+              },
+              "trial": {
+                "count": 3,
+                "avgMarketScore": 75.77,
+                "githubOnlyRatio": 0.0,
+                "resourceLikeCount": 0,
+                "editoriallyWeakCount": 0,
+                "topSuspicious": [],
+                "status": "good"
+              },
+              "assess": {
+                "count": 0,
+                "avgMarketScore": 0.0,
+                "githubOnlyRatio": 0.0,
+                "resourceLikeCount": 0,
+                "editoriallyWeakCount": 0,
+                "topSuspicious": [],
+                "status": "missing"
+              },
+              "hold": {
+                "count": 0,
+                "avgMarketScore": 0.0,
+                "githubOnlyRatio": 0.0,
+                "resourceLikeCount": 0,
+                "editoriallyWeakCount": 0,
+                "topSuspicious": [],
+                "status": "missing"
+              }
+            }
+          },
+          "topAdded": [
+            {
+              "id": "transformers",
+              "name": "transformers",
+              "ring": "adopt",
+              "marketScore": 83.69
+            },
+            {
+              "id": "yt-dlp",
+              "name": "yt-dlp",
+              "ring": "adopt",
+              "marketScore": 82.83
+            },
+            {
+              "id": "langchain",
+              "name": "langchain",
+              "ring": "adopt",
+              "marketScore": 82.81
+            },
+            {
+              "id": "pytorch",
+              "name": "pytorch",
+              "ring": "adopt",
+              "marketScore": 82.33
+            },
+            {
+              "id": "open-webui",
+              "name": "open-webui",
+              "ring": "trial",
+              "marketScore": 78.06
+            }
+          ],
+          "topDropped": [],
+          "collected": 160,
+          "normalized": 160,
+          "candidatesCore": 1,
+          "candidatesWatchlist": 1,
+          "candidatesBorderline": 14,
+          "classified": 16,
+          "llmCalls": 7,
+          "qualified": 15,
+          "output": 12,
+          "watchlist": 2
         }
       }
     }
