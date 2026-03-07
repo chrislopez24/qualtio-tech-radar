@@ -64,9 +64,12 @@ def _apply_hysteresis(
     demote_delta = float(hysteresis.get("demote_delta", DEFAULT_HYSTERESIS["demote_delta"]))
 
     if proposed_index > previous_index:
-        required_score = _threshold_for(proposed_ring, thresholds) + promote_delta
-        if composite < required_score:
-            return _cap_ring(previous_ring, ceiling_ring)
+        for candidate_index in range(proposed_index, previous_index, -1):
+            candidate_ring = RING_ORDER[candidate_index]
+            required_score = _threshold_for(candidate_ring, thresholds) + promote_delta
+            if composite >= required_score:
+                return _cap_ring(candidate_ring, ceiling_ring)
+        return _cap_ring(previous_ring, ceiling_ring)
 
     if proposed_index < previous_index:
         required_score = _threshold_for(previous_ring, thresholds) - demote_delta

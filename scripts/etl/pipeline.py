@@ -559,14 +559,15 @@ class RadarPipeline:
                 deduped.append(record)
             tech_records[target_key] = deduped
 
-        stack_subjects = [
-            self._normalize_id(tech.name)
-            for tech in candidate_techs[: self.config.sources.stackexchange.request_budget]
-            if self._normalize_id(tech.name)
-        ]
-        stack_records = self._safe_fetch_evidence(self.stackexchange_source, list(dict.fromkeys(stack_subjects)))
-        for record in stack_records:
-            _merge_records(self._normalize_id(record.subject_id), [record])
+        if self.config.sources.stackexchange.enabled:
+            stack_subjects = [
+                self._normalize_id(tech.name)
+                for tech in candidate_techs[: self.config.sources.stackexchange.request_budget]
+                if self._normalize_id(tech.name)
+            ]
+            stack_records = self._safe_fetch_evidence(self.stackexchange_source, list(dict.fromkeys(stack_subjects)))
+            for record in stack_records:
+                _merge_records(self._normalize_id(record.subject_id), [record])
 
         pypi_subject_map: dict[str, list[str]] = {}
         deps_subject_map: dict[str, list[str]] = {}
@@ -581,19 +582,21 @@ class RadarPipeline:
             for subject in self._deps_dev_subjects_for(tech):
                 deps_subject_map.setdefault(subject, []).append(tech_key)
 
-        pypi_subjects = list(pypi_subject_map.keys())[: self.config.sources.pypistats.request_budget]
-        pypi_records = self._safe_fetch_evidence(self.pypistats_source, pypi_subjects)
-        for record in pypi_records:
-            for tech_key in pypi_subject_map.get(str(record.subject_id), []):
-                _merge_records(tech_key, [record])
+        if self.config.sources.pypistats.enabled:
+            pypi_subjects = list(pypi_subject_map.keys())[: self.config.sources.pypistats.request_budget]
+            pypi_records = self._safe_fetch_evidence(self.pypistats_source, pypi_subjects)
+            for record in pypi_records:
+                for tech_key in pypi_subject_map.get(str(record.subject_id), []):
+                    _merge_records(tech_key, [record])
 
-        deps_subjects = list(deps_subject_map.keys())[: self.config.sources.deps_dev.request_budget]
-        deps_records = self._safe_fetch_evidence(self.deps_dev_source, deps_subjects)
-        for record in deps_records:
-            subject_id = str(record.subject_id)
-            subject_key = subject_id.split("@", 1)[0]
-            for tech_key in deps_subject_map.get(subject_key, []):
-                _merge_records(tech_key, [record])
+        if self.config.sources.deps_dev.enabled:
+            deps_subjects = list(deps_subject_map.keys())[: self.config.sources.deps_dev.request_budget]
+            deps_records = self._safe_fetch_evidence(self.deps_dev_source, deps_subjects)
+            for record in deps_records:
+                subject_id = str(record.subject_id)
+                subject_key = subject_id.split("@", 1)[0]
+                for tech_key in deps_subject_map.get(subject_key, []):
+                    _merge_records(tech_key, [record])
 
         osv_subject_map: dict[str, list[str]] = {}
         for tech in technologies:
@@ -602,10 +605,11 @@ class RadarPipeline:
             for subject in self._osv_subjects_for(tech):
                 osv_subject_map.setdefault(subject, []).append(tech_key)
 
-        osv_records = self._safe_fetch_evidence(self.osv_source, list(osv_subject_map.keys()))
-        for record in osv_records:
-            for tech_key in osv_subject_map.get(str(record.subject_id), []):
-                _merge_records(tech_key, [record])
+        if self.config.sources.osv.enabled:
+            osv_records = self._safe_fetch_evidence(self.osv_source, list(osv_subject_map.keys()))
+            for record in osv_records:
+                for tech_key in osv_subject_map.get(str(record.subject_id), []):
+                    _merge_records(tech_key, [record])
 
         for tech in technologies:
             tech.evidence = tech_records.get(self._normalize_id(tech.name), [])
@@ -1152,17 +1156,16 @@ class RadarPipeline:
 
         def _evidence_summary(raw_signals: Dict[str, Any], evidence: List[EvidenceRecord]) -> Dict[str, Any]:
             adoption_metrics = {"reverse_dependents", "downloads_last_month"}
+            source_names = _collect_source_names(raw_signals, evidence)
             metrics = sorted({str(record.metric) for record in evidence if getattr(record, "metric", None)})
             has_external_adoption = bool(float(raw_signals.get("has_external_adoption", 0.0) or 0.0)) or any(
                 str(record.metric).strip().lower() in adoption_metrics
                 and str(record.source).strip().lower() not in {"github", "hackernews"}
                 for record in evidence
             )
-            github_only = bool(float(raw_signals.get("github_only", 0.0) or 0.0))
-            if not github_only:
-                github_only = _collect_source_names(raw_signals, evidence) == ["github"]
+            github_only = source_names == ["github"]
             return {
-                "sources": _collect_source_names(raw_signals, evidence),
+                "sources": source_names,
                 "metrics": metrics,
                 "hasExternalAdoption": has_external_adoption,
                 "githubOnly": github_only,
@@ -1346,6 +1349,94 @@ class RadarPipeline:
             }
         }
 
+    def _is_low_quality_assess_item(self, item: FilteredItem) -> bool:
+        if str(getattr(item, "ring", "")) != "assess":
+            return False
+
+        raw_signals = getattr(item, "signals", {}) or {}
+        if not isinstance(raw_signals, dict):
+            raw_signals = {}
+
+        gh_momentum = float(raw_signals.get("gh_momentum", 0.0) or 0.0)
+        gh_popularity = float(raw_signals.get("gh_popularity", 0.0) or 0.0)
+        hn_heat = float(raw_signals.get("hn_heat", 0.0) or 0.0)
+        source_coverage = float(raw_signals.get("source_coverage", 0.0) or 0.0)
+        has_external_adoption = bool(float(raw_signals.get("has_external_adoption", 0.0) or 0.0))
+
+        github_only_raw = raw_signals.get("github_only")
+        if github_only_raw is None:
+            github_only = (gh_momentum > 0.0 or gh_popularity > 0.0) and hn_heat <= 0.0
+        else:
+            github_only = bool(float(github_only_raw or 0.0))
+        if source_coverage > 0.0 and source_coverage <= 1.0 and (gh_momentum > 0.0 or gh_popularity > 0.0) and not has_external_adoption:
+            github_only = True
+
+        editorially_plausible = is_trial_ring_editorially_eligible(
+            str(getattr(item, "name", "")),
+            str(getattr(item, "description", "")),
+            getattr(item, "topics", []),
+        )
+        market_score = float(getattr(item, "market_score", 0.0) or 0.0)
+
+        return github_only and not has_external_adoption and hn_heat <= 0.0 and (
+            market_score < 60.0 or not editorially_plausible
+        )
+
+    def _ensure_ring_presence(self, items: List[FilteredItem]) -> List[FilteredItem]:
+        def _item_market_score(item: FilteredItem) -> float:
+            explicit = float(getattr(item, "market_score", 0.0) or 0.0)
+            if explicit > 0.0:
+                return explicit
+
+            raw_signals = getattr(item, "signals", {}) or {}
+            if not isinstance(raw_signals, dict):
+                return 0.0
+
+            adoption = float(raw_signals.get("adoption_score", 0.0) or 0.0)
+            mindshare = float(raw_signals.get("mindshare_score", 0.0) or 0.0)
+            health = float(raw_signals.get("health_score", 0.0) or 0.0)
+            risk = float(raw_signals.get("risk_score", 0.0) or 0.0)
+            weighted = (adoption * 0.45) + (mindshare * 0.20) + (health * 0.20) + (risk * 0.15)
+            if weighted > 0.0:
+                return weighted
+
+            gh_momentum = float(raw_signals.get("gh_momentum", 0.0) or 0.0)
+            gh_popularity = float(raw_signals.get("gh_popularity", 0.0) or 0.0)
+            hn_heat = float(raw_signals.get("hn_heat", 0.0) or 0.0)
+            return (gh_momentum * 0.4) + (gh_popularity * 0.4) + (hn_heat * 0.2)
+
+        ring_counts = {"adopt": 0, "trial": 0, "assess": 0, "hold": 0}
+        for item in items:
+            ring = str(getattr(item, "ring", "")).strip().lower()
+            if ring in ring_counts:
+                ring_counts[ring] += 1
+
+        if ring_counts["assess"] > 0:
+            return items
+
+        candidates: List[FilteredItem] = []
+        for item in items:
+            if str(getattr(item, "ring", "")).strip().lower() != "trial":
+                continue
+            raw_signals = getattr(item, "signals", {}) or {}
+            if not isinstance(raw_signals, dict):
+                raw_signals = {}
+            source_coverage = float(raw_signals.get("source_coverage", 0.0) or 0.0)
+            has_external = bool(float(raw_signals.get("has_external_adoption", 0.0) or 0.0))
+            if source_coverage >= 2.0 or has_external:
+                candidates.append(item)
+
+        if not candidates:
+            return items
+
+        demoted = min(candidates, key=_item_market_score)
+        demoted.ring = "assess"
+        logger.info(
+            "Phase 5d - Demoted %s to assess to preserve ring coverage with quality evidence",
+            demoted.name,
+        )
+        return items
+
     def _save_checkpoint(self, phase: str, cursor: int = 0, **kwargs) -> None:
         """Save checkpoint at current phase."""
         if self.checkpoint:
@@ -1422,6 +1513,15 @@ class RadarPipeline:
         self._save_checkpoint("filter", cursor=len(filtered_items or []))
 
         filtered_items = self._assign_market_rings(filtered_items)
+        removed_low_quality_main = len(filtered_items)
+        filtered_items = [item for item in filtered_items if not self._is_low_quality_assess_item(item)]
+        removed_low_quality_main -= len(filtered_items)
+        if removed_low_quality_main > 0:
+            logger.info(
+                "Phase 5b - Removed %s low-quality assess items from main radar",
+                removed_low_quality_main,
+            )
+        filtered_items = self._ensure_ring_presence(filtered_items)
 
         watchlist_items = self._build_watchlist_items(
             technologies,
@@ -1430,6 +1530,17 @@ class RadarPipeline:
             main_ids={self._normalize_id(item.name) for item in filtered_items},
         )
         watchlist_items = self._assign_market_rings(watchlist_items)
+        for item in watchlist_items:
+            if str(getattr(item, "ring", "")) == "adopt":
+                item.ring = "trial"
+        removed_low_quality_watchlist = len(watchlist_items)
+        watchlist_items = [item for item in watchlist_items if not self._is_low_quality_assess_item(item)]
+        removed_low_quality_watchlist -= len(watchlist_items)
+        if removed_low_quality_watchlist > 0:
+            logger.info(
+                "Phase 5c - Removed %s low-quality assess items from watchlist",
+                removed_low_quality_watchlist,
+            )
 
         output = self._generate_output(filtered_items or [], watchlist_items)
         output_count = len(output['technologies'])

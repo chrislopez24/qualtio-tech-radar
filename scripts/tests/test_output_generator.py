@@ -576,3 +576,47 @@ def test_sanitize_for_public_normalizes_explainability_aliases_without_leaking_s
     assert "why_this_ring" not in sanitized
     assert sanitized["sourceCoverage"] == 4
     assert sanitized["whyThisRing"] == "Because."
+
+
+def test_output_evidence_summary_github_only_uses_observed_sources_not_stale_signal_flag():
+    from types import SimpleNamespace
+    from etl.pipeline import RadarPipeline
+
+    pipeline = RadarPipeline()
+    output = pipeline._generate_output([
+        SimpleNamespace(
+            name="React",
+            description="UI library",
+            stars=220000,
+            quadrant="tools",
+            ring="trial",
+            confidence=0.9,
+            trend="up",
+            moved=0,
+            market_score=78.0,
+            signals={
+                "gh_momentum": 90.0,
+                "gh_popularity": 96.0,
+                "hn_heat": 0.0,
+                "github_only": 1.0,
+                "has_external_adoption": 1.0,
+            },
+            evidence=[
+                EvidenceRecord(
+                    source="deps_dev",
+                    metric="reverse_dependents",
+                    subject_id="npm:react",
+                    raw_value=700000,
+                    normalized_value=98.0,
+                    observed_at="2026-03-07T00:00:00Z",
+                    freshness_days=1,
+                )
+            ],
+            is_deprecated=False,
+            replacement=None,
+        )
+    ])
+
+    tech = output["technologies"][0]
+    assert "deps_dev" in tech["evidenceSummary"]["sources"]
+    assert tech["evidenceSummary"]["githubOnly"] is False

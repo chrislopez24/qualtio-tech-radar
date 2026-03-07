@@ -14,24 +14,25 @@
 
 ## Results
 
-- Our technologies: `35`
+- Our technologies: `13`
 - Thoughtworks blips (vol 33): `114`
 - Zalando entries: `77`
 
 Exact-name overlap:
 
-- With Thoughtworks: `2` (`langflow`, `n8n`)
-- With Zalando: `5` (`go`, `javascript`, `kubernetes`, `python`, `typescript`)
+- With Thoughtworks: `1` (`langflow`)
+- With Zalando: `3` (`go`, `python`, `typescript`)
 
 Our strong rings at run time:
 
-- `adopt` (`6`): `transformers`, `yt-dlp`, `langchain`, `pytorch`, `django`, `fastapi`
-- `trial` (`8`): `TypeScript`, `go`, `Python`, `open-webui`, `youtube-dl`, `langflow`, `react`, `next.js`
+- `adopt` (`5`): `transformers`, `yt-dlp`, `langchain`, `pytorch`, `django`
+- `trial` (`7`): `TypeScript`, `go`, `Python`, `open-webui`, `youtube-dl`, `langflow`, `react`
+- `assess` (`1`): `next.js`
 
 ## Interpretation
 
 - Low exact overlap with Thoughtworks is expected: Thoughtworks radar emphasizes practices, tooling patterns, and directional picks, not only mainstream stack anchors.
-- Moderate overlap with Zalando on foundational languages/platforms is healthy and confirms baseline relevance.
+- Moderate overlap with Zalando on foundational languages/platforms is still present and confirms baseline relevance.
 - Our radar is intentionally more GitHub/package-evidence-driven than expert-panel-curated radars.
 
 ## Decision

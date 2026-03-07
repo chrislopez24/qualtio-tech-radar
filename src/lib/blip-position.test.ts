@@ -40,21 +40,21 @@ describe('calculateBlipPositions', () => {
     }
   });
 
-  it('puts Linux inside the platforms sector', () => {
+  it('puts a platforms technology inside the platforms sector', () => {
     const typedAiData = aiData as AIRadarData;
     const positions = calculateBlipPositions(typedAiData.technologies);
-    const linux = typedAiData.technologies.find((technology) => technology.id === 'linux');
-    const linuxPosition = positions.get('linux');
+    const platformTech = typedAiData.technologies.find((technology) => technology.quadrant === 'platforms');
+    const platformPosition = platformTech ? positions.get(platformTech.id) : undefined;
     const center = RADAR_SIZE / 2;
 
-    expect(linux).toBeDefined();
-    expect(linuxPosition).toBeDefined();
+    expect(platformTech).toBeDefined();
+    expect(platformPosition).toBeDefined();
 
-    if (!linux || !linuxPosition) {
+    if (!platformTech || !platformPosition) {
       return;
     }
 
-    const quadrant = QUADRANTS.find((value) => value.id === linux.quadrant);
+    const quadrant = QUADRANTS.find((value) => value.id === platformTech.quadrant);
 
     expect(quadrant).toBeDefined();
 
@@ -62,7 +62,7 @@ describe('calculateBlipPositions', () => {
       return;
     }
 
-    const angle = (Math.atan2(linuxPosition.y - center, linuxPosition.x - center) * 180) / Math.PI;
+    const angle = (Math.atan2(platformPosition.y - center, platformPosition.x - center) * 180) / Math.PI;
     const normalizedAngle = angle < -180 ? angle + 360 : angle;
     const expectedCenter = quadrant.angle - 90;
 

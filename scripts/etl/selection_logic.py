@@ -114,6 +114,40 @@ def strategic_filter(
                     strategic_value=classification.strategic_value,
                 )
 
+        if effective_classification.ring == "assess":
+            raw_signals = getattr(tech, "signals", {}) or {}
+            if not isinstance(raw_signals, dict):
+                raw_signals = {}
+            gh_momentum = float(raw_signals.get("gh_momentum", 0.0) or 0.0)
+            gh_popularity = float(raw_signals.get("gh_popularity", 0.0) or 0.0)
+            hn_heat = float(raw_signals.get("hn_heat", 0.0) or 0.0)
+            source_coverage = float(raw_signals.get("source_coverage", 0.0) or 0.0)
+            github_only_raw = raw_signals.get("github_only")
+            if github_only_raw is None:
+                github_only = (gh_momentum > 0.0 or gh_popularity > 0.0) and hn_heat <= 0.0
+            else:
+                github_only = bool(float(github_only_raw or 0.0))
+            has_external_adoption = bool(float(raw_signals.get("has_external_adoption", 0.0) or 0.0))
+            if source_coverage > 0.0 and source_coverage <= 1.0 and (gh_momentum > 0.0 or gh_popularity > 0.0) and not has_external_adoption:
+                github_only = True
+            editorially_plausible = is_trial_ring_editorially_eligible(
+                tech.name,
+                effective_classification.description or tech.description,
+                getattr(tech, "topics", []),
+            )
+            if (
+                github_only
+                and not has_external_adoption
+                and hn_heat <= 0.0
+                and (float(tech.market_score) < 60.0 or not editorially_plausible)
+            ):
+                logger.debug(
+                    "Filtering out %s: low-confidence/editorially-weak assess item with GitHub-only evidence",
+                    tech.name,
+                )
+                rejected_quality_gate += 1
+                continue
+
         qualified_techs.append((tech, effective_classification))
 
     logger.info(
@@ -121,6 +155,10 @@ def strategic_filter(
         len(qualified_techs),
         len(classified_pairs),
     )
+    qualified_lookup: Dict[str, Tuple[Any, ClassificationResult]] = {
+        pipeline._normalize_id(classification.name): (tech, classification)
+        for tech, classification in qualified_techs
+    }
 
     items = []
     for tech, classification in qualified_techs:
@@ -188,7 +226,18 @@ def strategic_filter(
         item_id = pipeline._normalize_id(item.name)
         if item_id in previous_watchlist_ids:
             continue
-        selected.append(item)
+        pair = qualified_lookup.get(item_id)
+        if pair is not None:
+            tech, classification = pair
+            hydrated = pipeline._build_filtered_item(tech, classification, confidence_floor=0.5)
+            hydrated.quadrant = item.quadrant
+            hydrated.ring = item.ring
+            hydrated.description = item.description
+            hydrated.trend = item.trend
+            hydrated.strategic_value = item.strategic_value
+            selected.append(hydrated)
+        else:
+            selected.append(item)
         selected_ids.add(item_id)
 
     ranked_candidates = sorted(

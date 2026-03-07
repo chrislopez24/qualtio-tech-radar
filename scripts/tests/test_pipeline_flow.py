@@ -489,11 +489,17 @@ class TestPipelineFlow:
         from etl.pipeline import RadarPipeline, NormalizedTech
         from etl.evidence import EvidenceRecord
 
+        config = ETLConfig()
+        config.sources.stackexchange.enabled = True
+        config.sources.pypistats.enabled = True
+        config.sources.deps_dev.enabled = True
+        config.sources.osv.enabled = True
+
         with patch('etl.pipeline.GitHubTrendingSource'), \
              patch('etl.pipeline.HackerNewsSource'), \
              patch('etl.pipeline.TechnologyClassifier'), \
              patch('etl.pipeline.AITechnologyFilter'):
-            pipeline = RadarPipeline(config=ETLConfig())
+            pipeline = RadarPipeline(config=config)
 
         technologies = [
             NormalizedTech(
@@ -561,6 +567,9 @@ class TestPipelineFlow:
         from etl.pipeline import RadarPipeline, NormalizedTech
 
         config = ETLConfig()
+        config.sources.stackexchange.enabled = True
+        config.sources.pypistats.enabled = True
+        config.sources.deps_dev.enabled = True
         config.sources.stackexchange.request_budget = 2
         config.sources.pypistats.request_budget = 2
         config.sources.deps_dev.request_budget = 2
@@ -1312,6 +1321,107 @@ class TestPipelineFlow:
         assert assigned_by_name["You-Dont-Know-JS"].ring == "assess"
         assert assigned_by_name["Kubernetes"].ring == "trial"
 
+    def test_assign_market_rings_promotes_from_assess_to_trial_when_score_clearly_supports_it(self):
+        from etl.pipeline import RadarPipeline
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        pipeline.previous_snapshot = {
+            "technologies": [
+                {
+                    "id": "typescript",
+                    "ring": "assess",
+                    "marketScore": 70.0,
+                }
+            ]
+        }
+
+        item = MockFilteredItem(
+            name="TypeScript",
+            description="Typed language for large-scale JavaScript applications.",
+            stars=98000,
+            quadrant="languages",
+            ring="trial",
+            confidence=0.95,
+            trend="up",
+            strategic_value="high",
+        )
+        setattr(item, "market_score", 83.0)
+        setattr(
+            item,
+            "signals",
+            {
+                "gh_momentum": 90.0,
+                "gh_popularity": 88.0,
+                "hn_heat": 22.0,
+                "source_coverage": 4.0,
+                "has_external_adoption": 1.0,
+                "github_only": 0.0,
+            },
+        )
+
+        assigned = pipeline._assign_market_rings([item])
+
+        assert assigned[0].ring == "trial"
+
+    def test_ensure_ring_presence_adds_assess_from_lowest_quality_trial_candidate(self):
+        from etl.pipeline import RadarPipeline
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        trial_low = MockFilteredItem(
+            name="Next.js",
+            description="React framework",
+            stars=130000,
+            quadrant="tools",
+            ring="trial",
+            confidence=0.9,
+            trend="up",
+            strategic_value="high",
+        )
+        setattr(trial_low, "market_score", 63.0)
+        setattr(trial_low, "signals", {"source_coverage": 3.0, "has_external_adoption": 1.0})
+
+        trial_high = MockFilteredItem(
+            name="React",
+            description="UI library",
+            stars=220000,
+            quadrant="tools",
+            ring="trial",
+            confidence=0.9,
+            trend="up",
+            strategic_value="high",
+        )
+        setattr(trial_high, "market_score", 74.0)
+        setattr(trial_high, "signals", {"source_coverage": 3.0, "has_external_adoption": 1.0})
+
+        adopt_item = MockFilteredItem(
+            name="Django",
+            description="Web framework",
+            stars=82000,
+            quadrant="tools",
+            ring="adopt",
+            confidence=0.9,
+            trend="up",
+            strategic_value="high",
+        )
+        setattr(adopt_item, "market_score", 82.0)
+        setattr(adopt_item, "signals", {"source_coverage": 4.0, "has_external_adoption": 1.0})
+
+        updated = pipeline._ensure_ring_presence([adopt_item, trial_high, trial_low])
+        by_name = {item.name: item for item in updated}
+
+        assert by_name["Next.js"].ring == "assess"
+        assert by_name["React"].ring == "trial"
+
     def test_apply_market_scoring_attaches_evidence_subscores_and_coverage(self):
         from etl.pipeline import RadarPipeline, NormalizedTech
         from etl.evidence import EvidenceRecord
@@ -1467,7 +1577,7 @@ class TestPipelineFlow:
             target_min = max(4, config.distribution.target_total - 3)
             assert len(filtered) == target_min
 
-    def test_strategic_filter_downgrades_reference_pattern_repos_to_assess(self):
+    def test_strategic_filter_filters_reference_pattern_repos_after_downgrade(self):
         from etl.pipeline import RadarPipeline, NormalizedTech
         from etl.classifier import ClassificationResult
 
@@ -1538,10 +1648,9 @@ class TestPipelineFlow:
         filtered_by_name = {item.name: item for item in filtered}
 
         assert "React" in filtered_by_name
-        assert "Java-Design-Patterns" in filtered_by_name
-        assert filtered_by_name["Java-Design-Patterns"].ring == "assess"
+        assert "Java-Design-Patterns" not in filtered_by_name
 
-    def test_strategic_filter_downgrades_educational_trial_repos_but_keeps_plausible_tech(self):
+    def test_strategic_filter_filters_educational_trial_repos_but_keeps_plausible_tech(self):
         from etl.pipeline import RadarPipeline, NormalizedTech
         from etl.classifier import ClassificationResult
 
@@ -1611,8 +1720,81 @@ class TestPipelineFlow:
         filtered = pipeline._strategic_filter(technologies, classifications)
         filtered_by_name = {item.name: item for item in filtered}
 
-        assert filtered_by_name["You-Dont-Know-JS"].ring == "assess"
+        assert "You-Dont-Know-JS" not in filtered_by_name
         assert filtered_by_name["Kubernetes"].ring == "trial"
+
+    def test_strategic_filter_drops_low_confidence_assess_items_with_github_only_evidence(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+
+        config = ETLConfig(filtering=FilteringConfig(min_sources=1))
+        config.distribution.target_total = 4
+        config.distribution.min_per_quadrant = 1
+        config.distribution.max_per_quadrant = 4
+        config.quality_gates.min_hn_mentions.assess = 0
+        config.quality_gates.min_hn_mentions.trial = 0
+        config.quality_gates.min_hn_mentions.adopt = 0
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=config)
+
+        technologies = [
+            NormalizedTech(
+                "NoisyRepo",
+                "Random trending repository with unclear long-term relevance.",
+                12000,
+                2000,
+                "Python",
+                ["python"],
+                "",
+                0,
+                ["github"],
+                {"gh_popularity": 80.0, "gh_momentum": 75.0, "hn_heat": 0.0, "github_only": 1.0, "has_external_adoption": 0.0},
+                58.0,
+            ),
+            NormalizedTech(
+                "ReliableTech",
+                "Widely discussed framework with corroborated signals.",
+                25000,
+                5000,
+                "TypeScript",
+                ["framework"],
+                "",
+                12,
+                ["github", "hackernews"],
+                {"gh_popularity": 82.0, "gh_momentum": 78.0, "hn_heat": 40.0, "github_only": 0.0, "has_external_adoption": 0.0},
+                62.0,
+            ),
+        ]
+        classifications = [
+            ClassificationResult(
+                "NoisyRepo",
+                "tools",
+                "assess",
+                "Random trending repository with unclear long-term relevance.",
+                0.75,
+                "up",
+                strategic_value="medium",
+            ),
+            ClassificationResult(
+                "ReliableTech",
+                "tools",
+                "assess",
+                "Widely discussed framework with corroborated signals.",
+                0.8,
+                "up",
+                strategic_value="medium",
+            ),
+        ]
+
+        filtered = pipeline._strategic_filter(technologies, classifications)
+        names = {item.name for item in filtered}
+
+        assert "NoisyRepo" not in names
+        assert "ReliableTech" in names
 
     def test_strategic_filter_prefers_previous_main_ids_for_stability(self):
         from etl.pipeline import RadarPipeline, NormalizedTech
