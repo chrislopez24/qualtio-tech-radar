@@ -114,20 +114,20 @@ jobs:
             fi
             if [ -f "artifacts/candidate_output.json" ]; then
               python - <<'PY'
-import json
-from pathlib import Path
+              import json
+              from pathlib import Path
 
-validated_path = Path("src/data/data.ai.json")
-candidate_path = Path("artifacts/candidate_output.json")
+              validated_path = Path("src/data/data.ai.json")
+              candidate_path = Path("artifacts/candidate_output.json")
 
-if validated_path.exists() and candidate_path.exists():
-    validated = json.loads(validated_path.read_text())
-    candidate = json.loads(candidate_path.read_text())
-    shadow_gate = candidate.get("meta", {}).get("shadowGate")
-    if shadow_gate is not None:
-        validated.setdefault("meta", {})["shadowGate"] = shadow_gate
-        validated_path.write_text(json.dumps(validated, indent=2))
-PY
+              if validated_path.exists() and candidate_path.exists():
+                  validated = json.loads(validated_path.read_text())
+                  candidate = json.loads(candidate_path.read_text())
+                  shadow_gate = candidate.get("meta", {}).get("shadowGate")
+                  if shadow_gate is not None:
+                      validated.setdefault("meta", {})["shadowGate"] = shadow_gate
+                      validated_path.write_text(json.dumps(validated, indent=2))
+              PY
             fi
           else
             echo "gate_pass=false" >> "$GITHUB_OUTPUT"
