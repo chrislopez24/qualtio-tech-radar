@@ -22,6 +22,7 @@ from dataclasses import dataclass, field
 from etl.config import ETLConfig, load_etl_config
 from etl.ai_filter import (
     AITechnologyFilter,
+    DEPRECATED_MAP,
     FilteredItem,
     StrategicValue,
     is_resource_like_repository,
@@ -954,6 +955,36 @@ class RadarPipeline:
     def _normalize_id(self, name: str) -> str:
         return str(name).lower().replace(" ", "-").strip()
 
+    def _get_deprecated_info(self, name: str) -> Optional[Dict[str, str]]:
+        """Resolve deprecation metadata by tolerant name matching."""
+        raw_name = str(name or "").strip().lower()
+        if not raw_name:
+            return None
+
+        normalized_dash = re.sub(r"[^a-z0-9]+", "-", raw_name).strip("-")
+        normalized_compact = re.sub(r"[^a-z0-9]+", "", raw_name)
+        candidates = {
+            raw_name,
+            raw_name.replace("_", "-"),
+            raw_name.replace(" ", "-"),
+            normalized_dash,
+            normalized_compact,
+        }
+        candidates = {candidate for candidate in candidates if candidate}
+
+        for deprecated_name, info in DEPRECATED_MAP.items():
+            key = str(deprecated_name or "").strip().lower()
+            if not key:
+                continue
+            key_dash = re.sub(r"[^a-z0-9]+", "-", key).strip("-")
+            key_compact = re.sub(r"[^a-z0-9]+", "", key)
+            if key in candidates or key_dash in candidates or key_compact in candidates:
+                if isinstance(info, dict):
+                    return info
+                return {"replacement": "", "reason": str(info)}
+
+        return None
+
     def _to_strategic_value(self, value: Any) -> StrategicValue:
         if isinstance(value, StrategicValue):
             return value
@@ -1026,6 +1057,11 @@ class RadarPipeline:
         classification: ClassificationResult,
         confidence_floor: float = 0.5,
     ) -> FilteredItem:
+        deprecated_info = self._get_deprecated_info(getattr(classification, "name", "") or tech.name)
+        explicit_deprecated = bool(getattr(classification, "is_deprecated", False))
+        replacement = getattr(classification, "replacement", None)
+        if not replacement and deprecated_info:
+            replacement = deprecated_info.get("replacement")
         item = FilteredItem(
             name=classification.name,
             description=classification.description,
@@ -1036,8 +1072,8 @@ class RadarPipeline:
             trend=classification.trend,
             strategic_value=self._to_strategic_value(getattr(classification, "strategic_value", "medium")),
             suspicion_flags=list(getattr(classification, "suspicion_flags", []) or []),
-            is_deprecated=False,
-            replacement=None,
+            is_deprecated=explicit_deprecated or deprecated_info is not None,
+            replacement=replacement,
         )
         setattr(item, "market_score", tech.market_score)
         setattr(item, "signals", tech.signals)
@@ -1133,6 +1169,20 @@ class RadarPipeline:
                 item.description,
                 getattr(item, "topics", []),
             )
+            deprecated_info = self._get_deprecated_info(getattr(item, "name", ""))
+            if deprecated_info is not None:
+                setattr(item, "is_deprecated", True)
+                replacement = getattr(item, "replacement", None)
+                if not replacement:
+                    setattr(item, "replacement", deprecated_info.get("replacement"))
+            if bool(getattr(item, "is_deprecated", False)):
+                ring = "hold"
+                item.ring = ring
+                setattr(item, "moved", 0)
+                if isinstance(prev_ring, str) and prev_ring in RING_INDEX and ring in RING_INDEX:
+                    setattr(item, "moved", RING_INDEX[ring] - RING_INDEX[prev_ring])
+                item.trend = "down"
+                continue
             ring = decide_ring(
                 {
                     "adoption": float(signals.get("adoption_score", 0.0) or 0.0),
@@ -1495,6 +1545,36 @@ class RadarPipeline:
             market_score < 60.0 or not editorially_plausible
         )
 
+    def _is_reasonable_watchlist_item(self, item: FilteredItem) -> bool:
+        if not self._is_editorially_valid_for_selection(item):
+            return False
+
+        name = str(getattr(item, "name", ""))
+        description = str(getattr(item, "description", ""))
+        if is_resource_like_repository(name, description):
+            return False
+        combined_text = f"{name} {description}".lower()
+        if any(token in combined_text for token in ("100-days", "curriculum", "bootcamp")):
+            return False
+
+        raw_signals = getattr(item, "signals", {}) or {}
+        if not isinstance(raw_signals, dict):
+            raw_signals = {}
+
+        source_coverage = float(raw_signals.get("source_coverage", 0.0) or 0.0)
+        has_external_adoption = bool(float(raw_signals.get("has_external_adoption", 0.0) or 0.0))
+        hn_heat = float(raw_signals.get("hn_heat", 0.0) or 0.0)
+        market_score = float(getattr(item, "market_score", 0.0) or 0.0)
+        ring = str(getattr(item, "ring", "")).strip().lower()
+
+        if ring == "hold":
+            return has_external_adoption or hn_heat > 0.0 or market_score >= 55.0
+
+        if ring == "assess":
+            return has_external_adoption or hn_heat > 0.0 or (source_coverage >= 1.0 and market_score >= 57.0)
+
+        return market_score >= 50.0
+
     def _is_editorially_valid_for_selection(self, item: FilteredItem) -> bool:
         editorial_status = str(getattr(item, "editorial_status", "") or getattr(item, "editorialStatus", "")).strip().lower()
         if editorial_status == "invalid":
@@ -1705,14 +1785,30 @@ class RadarPipeline:
         for item in watchlist_items:
             if str(getattr(item, "ring", "")) == "adopt":
                 item.ring = "trial"
-        removed_low_quality_watchlist = len(watchlist_items)
+        removed_low_quality_watchlist = [
+            item for item in watchlist_items if self._is_low_quality_assess_item(item)
+        ]
         watchlist_items = [item for item in watchlist_items if not self._is_low_quality_assess_item(item)]
-        removed_low_quality_watchlist -= len(watchlist_items)
-        if removed_low_quality_watchlist > 0:
+        if removed_low_quality_watchlist:
             logger.info(
                 "Phase 5c - Removed %s low-quality assess items from watchlist",
-                removed_low_quality_watchlist,
+                len(removed_low_quality_watchlist),
             )
+        if not watchlist_items and removed_low_quality_watchlist:
+            rescued_items = [
+                item for item in removed_low_quality_watchlist
+                if self._is_reasonable_watchlist_item(item)
+            ]
+            rescued_items.sort(
+                key=lambda item: float(getattr(item, "market_score", 0.0) or 0.0),
+                reverse=True,
+            )
+            if rescued_items:
+                watchlist_items = rescued_items[:2]
+                logger.info(
+                    "Phase 5c - Rescued %s reasonable items into watchlist to avoid empty output",
+                    len(watchlist_items),
+                )
 
         output = self._generate_output(filtered_items or [], watchlist_items)
         output_count = len(output['technologies'])

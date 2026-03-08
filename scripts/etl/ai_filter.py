@@ -90,6 +90,7 @@ DEPRECATED_MAP = {
     "lodash": {"replacement": "native JS or date-fns", "reason": "Consider native alternatives for tree-shaking"},
     "underscore": {"replacement": "lodash or native JS", "reason": "Underscore is largely superseded by lodash"},
     "graphql": {"replacement": "@graphql-tools or nexus", "reason": "GraphQL ecosystem has evolved"},
+    "youtube-dl": {"replacement": "yt-dlp", "reason": "youtube-dl is largely superseded by yt-dlp"},
 }
 
 RESOURCE_LIKE_EXACT_NAMES = {

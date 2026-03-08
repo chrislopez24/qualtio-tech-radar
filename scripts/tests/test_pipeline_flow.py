@@ -1519,6 +1519,75 @@ class TestPipelineFlow:
 
         assert assigned[0].ring == "adopt"
 
+    def test_build_filtered_item_marks_known_deprecations_for_backfill_paths(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        tech = NormalizedTech(
+            name="youtube-dl",
+            description="Command-line program to download videos from YouTube.com and other sites",
+            stars=130000,
+            forks=10000,
+            language="Python",
+            topics=["video", "download"],
+            url="https://github.com/ytdl-org/youtube-dl",
+            sources=["github"],
+            signals={"source_coverage": 2.0},
+        )
+        tech.market_score = 75.0
+
+        classification = ClassificationResult(
+            name="youtube-dl",
+            quadrant="tools",
+            ring="trial",
+            description=tech.description,
+            confidence=0.8,
+            trend="stable",
+            strategic_value="medium",
+        )
+
+        item = pipeline._build_filtered_item(tech, classification)
+
+        assert item.is_deprecated is True
+        assert item.replacement == "yt-dlp"
+
+    def test_assign_market_rings_forces_hold_for_known_deprecations_without_explicit_flag(self):
+        from etl.pipeline import RadarPipeline
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter'):
+            pipeline = RadarPipeline(config=ETLConfig())
+
+        item = MockFilteredItem(
+            name="youtube-dl",
+            description="Command-line video downloader",
+            stars=130000,
+            quadrant="tools",
+            ring="trial",
+            confidence=0.9,
+            trend="stable",
+            strategic_value="medium",
+            is_deprecated=False,
+            replacement=None,
+        )
+        setattr(item, "market_score", 75.0)
+        setattr(item, "signals", {"source_coverage": 3.0, "has_external_adoption": 1.0, "github_only": 0.0})
+
+        assigned = pipeline._assign_market_rings([item])
+
+        assert assigned[0].ring == "hold"
+        assert assigned[0].trend == "down"
+        assert assigned[0].is_deprecated is True
+        assert assigned[0].replacement == "yt-dlp"
+
     def test_pipeline_fallback_classification_leaves_ring_as_default_placeholder(self):
         from etl.pipeline import RadarPipeline, NormalizedTech
 

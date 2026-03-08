@@ -306,6 +306,16 @@ def strategic_filter(
             hydrated.description = item.description
             hydrated.trend = item.trend
             hydrated.strategic_value = item.strategic_value
+            hydrated.is_deprecated = bool(getattr(item, "is_deprecated", False))
+            hydrated.replacement = getattr(item, "replacement", None)
+            ai_flags = list(getattr(item, "suspicion_flags", []) or [])
+            existing_flags = list(getattr(hydrated, "suspicion_flags", []) or [])
+            merged_flags: List[str] = []
+            for flag in existing_flags + ai_flags:
+                normalized = str(flag or "").strip()
+                if normalized and normalized not in merged_flags:
+                    merged_flags.append(normalized)
+            hydrated.suspicion_flags = merged_flags
             selected.append(hydrated)
         else:
             selected.append(item)
