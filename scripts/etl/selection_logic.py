@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 
 PLACEHOLDER_RING = "trial"
 RING_FILL_ORDER = ("adopt", "trial", "assess", "hold")
+GITHUB_ONLY_SOFT_SCORE_FLOOR = 56.0
+GITHUB_ONLY_SOFT_STARS_FLOOR = 100000
 
 
 def _eligible_selected_item(pipeline: Any, tech: Any, classification: ClassificationResult, confidence_floor: float = 0.5) -> Optional[FilteredItem]:
@@ -37,6 +39,27 @@ def _selection_signal_bonus(signals: Any) -> float:
 
 def _selection_ring(_classification: ClassificationResult) -> str:
     return PLACEHOLDER_RING
+
+
+def is_low_confidence_github_only_candidate(
+    *,
+    github_only: bool,
+    has_external_adoption: bool,
+    hn_heat: float,
+    editorially_plausible: bool,
+    market_score: float,
+    stars: int = 0,
+) -> bool:
+    """Gate noisy mono-source candidates while keeping strong GitHub-scale technologies in assess."""
+    if not github_only or has_external_adoption or hn_heat > 0.0:
+        return False
+    if not editorially_plausible:
+        return True
+    if market_score >= 60.0:
+        return False
+    if market_score >= GITHUB_ONLY_SOFT_SCORE_FLOOR and stars >= GITHUB_ONLY_SOFT_STARS_FLOOR:
+        return False
+    return True
 
 
 def _selection_score(item: FilteredItem) -> float:
@@ -211,11 +234,13 @@ def strategic_filter(
             effective_classification.description or tech.description,
             getattr(tech, "topics", []),
         )
-        if (
-            github_only
-            and not has_external_adoption
-            and hn_heat <= 0.0
-            and (float(tech.market_score) < 60.0 or not editorially_plausible)
+        if is_low_confidence_github_only_candidate(
+            github_only=github_only,
+            has_external_adoption=has_external_adoption,
+            hn_heat=hn_heat,
+            editorially_plausible=editorially_plausible,
+            market_score=float(tech.market_score),
+            stars=int(getattr(tech, "stars", 0) or 0),
         ):
             logger.debug(
                 "Filtering out %s: low-confidence/editorially-weak candidate with GitHub-only evidence",

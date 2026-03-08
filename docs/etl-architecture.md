@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Qualtio Tech Radar ETL pipeline automatically identifies, classifies, and tracks technology trends from external signals and evidence sources (GitHub, Hacker News, Stack Exchange, deps.dev, PyPI Stats, OSV) using AI-powered classification. There is no secondary repository deep-scan phase.
+The Qualtio Tech Radar ETL pipeline automatically identifies, classifies, and tracks technology trends from external signals and evidence sources (GitHub, Hacker News, deps.dev, PyPI Stats, OSV) using AI-powered classification. Stack Exchange is optional and disabled by default. There is no secondary repository deep-scan phase.
 
 ## System Architecture
 
@@ -10,8 +10,8 @@ The Qualtio Tech Radar ETL pipeline automatically identifies, classifies, and tr
 ┌─────────────────────────────────────────────────────────────┐
 │                      DATA SOURCES                           │
 ├──────────────┬──────────────┤
-│ GitHub API   │ Hacker News  │ Stack Exchange │ deps.dev │
-│ PyPI Stats   │ OSV          │                │          │
+│ GitHub API   │ Hacker News  │ deps.dev       │
+│ PyPI Stats   │ OSV          │                │
 └──────┬───────┴──────┬────────┴───────┬────────┴──────────┘
        │              │                │
        ▼              ▼                ▼
@@ -66,7 +66,7 @@ The Qualtio Tech Radar ETL pipeline automatically identifies, classifies, and tr
 **Evidence Adapters**
 - `github_trending`: repo momentum and popularity
 - `hackernews`: discussion heat
-- `stackexchange`: tag activity / mindshare
+- `stackexchange`: optional tag activity / mindshare (disabled by default)
 - `deps.dev`: reverse dependents and package linkage
 - `pypistats`: monthly download pressure for Python packages
 - `osv`: known vulnerability pressure
@@ -101,6 +101,7 @@ The ring policy then applies explicit gates:
 - `adopt` requires corroborated non-GitHub adoption
 - `trial` requires corroboration or an editorial exception
 - `assess` and `hold` remain available for promising but weakly corroborated items
+- mono-source GitHub candidates are allowed into `assess` only when editorially plausible and clearly above the soft admission floor (otherwise they stay out)
 
 ### Selective LLM Optimization
 

@@ -2131,6 +2131,80 @@ class TestPipelineFlow:
         assert "NoisyRepo" not in names
         assert "ReliableTech" in names
 
+    def test_strategic_filter_keeps_massive_github_only_candidates_in_assess_soft_band(self):
+        from etl.pipeline import RadarPipeline, NormalizedTech
+        from etl.classifier import ClassificationResult
+
+        config = ETLConfig(filtering=FilteringConfig(min_sources=1))
+        config.distribution.target_total = 4
+        config.distribution.min_per_quadrant = 1
+        config.distribution.max_per_quadrant = 4
+        config.quality_gates.min_hn_mentions.assess = 0
+        config.quality_gates.min_hn_mentions.trial = 0
+        config.quality_gates.min_hn_mentions.adopt = 0
+
+        with patch('etl.pipeline.GitHubTrendingSource'), \
+             patch('etl.pipeline.HackerNewsSource'), \
+             patch('etl.pipeline.TechnologyClassifier'), \
+             patch('etl.pipeline.AITechnologyFilter') as mock_filter:
+            mock_filter.return_value.filter.side_effect = lambda items: items
+            pipeline = RadarPipeline(config=config)
+
+        technologies = [
+            NormalizedTech(
+                "Linux",
+                "The Linux kernel powers most servers and cloud infrastructure.",
+                220000,
+                70000,
+                "C",
+                ["kernel", "operating-system", "cloud"],
+                "",
+                0,
+                ["github"],
+                {"gh_popularity": 88.0, "gh_momentum": 72.0, "hn_heat": 0.0, "github_only": 1.0, "has_external_adoption": 0.0},
+                58.2,
+            ),
+            NormalizedTech(
+                "NoisyRepo",
+                "Random trending repository with unclear long-term relevance.",
+                12000,
+                2000,
+                "Python",
+                ["python"],
+                "",
+                0,
+                ["github"],
+                {"gh_popularity": 80.0, "gh_momentum": 75.0, "hn_heat": 0.0, "github_only": 1.0, "has_external_adoption": 0.0},
+                58.0,
+            ),
+        ]
+        classifications = [
+            ClassificationResult(
+                "Linux",
+                "platforms",
+                "assess",
+                "The Linux kernel powers most servers and cloud infrastructure.",
+                0.9,
+                "stable",
+                strategic_value="high",
+            ),
+            ClassificationResult(
+                "NoisyRepo",
+                "tools",
+                "assess",
+                "Random trending repository with unclear long-term relevance.",
+                0.75,
+                "up",
+                strategic_value="medium",
+            ),
+        ]
+
+        filtered = pipeline._strategic_filter(technologies, classifications)
+        names = {item.name for item in filtered}
+
+        assert "Linux" in names
+        assert "NoisyRepo" not in names
+
     def test_strategic_filter_prefers_previous_main_ids_for_stability(self):
         from etl.pipeline import RadarPipeline, NormalizedTech
         from etl.classifier import ClassificationResult

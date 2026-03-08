@@ -45,7 +45,7 @@ gh run list --repo chrislopez24/qualtio-tech-radar --limit 5
 
 ```bash
 # Download artifacts
-ghe run download --repo chrislopez24/qualtio-tech-radar --name shadow-eval-report
+gh run download --repo chrislopez24/qualtio-tech-radar --name shadow-eval-report
 
 # View report
 cat artifacts/shadow_eval.json
@@ -55,11 +55,11 @@ cat artifacts/shadow_eval.json
 
 ```bash
 # GitHub Token
-ghe secret set GH_TOKEN --repo chrislopez24/qualtio-tech-radar
+gh secret set GH_TOKEN --repo chrislopez24/qualtio-tech-radar
 # Paste: ghp_xxx
 
 # AI API Key
-ghe secret set SYNTHETIC_API_KEY --repo chrislopez24/qualtio-tech-radar
+gh secret set SYNTHETIC_API_KEY --repo chrislopez24/qualtio-tech-radar
 # Paste: syn_xxx
 ```
 
@@ -83,10 +83,10 @@ git push
 **Solution**:
 ```bash
 # Verify secret exists
-ghe secret list --repo chrislopez24/qualtio-tech-radar
+gh secret list --repo chrislopez24/qualtio-tech-radar
 
 # Update if needed
-ghe secret set SYNTHETIC_API_KEY --repo chrislopez24/qualtio-tech-radar
+gh secret set SYNTHETIC_API_KEY --repo chrislopez24/qualtio-tech-radar
 ```
 
 ### Issue: "Core overlap below threshold"
@@ -125,7 +125,7 @@ ghe secret set SYNTHETIC_API_KEY --repo chrislopez24/qualtio-tech-radar
 **Solution**:
 ```bash
 # Enable Pages
-ghe repo edit chrislopez24/qualtio-tech-radar --enable-pages
+gh repo edit chrislopez24/qualtio-tech-radar --enable-pages
 
 # Settings → Pages → Source: GitHub Actions
 ```

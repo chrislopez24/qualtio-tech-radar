@@ -48,7 +48,12 @@ from etl.sources.osv_source import OSVSource
 from etl.candidate_selector import select_candidates, CandidateSelection
 from etl.llm_cache import LLMDecisionCache
 from etl.quadrant_logic import infer_quadrant, quadrant_affinity
-from etl.selection_logic import strategic_filter, build_watchlist_items, rebalance_soft_ring_targets
+from etl.selection_logic import (
+    strategic_filter,
+    build_watchlist_items,
+    rebalance_soft_ring_targets,
+    is_low_confidence_github_only_candidate,
+)
 from etl.evidence import EvidenceRecord
 
 logger = logging.getLogger(__name__)
@@ -1541,8 +1546,13 @@ class RadarPipeline:
         )
         market_score = float(getattr(item, "market_score", 0.0) or 0.0)
 
-        return github_only and not has_external_adoption and hn_heat <= 0.0 and (
-            market_score < 60.0 or not editorially_plausible
+        return is_low_confidence_github_only_candidate(
+            github_only=github_only,
+            has_external_adoption=has_external_adoption,
+            hn_heat=hn_heat,
+            editorially_plausible=editorially_plausible,
+            market_score=market_score,
+            stars=int(getattr(item, "stars", 0) or 0),
         )
 
     def _is_reasonable_watchlist_item(self, item: FilteredItem) -> bool:
@@ -1566,9 +1576,12 @@ class RadarPipeline:
         hn_heat = float(raw_signals.get("hn_heat", 0.0) or 0.0)
         market_score = float(getattr(item, "market_score", 0.0) or 0.0)
         ring = str(getattr(item, "ring", "")).strip().lower()
+        is_deprecated = bool(getattr(item, "is_deprecated", False))
 
         if ring == "hold":
-            return has_external_adoption or hn_heat > 0.0 or market_score >= 55.0
+            return is_deprecated or (
+                market_score >= 55.0 and (has_external_adoption or hn_heat > 0.0)
+            )
 
         if ring == "assess":
             return has_external_adoption or hn_heat > 0.0 or (source_coverage >= 1.0 and market_score >= 57.0)
@@ -1794,6 +1807,37 @@ class RadarPipeline:
                 "Phase 5c - Removed %s low-quality assess items from watchlist",
                 len(removed_low_quality_watchlist),
             )
+        removed_unreasonable_watchlist = [
+            item for item in watchlist_items if not self._is_reasonable_watchlist_item(item)
+        ]
+        watchlist_items = [item for item in watchlist_items if self._is_reasonable_watchlist_item(item)]
+        if removed_unreasonable_watchlist:
+            logger.info(
+                "Phase 5c - Removed %s unreasonable watchlist items",
+                len(removed_unreasonable_watchlist),
+            )
+        if not watchlist_items:
+            main_ids = {self._normalize_id(item.name) for item in filtered_items}
+            reserve_watchlist_candidates = [
+                item
+                for item in reserve_candidates
+                if self._normalize_id(getattr(item, "name", "")) not in main_ids
+                and not self._is_low_quality_assess_item(item)
+                and self._is_reasonable_watchlist_item(item)
+            ]
+            reserve_watchlist_candidates.sort(
+                key=lambda item: float(getattr(item, "market_score", 0.0) or 0.0),
+                reverse=True,
+            )
+            if reserve_watchlist_candidates:
+                watchlist_items = reserve_watchlist_candidates[:2]
+                for item in watchlist_items:
+                    if str(getattr(item, "ring", "")).strip().lower() == "adopt":
+                        item.ring = "trial"
+                logger.info(
+                    "Phase 5c - Filled watchlist with %s reserve candidates",
+                    len(watchlist_items),
+                )
         if not watchlist_items and removed_low_quality_watchlist:
             rescued_items = [
                 item for item in removed_low_quality_watchlist
@@ -1807,6 +1851,49 @@ class RadarPipeline:
                 watchlist_items = rescued_items[:2]
                 logger.info(
                     "Phase 5c - Rescued %s reasonable items into watchlist to avoid empty output",
+                    len(watchlist_items),
+                )
+        if not watchlist_items:
+            main_ids = {self._normalize_id(item.name) for item in filtered_items}
+            fallback_watch_candidates = sorted(
+                [tech for tech in technologies if self._normalize_id(tech.name) not in main_ids],
+                key=lambda tech: (float(getattr(tech, "market_score", 0.0) or 0.0), float(getattr(tech, "trend_delta", 0.0) or 0.0)),
+                reverse=True,
+            )
+            synthesized_watchlist: List[FilteredItem] = []
+            for tech in fallback_watch_candidates:
+                if len(synthesized_watchlist) >= 2:
+                    break
+                if is_resource_like_repository(tech.name, tech.description):
+                    continue
+
+                synthetic_classification = ClassificationResult(
+                    name=tech.name,
+                    quadrant=self._infer_quadrant(tech),
+                    ring="trial",
+                    description=tech.description or f"{tech.name} is tracked for potential near-term adoption.",
+                    confidence=max(0.5, float(tech.signals.get("score_confidence", 0.5) or 0.5)),
+                    trend="up" if float(getattr(tech, "trend_delta", 0.0) or 0.0) >= 0.0 else "stable",
+                    strategic_value="medium",
+                )
+                item = self._build_filtered_item(tech, synthetic_classification, confidence_floor=0.5)
+                item = self._assign_market_rings([item])[0]
+                if str(getattr(item, "ring", "")).strip().lower() == "adopt":
+                    item.ring = "trial"
+                if float(getattr(item, "market_score", 0.0) or 0.0) < 55.0:
+                    continue
+                if str(getattr(item, "ring", "")).strip().lower() == "hold" and not bool(getattr(item, "is_deprecated", False)):
+                    continue
+                if self._is_low_quality_assess_item(item):
+                    continue
+                if not self._is_reasonable_watchlist_item(item):
+                    continue
+                synthesized_watchlist.append(item)
+
+            if synthesized_watchlist:
+                watchlist_items = synthesized_watchlist
+                logger.info(
+                    "Phase 5c - Synthesized %s watchlist items from near-miss candidates",
                     len(watchlist_items),
                 )
 

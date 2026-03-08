@@ -122,6 +122,11 @@ RESOURCE_LIKE_PHRASES = (
     "system prompts",
     "prompt collection",
     "prompt library",
+    "curriculum",
+    "certification",
+    "style guide",
+    "activation script",
+    "activator",
 )
 
 EDITORIALLY_WEAK_STRONG_RING_EXACT_NAMES = {
@@ -144,6 +149,8 @@ EDITORIALLY_WEAK_TRIAL_RING_EXACT_NAMES = {
     "hellogithub",
     "javascript-algorithms",
     "javaguide",
+    "freecodecamp",
+    "microsoft-activation-scripts",
     "prompts.chat",
     "python-100-days",
     "you-dont-know-js",
@@ -178,6 +185,9 @@ def is_resource_like_repository(name: str, description: str = "") -> bool:
         return True
 
     if re.search(r"\b(books|roadmap|roadmaps|tutorial|tutorials)\b", name_lower):
+        return True
+
+    if re.search(r"\b(style guide|activator|activation scripts?|kms|certifications?)\b", combined_text):
         return True
 
     phrase_matches = sum(1 for phrase in RESOURCE_LIKE_PHRASES if phrase in combined_text)

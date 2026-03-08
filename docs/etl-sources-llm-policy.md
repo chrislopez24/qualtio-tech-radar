@@ -124,6 +124,17 @@ Current optimization principles:
 3. Send only residual ambiguity to LLM (bounded by budget).
 4. Never allow LLM-only candidates into strong rings without corroborating evidence.
 
+## GitHub-Only Assess Policy
+
+To keep output realistic without over-pruning:
+
+1. `adopt`/`trial` still require corroborated evidence (no GitHub-only strong rings).
+2. A narrow `assess` soft-band is allowed for mono-source GitHub candidates only if:
+   - editorially plausible,
+   - clearly above a minimum market-score floor,
+   - strong repository scale supports sector relevance.
+3. Educational/resource/style-guide/activation repositories remain blocked by editorial rules.
+
 See also: `docs/external-sources-rate-limits-2026-03-07.md` for concrete API limits/access references.
 
 ## Operational Checklist

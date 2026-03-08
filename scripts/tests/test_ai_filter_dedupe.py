@@ -259,3 +259,59 @@ class TestDeduplicationAndDeprecation:
         result_names = {item.name.lower() for item in result}
         assert "react" in result_names
         assert "awesome-python" not in result_names
+
+    def test_filter_excludes_curriculum_style_guide_and_activation_repositories(self):
+        """Learning portals, style guides, and activation repos are not market technologies."""
+        filter_config = Mock()
+        filter_config.auto_ignore = []
+        filter_config.include_only = []
+        filter_config.min_confidence = 0.5
+
+        result = AITechnologyFilter(filter_config).filter([
+            MockTechItem(
+                name="freeCodeCamp",
+                description="Open-source curriculum with certifications and coding challenges.",
+                stars=430000,
+                confidence=0.9,
+                strategic_value=StrategicValue.HIGH,
+                market_score=58.6,
+                signals={"gh_momentum": 85.0, "gh_popularity": 92.0, "hn_heat": 0.0},
+                sources=["github"],
+            ),
+            MockTechItem(
+                name="javascript",
+                description="JavaScript Style Guide for writing cleaner code.",
+                stars=148000,
+                confidence=0.9,
+                strategic_value=StrategicValue.MEDIUM,
+                market_score=55.5,
+                signals={"gh_momentum": 78.0, "gh_popularity": 88.0, "hn_heat": 0.0},
+                sources=["github"],
+            ),
+            MockTechItem(
+                name="Microsoft-Activation-Scripts",
+                description="Open-source Windows and Office activator scripts.",
+                stars=168000,
+                confidence=0.9,
+                strategic_value=StrategicValue.MEDIUM,
+                market_score=55.6,
+                signals={"gh_momentum": 80.0, "gh_popularity": 90.0, "hn_heat": 0.0},
+                sources=["github"],
+            ),
+            MockTechItem(
+                name="TensorFlow",
+                description="Machine learning framework for model training and deployment.",
+                stars=194000,
+                confidence=0.9,
+                strategic_value=StrategicValue.HIGH,
+                market_score=57.8,
+                signals={"gh_momentum": 82.0, "gh_popularity": 90.0, "hn_heat": 0.0},
+                sources=["github"],
+            ),
+        ])
+
+        result_names = {item.name.lower() for item in result}
+        assert "tensorflow" in result_names
+        assert "freecodecamp" not in result_names
+        assert "javascript" not in result_names
+        assert "microsoft-activation-scripts" not in result_names
