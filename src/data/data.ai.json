@@ -1,2167 +1,480 @@
 {
-  "updatedAt": "2026-03-08T02:35:30.316488",
+  "updatedAt": "2026-03-11T19:22:39.289773+00:00",
   "technologies": [
-    {
-      "id": "vscode",
-      "name": "vscode",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "Visual Studio Code is Microsoft's popular source-code editor that has become the de facto standard for code editing. It supports debugging, syntax highlighting, intelligent code completion, snippets, code refactoring, and integrated Git. With 182k GitHub stars, it is one of the most widely adopted development tools globally.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 56.89,
-      "signals": {
-        "ghMomentum": 97.49,
-        "ghPopularity": 97.46,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 1,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github"
-        ],
-        "metrics": [
-          "gh_momentum",
-          "gh_popularity"
-        ],
-        "hasExternalAdoption": false,
-        "githubOnly": true
-      },
-      "whyThisRing": "Assess because composite 56.9 is promising but evidence depth is still limited.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 182415,
-      "confidence": 0.98,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257166",
-      "canonicalId": "vscode",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "github",
-          "metric": "gh_momentum",
-          "subjectId": "github:vscode",
-          "rawValue": 97.49,
-          "normalizedValue": 97.49,
-          "observedAt": "2026-03-08T02:35:30.237416",
-          "freshnessDays": 1
-        },
-        {
-          "source": "github",
-          "metric": "gh_popularity",
-          "subjectId": "github:vscode",
-          "rawValue": 97.46,
-          "normalizedValue": 97.46,
-          "observedAt": "2026-03-08T02:35:30.237416",
-          "freshnessDays": 1
-        }
-      ]
-    },
-    {
-      "id": "linux",
-      "name": "linux",
-      "quadrant": "platforms",
-      "ring": "assess",
-      "description": "The Linux kernel is the core component of the Linux operating system, managing hardware resources, system calls, process and memory management, and file systems. It powers the vast majority of servers, supercomputers, Android devices, and cloud infrastructure worldwide.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 58.28,
-      "signals": {
-        "ghMomentum": 99.31,
-        "ghPopularity": 99.02,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 1,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github"
-        ],
-        "metrics": [
-          "gh_momentum",
-          "gh_popularity"
-        ],
-        "hasExternalAdoption": false,
-        "githubOnly": true
-      },
-      "whyThisRing": "Assess because composite 58.3 is promising but evidence depth is still limited.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 221368,
-      "confidence": 0.95,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257185",
-      "canonicalId": "linux",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "github",
-          "metric": "gh_momentum",
-          "subjectId": "github:linux",
-          "rawValue": 99.31,
-          "normalizedValue": 99.31,
-          "observedAt": "2026-03-08T02:35:30.237466",
-          "freshnessDays": 1
-        },
-        {
-          "source": "github",
-          "metric": "gh_popularity",
-          "subjectId": "github:linux",
-          "rawValue": 99.02,
-          "normalizedValue": 99.02,
-          "observedAt": "2026-03-08T02:35:30.237466",
-          "freshnessDays": 1
-        }
-      ]
-    },
-    {
-      "id": "tensorflow",
-      "name": "tensorflow",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "An open source machine learning framework developed by Google, providing a comprehensive ecosystem for building and deploying machine learning models. Supports neural networks, deep learning, and various ML tasks across platforms.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 57.83,
-      "signals": {
-        "ghMomentum": 98.57,
-        "ghPopularity": 97.96,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 1,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github"
-        ],
-        "metrics": [
-          "gh_momentum",
-          "gh_popularity"
-        ],
-        "hasExternalAdoption": false,
-        "githubOnly": true
-      },
-      "whyThisRing": "Assess because composite 57.8 is promising but evidence depth is still limited.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 194033,
-      "confidence": 0.95,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257197",
-      "canonicalId": "tensorflow",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "github",
-          "metric": "gh_momentum",
-          "subjectId": "github:tensorflow",
-          "rawValue": 98.57,
-          "normalizedValue": 98.57,
-          "observedAt": "2026-03-08T02:35:30.237490",
-          "freshnessDays": 1
-        },
-        {
-          "source": "github",
-          "metric": "gh_popularity",
-          "subjectId": "github:tensorflow",
-          "rawValue": 97.96,
-          "normalizedValue": 97.96,
-          "observedAt": "2026-03-08T02:35:30.237490",
-          "freshnessDays": 1
-        }
-      ]
-    },
-    {
-      "id": "bootstrap",
-      "name": "bootstrap",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "The most popular HTML, CSS, and JavaScript framework for developing responsive, mobile-first projects on the web.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 57.38,
-      "signals": {
-        "ghMomentum": 97.96,
-        "ghPopularity": 97.09,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 1,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github"
-        ],
-        "metrics": [
-          "gh_momentum",
-          "gh_popularity"
-        ],
-        "hasExternalAdoption": false,
-        "githubOnly": true
-      },
-      "whyThisRing": "Assess because composite 57.4 is promising but evidence depth is still limited.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 174035,
-      "confidence": 0.95,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257205",
-      "canonicalId": "bootstrap",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "github",
-          "metric": "gh_momentum",
-          "subjectId": "github:bootstrap",
-          "rawValue": 97.96,
-          "normalizedValue": 97.96,
-          "observedAt": "2026-03-08T02:35:30.237509",
-          "freshnessDays": 1
-        },
-        {
-          "source": "github",
-          "metric": "gh_popularity",
-          "subjectId": "github:bootstrap",
-          "rawValue": 97.09,
-          "normalizedValue": 97.09,
-          "observedAt": "2026-03-08T02:35:30.237509",
-          "freshnessDays": 1
-        }
-      ]
-    },
-    {
-      "id": "n8n",
-      "name": "n8n",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "Fair-code workflow automation platform enabling visual and code-based workflow creation with 400+ integrations. Supports self-hosting or cloud deployment, with native AI capabilities for intelligent automation.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 57.2,
-      "signals": {
-        "ghMomentum": 98.09,
-        "ghPopularity": 97.27,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 1,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github"
-        ],
-        "metrics": [
-          "gh_momentum",
-          "gh_popularity"
-        ],
-        "hasExternalAdoption": false,
-        "githubOnly": true
-      },
-      "whyThisRing": "Assess because composite 57.2 is promising but evidence depth is still limited.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 178036,
-      "confidence": 0.95,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257213",
-      "canonicalId": "n8n",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "github",
-          "metric": "gh_momentum",
-          "subjectId": "github:n8n",
-          "rawValue": 98.09,
-          "normalizedValue": 98.09,
-          "observedAt": "2026-03-08T02:35:30.237527",
-          "freshnessDays": 1
-        },
-        {
-          "source": "github",
-          "metric": "gh_popularity",
-          "subjectId": "github:n8n",
-          "rawValue": 97.27,
-          "normalizedValue": 97.27,
-          "observedAt": "2026-03-08T02:35:30.237527",
-          "freshnessDays": 1
-        }
-      ]
-    },
-    {
-      "id": "autogpt",
-      "name": "AutoGPT",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "AutoGPT is an open-source AI agent framework that uses GPT-4 to autonomously accomplish complex tasks by chaining together sub-tasks. It enables developers to build applications where AI can self-prompt and execute multi-step workflows with minimal human intervention.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 57.13,
-      "signals": {
-        "ghMomentum": 98.0,
-        "ghPopularity": 97.46,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 1,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github"
-        ],
-        "metrics": [
-          "gh_momentum",
-          "gh_popularity"
-        ],
-        "hasExternalAdoption": false,
-        "githubOnly": true
-      },
-      "whyThisRing": "Assess because composite 57.1 is promising but evidence depth is still limited.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 182255,
-      "confidence": 0.95,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257220",
-      "canonicalId": "autogpt",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "github",
-          "metric": "gh_momentum",
-          "subjectId": "github:autogpt",
-          "rawValue": 98.0,
-          "normalizedValue": 98.0,
-          "observedAt": "2026-03-08T02:35:30.237545",
-          "freshnessDays": 1
-        },
-        {
-          "source": "github",
-          "metric": "gh_popularity",
-          "subjectId": "github:autogpt",
-          "rawValue": 97.46,
-          "normalizedValue": 97.46,
-          "observedAt": "2026-03-08T02:35:30.237545",
-          "freshnessDays": 1
-        }
-      ]
-    },
-    {
-      "id": "transformers",
-      "name": "transformers",
-      "quadrant": "tools",
-      "ring": "adopt",
-      "description": "🤗 Transformers: the model-definition framework for state-of-the-art machine learning models in text, vision, audio, and multimodal models, for both inference and training. ",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 83.69,
-      "signals": {
-        "ghMomentum": 96.19,
-        "ghPopularity": 96.28,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 4,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github",
-          "pypistats",
-          "deps_dev",
-          "osv"
-        ],
-        "metrics": [
-          "default_version",
-          "downloads_last_month",
-          "known_vulnerabilities",
-          "reverse_dependents"
-        ],
-        "hasExternalAdoption": true,
-        "githubOnly": false
-      },
-      "whyThisRing": "Adopt because composite 83.7 is backed by external adoption evidence across 4 sources.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 157533,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257233",
-      "canonicalId": "transformers",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "pypistats",
-          "metric": "downloads_last_month",
-          "subjectId": "transformers",
-          "rawValue": 112373909,
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:15.570656+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "reverse_dependents",
-          "subjectId": "pypi:transformers",
-          "rawValue": 6588,
-          "normalizedValue": 63.65,
-          "observedAt": "2026-03-07T14:30:17.155141+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "default_version",
-          "subjectId": "pypi:transformers@5.3.0",
-          "rawValue": "5.3.0",
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:17.155150+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "osv",
-          "metric": "known_vulnerabilities",
-          "subjectId": "pypi:transformers@5.3.0",
-          "rawValue": 0,
-          "normalizedValue": 0.0,
-          "observedAt": "2026-03-08T01:33:11.616197+00:00",
-          "freshnessDays": 1
-        }
-      ]
-    },
     {
       "id": "typescript",
       "name": "TypeScript",
       "quadrant": "languages",
-      "ring": "trial",
-      "description": "TypeScript is a superset of JavaScript that compiles to clean JavaScript output.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 83.32,
-      "signals": {
-        "ghMomentum": 91.6,
-        "ghPopularity": 93.25,
-        "hnHeat": 48.0
-      },
-      "sourceCoverage": 4,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github",
-          "hackernews",
-          "deps_dev",
-          "osv"
-        ],
-        "metrics": [
-          "default_version",
-          "known_vulnerabilities",
-          "reverse_dependents"
-        ],
-        "hasExternalAdoption": true,
-        "githubOnly": false
-      },
-      "whyThisRing": "Trial because composite 83.3 shows momentum with external adoption evidence across 4 sources.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 108054,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257242",
-      "canonicalId": "typescript",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "deps_dev",
-          "metric": "reverse_dependents",
-          "subjectId": "npm:typescript",
-          "rawValue": 42809,
-          "normalizedValue": 77.19,
-          "observedAt": "2026-03-07T14:30:16.917164+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "default_version",
-          "subjectId": "npm:typescript@5.9.3",
-          "rawValue": "5.9.3",
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:16.917174+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "osv",
-          "metric": "known_vulnerabilities",
-          "subjectId": "npm:typescript@5.9.3",
-          "rawValue": 0,
-          "normalizedValue": 0.0,
-          "observedAt": "2026-03-08T01:33:11.616210+00:00",
-          "freshnessDays": 1
-        }
-      ]
-    },
-    {
-      "id": "yt-dlp",
-      "name": "yt-dlp",
-      "quadrant": "tools",
       "ring": "adopt",
-      "description": "A feature-rich command-line audio/video downloader",
-      "moved": 0,
+      "description": "TypeScript extends JavaScript with static typing, providing compile-time error detection and enhanced IDE support. It has become the default choice for large-scale web applications and is extensively used in modern frontend frameworks like Angular, React, and Vue.",
       "trend": "stable",
-      "marketScore": 82.83,
-      "signals": {
-        "ghMomentum": 93.21,
-        "ghPopularity": 95.89,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 4,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github",
-          "pypistats",
-          "deps_dev",
-          "osv"
-        ],
-        "metrics": [
-          "default_version",
-          "downloads_last_month",
-          "known_vulnerabilities",
-          "reverse_dependents"
-        ],
-        "hasExternalAdoption": true,
-        "githubOnly": false
-      },
-      "whyThisRing": "Adopt because composite 82.8 is backed by external adoption evidence across 4 sources.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 150085,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257249",
-      "canonicalId": "yt-dlp",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "pypistats",
-          "metric": "downloads_last_month",
-          "subjectId": "yt-dlp",
-          "rawValue": 10254538,
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:15.700449+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "reverse_dependents",
-          "subjectId": "pypi:yt-dlp",
-          "rawValue": 14,
-          "normalizedValue": 19.6,
-          "observedAt": "2026-03-07T14:30:17.471186+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "default_version",
-          "subjectId": "pypi:yt-dlp@2026.3.3.162408.dev0",
-          "rawValue": "2026.3.3.162408.dev0",
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:17.471195+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "osv",
-          "metric": "known_vulnerabilities",
-          "subjectId": "pypi:yt-dlp@2026.3.3.162408.dev0",
-          "rawValue": 0,
-          "normalizedValue": 0.0,
-          "observedAt": "2026-03-08T01:33:11.616199+00:00",
-          "freshnessDays": 1
-        }
-      ]
-    },
-    {
-      "id": "langchain",
-      "name": "langchain",
-      "quadrant": "platforms",
-      "ring": "adopt",
-      "description": "The agent engineering platform",
+      "confidence": 1.0,
+      "updatedAt": "2025-01-15T00:00:00Z",
       "moved": 0,
-      "trend": "stable",
-      "marketScore": 82.81,
-      "signals": {
-        "ghMomentum": 93.86,
-        "ghPopularity": 94.65,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 4,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github",
-          "pypistats",
-          "deps_dev",
-          "osv"
-        ],
-        "metrics": [
-          "default_version",
-          "downloads_last_month",
-          "known_vulnerabilities",
-          "reverse_dependents"
-        ],
-        "hasExternalAdoption": true,
-        "githubOnly": false
-      },
-      "whyThisRing": "Adopt because composite 82.8 is backed by external adoption evidence across 4 sources.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 128568,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257261",
-      "canonicalId": "langchain",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "pypistats",
-          "metric": "downloads_last_month",
-          "subjectId": "langchain",
-          "rawValue": 222679849,
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:15.832489+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "reverse_dependents",
-          "subjectId": "pypi:langchain",
-          "rawValue": 2234,
-          "normalizedValue": 55.82,
-          "observedAt": "2026-03-07T14:30:17.607899+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "default_version",
-          "subjectId": "pypi:langchain@1.2.10",
-          "rawValue": "1.2.10",
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:17.607908+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "osv",
-          "metric": "known_vulnerabilities",
-          "subjectId": "pypi:langchain@1.2.10",
-          "rawValue": 0,
-          "normalizedValue": 0.0,
-          "observedAt": "2026-03-08T01:33:11.616206+00:00",
-          "freshnessDays": 1
-        }
-      ]
-    },
-    {
-      "id": "pytorch",
-      "name": "pytorch",
-      "quadrant": "techniques",
-      "ring": "adopt",
-      "description": "Tensors and Dynamic neural networks in Python with strong GPU acceleration",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 82.33,
-      "signals": {
-        "ghMomentum": 93.03,
-        "ghPopularity": 92.47,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 4,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github",
-          "pypistats",
-          "deps_dev",
-          "osv"
-        ],
-        "metrics": [
-          "default_version",
-          "downloads_last_month",
-          "known_vulnerabilities",
-          "reverse_dependents"
-        ],
-        "hasExternalAdoption": true,
-        "githubOnly": false
-      },
-      "whyThisRing": "Adopt because composite 82.3 is backed by external adoption evidence across 4 sources.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 98025,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257269",
-      "canonicalId": "pytorch",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "pypistats",
-          "metric": "downloads_last_month",
-          "subjectId": "torch",
-          "rawValue": 74313910,
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:16.360424+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "reverse_dependents",
-          "subjectId": "pypi:torch",
-          "rawValue": 19820,
-          "normalizedValue": 71.62,
-          "observedAt": "2026-03-07T14:30:18.054586+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "default_version",
-          "subjectId": "pypi:torch@2.10.0",
-          "rawValue": "2.10.0",
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:18.054595+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "osv",
-          "metric": "known_vulnerabilities",
-          "subjectId": "pypi:torch@2.10.0",
-          "rawValue": 0,
-          "normalizedValue": 0.0,
-          "observedAt": "2026-03-08T01:33:11.616211+00:00",
-          "freshnessDays": 1
-        }
-      ]
-    },
-    {
-      "id": "django",
-      "name": "django",
-      "quadrant": "tools",
-      "ring": "adopt",
-      "description": "The Web framework for perfectionists with deadlines.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 82.23,
-      "signals": {
-        "ghMomentum": 92.96,
-        "ghPopularity": 91.51,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 4,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github",
-          "pypistats",
-          "deps_dev",
-          "osv"
-        ],
-        "metrics": [
-          "default_version",
-          "downloads_last_month",
-          "known_vulnerabilities",
-          "reverse_dependents"
-        ],
-        "hasExternalAdoption": true,
-        "githubOnly": false
-      },
-      "whyThisRing": "Adopt because composite 82.2 is backed by external adoption evidence across 4 sources.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 87008,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257278",
-      "canonicalId": "django",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "pypistats",
-          "metric": "downloads_last_month",
-          "subjectId": "django",
-          "rawValue": 38969669,
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:16.492163+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "reverse_dependents",
-          "subjectId": "pypi:django",
-          "rawValue": 10389,
-          "normalizedValue": 66.94,
-          "observedAt": "2026-03-07T14:30:18.170002+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "default_version",
-          "subjectId": "pypi:django@6.0.3",
-          "rawValue": "6.0.3",
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:18.170011+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "osv",
-          "metric": "known_vulnerabilities",
-          "subjectId": "pypi:django@6.0.3",
-          "rawValue": 0,
-          "normalizedValue": 0.0,
-          "observedAt": "2026-03-08T01:33:11.616214+00:00",
-          "freshnessDays": 1
-        }
-      ]
-    },
-    {
-      "id": "fastapi",
-      "name": "fastapi",
-      "quadrant": "tools",
-      "ring": "adopt",
-      "description": "FastAPI framework, high performance, easy to learn, fast to code, ready for production",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 81.5,
-      "signals": {
-        "ghMomentum": 89.79,
-        "ghPopularity": 92.3,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 4,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github",
-          "pypistats",
-          "deps_dev",
-          "osv"
-        ],
-        "metrics": [
-          "default_version",
-          "downloads_last_month",
-          "known_vulnerabilities",
-          "reverse_dependents"
-        ],
-        "hasExternalAdoption": true,
-        "githubOnly": false
-      },
-      "whyThisRing": "Adopt because composite 81.5 is backed by external adoption evidence across 4 sources.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 95986,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257285",
-      "canonicalId": "fastapi",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "pypistats",
-          "metric": "downloads_last_month",
-          "subjectId": "fastapi",
-          "rawValue": 290283999,
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:16.622949+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "reverse_dependents",
-          "subjectId": "pypi:fastapi",
-          "rawValue": 12132,
-          "normalizedValue": 68.07,
-          "observedAt": "2026-03-07T14:30:18.283032+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "default_version",
-          "subjectId": "pypi:fastapi@0.135.1",
-          "rawValue": "0.135.1",
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:18.283047+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "osv",
-          "metric": "known_vulnerabilities",
-          "subjectId": "pypi:fastapi@0.135.1",
-          "rawValue": 0,
-          "normalizedValue": 0.0,
-          "observedAt": "2026-03-08T01:33:11.616213+00:00",
-          "freshnessDays": 1
-        }
-      ]
-    },
-    {
-      "id": "open-webui",
-      "name": "open-webui",
-      "quadrant": "tools",
-      "ring": "trial",
-      "description": "User-friendly AI Interface (Supports Ollama, OpenAI API, ...)",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 78.06,
-      "signals": {
-        "ghMomentum": 93.29,
-        "ghPopularity": 94.5,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 4,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github",
-          "pypistats",
-          "deps_dev",
-          "osv"
-        ],
-        "metrics": [
-          "default_version",
-          "downloads_last_month",
-          "known_vulnerabilities",
-          "reverse_dependents"
-        ],
-        "hasExternalAdoption": true,
-        "githubOnly": false
-      },
-      "whyThisRing": "Trial because composite 78.1 shows momentum with external adoption evidence across 4 sources.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 126120,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257292",
-      "canonicalId": "open-webui",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "pypistats",
-          "metric": "downloads_last_month",
-          "subjectId": "open-webui",
-          "rawValue": 1326828,
-          "normalizedValue": 87.47,
-          "observedAt": "2026-03-07T14:30:15.962566+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "reverse_dependents",
-          "subjectId": "pypi:open-webui",
-          "rawValue": 2,
-          "normalizedValue": 7.95,
-          "observedAt": "2026-03-07T14:30:17.715208+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "default_version",
-          "subjectId": "pypi:open-webui@0.8.8",
-          "rawValue": "0.8.8",
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:17.715217+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "osv",
-          "metric": "known_vulnerabilities",
-          "subjectId": "pypi:open-webui@0.8.8",
-          "rawValue": 0,
-          "normalizedValue": 0.0,
-          "observedAt": "2026-03-08T01:33:11.616208+00:00",
-          "freshnessDays": 1
-        }
-      ]
-    },
-    {
-      "id": "youtube-dl",
-      "name": "youtube-dl",
-      "quadrant": "tools",
-      "ring": "hold",
-      "description": "Command-line program to download videos from YouTube.com and other video sites",
-      "moved": 0,
-      "trend": "down",
-      "marketScore": 75.46,
-      "signals": {
-        "ghMomentum": 92.43,
-        "ghPopularity": 95.32,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 4,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github",
-          "pypistats",
-          "deps_dev",
-          "osv"
-        ],
-        "metrics": [
-          "default_version",
-          "downloads_last_month",
-          "known_vulnerabilities",
-          "reverse_dependents"
-        ],
-        "hasExternalAdoption": true,
-        "githubOnly": false
-      },
-      "whyThisRing": "Hold because composite 75.5 lacks enough corroborated evidence for stronger rings.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 139816,
-      "confidence": 0.5,
-      "isDeprecated": true,
-      "replacement": "yt-dlp",
-      "updatedAt": "2026-03-08T02:35:30.257299",
-      "canonicalId": "youtube-dl",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "pypistats",
-          "metric": "downloads_last_month",
-          "subjectId": "youtube-dl",
-          "rawValue": 224816,
-          "normalizedValue": 76.45,
-          "observedAt": "2026-03-07T14:30:16.095191+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "reverse_dependents",
-          "subjectId": "pypi:youtube-dl",
-          "rawValue": 333,
-          "normalizedValue": 42.06,
-          "observedAt": "2026-03-07T14:30:17.840736+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "default_version",
-          "subjectId": "pypi:youtube-dl@2021.12.17",
-          "rawValue": "2021.12.17",
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:17.840744+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "osv",
-          "metric": "known_vulnerabilities",
-          "subjectId": "pypi:youtube-dl@2021.12.17",
-          "rawValue": 1,
-          "normalizedValue": 20.0,
-          "observedAt": "2026-03-08T01:33:11.616203+00:00",
-          "freshnessDays": 1
-        }
-      ]
-    },
-    {
-      "id": "langflow",
-      "name": "langflow",
-      "quadrant": "platforms",
-      "ring": "trial",
-      "description": "Langflow is a powerful tool for building and deploying AI-powered agents and workflows.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 71.75,
-      "signals": {
-        "ghMomentum": 92.04,
-        "ghPopularity": 95.64,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 4,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github",
-          "pypistats",
-          "deps_dev",
-          "osv"
-        ],
-        "metrics": [
-          "default_version",
-          "downloads_last_month",
-          "known_vulnerabilities",
-          "reverse_dependents"
-        ],
-        "hasExternalAdoption": true,
-        "githubOnly": false
-      },
-      "whyThisRing": "Trial because composite 71.8 shows momentum with external adoption evidence across 4 sources.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 145342,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257306",
-      "canonicalId": "langflow",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "pypistats",
-          "metric": "downloads_last_month",
-          "subjectId": "langflow",
-          "rawValue": 85844,
-          "normalizedValue": 70.48,
-          "observedAt": "2026-03-07T14:30:16.229194+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "reverse_dependents",
-          "subjectId": "pypi:langflow",
-          "rawValue": 0,
-          "normalizedValue": 0.0,
-          "observedAt": "2026-03-07T14:30:17.955375+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "default_version",
-          "subjectId": "pypi:langflow@1.8.0",
-          "rawValue": "1.8.0",
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:17.955384+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "osv",
-          "metric": "known_vulnerabilities",
-          "subjectId": "pypi:langflow@1.8.0",
-          "rawValue": 0,
-          "normalizedValue": 0.0,
-          "observedAt": "2026-03-08T01:33:11.616201+00:00",
-          "freshnessDays": 1
-        }
-      ]
-    },
-    {
-      "id": "react",
-      "name": "react",
-      "quadrant": "tools",
-      "ring": "trial",
-      "description": "The library for web and native user interfaces.",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 74.17,
-      "signals": {
-        "ghMomentum": 99.86,
-        "ghPopularity": 99.79,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 3,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github",
-          "deps_dev",
-          "osv"
-        ],
-        "metrics": [
-          "default_version",
-          "known_vulnerabilities",
-          "reverse_dependents"
-        ],
-        "hasExternalAdoption": true,
-        "githubOnly": false
-      },
-      "whyThisRing": "Trial because composite 74.2 shows momentum with external adoption evidence across 3 sources.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 243702,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257313",
-      "canonicalId": "react",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "deps_dev",
-          "metric": "reverse_dependents",
-          "subjectId": "npm:react",
-          "rawValue": 20619,
-          "normalizedValue": 71.9,
-          "observedAt": "2026-03-07T14:30:17.046124+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "default_version",
-          "subjectId": "npm:react@19.2.4",
-          "rawValue": "19.2.4",
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:17.046135+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "osv",
-          "metric": "known_vulnerabilities",
-          "subjectId": "npm:react@19.2.4",
-          "rawValue": 0,
-          "normalizedValue": 0.0,
-          "observedAt": "2026-03-08T01:33:11.616184+00:00",
-          "freshnessDays": 1
-        }
-      ]
-    },
-    {
-      "id": "go",
-      "name": "go",
-      "quadrant": "languages",
-      "ring": "trial",
-      "description": "The Go programming language",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 82.67,
-      "signals": {
-        "ghMomentum": 93.74,
-        "ghPopularity": 94.92,
-        "hnHeat": 100.0
-      },
-      "sourceCoverage": 2,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github",
-          "hackernews"
-        ],
-        "metrics": [
-          "gh_momentum",
-          "gh_popularity",
-          "hn_heat"
-        ],
-        "hasExternalAdoption": false,
-        "githubOnly": false
-      },
-      "whyThisRing": "Trial because composite 82.7 shows momentum with corroborated signals across 2 sources.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 132945,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257321",
-      "canonicalId": "go",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "github",
-          "metric": "gh_momentum",
-          "subjectId": "github:go",
-          "rawValue": 93.74,
-          "normalizedValue": 93.74,
-          "observedAt": "2026-03-08T02:35:30.238068",
-          "freshnessDays": 1
-        },
-        {
-          "source": "github",
-          "metric": "gh_popularity",
-          "subjectId": "github:go",
-          "rawValue": 94.92,
-          "normalizedValue": 94.92,
-          "observedAt": "2026-03-08T02:35:30.238068",
-          "freshnessDays": 1
-        },
-        {
-          "source": "hackernews",
-          "metric": "hn_heat",
-          "subjectId": "hn:go",
-          "rawValue": 100.0,
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-08T02:35:30.238068",
-          "freshnessDays": 1
-        }
-      ]
-    },
-    {
-      "id": "next.js",
-      "name": "next.js",
-      "quadrant": "tools",
-      "ring": "trial",
-      "description": "The React Framework",
-      "moved": 0,
-      "trend": "stable",
-      "marketScore": 63.61,
-      "signals": {
-        "ghMomentum": 95.3,
-        "ghPopularity": 95.23,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 3,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github",
-          "deps_dev",
-          "osv"
-        ],
-        "metrics": [
-          "default_version",
-          "known_vulnerabilities",
-          "reverse_dependents"
-        ],
-        "hasExternalAdoption": true,
-        "githubOnly": false
-      },
-      "whyThisRing": "Trial because composite 63.6 shows momentum with external adoption evidence across 3 sources.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 138201,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257327",
-      "canonicalId": "next.js",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "deps_dev",
-          "metric": "reverse_dependents",
-          "subjectId": "npm:next",
-          "rawValue": 849,
-          "normalizedValue": 48.82,
-          "observedAt": "2026-03-07T14:30:17.358846+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "deps_dev",
-          "metric": "default_version",
-          "subjectId": "npm:next@16.1.6",
-          "rawValue": "16.1.6",
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-07T14:30:17.358855+00:00",
-          "freshnessDays": 1
-        },
-        {
-          "source": "osv",
-          "metric": "known_vulnerabilities",
-          "subjectId": "npm:next@16.1.6",
-          "rawValue": 0,
-          "normalizedValue": 0.0,
-          "observedAt": "2026-03-08T01:33:11.616205+00:00",
-          "freshnessDays": 1
-        }
-      ]
+      "whyThisRing": "TypeScript maintains the highest adoption score (90.11) among languages and the lowest risk profile (5.0). Its type system improves code quality and maintainability, making it essential for enterprise web development.",
+      "whyNow": "With the continued growth of complex web applications and the need for better tooling and maintainability, TypeScript's adoption continues to accelerate across industries.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
     },
     {
       "id": "python",
       "name": "Python",
+      "quadrant": "languages",
+      "ring": "adopt",
+      "description": "Python is a versatile, interpreted language known for its readable syntax and extensive ecosystem. It dominates data science, machine learning, automation, and rapid prototyping while also serving as a popular choice for backend development.",
+      "trend": "up",
+      "confidence": 1.0,
+      "updatedAt": "2025-01-15T00:00:00Z",
+      "moved": 0,
+      "whyThisRing": "Python achieves near-perfect adoption (87.73) and momentum (100.0) with minimal risk (5.0). Its library ecosystem and cross-domain applicability make it a foundational language for modern development teams.",
+      "whyNow": "The AI/ML boom continues to drive Python's growth, while its simplicity maintains strong appeal for education and scripting use cases.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
+    },
+    {
+      "id": "react",
+      "name": "React",
+      "quadrant": "tools",
+      "ring": "adopt",
+      "description": "The dominant JavaScript UI library with ecosystem dominance across web and mobile (React Native). Component-based architecture and virtual DOM have become industry standards.",
+      "trend": "stable",
+      "confidence": 1.0,
+      "updatedAt": "2025-01-15T00:00:00Z",
+      "moved": 0,
+      "whyThisRing": "React has achieved complete market dominance with 78.4% adoption and 100 momentum. Its mature ecosystem, massive community, and employment market dominance make it the default choice for frontend development.",
+      "whyNow": "React 18 introduced concurrent rendering and automatic batching. The ecosystem continues to consolidate around server components and the App Router pattern. No viable competitor threatens its lead.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
+    },
+    {
+      "id": "nextjs",
+      "name": "Next.js",
+      "quadrant": "tools",
+      "ring": "adopt",
+      "description": "The leading React full-stack framework with server-side rendering, API routes, and optimized deployment workflows.",
+      "trend": "up",
+      "confidence": 1.0,
+      "updatedAt": "2025-01-15T00:00:00Z",
+      "moved": 0,
+      "whyThisRing": "Next.js has become the de facto standard for React applications with 100 momentum and 72% adoption. Its opinionated architecture solves core web development problems comprehensively.",
+      "whyNow": "Version 14+ delivers improved server actions, partial prerendering, and better edge computing support. The Vercel ecosystem provides seamless deployment that competitors cannot match.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
+    },
+    {
+      "id": "go",
+      "name": "Go",
+      "quadrant": "languages",
+      "ring": "adopt",
+      "description": "Go is a statically typed, compiled language designed for simplicity, concurrency, and efficiency. It excels in cloud-native development, microservices, DevOps tooling, and high-performance network services.",
+      "trend": "up",
+      "confidence": 0.95,
+      "updatedAt": "2025-01-15T00:00:00Z",
+      "moved": 0,
+      "whyThisRing": "Go demonstrates strong adoption (75.65) with perfect momentum and maturity scores, combined with the lowest risk profile (5.0). Its goroutine model provides efficient concurrent programming.",
+      "whyNow": "As organizations modernize infrastructure and adopt cloud-native architectures, Go's alignment with Kubernetes, Docker, and contemporary service mesh technologies drives sustained interest.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
+    },
+    {
+      "id": "docker",
+      "name": "Docker",
+      "quadrant": "tools",
+      "ring": "adopt",
+      "description": "Containerization platform that has become the standard for packaging and deploying applications. Enables consistent environments across development and production.",
+      "trend": "stable",
+      "confidence": 0.95,
+      "updatedAt": "2025-01-15T00:00:00Z",
+      "moved": 0,
+      "whyThisRing": "Docker has achieved ubiquitous adoption and is now foundational infrastructure. The technology is mature, well-understood, and solving a core problem that hasn't been superseded.",
+      "whyNow": "Containerization is no longer optional for modern software delivery. Kubernetes dominance has solidified Docker as the default container runtime. Teams should standardize on Docker for consistency.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
+    },
+    {
+      "id": "kubernetes",
+      "name": "Kubernetes",
+      "quadrant": "platforms",
+      "ring": "adopt",
+      "description": "The de facto standard for container orchestration, providing automated deployment, scaling, and management of containerized applications across distributed environments.",
+      "trend": "stable",
+      "confidence": 0.95,
+      "updatedAt": "2025-01-15T00:00:00Z",
+      "moved": 0,
+      "whyThisRing": "Kubernetes has achieved overwhelming market dominance with 86% adoption and maximum momentum, making it the safest choice for container orchestration. Its mature ecosystem and widespread industry support reduce vendor lock-in risk.",
+      "whyNow": "The container orchestration market has consolidated around Kubernetes. With 79.4% maturity and lowest risk score, organizations should adopt Kubernetes rather than invest in alternative orchestration solutions.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
+    },
+    {
+      "id": "retrieval-augmented-generation",
+      "name": "Retrieval-Augmented Generation",
+      "quadrant": "techniques",
+      "ring": "adopt",
+      "description": "RAG combines language models with external knowledge retrieval, enabling accurate, context-aware responses grounded in specific data sources.",
+      "trend": "up",
+      "confidence": 0.92,
+      "updatedAt": "2025-01-15T00:00:00Z",
+      "moved": 0,
+      "whyThisRing": "RAG has the highest momentum (100.0) in the techniques lane and the highest maturity (82.2), indicating it's a proven technique ready for broad deployment. Its low risk profile (20.0) makes it a safe choice for production systems.",
+      "whyNow": "With AI adoption accelerating across industries, RAG provides a practical approach to ground LLM responses in organizational knowledge while maintaining accuracy and traceability. The combination of high momentum and maturity signals the technique has crossed the chasm into mainstream use.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
+    },
+    {
+      "id": "rust",
+      "name": "Rust",
+      "quadrant": "languages",
+      "ring": "adopt",
+      "description": "Rust is a systems programming language that guarantees memory safety without garbage collection. It offers performance comparable to C++ while eliminating common programming errors through its ownership model and borrow checker.",
+      "trend": "up",
+      "confidence": 0.9,
+      "updatedAt": "2025-01-15T00:00:00Z",
+      "moved": 0,
+      "whyThisRing": "Rust achieves perfect maturity (100.0) and momentum (100.0) with minimal risk (5.0). Its memory safety guarantees appeal to organizations building high-reliability systems.",
+      "whyNow": "Rust's adoption grows as major technology companies invest in its ecosystem for performance-critical components, and its inclusion in Linux kernel development signals industry acceptance.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
+    },
+    {
+      "id": "github-actions",
+      "name": "GitHub Actions",
+      "quadrant": "tools",
+      "ring": "adopt",
+      "description": "Integrated CI/CD platformnative to GitHub repositories, enabling automated build, test, and deployment workflows.",
+      "trend": "up",
+      "confidence": 0.9,
+      "updatedAt": "2025-01-15T00:00:00Z",
+      "moved": 0,
+      "whyThisRing": "GitHub Actions is the default choice for teams already using GitHub. It eliminates the need for external CI/CD providers and integrates seamlessly with repository workflows.",
+      "whyNow": "With GitHub's market dominance, Actions has become the path of least resistance for CI/CD. The ecosystem of actions and marketplace makes it the pragmatic choice for most teams.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
+    },
+    {
+      "id": "platform-engineering",
+      "name": "Platform Engineering",
+      "quadrant": "techniques",
+      "ring": "adopt",
+      "description": "Platform engineering builds internal developer platforms that provide self-service capabilities, standardizing infrastructure and accelerating delivery cycles.",
+      "trend": "stable",
+      "confidence": 0.88,
+      "updatedAt": "2025-01-15T00:00:00Z",
+      "moved": 0,
+      "whyThisRing": "With 72% adoption, platform engineering has achieved widespread recognition as a core DevOps practice. The moderate risk (30.0) and established maturity (58.6) indicate it's a reliable technique for organizations scaling their engineering operations.",
+      "whyNow": "As organizations mature in their DevOps journey, the need for standardized, self-service developer platforms has become critical for reducing cognitive load and speeding up onboarding. The steady momentum reflects growing recognition that platform engineering is essential, not optional.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
+    },
+    {
+      "id": "fastapi",
+      "name": "FastAPI",
+      "quadrant": "tools",
+      "ring": "trial",
+      "description": "Modern Python web framework built on Starlette for ASGI apps, with automatic OpenAPI documentation and Pydantic validation.",
+      "trend": "up",
+      "confidence": 0.85,
+      "updatedAt": "2025-01-15T00:00:00Z",
+      "moved": 0,
+      "whyThisRing": "FastAPI shows the highest Python adoption (84%) with strong momentum (96), signaling rapid ecosystem transition from Django/Flask. Its async-first design aligns with modern Python patterns.",
+      "whyNow": "FastAPI is displacing Django as Python's framework of choice for new projects. Growing enterprise adoption but still proving scale in production across largest organizations.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
+    },
+    {
+      "id": "playwright",
+      "name": "Playwright",
+      "quadrant": "tools",
+      "ring": "trial",
+      "description": "Microsoft-developed end-to-end testing framework supporting multiple browsers with modern APIs for reliable web application testing.",
+      "trend": "up",
+      "confidence": 0.85,
+      "updatedAt": "2025-01-15T00:00:00Z",
+      "moved": 0,
+      "whyThisRing": "Playwright represents a modern approach to testing that addresses longstanding pain points in browser automation. Its cross-browser support and reliability outperform predecessors.",
+      "whyNow": "Cypress dominance in testing is being challenged by Playwright's superior cross-browser capabilities and Microsoft backing. Teams evaluating testing frameworks should trial Playwright.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
+    },
+    {
+      "id": "gitops",
+      "name": "GitOps",
+      "quadrant": "techniques",
+      "ring": "adopt",
+      "description": "GitOps uses Git as the single source of truth for infrastructure and application state, enabling declarative management and auditability of deployments.",
+      "trend": "stable",
+      "confidence": 0.85,
+      "updatedAt": "2025-01-15T00:00:00Z",
+      "moved": 0,
+      "whyThisRing": "GitOps has reached 72% adoption with solid maturity (58.6), making it a proven approach for infrastructure management. The technique has transitioned from emerging trend to established practice.",
+      "whyNow": "Organizations increasingly need audit trails, reproducibility, and version-controlled infrastructure. GitOps provides these guarantees while simplifying rollback and compliance. The consistent momentum reflects its value in production environments.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
+    },
+    {
+      "id": "ai-assisted-development",
+      "name": "AI-Assisted Development",
       "quadrant": "techniques",
       "ring": "trial",
-      "description": "All Algorithms implemented in Python",
+      "description": "AI-assisted development leverages large language models and code generation tools to augment developer productivity and code quality.",
+      "trend": "up",
+      "confidence": 0.78,
+      "updatedAt": "2025-01-15T00:00:00Z",
       "moved": 0,
-      "trend": "stable",
-      "marketScore": 73.89,
-      "signals": {
-        "ghMomentum": 99.24,
-        "ghPopularity": 98.91,
-        "hnHeat": 39.0
-      },
-      "sourceCoverage": 2,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github",
-          "hackernews"
-        ],
-        "metrics": [
-          "gh_momentum",
-          "gh_popularity",
-          "hn_heat"
-        ],
-        "hasExternalAdoption": false,
-        "githubOnly": false
-      },
-      "whyThisRing": "Trial because composite 73.9 shows momentum with corroborated signals across 2 sources.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 218412,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257334",
-      "canonicalId": "python",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "github",
-          "metric": "gh_momentum",
-          "subjectId": "github:python",
-          "rawValue": 99.24,
-          "normalizedValue": 99.24,
-          "observedAt": "2026-03-08T02:35:30.237978",
-          "freshnessDays": 1
-        },
-        {
-          "source": "github",
-          "metric": "gh_popularity",
-          "subjectId": "github:python",
-          "rawValue": 98.91,
-          "normalizedValue": 98.91,
-          "observedAt": "2026-03-08T02:35:30.237978",
-          "freshnessDays": 1
-        },
-        {
-          "source": "hackernews",
-          "metric": "hn_heat",
-          "subjectId": "hn:python",
-          "rawValue": 39.0,
-          "normalizedValue": 39.0,
-          "observedAt": "2026-03-08T02:35:30.237978",
-          "freshnessDays": 1
-        }
-      ]
+      "whyThisRing": "With 72% adoption and strong momentum, AI-assisted development is gaining traction but still evolving. The moderate maturity (58.6) and risk (30.0) suggest it's not yet a fully standardized practice across all organizations.",
+      "whyNow": "The rapid emergence of code generation tools and their integration into IDEs has created significant productivity gains, but best practices are still maturing. Organizations should experiment with these tools in controlled settings to develop internal guidelines.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
     },
     {
-      "id": "flutter",
-      "name": "flutter",
+      "id": "spring-boot",
+      "name": "Spring Boot",
       "quadrant": "tools",
       "ring": "assess",
-      "description": "Flutter makes it easy and fast to build beautiful apps for mobile and beyond",
+      "description": "Opinionated Java framework for building production-ready applications with auto-configuration and embedded servers.",
+      "trend": "down",
+      "confidence": 0.75,
+      "updatedAt": "2025-01-15T00:00:00Z",
       "moved": 0,
-      "trend": "stable",
-      "marketScore": 56.42,
-      "signals": {
-        "ghMomentum": 96.6,
-        "ghPopularity": 97.15,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 1,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github"
-        ],
-        "metrics": [
-          "gh_momentum",
-          "gh_popularity"
-        ],
-        "hasExternalAdoption": false,
-        "githubOnly": true
-      },
-      "whyThisRing": "Assess because composite 56.4 is promising but evidence depth is still limited.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 175466,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257339",
-      "canonicalId": "flutter",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "github",
-          "metric": "gh_momentum",
-          "subjectId": "github:flutter",
-          "rawValue": 96.6,
-          "normalizedValue": 96.6,
-          "observedAt": "2026-03-08T02:35:30.238448",
-          "freshnessDays": 1
-        },
-        {
-          "source": "github",
-          "metric": "gh_popularity",
-          "subjectId": "github:flutter",
-          "rawValue": 97.15,
-          "normalizedValue": 97.15,
-          "observedAt": "2026-03-08T02:35:30.238448",
-          "freshnessDays": 1
-        }
-      ]
+      "whyThisRing": "Spring Boot maintains solid enterprise adoption (72%) but shows declining momentum (72) compared to newer frameworks. Represents legacy enterprise choice rather than innovation frontier.",
+      "whyNow": "Enterprise Java shops continue standardizing on Spring, but modern alternatives (Quarkus, Micronaut) challenge its heavyweight nature. Evaluate only for JVM ecosystems with existing Spring investment.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
     },
     {
-      "id": "stable-diffusion-webui",
-      "name": "stable-diffusion-webui",
+      "id": "cursor",
+      "name": "Cursor",
       "quadrant": "tools",
-      "ring": "assess",
-      "description": "Stable Diffusion web UI",
+      "ring": "trial",
+      "description": "AI-first code editor built on VS Code with integrated LLM capabilities for intelligent code completion, generation, and refactoring.",
+      "trend": "up",
+      "confidence": 0.75,
+      "updatedAt": "2025-01-15T00:00:00Z",
       "moved": 0,
+      "whyThisRing": "Cursor represents a paradigm shift in developer tooling. While adoption is still growing, its momentum and maturity suggest it's ready for serious evaluation.",
+      "whyNow": "AI coding assistants are moving from novelty to productivity necessity. Cursor's highest momentum score and rapid maturity growth warrant teams to trial it alongside their existing editor.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
+    },
+    {
+      "id": "vercel",
+      "name": "Vercel",
+      "quadrant": "platforms",
+      "ring": "trial",
+      "description": "A cloud platform for static site hosting and serverless functions, optimized for frontend frameworks like Next.js with seamless CI/CD integration and edge deployment capabilities.",
+      "trend": "up",
+      "confidence": 0.75,
+      "updatedAt": "2025-01-15T00:00:00Z",
+      "moved": 0,
+      "whyThisRing": "Vercel represents the modern approach to frontend deployment, combining platform-as-a-service simplicity with edge computing capabilities that traditional PaaS offerings lack.",
+      "whyNow": "Frontend deployment has evolved beyond simple static hosting. Vercel's integrated developer experience and growing market presence make it the right time to trial this platform for new web projects.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
+    },
+    {
+      "id": "contract-testing",
+      "name": "Contract Testing",
+      "quadrant": "techniques",
+      "ring": "assess",
+      "description": "Contract testing verifies service APIs against predefined specifications, ensuring compatibility between microservices without requiring end-to-end integration.",
       "trend": "stable",
-      "marketScore": 56.04,
-      "signals": {
-        "ghMomentum": 96.14,
-        "ghPopularity": 96.49,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 1,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github"
-        ],
-        "metrics": [
-          "gh_momentum",
-          "gh_popularity"
-        ],
-        "hasExternalAdoption": false,
-        "githubOnly": true
-      },
-      "whyThisRing": "Assess because composite 56.0 is promising but evidence depth is still limited.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 161550,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257345",
-      "canonicalId": "stable-diffusion-webui",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "github",
-          "metric": "gh_momentum",
-          "subjectId": "github:stable-diffusion-webui",
-          "rawValue": 96.14,
-          "normalizedValue": 96.14,
-          "observedAt": "2026-03-08T02:35:30.238467",
-          "freshnessDays": 1
-        },
-        {
-          "source": "github",
-          "metric": "gh_popularity",
-          "subjectId": "github:stable-diffusion-webui",
-          "rawValue": 96.49,
-          "normalizedValue": 96.49,
-          "observedAt": "2026-03-08T02:35:30.238467",
-          "freshnessDays": 1
-        }
-      ]
+      "confidence": 0.72,
+      "updatedAt": "2025-01-15T00:00:00Z",
+      "moved": 0,
+      "whyThisRing": "While contract testing shows good adoption (72%), it remains more specialized compared to other techniques in this lane. Its moderate maturity (58.6) and risk (30.0) reflect a technique that works well in specific contexts but hasn't achieved universal adoption.",
+      "whyNow": "In microservices architectures, contract testing offers a pragmatic way to validate integration points without expensive end-to-end test runs. However, teams should assess whether their architecture and testing maturity justify the investment. The technique is particularly valuable for organizations with complex service meshes.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
+    },
+    {
+      "id": "cloudflare",
+      "name": "Cloudflare",
+      "quadrant": "platforms",
+      "ring": "assess",
+      "description": "Edge computing platform providing CDN, serverless functions, and zero-trust security, enabling developers to run code closer to users with global infrastructure.",
+      "trend": "up",
+      "confidence": 0.7,
+      "updatedAt": "2025-01-15T00:00:00Z",
+      "moved": 0,
+      "whyThisRing": "Cloudflare Workers represents the next evolution of edge computing, allowing code execution at the network edge with minimal latency and global distribution.",
+      "whyNow": "Edge computing is maturing rapidly as organizations seek to reduce latency and improve global performance. Cloudflare's expanding platform capabilities warrant assessment for modern application architectures.",
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": [],
+      "signals": {},
+      "evidence": []
     }
   ],
   "watchlist": [
     {
-      "id": "openclaw",
-      "name": "openclaw",
+      "id": "java",
+      "name": "Java",
+      "quadrant": "languages",
+      "ring": "assess",
+      "description": "Slightly elevated risk profile (15.0) compared to alternatives and marginally lower maturity (95.8). While still widely adopted in enterprise contexts, newer language options provide equivalent capability with better risk characteristics.",
+      "trend": "new",
+      "confidence": 0.55,
+      "updatedAt": "2026-03-11",
+      "marketScore": 86.01,
+      "whyThisRing": "Watchlist because it is relevant but did not make the lane cut this cycle.",
+      "entityType": "language",
+      "canonicalId": "java",
+      "owner": "Radar editorial review",
+      "nextStep": "Re-check signal breadth and team relevance next quarter.",
+      "nextReviewAt": "2026-06-09",
+      "moved": 0,
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": []
+    },
+    {
+      "id": "django",
+      "name": "Django",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "Mature but stagnant with declining momentum. Losing mindshare to FastAPI in Python ecosystem. Better served by trialing FastAPI for new projects.",
+      "trend": "new",
+      "confidence": 0.55,
+      "updatedAt": "2026-03-11",
+      "marketScore": 0.0,
+      "whyThisRing": "Watchlist because it is relevant but did not make the lane cut this cycle.",
+      "entityType": "framework",
+      "canonicalId": "django",
+      "owner": "Radar editorial review",
+      "nextStep": "Re-check signal breadth and team relevance next quarter.",
+      "nextReviewAt": "2026-06-09",
+      "moved": 0,
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": []
+    },
+    {
+      "id": "terraform",
+      "name": "Terraform",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "Infrastructure-as-code space is shifting toward cloud-native solutions (AWS CDK, Pulumi, Azure Bicep). Terraform's aging architecture and HashiCorp licensing changes reduce its long-term appeal. Consider evaluating cloud-native alternatives.",
+      "trend": "new",
+      "confidence": 0.55,
+      "updatedAt": "2026-03-11",
+      "marketScore": 62.2,
+      "whyThisRing": "Watchlist because it is relevant but did not make the lane cut this cycle.",
+      "entityType": "tool",
+      "canonicalId": "terraform",
+      "owner": "Radar editorial review",
+      "nextStep": "Re-check signal breadth and team relevance next quarter.",
+      "nextReviewAt": "2026-06-09",
+      "moved": 0,
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": []
+    },
+    {
+      "id": "aws",
+      "name": "AWS",
       "quadrant": "platforms",
       "ring": "assess",
-      "description": "Your own personal AI assistant. Any OS. Any Platform. The lobster way. 🦞 ",
+      "description": "While dominant in cloud infrastructure, AWS represents legacy IaaS rather than the application platforms this lane focuses on. Its monolithic service model contrasts with modern cloud-native platform approaches.",
+      "trend": "new",
+      "confidence": 0.55,
+      "updatedAt": "2026-03-11",
+      "marketScore": 58.6,
+      "whyThisRing": "Watchlist because it is relevant but did not make the lane cut this cycle.",
+      "entityType": "platform",
+      "canonicalId": "aws",
+      "owner": "Radar editorial review",
+      "nextStep": "Re-check signal breadth and team relevance next quarter.",
+      "nextReviewAt": "2026-06-09",
       "moved": 0,
-      "trend": "stable",
-      "marketScore": 58.75,
-      "signals": {
-        "ghMomentum": 100.0,
-        "ghPopularity": 100.0,
-        "hnHeat": 0.0
-      },
-      "sourceCoverage": 1,
-      "sourceFreshness": {
-        "freshestDays": 1,
-        "stalestDays": 1
-      },
-      "evidenceSummary": {
-        "sources": [
-          "github"
-        ],
-        "metrics": [
-          "gh_momentum",
-          "gh_popularity"
-        ],
-        "hasExternalAdoption": false,
-        "githubOnly": true
-      },
-      "whyThisRing": "Assess because composite 58.8 is promising but evidence depth is still limited.",
-      "editorialStatus": "clean",
-      "editorialFlags": [],
-      "stars": 275762,
-      "confidence": 0.5,
-      "isDeprecated": false,
-      "replacement": null,
-      "updatedAt": "2026-03-08T02:35:30.257353",
-      "canonicalId": "openclaw",
-      "entityType": "technology",
-      "evidence": [
-        {
-          "source": "github",
-          "metric": "gh_momentum",
-          "subjectId": "github:openclaw",
-          "rawValue": 100.0,
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-08T02:35:30.249463",
-          "freshnessDays": 1
-        },
-        {
-          "source": "github",
-          "metric": "gh_popularity",
-          "subjectId": "github:openclaw",
-          "rawValue": 100.0,
-          "normalizedValue": 100.0,
-          "observedAt": "2026-03-08T02:35:30.249463",
-          "freshnessDays": 1
-        }
-      ]
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": []
+    },
+    {
+      "id": "postgresql",
+      "name": "PostgreSQL",
+      "quadrant": "platforms",
+      "ring": "assess",
+      "description": "PostgreSQL is a database engine, not a platform. It belongs in the data layer rather than platforms lane which covers application deployment and orchestration platforms.",
+      "trend": "new",
+      "confidence": 0.55,
+      "updatedAt": "2026-03-11",
+      "marketScore": 62.2,
+      "whyThisRing": "Watchlist because it is relevant but did not make the lane cut this cycle.",
+      "entityType": "platform",
+      "canonicalId": "postgresql",
+      "owner": "Radar editorial review",
+      "nextStep": "Re-check signal breadth and team relevance next quarter.",
+      "nextReviewAt": "2026-06-09",
+      "moved": 0,
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": []
     }
   ],
   "meta": {
     "pipeline": {
-      "droppedInvalidDescriptions": 0,
-      "repairedDescriptions": 0,
-      "rejectedByStage": {
-        "insufficientSources": 0,
-        "qualityGate": 17,
-        "aiFilter": 16
-      },
-      "runMetrics": {
-        "sources": {
-          "github_trending": {
-            "records": 150,
-            "durationSeconds": 7.201,
-            "failures": 0
-          },
-          "hackernews": {
-            "records": 128,
-            "durationSeconds": 59.6143,
-            "failures": 0
-          },
-          "pypistats": {
-            "records": 9,
-            "durationSeconds": 0.0,
-            "failures": 0
-          },
-          "deps_dev": {
-            "records": 24,
-            "durationSeconds": 0.0,
-            "failures": 0
-          },
-          "osv": {
-            "records": 12,
-            "durationSeconds": 0.3357,
-            "failures": 0
-          }
-        }
-      },
-      "ringDistribution": {
-        "adopt": 6,
-        "trial": 7,
-        "assess": 8,
-        "hold": 1
-      },
-      "ringFillStatus": {
-        "adopt": {
-          "actual": 6,
-          "target": 10,
-          "max": 15,
-          "underfilled": true
-        },
-        "trial": {
-          "actual": 7,
-          "target": 10,
-          "max": 15,
-          "underfilled": true
-        },
-        "assess": {
-          "actual": 8,
-          "target": 10,
-          "max": 15,
-          "underfilled": true
-        },
-        "hold": {
-          "actual": 1,
-          "target": 10,
-          "max": 15,
-          "underfilled": true
-        }
-      },
-      "underfilledRings": [
-        "adopt",
-        "trial",
-        "assess",
-        "hold"
-      ],
-      "ringQuality": {
-        "adopt": {
-          "count": 6,
-          "avgMarketScore": 82.56,
-          "githubOnlyRatio": 0.0,
-          "resourceLikeCount": 0,
-          "editoriallyWeakCount": 0,
-          "topSuspicious": [],
-          "status": "good"
-        },
-        "trial": {
-          "count": 7,
-          "avgMarketScore": 75.35,
-          "githubOnlyRatio": 0.0,
-          "resourceLikeCount": 0,
-          "editoriallyWeakCount": 0,
-          "topSuspicious": [],
-          "status": "good"
-        },
-        "assess": {
-          "count": 8,
-          "avgMarketScore": 57.15,
-          "githubOnlyRatio": 1.0,
-          "resourceLikeCount": 0,
-          "editoriallyWeakCount": 0,
-          "topSuspicious": [
-            {
-              "id": "linux",
-              "name": "linux",
-              "marketScore": 58.28,
-              "reasons": [
-                "githubOnly"
-              ]
-            },
-            {
-              "id": "tensorflow",
-              "name": "tensorflow",
-              "marketScore": 57.83,
-              "reasons": [
-                "githubOnly"
-              ]
-            },
-            {
-              "id": "bootstrap",
-              "name": "bootstrap",
-              "marketScore": 57.38,
-              "reasons": [
-                "githubOnly"
-              ]
-            },
-            {
-              "id": "n8n",
-              "name": "n8n",
-              "marketScore": 57.2,
-              "reasons": [
-                "githubOnly"
-              ]
-            },
-            {
-              "id": "autogpt",
-              "name": "AutoGPT",
-              "marketScore": 57.13,
-              "reasons": [
-                "githubOnly"
-              ]
-            }
-          ],
-          "status": "warn"
-        },
-        "hold": {
-          "count": 1,
-          "avgMarketScore": 75.46,
-          "githubOnlyRatio": 0.0,
-          "resourceLikeCount": 0,
-          "editoriallyWeakCount": 0,
-          "topSuspicious": [],
-          "status": "good"
-        }
-      },
-      "quadrantQuality": {
-        "platforms": {
-          "count": 3,
-          "avgMarketScore": 70.95,
-          "githubOnlyRatio": 0.3333,
-          "resourceLikeCount": 0,
-          "editoriallyWeakCount": 0,
-          "topSuspicious": [
-            {
-              "id": "linux",
-              "name": "linux",
-              "marketScore": 58.28,
-              "reasons": [
-                "githubOnly"
-              ]
-            }
-          ],
-          "status": "good"
-        },
-        "techniques": {
-          "count": 2,
-          "avgMarketScore": 78.11,
-          "githubOnlyRatio": 0.0,
-          "resourceLikeCount": 0,
-          "editoriallyWeakCount": 0,
-          "topSuspicious": [],
-          "status": "good"
-        },
-        "tools": {
-          "count": 15,
-          "avgMarketScore": 68.03,
-          "githubOnlyRatio": 0.4667,
-          "resourceLikeCount": 0,
-          "editoriallyWeakCount": 0,
-          "topSuspicious": [
-            {
-              "id": "tensorflow",
-              "name": "tensorflow",
-              "marketScore": 57.83,
-              "reasons": [
-                "githubOnly"
-              ]
-            },
-            {
-              "id": "bootstrap",
-              "name": "bootstrap",
-              "marketScore": 57.38,
-              "reasons": [
-                "githubOnly"
-              ]
-            },
-            {
-              "id": "n8n",
-              "name": "n8n",
-              "marketScore": 57.2,
-              "reasons": [
-                "githubOnly"
-              ]
-            },
-            {
-              "id": "autogpt",
-              "name": "AutoGPT",
-              "marketScore": 57.13,
-              "reasons": [
-                "githubOnly"
-              ]
-            },
-            {
-              "id": "vscode",
-              "name": "vscode",
-              "marketScore": 56.89,
-              "reasons": [
-                "githubOnly"
-              ]
-            }
-          ],
-          "status": "good"
-        },
-        "languages": {
-          "count": 2,
-          "avgMarketScore": 83.0,
-          "githubOnlyRatio": 0.0,
-          "resourceLikeCount": 0,
-          "editoriallyWeakCount": 0,
-          "topSuspicious": [],
-          "status": "good"
-        }
-      },
-      "quadrantRingQuality": {
-        "platforms": {
-          "adopt": {
-            "count": 1,
-            "avgMarketScore": 82.81,
-            "githubOnlyRatio": 0.0,
-            "resourceLikeCount": 0,
-            "editoriallyWeakCount": 0,
-            "topSuspicious": [],
-            "status": "good"
-          },
-          "trial": {
-            "count": 1,
-            "avgMarketScore": 71.75,
-            "githubOnlyRatio": 0.0,
-            "resourceLikeCount": 0,
-            "editoriallyWeakCount": 0,
-            "topSuspicious": [],
-            "status": "good"
-          },
-          "assess": {
-            "count": 1,
-            "avgMarketScore": 58.28,
-            "githubOnlyRatio": 1.0,
-            "resourceLikeCount": 0,
-            "editoriallyWeakCount": 0,
-            "topSuspicious": [
-              {
-                "id": "linux",
-                "name": "linux",
-                "marketScore": 58.28,
-                "reasons": [
-                  "githubOnly"
-                ]
-              }
-            ],
-            "status": "warn"
-          },
-          "hold": {
-            "count": 0,
-            "avgMarketScore": 0.0,
-            "githubOnlyRatio": 0.0,
-            "resourceLikeCount": 0,
-            "editoriallyWeakCount": 0,
-            "topSuspicious": [],
-            "status": "missing"
-          }
-        },
-        "techniques": {
-          "adopt": {
-            "count": 1,
-            "avgMarketScore": 82.33,
-            "githubOnlyRatio": 0.0,
-            "resourceLikeCount": 0,
-            "editoriallyWeakCount": 0,
-            "topSuspicious": [],
-            "status": "good"
-          },
-          "trial": {
-            "count": 1,
-            "avgMarketScore": 73.89,
-            "githubOnlyRatio": 0.0,
-            "resourceLikeCount": 0,
-            "editoriallyWeakCount": 0,
-            "topSuspicious": [],
-            "status": "good"
-          },
-          "assess": {
-            "count": 0,
-            "avgMarketScore": 0.0,
-            "githubOnlyRatio": 0.0,
-            "resourceLikeCount": 0,
-            "editoriallyWeakCount": 0,
-            "topSuspicious": [],
-            "status": "missing"
-          },
-          "hold": {
-            "count": 0,
-            "avgMarketScore": 0.0,
-            "githubOnlyRatio": 0.0,
-            "resourceLikeCount": 0,
-            "editoriallyWeakCount": 0,
-            "topSuspicious": [],
-            "status": "missing"
-          }
-        },
-        "tools": {
-          "adopt": {
-            "count": 4,
-            "avgMarketScore": 82.56,
-            "githubOnlyRatio": 0.0,
-            "resourceLikeCount": 0,
-            "editoriallyWeakCount": 0,
-            "topSuspicious": [],
-            "status": "good"
-          },
-          "trial": {
-            "count": 3,
-            "avgMarketScore": 71.95,
-            "githubOnlyRatio": 0.0,
-            "resourceLikeCount": 0,
-            "editoriallyWeakCount": 0,
-            "topSuspicious": [],
-            "status": "good"
-          },
-          "assess": {
-            "count": 7,
-            "avgMarketScore": 56.98,
-            "githubOnlyRatio": 1.0,
-            "resourceLikeCount": 0,
-            "editoriallyWeakCount": 0,
-            "topSuspicious": [
-              {
-                "id": "tensorflow",
-                "name": "tensorflow",
-                "marketScore": 57.83,
-                "reasons": [
-                  "githubOnly"
-                ]
-              },
-              {
-                "id": "bootstrap",
-                "name": "bootstrap",
-                "marketScore": 57.38,
-                "reasons": [
-                  "githubOnly"
-                ]
-              },
-              {
-                "id": "n8n",
-                "name": "n8n",
-                "marketScore": 57.2,
-                "reasons": [
-                  "githubOnly"
-                ]
-              },
-              {
-                "id": "autogpt",
-                "name": "AutoGPT",
-                "marketScore": 57.13,
-                "reasons": [
-                  "githubOnly"
-                ]
-              },
-              {
-                "id": "vscode",
-                "name": "vscode",
-                "marketScore": 56.89,
-                "reasons": [
-                  "githubOnly"
-                ]
-              }
-            ],
-            "status": "warn"
-          },
-          "hold": {
-            "count": 1,
-            "avgMarketScore": 75.46,
-            "githubOnlyRatio": 0.0,
-            "resourceLikeCount": 0,
-            "editoriallyWeakCount": 0,
-            "topSuspicious": [],
-            "status": "good"
-          }
-        },
-        "languages": {
-          "adopt": {
-            "count": 0,
-            "avgMarketScore": 0.0,
-            "githubOnlyRatio": 0.0,
-            "resourceLikeCount": 0,
-            "editoriallyWeakCount": 0,
-            "topSuspicious": [],
-            "status": "missing"
-          },
-          "trial": {
-            "count": 2,
-            "avgMarketScore": 83.0,
-            "githubOnlyRatio": 0.0,
-            "resourceLikeCount": 0,
-            "editoriallyWeakCount": 0,
-            "topSuspicious": [],
-            "status": "good"
-          },
-          "assess": {
-            "count": 0,
-            "avgMarketScore": 0.0,
-            "githubOnlyRatio": 0.0,
-            "resourceLikeCount": 0,
-            "editoriallyWeakCount": 0,
-            "topSuspicious": [],
-            "status": "missing"
-          },
-          "hold": {
-            "count": 0,
-            "avgMarketScore": 0.0,
-            "githubOnlyRatio": 0.0,
-            "resourceLikeCount": 0,
-            "editoriallyWeakCount": 0,
-            "topSuspicious": [],
-            "status": "missing"
-          }
-        }
-      },
-      "topAdded": [],
-      "topDropped": [],
-      "collected": 162,
-      "normalized": 162,
-      "candidatesCore": 1,
-      "candidatesWatchlist": 0,
-      "candidatesBorderline": 39,
-      "classified": 40,
-      "llmCalls": 7,
-      "qualified": 23,
-      "output": 22,
-      "watchlist": 1
-    },
-    "shadowGate": {
-      "status": "warn",
-      "coreOverlap": 1.0,
-      "leaderCoverage": 1.0,
-      "watchlistRecall": 1.0,
-      "llmCallReduction": 0.825,
-      "filteredCount": 0,
-      "addedCount": 0,
-      "filteredByRing": {},
-      "filteredSample": [],
-      "nextAction": "improve-source-coverage",
-      "leaderTransitionSummary": {
-        "candidateCount": 0,
-        "promotedCount": 0
-      },
-      "leaderState": {
-        "stableLeaders": [
-          "go",
-          "langchain",
-          "transformers",
-          "typescript",
-          "yt-dlp"
-        ],
-        "candidateChanges": {},
-        "promotedChanges": [],
-        "lastRunId": "2026-03-08T02:35:30.331044",
-        "promotionRuns": 3
-      },
-      "candidateChanges": {}
+      "collected": 88,
+      "qualified": 20,
+      "output": 20,
+      "watchlist": 5
     }
   }
 }
