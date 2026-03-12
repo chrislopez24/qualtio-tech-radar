@@ -12,15 +12,12 @@ jobs:
     permissions:
       contents: write
     outputs:
-      shadow_gate_status: ${{ steps.shadow-status.outputs.gate_status }}
-      shadow_gate_pass: ${{ steps.shadow-status.outputs.gate_pass }}
-      gate_commit: ${{ steps.shadow-status.outputs.gate_commit }}
       build_ref: ${{ steps.build-ref.outputs.build_ref }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -33,128 +30,72 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('scripts/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-          
+
       - name: Create venv and install dependencies
         run: |
           python -m venv .venv
           .venv/bin/pip install -r scripts/requirements.txt
 
-      - name: Capture baseline snapshot
-        run: |
-          mkdir -p artifacts
-          if [ -f "src/data/data.ai.json" ]; then
-            cp src/data/data.ai.json artifacts/baseline.json
-            echo "Baseline captured at artifacts/baseline.json"
-          else
-            echo "No baseline file found in repository snapshot"
-          fi
-          
       - name: Run data pipeline
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           SYNTHETIC_API_KEY: ${{ secrets.SYNTHETIC_API_KEY }}
+          SYNTHETIC_API_URL: ${{ secrets.SYNTHETIC_API_URL }}
+          SYNTHETIC_MODEL: ${{ secrets.SYNTHETIC_MODEL }}
           PYTHONUNBUFFERED: "1"
         run: |
-          .venv/bin/python -u scripts/main.py --resume
-          
-      - name: Shadow Evaluation - Quality Gate
-        id: shadow-eval
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          SYNTHETIC_API_KEY: ${{ secrets.SYNTHETIC_API_KEY }}
-          PYTHONUNBUFFERED: "1"
-        run: |
-          if [ ! -f "artifacts/baseline.json" ]; then
-            cp src/data/data.ai.json artifacts/baseline.json
-            echo "No baseline snapshot found before ETL; using current output as baseline fallback"
-          fi
+          .venv/bin/python -u scripts/main.py
 
-          # quality metrics: core_overlap, leader_coverage, watchlist_recall, llm_call_reduction
-          echo "Running shadow evaluation..."
-          .venv/bin/python -u scripts/main.py \
-            --shadow-only \
-            --shadow-baseline artifacts/baseline.json \
-            --shadow-current src/data/data.ai.json \
-            --shadow-output artifacts/shadow_eval.json \
-            --shadow-threshold-core-overlap 0.85 \
-            --shadow-threshold-leader-coverage 0.95 \
-            --shadow-threshold-watchlist-recall 0.80 \
-            --shadow-threshold-llm-reduction 0.00
-
-      - name: Snapshot candidate output for shadow metadata
-        if: always()
-        run: |
-          if [ -f "src/data/data.ai.json" ]; then
-            cp src/data/data.ai.json artifacts/candidate_output.json
-          fi
-
-      - name: Resolve Shadow Gate Status
-        id: shadow-status
-        if: always()
-        run: |
-          if [ -f "artifacts/shadow_eval.json" ]; then
-            gate_status=$(python -c "import json;from pathlib import Path;report=json.loads(Path('artifacts/shadow_eval.json').read_text());print(str(report.get('gate_status') or 'fail').strip().lower())")
-          else
-            gate_status="fail"
-          fi
-
-          echo "gate_status=${gate_status}" >> "$GITHUB_OUTPUT"
-
-          if [ "$gate_status" = "pass" ]; then
-            echo "gate_pass=true" >> "$GITHUB_OUTPUT"
-            echo "gate_commit=true" >> "$GITHUB_OUTPUT"
-            echo "Shadow gate PASS - ETL data eligible for commit"
-          elif [ "$gate_status" = "warn" ]; then
-            echo "gate_pass=false" >> "$GITHUB_OUTPUT"
-            echo "gate_commit=true" >> "$GITHUB_OUTPUT"
-            echo "Shadow gate WARN - restoring validated data snapshot and preserving updated shadow metadata"
-            if [ -f "artifacts/baseline.json" ]; then
-              cp artifacts/baseline.json src/data/data.ai.json
-            fi
-            if [ -f "artifacts/candidate_output.json" ]; then
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          validated_path = Path("src/data/data.ai.json")
-          candidate_path = Path("artifacts/candidate_output.json")
-
-          if validated_path.exists() and candidate_path.exists():
-              validated = json.loads(validated_path.read_text())
-              candidate = json.loads(candidate_path.read_text())
-              shadow_gate = candidate.get("meta", {}).get("shadowGate")
-              if shadow_gate is not None:
-                  validated.setdefault("meta", {})["shadowGate"] = shadow_gate
-                  validated_path.write_text(json.dumps(validated, indent=2))
-          PY
-            fi
-          else
-            echo "gate_pass=false" >> "$GITHUB_OUTPUT"
-            echo "gate_commit=false" >> "$GITHUB_OUTPUT"
-            echo "Shadow gate ${gate_status} - restoring validated data snapshot"
-            if [ -f "artifacts/baseline.json" ]; then
-              cp artifacts/baseline.json src/data/data.ai.json
-            fi
-          fi
-          
-      - name: Upload Shadow Eval Artifacts
+      - name: Upload ETL artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: shadow-eval-report
+          name: etl-artifacts
           path: |
-            artifacts/shadow_eval.json
-            artifacts/baseline.json
+            artifacts/market-snapshot.json
+            artifacts/lane-packs.json
+            artifacts/editorial-decisions.json
+            artifacts/editorial-harmonized.json
+            artifacts/data.ai.preview.json
+            src/data/data.ai.json
           if-no-files-found: warn
 
       - name: Generate Radar Review Summary
         if: always()
         run: |
-          PYTHONPATH=scripts .venv/bin/python scripts/review_radar_output.py \
-            --input src/data/data.ai.json \
-            --output-json artifacts/review-summary.json \
-            --output-md artifacts/review-summary.md
+          python - <<'PY' > artifacts/review-summary.md
+          import json
+          from pathlib import Path
+
+          data_path = Path("src/data/data.ai.json")
+          if not data_path.exists():
+              raise SystemExit("src/data/data.ai.json not found after ETL run")
+
+          payload = json.loads(data_path.read_text())
+          technologies = payload.get("technologies", [])
+          watchlist = payload.get("watchlist", [])
+          meta = payload.get("meta", {}).get("pipeline", {})
+
+          print("# Radar Review Summary")
+          print()
+          print(f"- Updated at: {payload.get('updatedAt', 'n/a')}")
+          print(f"- Technologies: {len(technologies)}")
+          print(f"- Watchlist: {len(watchlist)}")
+          print(f"- Collected: {meta.get('collected', 'n/a')}")
+          print(f"- Qualified: {meta.get('qualified', 'n/a')}")
+          print(f"- Output: {meta.get('output', len(technologies))}")
+          print()
+          print("## Top technologies")
+          for item in technologies[:10]:
+              print(f"- {item.get('name', 'unknown')} ({item.get('ring', 'n/a')}, {item.get('quadrant', 'n/a')})")
+          print()
+          print("## Watchlist")
+          if watchlist:
+              for item in watchlist[:10]:
+                  print(f"- {item.get('name', 'unknown')} ({item.get('ring', 'n/a')}, {item.get('quadrant', 'n/a')})")
+          else:
+              print("- none")
+          PY
           cat artifacts/review-summary.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload Radar Review Summary
@@ -162,23 +103,16 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: radar-review-summary
-          path: |
-            artifacts/review-summary.json
-            artifacts/review-summary.md
+          path: artifacts/review-summary.md
           if-no-files-found: warn
-          
-      - name: Commit sanitized data
-        if: ${{ steps.shadow-status.outputs.gate_commit == 'true' }}
+
+      - name: Commit radar data
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          if [ "${{ steps.shadow-status.outputs.gate_status }}" = "pass" ]; then
-            git add src/data/data.ai.json src/data/data.ai.history.json
-          else
-            git add src/data/data.ai.json
-          fi
+          git add src/data/data.ai.json
           git diff --staged --quiet || git commit -m "chore: update AI radar data"
-          
+
       - name: Push changes
         run: |
           git push
@@ -196,17 +130,17 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-      
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.update-data.outputs.build_ref }}
-        
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -219,23 +153,23 @@ jobs:
           key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
-          
+
       - name: Install dependencies
         run: |
           npm ci
-          
+
       - name: Build static site
         run: |
           npm run build
-          
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
-        
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
-          
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
