@@ -29,7 +29,7 @@ export function SearchBar({ value, onChange, placeholder = 'Search technologies.
     <div className="relative group">
       {/* Glow effect on focus */}
       <motion.div
-        className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-[#00d4ff]/20 to-[#ff006e]/20 opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 blur-sm"
+        className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-[#d96d1f]/22 via-[#f2ede2]/10 to-[#9d5a28]/18 opacity-0 blur-sm transition-opacity duration-500 group-focus-within:opacity-100"
       />
       
       <div className="relative flex items-center">
@@ -47,7 +47,7 @@ export function SearchBar({ value, onChange, placeholder = 'Search technologies.
           onChange={(e) => onChange(e.target.value)}
           className="w-full pl-11 pr-24 py-2.5 bg-bg-secondary/80 border border-border-subtle rounded-xl
                      text-sm text-white placeholder:text-text-tertiary
-                     focus:outline-none focus:border-accent-cyan/30 focus:bg-bg-tertiary
+                     focus:outline-none focus:border-accent-cyan/45 focus:bg-bg-tertiary
                      transition-all duration-300
                      font-body"
         />

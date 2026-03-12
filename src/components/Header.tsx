@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { GithubLogo, Compass } from '@phosphor-icons/react';
+import { GithubLogo } from '@phosphor-icons/react';
 import { AIIndicator } from './ModeToggle';
 import { SearchBar } from './SearchBar';
 import { SPRING_SMOOTH, SPRING_SNAPPY } from '@/lib/animation-constants';
@@ -23,40 +23,38 @@ export function Header({
       transition={SPRING_SMOOTH}
     >
       {/* Gradient Line */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-accent-cyan/50 to-transparent" />
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-accent-cyan/70 to-transparent" />
       
       {/* Header Content */}
       <div className="glass-panel border-b-0">
-        <div className="max-w-[1600px] mx-auto px-6 lg:px-8 py-4">
+        <div className="max-w-[1600px] mx-auto px-6 lg:px-8 py-3.5">
           <div className="flex items-center justify-between gap-6">
             {/* Logo Section */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <motion.div 
-                className="relative w-11 h-11 rounded-xl flex items-center justify-center overflow-hidden group"
+                className="relative flex items-center overflow-hidden rounded-xl border border-white/8 bg-white/[0.02] px-3 py-2 shadow-[0_0_0_1px_rgba(217,109,31,0.06)]"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
                 transition={SPRING_SNAPPY}
               >
-                {/* Background Glow */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#00d4ff] to-[#ff006e] opacity-80 group-hover:opacity-100 transition-opacity" />
-                
-                {/* Animated Border */}
-                <div className="absolute inset-0 rounded-xl border-2 border-white/20 group-hover:shadow-[0_0_20px_2px_rgba(0,212,255,0.3)] transition-shadow duration-300" />
-                
-                <Compass className="w-6 h-6 text-white relative z-10" weight="fill" />
+                <img
+                  src="/logo.png"
+                  alt="Qualtio"
+                  className="relative z-10 h-[28px] w-auto sm:h-[30px] lg:h-[32px]"
+                />
               </motion.div>
               
-              <div className="hidden sm:block">
+              <div className="hidden sm:block leading-none">
                 <motion.h1 
-                  className="font-display text-xl font-bold tracking-tight text-white"
+                  className="font-mono text-[11px] font-medium uppercase tracking-[0.28em] text-text-secondary"
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 }}
                 >
-                  <span className="text-glow-cyan">Q</span>ualtio
+                  Qualtio
                 </motion.h1>
                 <motion.p 
-                  className="text-xs font-mono text-text-tertiary uppercase tracking-widest"
+                  className="mt-1 text-[10px] font-mono text-accent-cyan uppercase tracking-[0.32em]"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
@@ -79,7 +77,7 @@ export function Header({
                 href="https://github.com/chrislopez24/qualtio-tech-radar"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-3 rounded-xl hover:bg-white/5 transition-colors spring-transition group"
+                className="rounded-xl p-3 transition-colors spring-transition group hover:bg-white/5"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 transition={SPRING_SNAPPY}

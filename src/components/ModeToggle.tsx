@@ -33,7 +33,7 @@ export function AIIndicator() {
       </span>
       
       {/* Status indicator */}
-      <div className="w-1.5 h-1.5 rounded-full bg-accent-cyan" />
+      <div className="w-1.5 h-1.5 rounded-full bg-accent-cyan shadow-[0_0_10px_rgba(217,109,31,0.35)]" />
     </motion.div>
   );
 }
