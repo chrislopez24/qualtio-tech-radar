@@ -35,18 +35,18 @@
   --color-text-tertiary: #8b8276;
 
   /* Corporate accents */
-  --color-accent-cyan: #d96d1f;
-  --color-accent-cyan-glow: rgba(217, 109, 31, 0.24);
+  --color-accent-cyan: #f97316;
+  --color-accent-cyan-glow: rgba(249, 115, 22, 0.24);
   --color-accent-amber: #f2ede2;
   --color-accent-amber-glow: rgba(242, 237, 226, 0.18);
-  --color-accent-coral: #9d5a28;
-  --color-accent-coral-glow: rgba(157, 90, 40, 0.2);
-  --color-accent-fuchsia: #665f56;
-  --color-accent-fuchsia-glow: rgba(102, 95, 86, 0.2);
+  --color-accent-coral: #c45a15;
+  --color-accent-coral-glow: rgba(196, 90, 21, 0.2);
+  --color-accent-fuchsia: #6b6259;
+  --color-accent-fuchsia-glow: rgba(107, 98, 89, 0.2);
   
   /* UI Colors */
   --color-border-subtle: rgba(255, 255, 255, 0.08);
-  --color-border-glow: rgba(0, 212, 255, 0.2);
+  --color-border-glow: rgba(249, 115, 22, 0.2);
   
   /* Shadcn overrides */
   --color-background: var(--color-bg-primary);
@@ -116,26 +116,26 @@
 
 /* Glassmorphism with Tech Noir Edge */
 .glass-panel {
-  background: rgba(15, 15, 15, 0.88);
+  background: linear-gradient(180deg, rgba(10, 10, 10, 0.94) 0%, rgba(15, 15, 15, 0.9) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(217, 109, 31, 0.12);
+  border: 1px solid rgba(249, 115, 22, 0.1);
   box-shadow: 
-    0 0 0 1px rgba(217, 109, 31, 0.05),
+    0 0 0 1px rgba(249, 115, 22, 0.04),
     0 25px 50px -12px rgba(0, 0, 0, 0.6);
 }
 
 .glass-panel:hover {
-  border-color: rgba(217, 109, 31, 0.22);
+  border-color: rgba(249, 115, 22, 0.18);
   box-shadow: 
-    0 0 0 1px rgba(217, 109, 31, 0.1),
+    0 0 0 1px rgba(249, 115, 22, 0.08),
     0 25px 50px -12px rgba(0, 0, 0, 0.6),
-    0 0 30px rgba(217, 109, 31, 0.08);
+    0 0 30px rgba(249, 115, 22, 0.07);
 }
 
 /* Electric Glow Effects */
 .glow-cyan {
-  box-shadow: 0 0 20px rgba(217, 109, 31, 0.34), 0 0 40px rgba(217, 109, 31, 0.18);
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.32), 0 0 40px rgba(249, 115, 22, 0.16);
 }
 
 .glow-amber {
@@ -151,7 +151,7 @@
 }
 
 .text-glow-cyan {
-  text-shadow: 0 0 20px rgba(217, 109, 31, 0.35);
+  text-shadow: 0 0 20px rgba(249, 115, 22, 0.35);
 }
 
 .text-glow-amber {
@@ -161,18 +161,18 @@
 /* Bento Card - Editorial Style */
 .bento-card {
   background: linear-gradient(145deg, rgba(13, 13, 13, 0.96) 0%, rgba(23, 23, 23, 0.96) 100%);
-  border: 1px solid rgba(217, 109, 31, 0.08);
+  border: 1px solid rgba(249, 115, 22, 0.08);
   border-radius: 1.25rem;
   box-shadow: 
-    0 0 0 1px rgba(217, 109, 31, 0.03),
+    0 0 0 1px rgba(249, 115, 22, 0.03),
     0 20px 40px -15px rgba(0, 0, 0, 0.5);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .bento-card:hover {
-  border-color: rgba(217, 109, 31, 0.16);
+  border-color: rgba(249, 115, 22, 0.14);
   box-shadow: 
-    0 0 0 1px rgba(217, 109, 31, 0.08),
+    0 0 0 1px rgba(249, 115, 22, 0.07),
     0 25px 50px -15px rgba(0, 0, 0, 0.58),
     inset 0 1px 0 rgba(255, 255, 255, 0.03);
   transform: translateY(-2px);
@@ -219,10 +219,10 @@
 /* Editorial Badge Styles */
 .badge-editorial {
   @apply inline-flex items-center gap-1.5 px-3 py-1 text-xs font-mono font-medium uppercase tracking-wider;
-  background: rgba(217, 109, 31, 0.1);
-  border: 1px solid rgba(217, 109, 31, 0.22);
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px solid rgba(249, 115, 22, 0.22);
   border-radius: 0.5rem;
-  color: #d96d1f;
+  color: #f97316;
 }
 
 .badge-editorial-amber {
@@ -256,7 +256,7 @@
   inset: 0;
   border-radius: 1.25rem;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(217, 109, 31, 0.24), rgba(242, 237, 226, 0.08), rgba(217, 109, 31, 0.08));
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.24), rgba(242, 237, 226, 0.08), rgba(249, 115, 22, 0.08));
   -webkit-mask: 
     linear-gradient(#fff 0 0) content-box, 
     linear-gradient(#fff 0 0);

@@ -34,9 +34,9 @@ export function Radar({
           className="w-full h-full"
           style={{
             backgroundImage: `
-              radial-gradient(circle at ${center}px ${center}px, rgba(217, 109, 31, 0.05) 0%, transparent 60%),
-              linear-gradient(rgba(217, 109, 31, 0.02) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(217, 109, 31, 0.02) 1px, transparent 1px)
+              radial-gradient(circle at ${center}px ${center}px, rgba(249, 115, 22, 0.06) 0%, rgba(99, 102, 241, 0.025) 42%, transparent 66%),
+              linear-gradient(rgba(249, 115, 22, 0.018) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(99, 102, 241, 0.018) 1px, transparent 1px)
             `,
             backgroundSize: '100% 100%, 60px 60px, 60px 60px',
           }}
@@ -63,8 +63,8 @@ export function Radar({
           
           {/* Radial Gradient for center glow */}
           <radialGradient id="radarCenterGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#d96d1f" stopOpacity={0.06} />
-            <stop offset="50%" stopColor="#d96d1f" stopOpacity={0.025} />
+            <stop offset="0%" stopColor="#f97316" stopOpacity={0.055} />
+            <stop offset="45%" stopColor="#6366f1" stopOpacity={0.02} />
             <stop offset="100%" stopColor="transparent" stopOpacity={0} />
           </radialGradient>
         </defs>

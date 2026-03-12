@@ -5,6 +5,7 @@ import { GithubLogo } from '@phosphor-icons/react';
 import { AIIndicator } from './ModeToggle';
 import { SearchBar } from './SearchBar';
 import { SPRING_SMOOTH, SPRING_SNAPPY } from '@/lib/animation-constants';
+import { getPublicAssetPath } from '@/lib/public-asset';
 
 interface HeaderProps {
   searchQuery: string;
@@ -15,6 +16,8 @@ export function Header({
   searchQuery, 
   onSearchChange 
 }: HeaderProps) {
+  const logoSrc = getPublicAssetPath('/logo.png');
+
   return (
     <motion.header 
       className="fixed top-0 left-0 right-0 z-50"
@@ -32,34 +35,34 @@ export function Header({
             {/* Logo Section */}
             <div className="flex items-center gap-3">
               <motion.div 
-                className="relative flex items-center overflow-hidden rounded-xl border border-white/8 bg-white/[0.02] px-3 py-2 shadow-[0_0_0_1px_rgba(217,109,31,0.06)]"
-                whileHover={{ scale: 1.05 }}
+                className="relative flex items-center overflow-hidden rounded-xl border border-[rgba(249,115,22,0.18)] bg-white/[0.02] px-3 py-2 shadow-[0_0_0_1px_rgba(249,115,22,0.06)]"
+                whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
                 transition={SPRING_SNAPPY}
               >
                 <img
-                  src="/logo.png"
+                  src={logoSrc}
                   alt="Qualtio"
-                  className="relative z-10 h-[28px] w-auto sm:h-[30px] lg:h-[32px]"
+                  className="relative z-10 h-[24px] w-auto sm:h-[28px] lg:h-[30px]"
                 />
               </motion.div>
               
               <div className="hidden sm:block leading-none">
-                <motion.h1 
-                  className="font-mono text-[11px] font-medium uppercase tracking-[0.28em] text-text-secondary"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 }}
-                >
-                  Qualtio
-                </motion.h1>
                 <motion.p 
-                  className="mt-1 text-[10px] font-mono text-accent-cyan uppercase tracking-[0.32em]"
+                  className="text-[11px] font-mono text-accent-cyan uppercase tracking-[0.34em]"
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.12 }}
+                >
+                  Tech Radar
+                </motion.p>
+                <motion.p
+                  className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-text-tertiary"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
                 >
-                  Tech Radar
+                  Editorial market snapshot
                 </motion.p>
               </div>
             </div>
