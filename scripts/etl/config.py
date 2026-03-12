@@ -134,12 +134,12 @@ class ScoringConfig(BaseModel):
 
 
 class DistributionConfig(BaseModel):
-    target_total: int = Field(ge=5, default=15)
+    target_total: int = Field(ge=5, default=75)
     min_per_quadrant: int = Field(ge=1, default=2)
-    max_per_quadrant: int = Field(ge=1, default=5)
+    max_per_quadrant: int = Field(ge=1, default=20)
     min_per_ring: int = Field(ge=0, default=1)
-    target_per_ring: int = Field(ge=0, default=10)
-    max_per_ring: int = Field(ge=0, default=15)
+    target_per_ring: int = Field(ge=0, default=18)
+    max_per_ring: int = Field(ge=0, default=24)
 
 
 class MinStarsConfig(BaseModel):

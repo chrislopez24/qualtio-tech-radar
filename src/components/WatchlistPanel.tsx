@@ -8,6 +8,7 @@ import { SourceCoverageBadge } from './SourceCoverageBadge';
 
 interface WatchlistPanelProps {
   watchlist: AITechnology[];
+  totalWatchlistCount?: number;
   meta?: AIRadarMeta;
   onSelectTechnology: (technology: AITechnology) => void;
 }
@@ -82,23 +83,36 @@ function formatRingMix(ringDistribution?: Record<string, number>) {
     .filter(({ count }) => count > 0);
 }
 
-export function WatchlistPanel({ watchlist, meta, onSelectTechnology }: WatchlistPanelProps) {
+export function WatchlistPanel({
+  watchlist,
+  totalWatchlistCount,
+  meta,
+  onSelectTechnology,
+}: WatchlistPanelProps) {
   const pipeline = meta?.pipeline;
   const shadow = meta?.shadowGate;
   const ringMix = formatRingMix(pipeline?.ringDistribution);
   const topAdded = pipeline?.topAdded ?? [];
   const topDropped = pipeline?.topDropped ?? [];
   const leaderTransitionSummary = shadow?.leaderTransitionSummary;
+  const totalItems = totalWatchlistCount ?? watchlist.length;
+  const hasFilteredWatchlist = totalItems > watchlist.length;
+  const watchlistCountLabel = hasFilteredWatchlist
+    ? `${watchlist.length} of ${totalItems} items`
+    : `${watchlist.length} items`;
+  const emptyMessage = hasFilteredWatchlist
+    ? 'No watchlist entries match current filters.'
+    : 'No watchlist entries in current run.';
 
   return (
     <section className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_320px]">
       <div className="bento-card p-3">
         <div className="mb-2 flex items-center justify-between">
           <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">Watchlist</h3>
-          <span className="text-xs text-muted-foreground">{watchlist.length} items</span>
+          <span className="text-xs text-muted-foreground">{watchlistCountLabel}</span>
         </div>
         {watchlist.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No watchlist entries in current run.</p>
+          <p className="text-sm text-muted-foreground">{emptyMessage}</p>
         ) : (
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-1">
             {watchlist.map((technology) => (

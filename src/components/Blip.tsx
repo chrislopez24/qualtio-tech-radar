@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useCallback, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import type { Technology, AITechnology } from '@/lib/types';
 import { getRingById } from '@/lib/radar-config';
-import { RADAR_SIZE } from '@/lib/radar-config';
+import { getTooltipPosition } from '@/lib/blip-position';
 
 interface BlipProps {
   technology: Technology | AITechnology;
@@ -12,6 +11,8 @@ interface BlipProps {
   y: number;
   isSelected: boolean;
   isFiltered: boolean;
+  isHoveredExternal: boolean;
+  onHoverChange: (technologyId: string | null) => void;
   onSelect: (tech: Technology | AITechnology) => void;
 }
 
@@ -21,12 +22,15 @@ export const Blip = memo(function Blip({
   y,
   isSelected,
   isFiltered,
+  isHoveredExternal,
+  onHoverChange,
   onSelect,
 }: BlipProps) {
-  const [isHovered, setIsHovered] = useState(false);
+  const [isHoveredInternal, setIsHoveredInternal] = useState(false);
 
   const ring = getRingById(technology.ring);
   const baseColor = ring.color;
+  const isHovered = isHoveredInternal || isHoveredExternal;
 
   const handleClick = useCallback(() => {
     onSelect(technology);
@@ -39,158 +43,114 @@ export const Blip = memo(function Blip({
     }
   }, [technology, onSelect]);
 
-  // Calculate tooltip position to avoid clipping
+  const handlePointerEnter = useCallback(() => {
+    setIsHoveredInternal(true);
+    onHoverChange(technology.id);
+  }, [technology.id, onHoverChange]);
+
+  const handlePointerLeave = useCallback(() => {
+    setIsHoveredInternal(false);
+    onHoverChange(null);
+  }, [onHoverChange]);
+
   const tooltipWidth = Math.min(technology.name.length * 8 + 24, 160);
-  const tooltipX = x + 18;
-  const tooltipY = y - 14;
-  
-  // Adjust if tooltip overflows right edge
-  const adjustedX = tooltipX + tooltipWidth > RADAR_SIZE - 20 
-    ? x - tooltipWidth - 18 
-    : tooltipX;
+  const tooltipPosition = getTooltipPosition({ x, y, width: tooltipWidth });
+  const outerRadius = isSelected ? 14 : isHovered ? 11 : 0;
+  const mainRadius = isSelected ? 8 : isHovered ? 6.5 : 5.5;
+  const innerRadius = isSelected ? 3.8 : isHovered ? 3 : 2.3;
 
   return (
-    <motion.g
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ 
-        opacity: isFiltered ? 0.15 : 1, 
-        scale: isSelected ? 1.4 : isHovered ? 1.2 : 1 
+    <g
+      style={{
+        cursor: 'pointer',
+        opacity: isFiltered ? 0.22 : 1,
+        transformOrigin: `${x}px ${y}px`,
+        transition: 'opacity 140ms ease, transform 140ms ease',
+        transform: isSelected ? 'scale(1.16)' : isHovered ? 'scale(1.08)' : 'scale(1)',
       }}
-      transition={{ 
-        type: "spring",
-        stiffness: 400,
-        damping: 25
-      }}
-      style={{ cursor: 'pointer' }}
       tabIndex={isFiltered ? -1 : 0}
       role="button"
       aria-label={`${technology.name} - ${technology.ring} ring, ${technology.quadrant} quadrant`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onFocus={() => setIsHovered(true)}
-      onBlur={() => setIsHovered(false)}
+      onMouseEnter={handlePointerEnter}
+      onMouseLeave={handlePointerLeave}
+      onFocus={handlePointerEnter}
+      onBlur={handlePointerLeave}
       onKeyDown={handleKeyDown}
       onClick={handleClick}
     >
-      {/* Outer glow ring */}
-      {(isHovered || isSelected) && (
-        <motion.circle
+      {outerRadius > 0 ? (
+        <circle
           cx={x}
           cy={y}
-          r={isSelected ? 16 : 12}
+          r={outerRadius}
           fill="none"
           stroke={baseColor}
           strokeWidth={1}
-          opacity={0.2}
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ 
-            scale: [1, 1.15, 1],
-            opacity: [0.2, 0.1, 0.2]
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
+          opacity={isSelected ? 0.4 : 0.22}
         />
-      )}
-      
-      {/* Main blip */}
-      <motion.circle
+      ) : null}
+
+      <circle
         cx={x}
         cy={y}
-        r={isSelected ? 9 : isHovered ? 7 : 6}
+        r={mainRadius}
         fill={baseColor}
         stroke={isSelected ? '#fff' : baseColor}
-        strokeWidth={isSelected ? 2 : 1}
+        strokeWidth={isSelected ? 1.8 : 1}
         style={{
-          filter: isHovered || isSelected 
-            ? `drop-shadow(0 0 6px ${baseColor})` 
-            : 'none',
+          filter: isHovered || isSelected ? `drop-shadow(0 0 4px ${baseColor})` : 'none',
+          transition: 'r 140ms ease, filter 140ms ease, stroke-width 140ms ease',
         }}
       />
-      
-      {/* Inner core */}
-      <motion.circle
+
+      <circle
         cx={x}
         cy={y}
-        r={isSelected ? 4 : isHovered ? 3 : 2.5}
+        r={innerRadius}
         fill="#fff"
-        opacity={isHovered || isSelected ? 0.95 : 0.8}
+        opacity={isHovered || isSelected ? 0.96 : 0.84}
       />
-      
-      {/* Rotating selection ring */}
-      {isSelected && (
-        <motion.circle
+
+      {isSelected ? (
+        <circle
           cx={x}
           cy={y}
-          r={12}
+          r={11}
           fill="none"
           stroke={baseColor}
           strokeWidth={1}
           strokeDasharray="4 4"
-          initial={{ rotate: 0 }}
-          animate={{ rotate: 360 }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          style={{
-            transformOrigin: `${x}px ${y}px`,
-            opacity: 0.5
-          }}
+          opacity={0.5}
         />
-      )}
-      
-      {/* Smart-positioned tooltip */}
-      <AnimatePresence>
-        {(isHovered || isSelected) && (
-          <motion.g
-            initial={{ opacity: 0, y: 8, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.95 }}
-            transition={{ 
-              duration: 0.2,
-              ease: [0.16, 1, 0.3, 1]
-            }}
+      ) : null}
+
+      {isHovered || isSelected ? (
+        <g>
+          <rect
+            x={tooltipPosition.x}
+            y={tooltipPosition.y}
+            width={tooltipWidth}
+            height={26}
+            rx={6}
+            fill="rgba(10, 10, 15, 0.98)"
+            stroke={baseColor}
+            strokeWidth={1}
+            style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))' }}
+          />
+          <text
+            x={tooltipPosition.x + tooltipWidth / 2}
+            y={tooltipPosition.y + 17}
+            fill="#fff"
+            fontSize={11}
+            fontFamily="var(--font-sans)"
+            fontWeight={500}
+            textAnchor="middle"
+            letterSpacing="0.02em"
           >
-            {/* Tooltip Background */}
-            <motion.rect
-              x={adjustedX}
-              y={tooltipY}
-              width={tooltipWidth}
-              height={26}
-              rx={6}
-              fill="rgba(10, 10, 15, 0.98)"
-              stroke={baseColor}
-              strokeWidth={1}
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 400, damping: 25 }}
-              style={{
-                filter: `drop-shadow(0 4px 12px rgba(0,0,0,0.5))`
-              }}
-            />
-            
-            {/* Tooltip Text */}
-            <text
-              x={adjustedX + tooltipWidth / 2}
-              y={tooltipY + 17}
-              fill="#fff"
-              fontSize={11}
-              fontFamily="var(--font-sans)"
-              fontWeight={500}
-              textAnchor="middle"
-              letterSpacing="0.02em"
-            >
-              {technology.name.length > 18 
-                ? technology.name.slice(0, 15) + '...' 
-                : technology.name}
-            </text>
-          </motion.g>
-        )}
-      </AnimatePresence>
-    </motion.g>
+            {technology.name.length > 18 ? `${technology.name.slice(0, 15)}...` : technology.name}
+          </text>
+        </g>
+      ) : null}
+    </g>
   );
 });

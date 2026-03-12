@@ -3,7 +3,7 @@ from __future__ import annotations
 from etl.contracts import LaneEditorialInput
 
 
-def build_lane_prompt(lane_input: LaneEditorialInput) -> str:
+def build_lane_prompt(lane_input: LaneEditorialInput, max_items: int) -> str:
     candidate_lines = [
         f"- {candidate.canonical_name}: adoption={candidate.adoption_signals.get('adoption', 0)}, momentum={candidate.momentum_signals.get('momentum', 0)}, maturity={candidate.maturity_signals.get('maturity', 0)}, risk={candidate.risk_signals.get('risk', 0)}"
         for candidate in lane_input.candidates
@@ -42,6 +42,9 @@ Do not wrap JSON in markdown fences.""" % (lane_input.lane, lane_input.lane, lan
         [
             f"You are editing the {lane_input.lane} lane for a technology radar.",
             "Return strict JSON with included and excluded arrays.",
+            f"Include at most {max_items} items. Do not include every candidate if the lane would become noisy.",
+            "Use the excluded list for candidates that look promising but are more appropriate for near-term watchlist review.",
+            "Order excluded items with the strongest near-term adoption potential first.",
             "Each included item must have ring, description, whyThisRing, whyNow, confidence, and trend.",
             schema,
             *lane_input.prompt_context,

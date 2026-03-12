@@ -35,6 +35,14 @@ def test_config_exposes_llm_optimization_controls():
     assert cfg.llm_optimization.watchlist_ratio > 0.0
 
 
+def test_config_targets_large_radar_output():
+    from etl.config import load_etl_config
+
+    cfg = load_etl_config("scripts/config.yaml")
+    assert cfg.distribution.target_total == 75
+    assert cfg.distribution.max_per_quadrant >= 18
+
+
 def test_config_only_exposes_supported_signal_sources():
     from etl.config import load_etl_config
 

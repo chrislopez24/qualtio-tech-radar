@@ -91,6 +91,20 @@ describe('WatchlistPanel', () => {
     expect(html).toContain('No review date');
   });
 
+  it('distinguishes an empty watchlist from a filtered-out watchlist', () => {
+    const html = renderToStaticMarkup(
+      <WatchlistPanel
+        watchlist={[]}
+        totalWatchlistCount={3}
+        onSelectTechnology={() => {}}
+      />,
+    );
+
+    expect(html).toContain('No watchlist entries match current filters.');
+    expect(html).toContain('0 of 3 items');
+    expect(html).not.toContain('No watchlist entries in current run.');
+  });
+
   it('renders quality overview when ring and quadrant quality metadata are present', () => {
     const html = renderToStaticMarkup(
       <WatchlistPanel

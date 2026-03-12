@@ -107,12 +107,12 @@ scoring:
 
 # Target: compact but richer radar coverage
 distribution:
-  target_total: 40
-  min_per_quadrant: 2
-  max_per_quadrant: 12
-  min_per_ring: 8
-  target_per_ring: 10
-  max_per_ring: 15  # Opportunistic ceiling; underfill is preferred to weak padding
+  target_total: 75
+  min_per_quadrant: 6
+  max_per_quadrant: 20
+  min_per_ring: 12
+  target_per_ring: 18
+  max_per_ring: 24  # Opportunistic ceiling; underfill is preferred to weak padding
 
 history:
   enabled: true

@@ -95,7 +95,7 @@ class HackerNewsDiscoverySource:
     name = "hackernews"
 
     def __init__(self, config):
-        self.source = HackerNewsSource(config, max_stories_scan=80)
+        self.source = HackerNewsSource(config, max_stories_scan=500)
 
     def fetch(self) -> list[dict[str, Any]]:
         mentions: dict[str, list[float]] = defaultdict(list)

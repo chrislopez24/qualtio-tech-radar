@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import aiData from '../data/data.ai.json';
 import { QUADRANTS, RADAR_SIZE, RINGS } from './radar-config';
-import { calculateBlipPositions, calculateVisibleBlipPositions } from './blip-position';
+import {
+  calculateBlipPositions,
+  calculateVisibleBlipPositions,
+  getTooltipPosition,
+} from './blip-position';
 import type { AIRadarData } from './types';
 
 function getRingBounds(ringId: string) {
@@ -95,5 +99,40 @@ describe('calculateBlipPositions', () => {
     );
 
     expect(positionsForVisibleSubset.get('alpha')).toEqual(positionsWithFullContext.get('alpha'));
+  });
+
+  it('rounds blip coordinates to stable precision for hydration', () => {
+    const positions = calculateBlipPositions([
+      {
+        id: 'docker',
+        name: 'Docker',
+        quadrant: 'tools',
+        ring: 'trial',
+        description: 'Container tooling',
+      },
+    ]);
+
+    const position = positions.get('docker');
+
+    expect(position).toBeDefined();
+
+    if (!position) {
+      return;
+    }
+
+    expect(position.x).toBe(Number(position.x.toFixed(4)));
+    expect(position.y).toBe(Number(position.y.toFixed(4)));
+  });
+
+  it('clamps tooltip positions inside the radar bounds', () => {
+    expect(getTooltipPosition({ x: 10, y: 10, width: 120 })).toEqual({
+      x: 28,
+      y: 8,
+    });
+
+    expect(getTooltipPosition({ x: RADAR_SIZE - 10, y: 50, width: 120 })).toEqual({
+      x: RADAR_SIZE - 148,
+      y: 36,
+    });
   });
 });

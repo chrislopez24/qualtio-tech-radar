@@ -49,7 +49,7 @@ def test_lane_editor_normalizes_synthetic_variant_fields():
 
 
 def test_lane_editor_prefers_synthetic_openai_compatible_config(monkeypatch):
-    from etl.editorial_llm.lane_editor import resolve_llm_config
+    from etl.editorial_llm.client import resolve_llm_config
 
     monkeypatch.setenv("SYNTHETIC_API_KEY", "syn-test")
     monkeypatch.setenv("SYNTHETIC_API_URL", "https://api.synthetic.new/v1")
@@ -66,7 +66,7 @@ def test_lane_editor_prefers_synthetic_openai_compatible_config(monkeypatch):
 
 
 def test_lane_editor_does_not_fall_back_to_openai_provider(monkeypatch):
-    from etl.editorial_llm.lane_editor import resolve_llm_config
+    from etl.editorial_llm.client import resolve_llm_config
 
     monkeypatch.delenv("SYNTHETIC_API_KEY", raising=False)
     monkeypatch.setenv("OPENAI_API_KEY", "openai-test")
@@ -82,11 +82,12 @@ def test_lane_prompt_requests_exact_schema_and_enums():
     from etl.contracts import LaneEditorialInput
     from etl.editorial_llm.prompts import build_lane_prompt
 
-    prompt = build_lane_prompt(LaneEditorialInput(lane="frameworks", candidates=[]))
+    prompt = build_lane_prompt(LaneEditorialInput(lane="frameworks", candidates=[]), max_items=15)
 
     assert '"ring": "adopt|trial|assess|hold"' in prompt
     assert '"trend": "up|down|stable|new"' in prompt
     assert '"confidence": 0.0-1.0' in prompt
+    assert "Include at most 15 items" in prompt
 
 
 def test_lane_editor_retries_same_synthetic_config_on_invalid_first_response(monkeypatch):
@@ -94,7 +95,7 @@ def test_lane_editor_retries_same_synthetic_config_on_invalid_first_response(mon
     import types
 
     from etl.contracts import LaneEditorialInput, MarketEntity
-    from etl.editorial_llm.lane_editor import _try_llm_lane_decision
+    from etl.editorial_llm.client import request_lane_decision
 
     calls = []
 
@@ -115,18 +116,21 @@ def test_lane_editor_retries_same_synthetic_config_on_invalid_first_response(mon
     monkeypatch.setenv("SYNTHETIC_MODEL", "hf:MiniMaxAI/MiniMax-M2.5")
     monkeypatch.setitem(sys.modules, "openai", types.SimpleNamespace(OpenAI=FakeOpenAI))
 
-    result = _try_llm_lane_decision(
-        LaneEditorialInput(
-            lane="frameworks",
-            candidates=[
-                MarketEntity(
-                    canonical_name="React",
-                    canonical_slug="react",
-                    editorial_kind="framework",
-                    topic_family="ui",
-                )
-            ],
-        )
+    lane_input = LaneEditorialInput(
+        lane="frameworks",
+        candidates=[
+            MarketEntity(
+                canonical_name="React",
+                canonical_slug="react",
+                editorial_kind="framework",
+                topic_family="ui",
+            )
+        ],
+    )
+    result = request_lane_decision(
+        lane_input=lane_input,
+        prompt="Return JSON",
+        parser=lambda payload: __import__("etl.editorial_llm.lane_editor", fromlist=["parse_lane_decision_json"]).parse_lane_decision_json(payload),
     )
 
     assert result is not None

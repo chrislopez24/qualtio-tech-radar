@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 from datetime import datetime, timezone
 from typing import Any
 
@@ -11,6 +10,7 @@ from etl.contracts import (
     LaneEditorialDecision,
     LaneEditorialInput,
 )
+from etl.editorial_llm.client import request_lane_decision
 from etl.editorial_llm.prompts import build_lane_prompt
 from etl.signals.scoring import market_score
 
@@ -29,63 +29,18 @@ def parse_lane_decision_json(payload: str) -> LaneEditorialDecision:
 
 
 def decide_lane(lane_input: LaneEditorialInput, max_items: int = 6) -> LaneEditorialDecision:
-    llm_decision = _try_llm_lane_decision(lane_input)
+    llm_decision = _try_llm_lane_decision(lane_input, max_items=max_items)
     if llm_decision is not None:
         return llm_decision
     return _heuristic_lane_decision(lane_input, max_items=max_items)
 
 
-def resolve_llm_config() -> dict[str, str] | None:
-    synthetic_api_key = os.environ.get("SYNTHETIC_API_KEY")
-    if synthetic_api_key:
-        return {
-            "api_key": synthetic_api_key,
-            "base_url": os.environ.get("SYNTHETIC_API_URL", "https://api.synthetic.new/v1"),
-            "model": os.environ.get("SYNTHETIC_MODEL", "hf:MiniMaxAI/MiniMax-M2.5"),
-        }
-
-    return None
-
-
-def _try_llm_lane_decision(lane_input: LaneEditorialInput) -> LaneEditorialDecision | None:
-    try:
-        from openai import OpenAI
-    except Exception:  # pragma: no cover - optional runtime dependency path
-        return None
-
-    config = resolve_llm_config()
-    if config is None:
-        return None
-
-    client = OpenAI(
-        api_key=config["api_key"],
-        base_url=config["base_url"],
+def _try_llm_lane_decision(lane_input: LaneEditorialInput, max_items: int) -> LaneEditorialDecision | None:
+    return request_lane_decision(
+        lane_input=lane_input,
+        prompt=build_lane_prompt(lane_input, max_items=max_items),
+        parser=parse_lane_decision_json,
     )
-    messages = [
-        {"role": "system", "content": "You are an editor for a technology radar. Return strict JSON only."},
-        {"role": "user", "content": build_lane_prompt(lane_input)},
-    ]
-
-    for _ in range(2):
-        try:
-            response = client.chat.completions.create(
-                model=config["model"],
-                messages=messages,
-                response_format={"type": "json_object"},
-            )
-        except Exception:
-            continue
-
-        content = response.choices[0].message.content if response.choices else None
-        if not content:
-            continue
-
-        try:
-            return parse_lane_decision_json(content)
-        except ValueError:
-            continue
-
-    return None
 
 
 def _normalize_lane_decision_payload(payload: dict[str, Any]) -> dict[str, Any]:

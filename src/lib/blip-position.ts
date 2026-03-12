@@ -7,6 +7,16 @@ export interface BlipPosition {
   angle: number;
 }
 
+interface TooltipPositionInput {
+  x: number;
+  y: number;
+  width: number;
+  height?: number;
+  radarSize?: number;
+  margin?: number;
+  offset?: number;
+}
+
 function hashCode(value: string): number {
   let hash = 0;
 
@@ -26,6 +36,31 @@ function pseudoRandom(seed: number, salt: number): number {
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
+}
+
+function roundCoordinate(value: number): number {
+  return Number(value.toFixed(4));
+}
+
+export function getTooltipPosition({
+  x,
+  y,
+  width,
+  height = 26,
+  radarSize = RADAR_SIZE,
+  margin = 8,
+  offset = 18,
+}: TooltipPositionInput): { x: number; y: number } {
+  const preferredX = x + offset;
+  const fallbackX = x - width - offset;
+  const unclampedX = preferredX + width > radarSize - margin ? fallbackX : preferredX;
+  const clampedX = clamp(unclampedX, margin, radarSize - width - margin);
+  const clampedY = clamp(y - 14, margin, radarSize - height - margin);
+
+  return {
+    x: clampedX,
+    y: clampedY,
+  };
 }
 
 function getRingBounds(ringId: Technology['ring']) {
@@ -105,7 +140,11 @@ export function calculateBlipPositions(technologies: Technology[]): Map<string, 
       const x = center + radius * Math.cos(angleRad);
       const y = center + radius * Math.sin(angleRad);
 
-      result.set(technology.id, { x, y, angle });
+      result.set(technology.id, {
+        x: roundCoordinate(x),
+        y: roundCoordinate(y),
+        angle: roundCoordinate(angle),
+      });
     });
   }
 

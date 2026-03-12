@@ -10,37 +10,17 @@ interface RadarProps {
   technologies: (Technology | AITechnology)[];
   allTechnologies?: (Technology | AITechnology)[];
   selectedTech: Technology | AITechnology | null;
+  hoveredTechnologyId: string | null;
+  onHoverTechnology: (technologyId: string | null) => void;
   onSelect: (tech: Technology | AITechnology) => void;
 }
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.02,
-      delayChildren: 0.3,
-    },
-  },
-} as const;
-
-const itemVariants = {
-  hidden: { opacity: 0, scale: 0 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      type: "spring" as const,
-      stiffness: 200,
-      damping: 15,
-    },
-  },
-} as const;
 
 export function Radar({
   technologies,
   allTechnologies = technologies,
   selectedTech,
+  hoveredTechnologyId,
+  onHoverTechnology,
   onSelect,
 }: RadarProps) {
   const { getPosition } = useBlipPosition(technologies, allTechnologies);
@@ -249,29 +229,31 @@ export function Radar({
         </motion.g>
 
         {/* Technology Blips */}
-        <motion.g
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
+        <g>
           {technologies.map((tech) => {
             const position = getPosition(tech.id);
             if (!position) return null;
 
             return (
-              <motion.g key={tech.id} variants={itemVariants}>
+              <g key={tech.id}>
                 <Blip
                   technology={tech}
                   x={position.x}
                   y={position.y}
                   isSelected={selectedTech?.id === tech.id}
-                  isFiltered={false}
+                  isFiltered={Boolean(
+                    hoveredTechnologyId &&
+                    hoveredTechnologyId !== tech.id &&
+                    selectedTech?.id !== tech.id,
+                  )}
+                  isHoveredExternal={hoveredTechnologyId === tech.id}
+                  onHoverChange={onHoverTechnology}
                   onSelect={onSelect}
                 />
-              </motion.g>
+              </g>
             );
           })}
-        </motion.g>
+        </g>
       </svg>
     </div>
   );

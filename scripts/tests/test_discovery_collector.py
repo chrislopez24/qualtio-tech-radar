@@ -50,3 +50,12 @@ def test_github_discovery_source_keeps_only_seeded_market_entities(monkeypatch):
     records = source.fetch()
 
     assert [record["name"] for record in records] == ["Next.js"]
+
+
+def test_hackernews_discovery_source_scans_broad_story_window():
+    from etl.config import ETLConfig
+    from etl.discovery.collector import HackerNewsDiscoverySource
+
+    source = HackerNewsDiscoverySource(ETLConfig().sources.hackernews)
+
+    assert source.source.max_stories_scan == 500
