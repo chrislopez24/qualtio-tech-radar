@@ -11,8 +11,6 @@ jobs:
     timeout-minutes: 120
     permissions:
       contents: write
-    outputs:
-      build_ref: ${{ steps.build-ref.outputs.build_ref }}
 
     steps:
       - name: Checkout repository
@@ -116,60 +114,3 @@ jobs:
       - name: Push changes
         run: |
           git push
-
-      - name: Record build ref
-        id: build-ref
-        if: always()
-        run: |
-          echo "build_ref=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-
-  build-and-deploy:
-    needs: update-data
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.update-data.outputs.build_ref }}
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Cache npm packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
-
-      - name: Install dependencies
-        run: |
-          npm ci
-
-      - name: Build static site
-        run: |
-          npm run build
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
