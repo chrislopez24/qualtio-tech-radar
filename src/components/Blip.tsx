@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useCallback, memo } from 'react';
+import { motion } from 'framer-motion';
 import type { Technology, AITechnology } from '@/lib/types';
-import { getRingById } from '@/lib/radar-config';
+import { getQuadrantById, getRingById } from '@/lib/radar-config';
 import { getTooltipPosition } from '@/lib/blip-position';
 
 interface BlipProps {
@@ -12,6 +13,7 @@ interface BlipProps {
   isSelected: boolean;
   isFiltered: boolean;
   isHoveredExternal: boolean;
+  hasActiveSelection?: boolean;
   onHoverChange: (technologyId: string | null) => void;
   onSelect: (tech: Technology | AITechnology) => void;
 }
@@ -23,12 +25,14 @@ export const Blip = memo(function Blip({
   isSelected,
   isFiltered,
   isHoveredExternal,
+  hasActiveSelection = false,
   onHoverChange,
   onSelect,
 }: BlipProps) {
   const [isHoveredInternal, setIsHoveredInternal] = useState(false);
 
   const ring = getRingById(technology.ring);
+  const quadrant = getQuadrantById(technology.quadrant);
   const baseColor = ring.color;
   const isHovered = isHoveredInternal || isHoveredExternal;
 
@@ -55,15 +59,21 @@ export const Blip = memo(function Blip({
 
   const tooltipWidth = Math.min(technology.name.length * 8 + 24, 160);
   const tooltipPosition = getTooltipPosition({ x, y, width: tooltipWidth });
-  const outerRadius = isSelected ? 14 : isHovered ? 11 : 0;
-  const mainRadius = isSelected ? 8 : isHovered ? 6.5 : 5.5;
-  const innerRadius = isSelected ? 3.8 : isHovered ? 3 : 2.3;
+  const hasContextCard = isSelected;
+  const outerRadius = isSelected ? 16 : isHovered ? 11 : 0;
+  const mainRadius = isSelected ? 7.4 : isHovered ? 6.5 : 5.5;
+  const innerRadius = isSelected ? 2.8 : isHovered ? 3 : 2.3;
+  const contextCardWidth = Math.min(Math.max(technology.name.length * 8 + 54, 122), 180);
+  const contextCardHeight = 44;
+  const contextCardX = Math.min(x + 18, 800 - contextCardWidth - 8);
+  const contextCardY = Math.max(y - 20, 8);
+  const contextMeta = `${ring.name} • ${quadrant.name}`;
 
   return (
-    <g
+    <motion.g
       style={{
         cursor: 'pointer',
-        opacity: isFiltered ? 0.22 : 1,
+        opacity: isFiltered ? 0.22 : hasActiveSelection && !isSelected ? 0.38 : 1,
         transformOrigin: `${x}px ${y}px`,
         transition: 'opacity 140ms ease, transform 140ms ease',
         transform: isSelected ? 'scale(1.16)' : isHovered ? 'scale(1.08)' : 'scale(1)',
@@ -78,53 +88,125 @@ export const Blip = memo(function Blip({
       onKeyDown={handleKeyDown}
       onClick={handleClick}
     >
+      {isSelected ? (
+        <motion.circle
+          cx={x}
+          cy={y}
+          r={20}
+          fill="none"
+          stroke={baseColor}
+          strokeWidth={1.5}
+          opacity={0.18}
+          initial={{ scale: 0.7, opacity: 0 }}
+          animate={{ scale: [0.9, 1.12, 1], opacity: [0, 0.32, 0.18] }}
+          transition={{ duration: 0.48, ease: [0.16, 1, 0.3, 1] }}
+        />
+      ) : null}
+
       {outerRadius > 0 ? (
-        <circle
+        <motion.circle
           cx={x}
           cy={y}
           r={outerRadius}
           fill="none"
           stroke={baseColor}
-          strokeWidth={1}
-          opacity={isSelected ? 0.4 : 0.22}
+          strokeWidth={isSelected ? 1.4 : 1}
+          opacity={isSelected ? 0.45 : 0.22}
+          initial={isSelected ? { scale: 0.82, opacity: 0 } : false}
+          animate={isSelected ? { scale: 1, opacity: 0.45 } : undefined}
+          transition={{ type: 'spring', stiffness: 320, damping: 24 }}
         />
       ) : null}
 
-      <circle
+      <motion.circle
         cx={x}
         cy={y}
         r={mainRadius}
         fill={baseColor}
-        stroke={isSelected ? '#fff' : baseColor}
-        strokeWidth={isSelected ? 1.8 : 1}
+        stroke={baseColor}
+        strokeWidth={isSelected ? 1.6 : 1}
         style={{
-          filter: isHovered || isSelected ? `drop-shadow(0 0 4px ${baseColor})` : 'none',
+          filter: isHovered || isSelected ? `drop-shadow(0 0 7px ${baseColor})` : 'none',
           transition: 'r 140ms ease, filter 140ms ease, stroke-width 140ms ease',
         }}
+        animate={isSelected ? { r: 7.4 } : isHovered ? { r: 6.5 } : { r: 5.5 }}
+        transition={{ type: 'spring', stiffness: 360, damping: 22 }}
       />
 
       <circle
         cx={x}
         cy={y}
         r={innerRadius}
-        fill="#fff"
-        opacity={isHovered || isSelected ? 0.96 : 0.84}
+        fill="#f6f1e8"
+        opacity={isHovered || isSelected ? 0.9 : 0.76}
       />
 
       {isSelected ? (
-        <circle
+        <motion.circle
           cx={x}
           cy={y}
-          r={11}
+          r={12}
           fill="none"
           stroke={baseColor}
           strokeWidth={1}
           strokeDasharray="4 4"
-          opacity={0.5}
+          opacity={0.55}
+          animate={{ rotate: 12 }}
+          transition={{ type: 'spring', stiffness: 140, damping: 18 }}
         />
       ) : null}
 
-      {isHovered || isSelected ? (
+      {hasContextCard ? (
+        <motion.g
+          className="selection-card"
+          data-selection-card="true"
+          initial={{ opacity: 0, x: -6, y: 3 }}
+          animate={{ opacity: 1, x: 0, y: 0 }}
+          transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <rect
+            x={contextCardX}
+            y={contextCardY}
+            width={contextCardWidth}
+            height={contextCardHeight}
+            rx={10}
+            fill="rgba(9, 10, 12, 0.96)"
+            stroke={baseColor}
+            strokeWidth={1.4}
+            style={{ filter: 'drop-shadow(0 8px 18px rgba(0,0,0,0.38))' }}
+          />
+          <rect
+            x={contextCardX + 8}
+            y={contextCardY + 8}
+            width={contextCardWidth - 16}
+            height={12}
+            rx={6}
+            fill={`${baseColor}22`}
+          />
+          <text
+            x={contextCardX + 10}
+            y={contextCardY + 30}
+            fill="#ffffff"
+            fontSize={13}
+            fontFamily="var(--font-sans)"
+            fontWeight={600}
+            letterSpacing="0.01em"
+          >
+            {technology.name}
+          </text>
+          <text
+            x={contextCardX + 10}
+            y={contextCardY + 17}
+            fill={baseColor}
+            fontSize={9}
+            fontFamily="var(--font-mono)"
+            fontWeight={600}
+            letterSpacing="0.08em"
+          >
+            {contextMeta}
+          </text>
+        </motion.g>
+      ) : isHovered ? (
         <g>
           <rect
             x={tooltipPosition.x}
@@ -151,6 +233,6 @@ export const Blip = memo(function Blip({
           </text>
         </g>
       ) : null}
-    </g>
+    </motion.g>
   );
 });

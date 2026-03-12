@@ -40,6 +40,7 @@ describe('DetailPanel', () => {
     expect(html).toContain('Owner &amp; review');
     expect(html).toContain('Next step');
     expect(html).toContain('Evidence / alternatives');
+    expect(html).toContain('lg:hidden');
   });
 
   it('does not render actionable headings when metadata is absent', () => {

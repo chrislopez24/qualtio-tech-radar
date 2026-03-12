@@ -1,12 +1,14 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Eye, Funnel } from '@phosphor-icons/react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowLeft, Eye, Funnel, Sparkle, X } from '@phosphor-icons/react';
 import type { AIRadarMeta, AITechnology, Quadrant, Ring, Trend } from '@/lib/types';
-import { QUADRANTS, RINGS } from '@/lib/radar-config';
+import { QUADRANTS, RINGS, getQuadrantById, getRingById } from '@/lib/radar-config';
 import type { RadarFilterState } from '@/lib/radar-filters';
 import { QualityOverview } from './QualityOverview';
+import { Badge } from '@/components/ui/badge';
+import { TechnologyDetailContent } from './TechnologyDetailContent';
 
 type RingId = 'adopt' | 'trial' | 'assess' | 'hold';
 type SidebarView = 'technologies' | 'watchlist' | 'guide';
@@ -22,6 +24,7 @@ interface RadarSidebarProps {
   visibleTechnologies: AITechnology[];
   totalTechnologies: number;
   selectedTechnologyId: string | null;
+  selectedTechnology?: AITechnology | null;
   hoveredTechnologyId: string | null;
   watchlist?: AITechnology[];
   totalWatchlistCount?: number;
@@ -34,12 +37,14 @@ interface RadarSidebarProps {
   onResetFilters: () => void;
   onHoverTechnology: (technologyId: string | null) => void;
   onSelectTechnology: (technology: AITechnology) => void;
+  onClearSelection: () => void;
 }
 
 export function RadarSidebar({
   visibleTechnologies,
   totalTechnologies,
   selectedTechnologyId,
+  selectedTechnology = null,
   hoveredTechnologyId,
   watchlist = [],
   totalWatchlistCount,
@@ -52,6 +57,7 @@ export function RadarSidebar({
   onResetFilters,
   onHoverTechnology,
   onSelectTechnology,
+  onClearSelection,
 }: RadarSidebarProps) {
   const [activeView, setActiveView] = useState<SidebarView>('technologies');
   const hiddenCount = Math.max(0, totalTechnologies - visibleTechnologies.length);
@@ -118,6 +124,8 @@ export function RadarSidebar({
   }, [visibleTechnologies]);
 
   const minConfidenceInput = filters.minConfidence === null ? '' : filters.minConfidence.toString();
+  const selectedRing = selectedTechnology ? getRingById(selectedTechnology.ring) : null;
+  const selectedQuadrant = selectedTechnology ? getQuadrantById(selectedTechnology.quadrant) : null;
 
   return (
     <aside className="bento-card flex h-auto min-h-0 flex-col overflow-hidden p-3 lg:h-full">
@@ -285,40 +293,106 @@ export function RadarSidebar({
       </div>
 
       <div className="mt-2 min-h-0 flex-1 overflow-hidden rounded-xl border border-border/60 bg-background/90 p-3">
-        <div className="mb-2 flex items-center gap-1.5">
-          {SIDEBAR_VIEWS.map((view) => {
-            const active = activeView === view.id;
-            const count = view.id === 'technologies'
-              ? visibleTechnologies.length
-              : view.id === 'watchlist'
-                ? watchlist.length
-                : undefined;
-            return (
-              <button
-                key={view.id}
-                type="button"
-                onClick={() => setActiveView(view.id)}
-                className={`rounded-lg border px-2.5 py-1 text-[11px] font-medium transition-colors ${
-                  active
-                    ? 'border-primary/70 bg-primary/12 text-foreground shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset]'
-                    : 'border-border/60 bg-background/70 text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <span className="inline-flex items-center gap-1.5">
-                  <span>{view.label}</span>
-                  {typeof count === 'number' ? (
-                    <span className={`rounded-full px-1.5 py-0.5 text-[10px] ${active ? 'bg-white/10 text-foreground' : 'bg-background/70 text-muted-foreground'}`}>
-                      {count}
-                    </span>
-                  ) : null}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        <AnimatePresence mode="wait" initial={false}>
+          {selectedTechnology ? (
+            <motion.div
+              key={`selected-${selectedTechnology.id}`}
+              initial={{ opacity: 0, x: 16 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -16 }}
+              transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+              className="flex h-full flex-col"
+            >
+              <div className="mb-3 flex items-start justify-between gap-3 rounded-xl border border-border/60 bg-background/70 p-3">
+                <div className="min-w-0">
+                  <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                    <Sparkle className="h-3.5 w-3.5 text-primary" weight="fill" />
+                    <span>Selected technology</span>
+                  </div>
+                  <h3 className="truncate text-xl font-semibold tracking-tight">{selectedTechnology.name}</h3>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {selectedRing ? (
+                      <Badge style={{ backgroundColor: `${selectedRing.color}15`, color: selectedRing.color, borderColor: `${selectedRing.color}30` }} className="border">
+                        {selectedRing.name}
+                      </Badge>
+                    ) : null}
+                    {selectedQuadrant ? (
+                      <Badge style={{ backgroundColor: `${selectedQuadrant.color}15`, color: selectedQuadrant.color, borderColor: `${selectedQuadrant.color}30` }} className="border">
+                        {selectedQuadrant.name}
+                      </Badge>
+                    ) : null}
+                    <Badge className="border border-primary/25 bg-primary/8 text-foreground">
+                      {Math.round(selectedTechnology.confidence * 100)}% confidence
+                    </Badge>
+                  </div>
+                </div>
 
-        <div className="h-full overflow-y-auto pr-1">
-          {activeView === 'technologies' ? (
+                <button
+                  type="button"
+                  onClick={onClearSelection}
+                  className="rounded-lg border border-border/70 p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  aria-label="Back to radar"
+                >
+                  <X className="h-4 w-4" weight="bold" />
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={onClearSelection}
+                className="mb-3 inline-flex w-fit items-center gap-2 rounded-full border border-primary/35 bg-primary/10 px-3 py-1 text-[11px] font-medium text-foreground transition-colors hover:bg-primary/15"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" weight="bold" />
+                Back to radar
+              </button>
+
+              <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+                <TechnologyDetailContent technology={selectedTechnology} />
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="explorer"
+              initial={{ opacity: 0, x: -16 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 16 }}
+              transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+              className="flex h-full flex-col"
+            >
+              <div className="mb-2 flex items-center gap-1.5">
+                {SIDEBAR_VIEWS.map((view) => {
+                  const active = activeView === view.id;
+                  const count = view.id === 'technologies'
+                    ? visibleTechnologies.length
+                    : view.id === 'watchlist'
+                      ? watchlist.length
+                      : undefined;
+                  return (
+                    <button
+                      key={view.id}
+                      type="button"
+                      onClick={() => setActiveView(view.id)}
+                      className={`rounded-lg border px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                        active
+                          ? 'border-primary/70 bg-primary/12 text-foreground shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset]'
+                          : 'border-border/60 bg-background/70 text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <span className="inline-flex items-center gap-1.5">
+                        <span>{view.label}</span>
+                        {typeof count === 'number' ? (
+                          <span className={`rounded-full px-1.5 py-0.5 text-[10px] ${active ? 'bg-white/10 text-foreground' : 'bg-background/70 text-muted-foreground'}`}>
+                            {count}
+                          </span>
+                        ) : null}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="h-full overflow-y-auto pr-1">
+                {activeView === 'technologies' ? (
             <>
               <div className="mb-2 flex items-center justify-between">
                 <h3 className="text-lg font-semibold tracking-tight">Technologies</h3>
@@ -371,9 +445,9 @@ export function RadarSidebar({
                 );
               })}
             </>
-          ) : null}
+                ) : null}
 
-          {activeView === 'watchlist' ? (
+                {activeView === 'watchlist' ? (
             <>
               <div className="mb-2 flex items-center justify-between">
                 <h3 className="text-lg font-semibold tracking-tight">Watchlist</h3>
@@ -414,9 +488,9 @@ export function RadarSidebar({
                 </div>
               )}
             </>
-          ) : null}
+                ) : null}
 
-          {activeView === 'guide' ? (
+                {activeView === 'guide' ? (
             <div className="space-y-3">
               <section className="rounded-xl border border-border/60 bg-background/70 p-2.5">
                 <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Run summary</h3>
@@ -458,8 +532,11 @@ export function RadarSidebar({
                 </div>
               </section>
             </div>
-          ) : null}
-        </div>
+                ) : null}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </aside>
   );

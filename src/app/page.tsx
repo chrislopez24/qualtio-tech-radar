@@ -177,6 +177,7 @@ export default function Home() {
                 visibleTechnologies={visibleTechnologies}
                 totalTechnologies={technologies.length}
                 selectedTechnologyId={selectedTech?.id ?? null}
+                selectedTechnology={selectedTech && 'confidence' in selectedTech ? selectedTech : null}
                 hoveredTechnologyId={hoveredTechnologyId}
                 watchlist={visibleWatchlist}
                 totalWatchlistCount={watchlist.length}
@@ -189,6 +190,10 @@ export default function Home() {
                 onResetFilters={resetFilters}
                 onHoverTechnology={setHoveredTechnologyId}
                 onSelectTechnology={handleSelect}
+                onClearSelection={() => {
+                  setSelectedTech(null);
+                  setPanelOpen(false);
+                }}
               />
             </motion.div>
           )}

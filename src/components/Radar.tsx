@@ -247,6 +247,7 @@ export function Radar({
                     selectedTech?.id !== tech.id,
                   )}
                   isHoveredExternal={hoveredTechnologyId === tech.id}
+                  hasActiveSelection={Boolean(selectedTech)}
                   onHoverChange={onHoverTechnology}
                   onSelect={onSelect}
                 />
