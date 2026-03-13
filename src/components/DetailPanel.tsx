@@ -33,7 +33,7 @@ function getDesktopAnchorStyle(anchor: { x: number; y: number } | null): React.C
   }
 
   return {
-    right: `calc(${((800 - anchor.x) / 800) * 100}% + 20px)`,
+    right: `calc(${((RADAR_SIZE - anchor.x) / RADAR_SIZE) * 100}% + 20px)`,
     top: verticalOffset,
     transform: 'translateY(-50%)',
   };

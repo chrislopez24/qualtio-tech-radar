@@ -170,8 +170,8 @@ export function HomeClient({ initialData }: HomeClientProps) {
     <div className="min-h-[100dvh] bg-background">
       <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
-      <main className="mx-auto max-w-[1600px] px-4 pb-4 pt-[100px] sm:px-6 lg:h-dvh lg:overflow-hidden lg:px-8">
-        <section className="mb-4 grid gap-3 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+      <main className="mx-auto max-w-[1840px] px-4 pb-6 pt-[100px] sm:px-6 lg:px-8">
+        <section className="mb-4 grid gap-3 lg:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.85fr)]">
           <div className="bento-card p-4">
             <p className="text-[11px] font-mono uppercase tracking-[0.28em] text-accent-cyan">How to read this radar</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight">Read signal strength before chasing novelty.</h2>
@@ -212,13 +212,13 @@ export function HomeClient({ initialData }: HomeClientProps) {
           ) : (
             <motion.div
               key="content"
-              className="grid grid-cols-1 gap-4 lg:h-[calc(100%-10.5rem)] lg:grid-cols-[minmax(0,1fr)_360px]"
+              className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.35fr)_380px]"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={SPRING_SMOOTH}
             >
-              <div className="min-w-0 lg:flex lg:h-full lg:flex-col">
-                <div className="bento-card relative flex items-center justify-center p-3 sm:p-4 lg:h-full lg:min-h-0">
+              <div className="min-w-0 lg:flex lg:flex-col">
+                <div className="bento-card relative flex items-center justify-center p-3 sm:p-4">
                   <Radar
                     technologies={visibleTechnologies}
                     allTechnologies={technologies}
@@ -250,23 +250,25 @@ export function HomeClient({ initialData }: HomeClientProps) {
                 </div>
               </div>
 
-              <RadarSidebar
-                visibleTechnologies={visibleTechnologies}
-                totalTechnologies={technologies.length}
-                selectedTechnologyId={selectedTech?.id ?? null}
-                hoveredTechnologyId={hoveredTechnologyId}
-                watchlist={visibleWatchlist}
-                totalWatchlistCount={watchlist.length}
-                meta={initialData.meta}
-                filters={filters}
-                onToggleRing={toggleRing}
-                onToggleQuadrant={toggleQuadrant}
-                onToggleTrend={toggleTrend}
-                onSetMinConfidence={setMinConfidence}
-                onResetFilters={resetFilters}
-                onHoverTechnology={setHoveredTechnologyId}
-                onSelectTechnology={handleSelect}
-              />
+              <div className="lg:sticky lg:top-[100px] lg:max-h-[calc(100dvh-116px)]">
+                <RadarSidebar
+                  visibleTechnologies={visibleTechnologies}
+                  totalTechnologies={technologies.length}
+                  selectedTechnologyId={selectedTech?.id ?? null}
+                  hoveredTechnologyId={hoveredTechnologyId}
+                  watchlist={visibleWatchlist}
+                  totalWatchlistCount={watchlist.length}
+                  meta={initialData.meta}
+                  filters={filters}
+                  onToggleRing={toggleRing}
+                  onToggleQuadrant={toggleQuadrant}
+                  onToggleTrend={toggleTrend}
+                  onSetMinConfidence={setMinConfidence}
+                  onResetFilters={resetFilters}
+                  onHoverTechnology={setHoveredTechnologyId}
+                  onSelectTechnology={handleSelect}
+                />
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

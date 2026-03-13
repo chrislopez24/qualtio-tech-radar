@@ -27,7 +27,7 @@ export function Radar({
   const center = RADAR_SIZE / 2;
 
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[800px]">
+    <div className="relative mx-auto aspect-square w-full max-w-[1120px] xl:max-w-[1240px]">
       {/* Background Grid Effect */}
       <div className="absolute inset-0 opacity-10">
         <div 
