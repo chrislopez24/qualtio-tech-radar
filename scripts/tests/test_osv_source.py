@@ -39,8 +39,8 @@ def test_osv_source_requires_versioned_subjects():
     assert source.fetch(["pypi:fastapi"]) == []
 
 
-def test_osv_source_maps_known_ecosystem_names_for_api_queries():
-    config = OSVConfig(enabled=True)
+def test_osv_source_maps_known_ecosystem_names_for_api_queries(tmp_path):
+    config = OSVConfig(enabled=True, cache_file=str(tmp_path / "osv-cache.json"))
     source = OSVSource(config)
 
     with patch.object(source.session, "post") as mock_post:

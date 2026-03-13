@@ -10,6 +10,7 @@ interface WatchlistPanelProps {
   watchlist: AITechnology[];
   totalWatchlistCount?: number;
   meta?: AIRadarMeta;
+  referenceDate?: string;
   onSelectTechnology: (technology: AITechnology) => void;
 }
 
@@ -18,7 +19,10 @@ function formatPercent(value?: number): string {
   return `${Math.round(value * 100)}%`;
 }
 
-function getReviewStatus(nextReviewAt?: string): { label: string; tone: 'neutral' | 'warning' | 'danger' } {
+function getReviewStatus(
+  nextReviewAt?: string,
+  referenceDate?: string,
+): { label: string; tone: 'neutral' | 'warning' | 'danger' } {
   if (!nextReviewAt) {
     return { label: 'No review date', tone: 'neutral' };
   }
@@ -28,7 +32,7 @@ function getReviewStatus(nextReviewAt?: string): { label: string; tone: 'neutral
     return { label: 'Invalid review date', tone: 'warning' };
   }
 
-  const now = new Date();
+  const now = referenceDate ? new Date(referenceDate) : new Date();
   const diffMs = reviewDate.getTime() - now.getTime();
   const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 
@@ -55,8 +59,8 @@ function reviewBadgeClass(tone: 'neutral' | 'warning' | 'danger'): string {
   return 'border-border/60 bg-background/70 text-muted-foreground';
 }
 
-function renderActionBadges(technology: AITechnology) {
-  const reviewStatus = getReviewStatus(technology.nextReviewAt);
+function renderActionBadges(technology: AITechnology, referenceDate?: string) {
+  const reviewStatus = getReviewStatus(technology.nextReviewAt, referenceDate);
 
   return (
     <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -87,6 +91,7 @@ export function WatchlistPanel({
   watchlist,
   totalWatchlistCount,
   meta,
+  referenceDate,
   onSelectTechnology,
 }: WatchlistPanelProps) {
   const pipeline = meta?.pipeline;
@@ -138,7 +143,7 @@ export function WatchlistPanel({
                   <p className="mt-1 text-xs text-muted-foreground">{technology.whyThisRing}</p>
                 ) : null}
 
-                {renderActionBadges(technology)}
+                {renderActionBadges(technology, referenceDate)}
               </button>
             ))}
           </div>

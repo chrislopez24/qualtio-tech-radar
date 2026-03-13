@@ -47,10 +47,4 @@ def test_config_only_exposes_supported_signal_sources():
     from etl.config import load_etl_config
 
     cfg = load_etl_config("scripts/config.yaml")
-    assert hasattr(cfg.sources, "github_trending")
-    assert hasattr(cfg.sources, "hackernews")
-    assert hasattr(cfg.sources, "deps_dev")
-    assert hasattr(cfg.sources, "stackexchange")
-    assert hasattr(cfg.sources, "pypistats")
-    assert hasattr(cfg.sources, "osv")
-    assert not hasattr(cfg.sources, "google_trends")
+    assert set(type(cfg.sources).model_fields.keys()) == {"github_trending", "hackernews", "deps_dev", "osv"}

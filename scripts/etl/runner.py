@@ -14,12 +14,20 @@ from etl.editorial_llm.lane_editor import decide_lane
 from etl.lanes.packer import pack_lanes
 from etl.publish.publisher import publish_radar
 from etl.signals.snapshot_builder import build_market_snapshot
+from etl.sources.deps_dev import DepsDevSource
+from etl.sources.osv_source import OSVSource
+from etl.validation_enrichment import enrich_market_entities_with_validation
 
 
 def run_market_radar_pipeline(config: ETLConfig, source_names: set[str] | None = None) -> dict[str, Any]:
     collector = DiscoveryCollector(build_default_sources(config, source_names=source_names))
     raw_records = collector.collect()
     market_entities = resolve_market_entities(raw_records)
+    market_entities = enrich_market_entities_with_validation(
+        market_entities,
+        deps_dev_source=DepsDevSource(config.sources.deps_dev),
+        osv_source=OSVSource(config.sources.osv),
+    )
     snapshot = build_market_snapshot(market_entities)
     lane_packs = pack_lanes(snapshot)
 

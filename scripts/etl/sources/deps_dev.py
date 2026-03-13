@@ -26,65 +26,68 @@ class DepsDevSource:
             return []
 
         evidence: list[EvidenceRecord] = []
-        for subject in subjects:
-            if subject in self._cache:
-                evidence.extend(self._cache[subject])
-                continue
-
-            persistent_hit = self._persistent_cache.get(subject)
-            if persistent_hit is not None:
-                if persistent_hit.negative:
-                    self._cache[subject] = []
+        try:
+            for subject in subjects:
+                if subject in self._cache:
+                    evidence.extend(self._cache[subject])
                     continue
-                records = [self._record_from_cache(item) for item in persistent_hit.value or []]
+
+                persistent_hit = self._persistent_cache.get(subject)
+                if persistent_hit is not None:
+                    if persistent_hit.negative:
+                        self._cache[subject] = []
+                        continue
+                    records = [self._record_from_cache(item) for item in persistent_hit.value or []]
+                    self._cache[subject] = records
+                    evidence.extend(records)
+                    continue
+
+                parsed = self._parse_subject(subject)
+                if parsed is None:
+                    continue
+
+                system, package = parsed
+                try:
+                    version = self._fetch_default_version(system, package)
+                    if not version:
+                        self._cache[subject] = []
+                        self._persistent_cache.put_negative(
+                            subject,
+                            ttl_seconds=self.config.negative_cache_ttl_seconds,
+                        )
+                        continue
+
+                    dependent_count = self._fetch_dependents_count(system, package, version)
+                    if dependent_count is None:
+                        self._cache[subject] = []
+                        self._persistent_cache.put_negative(
+                            subject,
+                            ttl_seconds=self.config.negative_cache_ttl_seconds,
+                        )
+                        continue
+                except requests.RequestException as exc:
+                    logger.warning("deps.dev lookup failed for %s: %s", subject, exc)
+                    self._cache[subject] = []
+                    if self._should_negative_cache_exception(exc):
+                        self._persistent_cache.put_negative(
+                            subject,
+                            ttl_seconds=self.config.negative_cache_ttl_seconds,
+                        )
+                    continue
+
+                records = [
+                    self._to_evidence(f"{system}:{package}", dependent_count),
+                    self._to_version_evidence(f"{system}:{package}@{version}", version),
+                ]
                 self._cache[subject] = records
+                self._persistent_cache.put(
+                    subject,
+                    [self._record_to_cache(record) for record in records],
+                    ttl_seconds=self.config.cache_ttl_seconds,
+                )
                 evidence.extend(records)
-                continue
-
-            parsed = self._parse_subject(subject)
-            if parsed is None:
-                continue
-
-            system, package = parsed
-            try:
-                version = self._fetch_default_version(system, package)
-                if not version:
-                    self._cache[subject] = []
-                    self._persistent_cache.put_negative(
-                        subject,
-                        ttl_seconds=self.config.negative_cache_ttl_seconds,
-                    )
-                    continue
-
-                dependent_count = self._fetch_dependents_count(system, package, version)
-                if dependent_count is None:
-                    self._cache[subject] = []
-                    self._persistent_cache.put_negative(
-                        subject,
-                        ttl_seconds=self.config.negative_cache_ttl_seconds,
-                    )
-                    continue
-            except requests.RequestException as exc:
-                logger.warning("deps.dev lookup failed for %s: %s", subject, exc)
-                self._cache[subject] = []
-                if self._should_negative_cache_exception(exc):
-                    self._persistent_cache.put_negative(
-                        subject,
-                        ttl_seconds=self.config.negative_cache_ttl_seconds,
-                    )
-                continue
-
-            records = [
-                self._to_evidence(f"{system}:{package}", dependent_count),
-                self._to_version_evidence(f"{system}:{package}@{version}", version),
-            ]
-            self._cache[subject] = records
-            self._persistent_cache.put(
-                subject,
-                [self._record_to_cache(record) for record in records],
-                ttl_seconds=self.config.cache_ttl_seconds,
-            )
-            evidence.extend(records)
+        finally:
+            self._persistent_cache.flush()
 
         return evidence
 

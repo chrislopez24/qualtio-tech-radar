@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { GithubLogo } from '@phosphor-icons/react';
 import { AIIndicator } from './ModeToggle';
 import { SearchBar } from './SearchBar';
@@ -40,9 +41,11 @@ export function Header({
                 whileTap={{ scale: 0.98 }}
                 transition={SPRING_SNAPPY}
               >
-                <img
+                <Image
                   src={logoSrc}
                   alt="Qualtio"
+                  width={132}
+                  height={30}
                   className="relative z-10 h-[24px] w-auto sm:h-[28px] lg:h-[30px]"
                 />
               </motion.div>

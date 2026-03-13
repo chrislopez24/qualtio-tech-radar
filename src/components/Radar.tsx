@@ -27,7 +27,7 @@ export function Radar({
   const center = RADAR_SIZE / 2;
 
   return (
-    <div className="relative">
+    <div className="relative mx-auto aspect-square w-full max-w-[800px]">
       {/* Background Grid Effect */}
       <div className="absolute inset-0 opacity-10">
         <div 
@@ -44,10 +44,8 @@ export function Radar({
       </div>
       
       <svg
-        width={RADAR_SIZE}
-        height={RADAR_SIZE}
         viewBox={`0 0 ${RADAR_SIZE} ${RADAR_SIZE}`}
-        className="max-w-full h-auto relative z-10"
+        className="relative z-10 h-full w-full"
         role="img"
         aria-label="Technology radar visualization showing technologies across four quadrants and maturity rings"
       >

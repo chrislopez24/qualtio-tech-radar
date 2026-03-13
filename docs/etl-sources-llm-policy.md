@@ -27,20 +27,9 @@ The LLM must never be the only system deciding the final `data.ai.json`.
 - Use in scoring: external adoption corroboration.
 - Scope: only explicit canonical package mappings.
 
-4. `pypistats`
-- Purpose: Python package download pressure.
-- Use in scoring: external adoption corroboration.
-- Scope: only explicit canonical package mappings.
-
-5. `osv`
+4. `osv`
 - Purpose: vulnerability pressure and risk.
 - Use in scoring: `risk` sub-score and evidence summary.
-
-### Disabled by default
-
-6. `stackexchange`
-- Status: disabled due unstable shared-IP throttling in our environment.
-- Re-enable only if a reliable key-backed quota path exists.
 
 ## API Limits and Keys
 
@@ -58,21 +47,9 @@ Reference posture for this repository:
 - Key: not required.
 - Notes: use canonical package mappings and persistent cache to avoid wasted calls.
 
-4. `pypistats`
-- Key: not required.
-- Notes: IP-based rate limiting applies; data updates daily, so repeated same-day calls are wasteful.
-
-5. `osv`
+4. `osv`
 - Key: not required.
 - Notes: prefer batched lookups from already-resolved package/version evidence.
-
-6. `stackexchange` (disabled)
-- Key: optional but quota-sensitive even with key due shared-IP throttles.
-- Policy: keep disabled by default.
-
-## StackExchange Replacement Strategy
-
-`stackexchange` is removed from default flow. Preferred free alternatives:
 
 1. `ossinsight` (public API)
 - Use for: repository-level GitHub activity and trend corroboration.
@@ -119,7 +96,7 @@ Deterministic pipeline remains authoritative. LLM is called only on unresolved b
 
 Current optimization principles:
 
-1. Load external evidence first (`github`, `hn`, `deps.dev`, `pypistats`, `osv`).
+1. Load discovery evidence first (`github`, `hn`), then validation evidence (`deps.dev`, `osv`).
 2. Apply deterministic editorial/quality gates.
 3. Send only residual ambiguity to LLM (bounded by budget).
 4. Never allow LLM-only candidates into strong rings without corroborating evidence.

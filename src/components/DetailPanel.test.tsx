@@ -42,6 +42,8 @@ describe('DetailPanel', () => {
     expect(html).toContain('Evidence / alternatives');
     expect(html).toContain('data-detail-anchor="240:180"');
     expect(html).toContain('lg:block');
+    expect(html).toContain('role="dialog"');
+    expect(html).toContain('data-detail-overlay="true"');
   });
 
   it('does not render actionable headings when metadata is absent', () => {
@@ -118,7 +120,7 @@ describe('DetailPanel', () => {
             stalestDays: 2,
           },
           evidenceSummary: {
-            sources: ['github', 'hackernews', 'deps_dev', 'stackexchange'],
+            sources: ['github', 'hackernews', 'deps_dev', 'osv'],
             metrics: ['reverse_dependents', 'tag_activity'],
             hasExternalAdoption: true,
             githubOnly: false,

@@ -1,16 +1,3 @@
-@import "@fontsource/syne/400.css";
-@import "@fontsource/syne/500.css";
-@import "@fontsource/syne/600.css";
-@import "@fontsource/syne/700.css";
-@import "@fontsource/syne/800.css";
-@import "@fontsource/sora/300.css";
-@import "@fontsource/sora/400.css";
-@import "@fontsource/sora/500.css";
-@import "@fontsource/sora/600.css";
-@import "@fontsource/sora/700.css";
-@import "@fontsource/jetbrains-mono/400.css";
-@import "@fontsource/jetbrains-mono/500.css";
-@import "@fontsource/jetbrains-mono/600.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "./shadcn-compat.css";
@@ -20,9 +7,9 @@
 /* Qualtio Industrial Design System */
 @theme inline {
   /* Typography */
-  --font-display: "Syne";
-  --font-sans: "Sora";
-  --font-mono: "JetBrains Mono";
+  --font-display: var(--font-display-face);
+  --font-sans: var(--font-sans-face);
+  --font-mono: var(--font-mono-face);
   
   /* Colors - Qualtio corporate palette */
   --color-bg-primary: #050505;

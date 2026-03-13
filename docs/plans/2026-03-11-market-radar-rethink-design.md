@@ -183,7 +183,7 @@ The frontend data contract stays stable even if internal stages change.
 Use:
 
 - seeds
-- Stack Overflow / StackExchange tag activity
+- community discussion signals
 - GitHub popularity/momentum as secondary signal
 - editorial corpus references
 
@@ -198,7 +198,7 @@ Use:
 - Maven Central
 - crates.io
 - dependency/dependent signals
-- Stack Overflow tags
+- community usage signals
 - GitHub as secondary support
 
 ### Platforms
@@ -208,7 +208,7 @@ Use:
 - seeds
 - official/open-source repos
 - ecosystem and SDK presence
-- Stack Overflow tags
+- package and ecosystem validation
 - editorial corpus
 
 Platforms should not depend on "trending repo" discovery to exist.

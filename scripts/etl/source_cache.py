@@ -23,6 +23,7 @@ class SourceCache:
     def __init__(self, path: Path | str):
         self.path = Path(path)
         self._data: dict[str, SourceCacheEntry] = {}
+        self._dirty = False
         self._load()
 
     def get(self, key: str, *, now: datetime | None = None) -> SourceCacheEntry | None:
@@ -31,7 +32,7 @@ class SourceCache:
             return None
         if entry.is_expired(now=now):
             self._data.pop(key, None)
-            self._flush()
+            self._dirty = True
             return None
         return entry
 
@@ -43,7 +44,7 @@ class SourceCache:
             observed_at=reference,
             expires_at=reference + timedelta(seconds=ttl_seconds),
         )
-        self._flush()
+        self._dirty = True
 
     def put_negative(self, key: str, *, ttl_seconds: int, observed_at: datetime | None = None) -> None:
         reference = observed_at or datetime.now(timezone.utc)
@@ -53,7 +54,13 @@ class SourceCache:
             observed_at=reference,
             expires_at=reference + timedelta(seconds=ttl_seconds),
         )
+        self._dirty = True
+
+    def flush(self) -> None:
+        if not self._dirty:
+            return
         self._flush()
+        self._dirty = False
 
     def _load(self) -> None:
         if not self.path.exists():

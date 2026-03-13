@@ -19,24 +19,10 @@ Document practical limits/access constraints for the ETL sources used (or consid
 - Access: no API key required.
 - Source: https://docs.deps.dev/get-started/
 
-4. PyPI Stats API
-- Access: no API key required.
-- Limits: IP-based rate limiting; data is updated daily.
-- Source: https://pypistats.org/api/
-
-5. OSV API
+4. OSV API
 - Access: no API key required.
 - Notes: supports batched querying (`/v1/querybatch`) for lower request pressure.
 - Source: https://google.github.io/osv.dev/api/
-
-## Disabled Source
-
-1. Stack Exchange API
-- Reason disabled: unstable behavior under shared-IP throttling for our pipeline profile.
-- Limits/behavior: IP throttle and quota/backoff model, including request-rate restrictions.
-- Sources:
-  - https://api.stackexchange.com/docs/throttle
-  - https://api.stackexchange.com/docs
 
 ## Free Alternatives Evaluated
 
@@ -55,7 +41,6 @@ Document practical limits/access constraints for the ETL sources used (or consid
 
 ## Decision
 
-- Keep production ETL on: `github + hackernews + deps.dev + pypistats + osv`.
-- Keep `stackexchange` disabled by default.
+- Keep production ETL on: `github + hackernews` for discovery, `deps.dev + osv` for validation.
 - Treat `ossinsight` and `ecosyste.ms` as next optional adapters for added corroboration.
 - Do not block Radar V2 quality on `libraries.io` account availability.

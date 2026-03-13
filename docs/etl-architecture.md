@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Qualtio Tech Radar ETL pipeline automatically identifies, classifies, and tracks technology trends from external signals and evidence sources (GitHub, Hacker News, deps.dev, PyPI Stats, OSV) using AI-powered classification. Stack Exchange is optional and disabled by default. There is no secondary repository deep-scan phase.
+The Qualtio Tech Radar ETL pipeline automatically identifies, classifies, and tracks technology trends from discovery signals (GitHub, Hacker News) and validation sources (deps.dev, OSV) using AI-powered classification. There is no secondary repository deep-scan phase.
 
 ## System Architecture
 
@@ -11,15 +11,15 @@ The Qualtio Tech Radar ETL pipeline automatically identifies, classifies, and tr
 │                      DATA SOURCES                           │
 ├──────────────┬──────────────┤
 │ GitHub API   │ Hacker News  │ deps.dev       │
-│ PyPI Stats   │ OSV          │                │
+│ OSV          │              │                │
 └──────┬───────┴──────┬────────┴───────┬────────┴──────────┘
        │              │                │
        ▼              ▼                ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                    RAW COLLECTION                           │
 │  • Leader repositories and GitHub momentum                  │
-│  • HN discussions and Stack Exchange tag activity           │
-│  • Package adoption, dependents, and vulnerability pressure │
+│  • HN discussions and discovery heat                        │
+│  • Package validation, dependents, and vulnerability pressure │
 └──────────────────┬──────────────────────────────────────────┘
                    │
                    ▼
@@ -66,9 +66,7 @@ The Qualtio Tech Radar ETL pipeline automatically identifies, classifies, and tr
 **Evidence Adapters**
 - `github_trending`: repo momentum and popularity
 - `hackernews`: discussion heat
-- `stackexchange`: optional tag activity / mindshare (disabled by default)
 - `deps.dev`: reverse dependents and package linkage
-- `pypistats`: monthly download pressure for Python packages
 - `osv`: known vulnerability pressure
 
 ### Stage 2: AI Classification (Transform)
@@ -92,8 +90,8 @@ The v2 scorer uses four sub-scores:
 
 | Score | Purpose |
 |------|---------|
-| `adoption` | Package downloads, reverse dependents, and GitHub adoption proxies |
-| `mindshare` | Hacker News heat plus Stack Exchange tag activity |
+| `adoption` | Reverse dependents and GitHub adoption proxies |
+| `mindshare` | Hacker News heat |
 | `health` | Maintenance strength and corroboration breadth |
 | `risk` | Vulnerability pressure from OSV |
 
@@ -440,7 +438,7 @@ All credentials stored in GitHub Secrets:
 
 1. **Twitter/X Mentions** - Social sentiment
 2. **Reddit Discussions** - Community interest
-3. **Stack Overflow** - Developer questions
+3. **Package Registry Signals** - Ecosystem usage questions
 4. **NPM/DockerHub** - Package metrics
 
 ### Technical Debt

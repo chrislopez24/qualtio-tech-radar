@@ -1,10 +1,12 @@
 from datetime import datetime, timezone
 import logging
+from pathlib import Path
 
 import requests
 
 from etl.config import OSVSource as OSVConfig
 from etl.evidence import EvidenceRecord
+from etl.source_cache import SourceCache
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +16,8 @@ class OSVSource:
         self.config = config
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": "Qualtio-Tech-Radar/1.0"})
-        self._cache: dict[tuple[str, ...], list[EvidenceRecord]] = {}
+        self._cache: dict[str, list[EvidenceRecord]] = {}
+        self._persistent_cache = SourceCache(Path(config.cache_file))
 
     def fetch(self, subjects: list[str]) -> list[EvidenceRecord]:
         if not self.config.enabled:
@@ -24,9 +27,26 @@ class OSVSource:
         if not parsed_subjects:
             return []
 
-        cache_key = tuple(f"{ecosystem}:{package}@{version}" for ecosystem, package, version in parsed_subjects)
-        if cache_key in self._cache:
-            return list(self._cache[cache_key])
+        evidence: list[EvidenceRecord] = []
+        missing_subjects: list[tuple[str, str, str]] = []
+
+        for ecosystem, package, version in parsed_subjects:
+            cache_key = f"{ecosystem}:{package}@{version}"
+            if cache_key in self._cache:
+                evidence.extend(self._cache[cache_key])
+                continue
+
+            persistent_hit = self._persistent_cache.get(cache_key)
+            if persistent_hit is not None:
+                records = [self._record_from_cache(item) for item in persistent_hit.value or []]
+                self._cache[cache_key] = records
+                evidence.extend(records)
+                continue
+
+            missing_subjects.append((ecosystem, package, version))
+
+        if not missing_subjects:
+            return evidence
 
         queries = [
             {
@@ -36,7 +56,7 @@ class OSVSource:
                 },
                 "version": version,
             }
-            for ecosystem, package, version in parsed_subjects
+            for ecosystem, package, version in missing_subjects
         ]
 
         try:
@@ -48,18 +68,24 @@ class OSVSource:
             response.raise_for_status()
             payload = response.json() or {}
         except requests.RequestException as exc:
-            logger.warning("OSV querybatch failed for %s: %s", cache_key, exc)
-            self._cache[cache_key] = []
-            return []
+            logger.warning("OSV querybatch failed for %s: %s", queries, exc)
+            return evidence
 
         results = payload.get("results") or []
-
-        evidence: list[EvidenceRecord] = []
-        for (ecosystem, package, version), result in zip(parsed_subjects, results):
+        for (ecosystem, package, version), result in zip(missing_subjects, results):
+            cache_key = f"{ecosystem}:{package}@{version}"
             vuln_count = len(result.get("vulns") or [])
-            evidence.append(self._to_evidence(f"{ecosystem}:{package}@{version}", vuln_count))
+            record = self._to_evidence(cache_key, vuln_count)
+            records = [record]
+            self._cache[cache_key] = records
+            self._persistent_cache.put(
+                cache_key,
+                [self._record_to_cache(record)],
+                ttl_seconds=self.config.cache_ttl_seconds,
+            )
+            evidence.extend(records)
 
-        self._cache[cache_key] = list(evidence)
+        self._persistent_cache.flush()
         return evidence
 
     def _parse_subject(self, subject: str) -> tuple[str, str, str] | None:
@@ -92,3 +118,25 @@ class OSVSource:
             "rubygems": "RubyGems",
         }
         return mapping.get(ecosystem, ecosystem)
+
+    def _record_to_cache(self, record: EvidenceRecord) -> dict:
+        return {
+            "source": record.source,
+            "metric": record.metric,
+            "subject_id": record.subject_id,
+            "raw_value": record.raw_value,
+            "normalized_value": record.normalized_value,
+            "observed_at": record.observed_at,
+            "freshness_days": record.freshness_days,
+        }
+
+    def _record_from_cache(self, payload: dict) -> EvidenceRecord:
+        return EvidenceRecord(
+            source=str(payload["source"]),
+            metric=str(payload["metric"]),
+            subject_id=str(payload["subject_id"]),
+            raw_value=payload["raw_value"],
+            normalized_value=float(payload["normalized_value"]),
+            observed_at=str(payload["observed_at"]),
+            freshness_days=int(payload["freshness_days"]),
+        )

@@ -81,6 +81,13 @@ export const Blip = memo(function Blip({
       onKeyDown={handleKeyDown}
       onClick={handleClick}
     >
+      <circle
+        cx={x}
+        cy={y}
+        r={16}
+        fill="transparent"
+      />
+
       {isSelected ? (
         <motion.circle
           cx={x}

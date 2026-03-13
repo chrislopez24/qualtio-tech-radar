@@ -3,6 +3,13 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Header } from './Header';
 
+vi.mock('next/image', () => ({
+  default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img alt={props.alt ?? ''} {...props} />
+  ),
+}));
+
 describe('Header', () => {
   afterEach(() => {
     vi.unstubAllEnvs();

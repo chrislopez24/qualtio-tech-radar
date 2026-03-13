@@ -91,6 +91,18 @@ describe('WatchlistPanel', () => {
     expect(html).toContain('No review date');
   });
 
+  it('uses the provided reference date for review badges', () => {
+    const html = renderToStaticMarkup(
+      <WatchlistPanel
+        watchlist={[{ ...watchlistItem, nextReviewAt: '2026-06-01' }]}
+        referenceDate="2026-05-18T00:00:00.000Z"
+        onSelectTechnology={() => {}}
+      />,
+    );
+
+    expect(html).toContain('Due in 14d');
+  });
+
   it('distinguishes an empty watchlist from a filtered-out watchlist', () => {
     const html = renderToStaticMarkup(
       <WatchlistPanel
