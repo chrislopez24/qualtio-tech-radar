@@ -3,7 +3,7 @@
 import { useState, useCallback, memo } from 'react';
 import { motion } from 'framer-motion';
 import type { Technology, AITechnology } from '@/lib/types';
-import { getQuadrantById, getRingById } from '@/lib/radar-config';
+import { getRingById } from '@/lib/radar-config';
 import { getTooltipPosition } from '@/lib/blip-position';
 
 interface BlipProps {
@@ -15,7 +15,7 @@ interface BlipProps {
   isHoveredExternal: boolean;
   hasActiveSelection?: boolean;
   onHoverChange: (technologyId: string | null) => void;
-  onSelect: (tech: Technology | AITechnology) => void;
+  onSelect: (tech: Technology | AITechnology, anchor?: { x: number; y: number }) => void;
 }
 
 export const Blip = memo(function Blip({
@@ -32,20 +32,19 @@ export const Blip = memo(function Blip({
   const [isHoveredInternal, setIsHoveredInternal] = useState(false);
 
   const ring = getRingById(technology.ring);
-  const quadrant = getQuadrantById(technology.quadrant);
   const baseColor = ring.color;
   const isHovered = isHoveredInternal || isHoveredExternal;
 
   const handleClick = useCallback(() => {
-    onSelect(technology);
-  }, [technology, onSelect]);
+    onSelect(technology, { x, y });
+  }, [technology, onSelect, x, y]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      onSelect(technology);
+      onSelect(technology, { x, y });
     }
-  }, [technology, onSelect]);
+  }, [technology, onSelect, x, y]);
 
   const handlePointerEnter = useCallback(() => {
     setIsHoveredInternal(true);
@@ -59,15 +58,9 @@ export const Blip = memo(function Blip({
 
   const tooltipWidth = Math.min(technology.name.length * 8 + 24, 160);
   const tooltipPosition = getTooltipPosition({ x, y, width: tooltipWidth });
-  const hasContextCard = isSelected;
   const outerRadius = isSelected ? 16 : isHovered ? 11 : 0;
   const mainRadius = isSelected ? 7.4 : isHovered ? 6.5 : 5.5;
   const innerRadius = isSelected ? 2.8 : isHovered ? 3 : 2.3;
-  const contextCardWidth = Math.min(Math.max(technology.name.length * 8 + 54, 122), 180);
-  const contextCardHeight = 44;
-  const contextCardX = Math.min(x + 18, 800 - contextCardWidth - 8);
-  const contextCardY = Math.max(y - 20, 8);
-  const contextMeta = `${ring.name} • ${quadrant.name}`;
 
   return (
     <motion.g
@@ -133,13 +126,15 @@ export const Blip = memo(function Blip({
         transition={{ type: 'spring', stiffness: 360, damping: 22 }}
       />
 
-      <circle
-        cx={x}
-        cy={y}
-        r={innerRadius}
-        fill="#f6f1e8"
-        opacity={isHovered || isSelected ? 0.9 : 0.76}
-      />
+      {!isSelected ? (
+        <circle
+          cx={x}
+          cy={y}
+          r={innerRadius}
+          fill="#f6f1e8"
+          opacity={isHovered ? 0.9 : 0.76}
+        />
+      ) : null}
 
       {isSelected ? (
         <motion.circle
@@ -156,57 +151,7 @@ export const Blip = memo(function Blip({
         />
       ) : null}
 
-      {hasContextCard ? (
-        <motion.g
-          className="selection-card"
-          data-selection-card="true"
-          initial={{ opacity: 0, x: -6, y: 3 }}
-          animate={{ opacity: 1, x: 0, y: 0 }}
-          transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <rect
-            x={contextCardX}
-            y={contextCardY}
-            width={contextCardWidth}
-            height={contextCardHeight}
-            rx={10}
-            fill="rgba(9, 10, 12, 0.96)"
-            stroke={baseColor}
-            strokeWidth={1.4}
-            style={{ filter: 'drop-shadow(0 8px 18px rgba(0,0,0,0.38))' }}
-          />
-          <rect
-            x={contextCardX + 8}
-            y={contextCardY + 8}
-            width={contextCardWidth - 16}
-            height={12}
-            rx={6}
-            fill={`${baseColor}22`}
-          />
-          <text
-            x={contextCardX + 10}
-            y={contextCardY + 30}
-            fill="#ffffff"
-            fontSize={13}
-            fontFamily="var(--font-sans)"
-            fontWeight={600}
-            letterSpacing="0.01em"
-          >
-            {technology.name}
-          </text>
-          <text
-            x={contextCardX + 10}
-            y={contextCardY + 17}
-            fill={baseColor}
-            fontSize={9}
-            fontFamily="var(--font-mono)"
-            fontWeight={600}
-            letterSpacing="0.08em"
-          >
-            {contextMeta}
-          </text>
-        </motion.g>
-      ) : isHovered ? (
+      {isHovered && !isSelected ? (
         <g>
           <rect
             x={tooltipPosition.x}

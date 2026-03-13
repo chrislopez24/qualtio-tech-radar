@@ -16,7 +16,7 @@ const selectedTechnology: AITechnology = {
 };
 
 describe('Blip', () => {
-  it('renders an anchored contextual summary card for selected technologies', () => {
+  it('keeps selected blips color-led without a white core fill', () => {
     const html = renderToStaticMarkup(
       <svg>
         <Blip
@@ -32,9 +32,8 @@ describe('Blip', () => {
       </svg>,
     );
 
-    expect(html).toContain('Vercel');
-    expect(html).toContain('Trial');
-    expect(html).toContain('Platforms');
-    expect(html).toContain('selection-card');
+    expect(html).toContain('stroke="#22d3ee"');
+    expect(html).not.toContain('fill="#fff"');
+    expect(html).not.toContain('fill="#f6f1e8"');
   });
 });

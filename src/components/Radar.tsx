@@ -12,7 +12,7 @@ interface RadarProps {
   selectedTech: Technology | AITechnology | null;
   hoveredTechnologyId: string | null;
   onHoverTechnology: (technologyId: string | null) => void;
-  onSelect: (tech: Technology | AITechnology) => void;
+  onSelect: (tech: Technology | AITechnology, anchor?: { x: number; y: number }) => void;
 }
 
 export function Radar({

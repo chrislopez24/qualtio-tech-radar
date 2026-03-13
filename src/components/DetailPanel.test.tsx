@@ -30,7 +30,7 @@ const richTechnology: AITechnology = {
 describe('DetailPanel', () => {
   it('renders actionable sections when metadata is present', () => {
     const html = renderToStaticMarkup(
-      <DetailPanel technology={richTechnology} open onClose={() => {}} />,
+      <DetailPanel technology={richTechnology} open anchor={{ x: 240, y: 180 }} onClose={() => {}} />,
     );
 
     expect(html).toContain('Why now');
@@ -40,7 +40,8 @@ describe('DetailPanel', () => {
     expect(html).toContain('Owner &amp; review');
     expect(html).toContain('Next step');
     expect(html).toContain('Evidence / alternatives');
-    expect(html).toContain('lg:hidden');
+    expect(html).toContain('data-detail-anchor="240:180"');
+    expect(html).toContain('lg:block');
   });
 
   it('does not render actionable headings when metadata is absent', () => {
@@ -57,6 +58,7 @@ describe('DetailPanel', () => {
           updatedAt: '2026-03-05T00:00:00.000Z',
         }}
         open
+        anchor={{ x: 240, y: 180 }}
         onClose={() => {}}
       />,
     );
@@ -75,6 +77,7 @@ describe('DetailPanel', () => {
           signalFreshness: 'fresh in last 7 days',
         }}
         open
+        anchor={{ x: 240, y: 180 }}
         onClose={() => {}}
       />,
     );
@@ -94,6 +97,7 @@ describe('DetailPanel', () => {
           signalFreshness: undefined,
         }}
         open
+        anchor={{ x: 240, y: 180 }}
         onClose={() => {}}
       />,
     );
@@ -121,6 +125,7 @@ describe('DetailPanel', () => {
           },
         }}
         open
+        anchor={{ x: 240, y: 180 }}
         onClose={() => {}}
       />,
     );

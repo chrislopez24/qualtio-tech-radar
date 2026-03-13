@@ -45,6 +45,7 @@ function EmptyState({ title, description }: { title: string; description: string
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTech, setSelectedTech] = useState<Technology | AITechnology | null>(null);
+  const [selectedAnchor, setSelectedAnchor] = useState<{ x: number; y: number } | null>(null);
   const [hoveredTechnologyId, setHoveredTechnologyId] = useState<string | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
   const [filters, setFilters] = useState<RadarFilterState>({
@@ -57,13 +58,16 @@ export default function Home() {
   const aiData = useRadarData();
   const deferredSearchQuery = useDeferredValue(searchQuery);
 
-  const handleSelect = useCallback((tech: Technology | AITechnology) => {
+  const handleSelect = useCallback((tech: Technology | AITechnology, anchor?: { x: number; y: number }) => {
     setSelectedTech(tech);
+    setSelectedAnchor(anchor ?? null);
     setPanelOpen(true);
   }, []);
 
   const handleClosePanel = useCallback(() => {
     setPanelOpen(false);
+    setSelectedTech(null);
+    setSelectedAnchor(null);
   }, []);
 
   const toggleRing = useCallback((ring: Ring) => {
@@ -148,7 +152,7 @@ export default function Home() {
               transition={SPRING_SMOOTH}
             >
               <div className="min-w-0 lg:flex lg:h-full lg:flex-col">
-                <div className="bento-card flex items-center justify-center p-3 sm:p-4 lg:h-full lg:min-h-0">
+                <div className="bento-card relative flex items-center justify-center p-3 sm:p-4 lg:h-full lg:min-h-0">
                     <Radar
                       technologies={visibleTechnologies}
                       allTechnologies={technologies}
@@ -156,6 +160,12 @@ export default function Home() {
                       hoveredTechnologyId={hoveredTechnologyId}
                       onHoverTechnology={setHoveredTechnologyId}
                       onSelect={handleSelect}
+                    />
+                    <DetailPanel
+                      technology={selectedTech}
+                      open={panelOpen}
+                      anchor={selectedAnchor}
+                      onClose={handleClosePanel}
                     />
                 </div>
 
@@ -177,7 +187,6 @@ export default function Home() {
                 visibleTechnologies={visibleTechnologies}
                 totalTechnologies={technologies.length}
                 selectedTechnologyId={selectedTech?.id ?? null}
-                selectedTechnology={selectedTech && 'confidence' in selectedTech ? selectedTech : null}
                 hoveredTechnologyId={hoveredTechnologyId}
                 watchlist={visibleWatchlist}
                 totalWatchlistCount={watchlist.length}
@@ -190,21 +199,11 @@ export default function Home() {
                 onResetFilters={resetFilters}
                 onHoverTechnology={setHoveredTechnologyId}
                 onSelectTechnology={handleSelect}
-                onClearSelection={() => {
-                  setSelectedTech(null);
-                  setPanelOpen(false);
-                }}
               />
             </motion.div>
           )}
         </AnimatePresence>
       </main>
-
-      <DetailPanel
-        technology={selectedTech}
-        open={panelOpen}
-        onClose={handleClosePanel}
-      />
     </div>
   );
 }
