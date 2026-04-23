@@ -173,7 +173,7 @@ export function HomeClient({ initialData }: HomeClientProps) {
       <main className="mx-auto max-w-[1840px] px-4 pb-6 pt-[100px] sm:px-6 lg:px-8">
         <section className="mb-4 grid gap-3 lg:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.85fr)]">
           <div className="bento-card p-4">
-            <p className="text-[11px] font-mono uppercase tracking-[0.28em] text-accent-cyan">How to read this radar</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent-cyan">How to read this radar</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight">Read signal strength before chasing novelty.</h2>
             <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
               Discovery comes from GitHub and Hacker News. Strong rings are then validated with deps.dev and OSV so momentum alone does not over-promote risky or weakly corroborated technologies.

@@ -52,7 +52,7 @@ export function Header({
               
               <div className="hidden sm:block leading-none">
                 <motion.p 
-                  className="text-[11px] font-mono text-accent-cyan uppercase tracking-[0.34em]"
+                  className="text-[11px] font-semibold text-accent-cyan uppercase tracking-[0.18em]"
                   initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.12 }}
@@ -60,7 +60,7 @@ export function Header({
                   Tech Radar
                 </motion.p>
                 <motion.p
-                  className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-text-tertiary"
+                  className="mt-1 text-[10px] font-medium uppercase tracking-[0.12em] text-text-tertiary"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
