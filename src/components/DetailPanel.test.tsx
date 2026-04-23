@@ -139,4 +139,32 @@ describe('DetailPanel', () => {
     expect(html).toContain('reverse_dependents');
     expect(html).toContain('freshest 1d');
   });
+
+  it('renders structured evidence records without object placeholders', () => {
+    const html = renderToStaticMarkup(
+      <DetailPanel
+        technology={{
+          ...richTechnology,
+          evidence: [
+            {
+              source: 'deps_dev',
+              metric: 'reverse_dependents',
+              subjectId: 'npm:react',
+              rawValue: 21056,
+              normalizedValue: 72.06,
+              observedAt: '2026-03-13T10:07:32.096516+00:00',
+              freshnessDays: 1,
+            },
+          ],
+        }}
+        open
+        anchor={{ x: 240, y: 180 }}
+        onClose={() => {}}
+      />,
+    );
+
+    expect(html).toContain('deps_dev:reverse_dependents');
+    expect(html).toContain('npm:react');
+    expect(html).not.toContain('[object Object]');
+  });
 });

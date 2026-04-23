@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from collections import defaultdict
 from typing import Any, Iterable
 
@@ -102,7 +103,7 @@ class HackerNewsDiscoverySource:
         for story in self.source.fetch():
             text = f"{story.title} {story.url}".lower()
             for alias, seed in SEED_LOOKUP.items():
-                if alias in text:
+                if _contains_alias(text, alias):
                     mentions[seed["canonical_name"]].append(min(100.0, float(story.points) * 0.5 + story.tech_score * 5.0))
 
         records: list[dict[str, Any]] = []
@@ -145,6 +146,20 @@ def _coerce_record(item: Any) -> dict[str, Any]:
     if hasattr(item, "__dict__"):
         return dict(vars(item))
     raise TypeError(f"Unsupported discovery record type: {type(item)!r}")
+
+
+def _contains_alias(text: str, alias: str) -> bool:
+    value = str(alias or "").strip().lower()
+    if not value:
+        return False
+
+    pattern = re.escape(value)
+    if value[0].isalnum():
+        pattern = rf"(?<![a-z0-9]){pattern}"
+    if value[-1].isalnum():
+        pattern = rf"{pattern}(?![a-z0-9])"
+
+    return re.search(pattern, text) is not None
 
 
 def _seed_for_github_signal(signal: Any) -> dict[str, Any] | None:

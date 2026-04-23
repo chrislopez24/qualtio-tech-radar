@@ -123,7 +123,10 @@ def _normalize_trend_value(value: Any) -> str:
 
 def _normalize_confidence_value(value: Any) -> float:
     if isinstance(value, (int, float)):
-        return float(value)
+        numeric = float(value)
+        if numeric > 1.0:
+            numeric = numeric / 100.0
+        return max(0.0, min(1.0, numeric))
 
     mapping = {
         "very high": 0.95,

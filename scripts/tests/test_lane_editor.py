@@ -48,6 +48,28 @@ def test_lane_editor_normalizes_synthetic_variant_fields():
     assert payload.included[0].trend == "up"
 
 
+def test_lane_editor_normalizes_numeric_percentage_confidence():
+    from etl.editorial_llm.lane_editor import parse_lane_decision
+
+    payload = parse_lane_decision(
+        {
+            "lane": "frameworks",
+            "included": [
+                {
+                    "name": "React",
+                    "ring": "ADOPT",
+                    "description": "UI library",
+                    "confidence": 95,
+                    "trend": "rising",
+                }
+            ],
+            "excluded": [],
+        }
+    )
+
+    assert payload.included[0].confidence == 0.95
+
+
 def test_lane_editor_prefers_synthetic_openai_compatible_config(monkeypatch):
     from etl.editorial_llm.client import resolve_llm_config
 

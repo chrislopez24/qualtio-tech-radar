@@ -201,3 +201,29 @@ def test_deps_dev_source_does_not_persist_rate_limit_failures(tmp_path):
 
     assert len(evidence) == 2
     assert mock_get.call_count == 2
+
+
+def test_deps_dev_source_respects_request_budget_for_uncached_subjects(tmp_path):
+    config = DepsDevConfig(
+        enabled=True,
+        cache_file=str(tmp_path / "deps-dev-cache.json"),
+        request_budget=1,
+    )
+    source = DepsDevSource(config)
+
+    with patch.object(source.session, "get") as mock_get:
+        package_response = Mock()
+        package_response.raise_for_status.return_value = None
+        package_response.json.return_value = {
+            "defaultVersionKey": {"system": "npm", "name": "react", "version": "19.0.0"}
+        }
+
+        dependents_response = Mock()
+        dependents_response.raise_for_status.return_value = None
+        dependents_response.json.return_value = {"totalCount": 10}
+
+        mock_get.side_effect = [package_response, dependents_response]
+        evidence = source.fetch(["npm:react", "npm:typescript"])
+
+    assert {record.subject_id for record in evidence} == {"npm:react", "npm:react@19.0.0"}
+    assert mock_get.call_count == 2

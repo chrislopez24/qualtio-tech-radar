@@ -26,6 +26,7 @@ class DepsDevSource:
             return []
 
         evidence: list[EvidenceRecord] = []
+        uncached_requests = 0
         try:
             for subject in subjects:
                 if subject in self._cache:
@@ -45,6 +46,11 @@ class DepsDevSource:
                 parsed = self._parse_subject(subject)
                 if parsed is None:
                     continue
+
+                if uncached_requests >= self.config.request_budget:
+                    logger.info("deps.dev request budget exhausted; skipping %s", subject)
+                    continue
+                uncached_requests += 1
 
                 system, package = parsed
                 try:

@@ -17,6 +17,15 @@ interface TechnologyDetailContentProps {
   technology: Technology | AITechnology;
 }
 
+type EvidenceRecordLike = {
+  source?: unknown;
+  metric?: unknown;
+  subjectId?: unknown;
+  subject_id?: unknown;
+  rawValue?: unknown;
+  raw_value?: unknown;
+};
+
 function formatNumber(num: number): string {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
   if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
@@ -35,6 +44,24 @@ function renderStringListSection(title: string, items?: string[]) {
       </ul>
     </section>
   );
+}
+
+function formatEvidenceItem(item: string | EvidenceRecordLike): string {
+  if (typeof item === 'string') {
+    return item;
+  }
+
+  const source = typeof item.source === 'string' ? item.source : 'unknown';
+  const metric = typeof item.metric === 'string' ? item.metric : 'signal';
+  const subject = typeof item.subjectId === 'string'
+    ? item.subjectId
+    : typeof item.subject_id === 'string'
+      ? item.subject_id
+      : null;
+  const rawValue = item.rawValue ?? item.raw_value;
+  const value = rawValue !== undefined && rawValue !== null ? ` (${String(rawValue)})` : '';
+
+  return subject ? `${source}:${metric} ${subject}${value}` : `${source}:${metric}${value}`;
 }
 
 export function TechnologyDetailContent({ technology }: TechnologyDetailContentProps) {
@@ -156,7 +183,7 @@ export function TechnologyDetailContent({ technology }: TechnologyDetailContentP
                   <section>
                     <h4 className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Evidence / alternatives</h4>
                     {aiTechnology.evidence?.length ? (
-                      <p className="mt-1 text-muted-foreground">Evidence: {aiTechnology.evidence.join(', ')}</p>
+                      <p className="mt-1 text-muted-foreground">Evidence: {aiTechnology.evidence.map(formatEvidenceItem).join(', ')}</p>
                     ) : null}
                     {aiTechnology.alternatives?.length ? (
                       <p className="mt-1 text-muted-foreground">Alternatives: {aiTechnology.alternatives.join(', ')}</p>

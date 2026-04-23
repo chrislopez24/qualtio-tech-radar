@@ -59,3 +59,30 @@ def test_hackernews_discovery_source_scans_broad_story_window():
     source = HackerNewsDiscoverySource(ETLConfig().sources.hackernews)
 
     assert source.source.max_stories_scan == 500
+
+
+def test_hackernews_discovery_source_matches_aliases_on_token_boundaries(monkeypatch):
+    from etl.config import ETLConfig
+    from etl.discovery.collector import HackerNewsDiscoverySource
+    from etl.sources.hackernews import HackerNewsItem
+
+    def fake_fetch(self):
+        return [
+            HackerNewsItem(
+                id=1,
+                title="Django and MongoDB deployment notes",
+                url="https://example.com/google-cloud-notes",
+                points=50,
+                author="tester",
+                created_at=0,
+                comment_count=1,
+                tech_score=4.0,
+            )
+        ]
+
+    monkeypatch.setattr("etl.discovery.collector.HackerNewsSource.fetch", fake_fetch)
+
+    source = HackerNewsDiscoverySource(ETLConfig().sources.hackernews)
+    records = source.fetch()
+
+    assert {record["name"] for record in records} == {"Django", "MongoDB", "Google Cloud"}
