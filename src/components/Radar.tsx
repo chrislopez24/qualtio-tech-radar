@@ -27,18 +27,18 @@ export function Radar({
   const center = RADAR_SIZE / 2;
 
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[1120px] xl:max-w-[1240px]">
+    <div className="relative mx-auto aspect-square h-full max-h-full w-auto max-w-full overflow-visible">
       {/* Background Grid Effect */}
-      <div className="absolute inset-0 opacity-10">
-        <div 
+      <div className="absolute inset-0 opacity-40">
+        <div
           className="w-full h-full"
           style={{
             backgroundImage: `
-              radial-gradient(circle at ${center}px ${center}px, rgba(249, 115, 22, 0.06) 0%, rgba(99, 102, 241, 0.025) 42%, transparent 66%),
-              linear-gradient(rgba(249, 115, 22, 0.018) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(99, 102, 241, 0.018) 1px, transparent 1px)
+              radial-gradient(circle at ${center}px ${center}px, rgba(249, 115, 22, 0.045) 0%, rgba(249, 115, 22, 0.012) 42%, transparent 68%),
+              linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px)
             `,
-            backgroundSize: '100% 100%, 60px 60px, 60px 60px',
+            backgroundSize: '100% 100%, 72px 72px, 72px 72px',
           }}
         />
       </div>
@@ -61,8 +61,8 @@ export function Radar({
           
           {/* Radial Gradient for center glow */}
           <radialGradient id="radarCenterGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#f97316" stopOpacity={0.055} />
-            <stop offset="45%" stopColor="#6366f1" stopOpacity={0.02} />
+            <stop offset="0%" stopColor="#f97316" stopOpacity={0.04} />
+            <stop offset="45%" stopColor="#f2ede2" stopOpacity={0.012} />
             <stop offset="100%" stopColor="transparent" stopOpacity={0} />
           </radialGradient>
         </defs>
@@ -116,11 +116,11 @@ export function Radar({
               r={ring.radius}
               fill="none"
               stroke={ring.color}
-              strokeWidth={1.5}
+              strokeWidth={1.15}
               strokeDasharray={index % 2 === 0 ? 'none' : '8 4'}
-              opacity={0.5}
+              opacity={0.42}
               initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 0.5 }}
+              animate={{ pathLength: 1, opacity: 0.42 }}
               transition={{ 
                 duration: 1.2, 
                 delay: index * 0.15,
@@ -139,9 +139,9 @@ export function Radar({
                 x2={center + RINGS[0].radius * Math.cos((quadrant.angle - 90) * Math.PI / 180)}
                 y2={center + RINGS[0].radius * Math.sin((quadrant.angle - 90) * Math.PI / 180)}
                 stroke={quadrant.color}
-                strokeWidth={1.5}
+                strokeWidth={1}
                 strokeDasharray="8 4"
-                opacity={0.35}
+                opacity={0.28}
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
                 transition={{ 
@@ -160,10 +160,10 @@ export function Radar({
               x={center + 16}
               y={center - ring.radius + (ring.id === 'hold' ? 20 : ring.id === 'assess' ? 16 : ring.id === 'trial' ? 14 : 12)}
               fill={ring.color}
-              fontSize={10}
+              fontSize={9}
               fontFamily="var(--font-mono)"
               fontWeight={500}
-              opacity={0.7}
+              opacity={0.58}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 0.7, x: 0 }}
               transition={{ delay: 0.6 + index * 0.1 }}
@@ -200,11 +200,11 @@ export function Radar({
                   y={y - 14}
                   width={96}
                   height={28}
-                  rx={8}
-                  fill="rgba(10, 10, 15, 0.95)"
+                  rx={6}
+                  fill="rgba(10, 10, 10, 0.9)"
                   stroke={quadrant.color}
                   strokeWidth={1}
-                  opacity={0.95}
+                  opacity={0.82}
                 />
                 
                 {/* Label Text */}
@@ -212,12 +212,12 @@ export function Radar({
                   x={x}
                   y={y + 1}
                   fill={quadrant.color}
-                  fontSize={11}
+                  fontSize={10}
                   fontFamily="var(--font-sans)"
                   fontWeight={600}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  letterSpacing="0.08em"
+                  letterSpacing="0.06em"
                 >
                   {quadrant.name.toUpperCase()}
                 </text>

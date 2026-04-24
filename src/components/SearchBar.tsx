@@ -28,13 +28,11 @@ export function SearchBar({ value, onChange, placeholder = 'Search technologies.
   return (
     <div className="relative group">
       {/* Glow effect on focus */}
-      <motion.div
-        className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-[#d96d1f]/22 via-[#f2ede2]/10 to-[#9d5a28]/18 opacity-0 blur-sm transition-opacity duration-500 group-focus-within:opacity-100"
-      />
+      <motion.div className="absolute -inset-0.5 rounded-xl bg-primary/10 opacity-0 blur-sm transition-opacity duration-300 group-focus-within:opacity-100" />
       
       <div className="relative flex items-center">
         <MagnifyingGlass 
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-tertiary group-focus-within:text-accent-cyan transition-colors" 
+          className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-tertiary transition-colors group-focus-within:text-primary"
           weight="duotone" 
         />
         
@@ -45,9 +43,9 @@ export function SearchBar({ value, onChange, placeholder = 'Search technologies.
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full pl-11 pr-24 py-2.5 bg-bg-secondary/80 border border-border-subtle rounded-xl
+          className="w-full rounded-xl border border-border/70 bg-bg-secondary/80 py-2.5 pl-10 pr-20
                      text-sm text-white placeholder:text-text-tertiary
-                     focus:outline-none focus:border-accent-cyan/45 focus:bg-bg-tertiary
+                     focus:border-primary/45 focus:bg-bg-tertiary focus:outline-none
                      transition-all duration-300
                      font-body"
         />
@@ -59,7 +57,7 @@ export function SearchBar({ value, onChange, placeholder = 'Search technologies.
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="absolute right-3 flex items-center gap-1 px-2 py-1 rounded-md bg-bg-tertiary border border-border-subtle"
+              className="absolute right-2.5 flex items-center gap-1 rounded-md border border-border/60 bg-bg-tertiary px-2 py-1"
             >
               <Command className="w-3 h-3 text-text-tertiary" weight="duotone" />
               <span className="text-[10px] font-mono text-text-tertiary uppercase">K</span>

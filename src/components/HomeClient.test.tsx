@@ -23,12 +23,17 @@ const radarData: AIRadarData = {
 };
 
 describe('HomeClient', () => {
-  it('surfaces first-viewport guide content and presets', () => {
+  it('surfaces the editorial workbench, metrics, presets, and mobile views', () => {
     const html = renderToStaticMarkup(<HomeClient initialData={radarData} />);
 
-    expect(html).toContain('How to read this radar');
+    expect(html).toContain('Editorial radar');
+    expect(html).toContain('Market signals, filtered into adoption decisions.');
+    expect(html).toContain('Visible');
+    expect(html).toContain('Watchlist');
     expect(html).toContain('Strong signals');
-    expect(html).toContain('Rising bets');
+    expect(html).toContain('Rising');
     expect(html).toContain('Needs review');
+    expect(html).toContain('Explore');
+    expect(html).toContain('Quality');
   });
 });

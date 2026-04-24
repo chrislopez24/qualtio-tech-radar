@@ -5,14 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Header } from '@/components/Header';
 import { Radar } from '@/components/Radar';
 import { RadarSidebar } from '@/components/RadarSidebar';
-import { WatchlistPanel } from '@/components/WatchlistPanel';
-import { Legend } from '@/components/Legend';
 import { DetailPanel } from '@/components/DetailPanel';
 import type { AIRadarData, AITechnology, Technology, Quadrant, Ring, Trend } from '@/lib/types';
 import { SPRING_SMOOTH } from '@/lib/animation-constants';
 import { filterTechnologies, type RadarFilterState } from '@/lib/radar-filters';
 import { getRadarContentState } from '@/lib/radar-view-state';
 import { parseRadarUrlState, serializeRadarUrlState } from '@/lib/url-state';
+import { QUADRANTS, RINGS } from '@/lib/radar-config';
 
 function EmptyState({ title, description }: { title: string; description: string }) {
   return (
@@ -53,6 +52,22 @@ const DEFAULT_FILTERS: RadarFilterState = {
   minConfidence: null,
 };
 
+type Preset = 'strong' | 'rising' | 'review';
+type MobileView = 'radar' | 'explore' | 'watchlist' | 'quality';
+
+const MOBILE_VIEWS: Array<{ id: MobileView; label: string }> = [
+  { id: 'radar', label: 'Radar' },
+  { id: 'explore', label: 'Explore' },
+  { id: 'watchlist', label: 'Watchlist' },
+  { id: 'quality', label: 'Quality' },
+];
+
+const QUICK_PRESETS: Array<{ id: Preset; label: string; meta: string }> = [
+  { id: 'strong', label: 'Strong signals', meta: 'Adopt + Trial' },
+  { id: 'rising', label: 'Rising', meta: 'Up or new' },
+  { id: 'review', label: 'Needs review', meta: 'Assess + Hold' },
+];
+
 export function HomeClient({ initialData }: HomeClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTech, setSelectedTech] = useState<Technology | AITechnology | null>(null);
@@ -60,6 +75,8 @@ export function HomeClient({ initialData }: HomeClientProps) {
   const [hoveredTechnologyId, setHoveredTechnologyId] = useState<string | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
   const [filters, setFilters] = useState<RadarFilterState>(DEFAULT_FILTERS);
+  const [activePreset, setActivePreset] = useState<Preset | null>(null);
+  const [mobileView, setMobileView] = useState<MobileView>('radar');
   const deferredSearchQuery = useDeferredValue(searchQuery);
 
   useEffect(() => {
@@ -97,11 +114,15 @@ export function HomeClient({ initialData }: HomeClientProps) {
 
   const handleClosePanel = useCallback(() => {
     setPanelOpen(false);
+  }, []);
+
+  const handlePanelExited = useCallback(() => {
     setSelectedTech(null);
     setSelectedAnchor(null);
   }, []);
 
   const toggleRing = useCallback((ring: Ring) => {
+    setActivePreset(null);
     setFilters((prev) => ({
       ...prev,
       rings: prev.rings.includes(ring)
@@ -111,6 +132,7 @@ export function HomeClient({ initialData }: HomeClientProps) {
   }, []);
 
   const toggleQuadrant = useCallback((quadrant: Quadrant) => {
+    setActivePreset(null);
     setFilters((prev) => ({
       ...prev,
       quadrants: prev.quadrants.includes(quadrant)
@@ -120,6 +142,7 @@ export function HomeClient({ initialData }: HomeClientProps) {
   }, []);
 
   const toggleTrend = useCallback((trend: Trend) => {
+    setActivePreset(null);
     setFilters((prev) => ({
       ...prev,
       trends: prev.trends.includes(trend)
@@ -129,11 +152,13 @@ export function HomeClient({ initialData }: HomeClientProps) {
   }, []);
 
   const setMinConfidence = useCallback((value: number | null) => {
+    setActivePreset(null);
     setFilters((prev) => ({ ...prev, minConfidence: value }));
   }, []);
 
   const resetFilters = useCallback(() => {
     setFilters(DEFAULT_FILTERS);
+    setActivePreset(null);
   }, []);
 
   const technologies = useMemo(() => initialData.technologies ?? [], [initialData]);
@@ -151,8 +176,27 @@ export function HomeClient({ initialData }: HomeClientProps) {
 
   const contentState = getRadarContentState(technologies.length, visibleTechnologies.length);
 
-  const applyPreset = useCallback((preset: 'strong' | 'rising' | 'review') => {
+  const ringCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const ring of RINGS) counts.set(ring.id, 0);
+    for (const technology of visibleTechnologies) {
+      counts.set(technology.ring, (counts.get(technology.ring) ?? 0) + 1);
+    }
+    return counts;
+  }, [visibleTechnologies]);
+
+  const quadrantCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const quadrant of QUADRANTS) counts.set(quadrant.id, 0);
+    for (const technology of visibleTechnologies) {
+      counts.set(technology.quadrant, (counts.get(technology.quadrant) ?? 0) + 1);
+    }
+    return counts;
+  }, [visibleTechnologies]);
+
+  const applyPreset = useCallback((preset: Preset) => {
     startTransition(() => {
+      setActivePreset(preset);
       setSearchQuery('');
       if (preset === 'strong') {
         setFilters({ rings: ['adopt', 'trial'], quadrants: [], trends: [], minConfidence: 0.7 });
@@ -170,34 +214,99 @@ export function HomeClient({ initialData }: HomeClientProps) {
     <div className="min-h-[100dvh] bg-background">
       <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
-      <main className="mx-auto max-w-[1840px] px-4 pb-6 pt-[100px] sm:px-6 lg:px-8">
-        <section className="mb-4 grid gap-3 lg:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.85fr)]">
-          <div className="bento-card p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent-cyan">How to read this radar</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight">Read signal strength before chasing novelty.</h2>
-            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-              Discovery comes from GitHub and Hacker News. Strong rings are then validated with deps.dev and OSV so momentum alone does not over-promote risky or weakly corroborated technologies.
-            </p>
+      <main className="dashboard-main mx-auto max-w-[1760px] px-3 pb-6 pt-[136px] sm:px-5 md:pt-[88px] lg:px-6">
+        <section className="workbench-strip mb-3 lg:mb-2">
+          <div className="min-w-0">
+            <p className="section-kicker">Editorial radar</p>
+            <h1 className="mt-1 text-balance text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+              Market signals, filtered into adoption decisions.
+            </h1>
           </div>
 
-          <div className="bento-card p-4">
-            <p className="text-[11px] font-mono uppercase tracking-[0.28em] text-muted-foreground">Quick presets</p>
-            <div className="mt-3 grid gap-2 sm:grid-cols-3 lg:grid-cols-1">
-              <button type="button" onClick={() => applyPreset('strong')} className="rounded-xl border border-border/60 bg-background/70 px-3 py-2 text-left transition-colors hover:bg-muted/60">
-                <p className="text-sm font-medium">Strong signals</p>
-                <p className="text-xs text-muted-foreground">Adopt + Trial with high confidence.</p>
+          <div className="hidden min-w-0 items-center gap-1 lg:flex" aria-label="Quick presets">
+            {QUICK_PRESETS.map((preset) => (
+              <button
+                key={preset.id}
+                type="button"
+                onClick={() => applyPreset(preset.id)}
+                aria-pressed={activePreset === preset.id}
+                className={`command-chip min-w-fit ${activePreset === preset.id ? 'command-chip-active' : ''}`}
+              >
+                <span>{preset.label}</span>
+                <small>{preset.meta}</small>
               </button>
-              <button type="button" onClick={() => applyPreset('rising')} className="rounded-xl border border-border/60 bg-background/70 px-3 py-2 text-left transition-colors hover:bg-muted/60">
-                <p className="text-sm font-medium">Rising bets</p>
-                <p className="text-xs text-muted-foreground">Up or new technologies worth shortlisting.</p>
-              </button>
-              <button type="button" onClick={() => applyPreset('review')} className="rounded-xl border border-border/60 bg-background/70 px-3 py-2 text-left transition-colors hover:bg-muted/60">
-                <p className="text-sm font-medium">Needs review</p>
-                <p className="text-xs text-muted-foreground">Assess and Hold items that need clearer calls.</p>
-              </button>
+            ))}
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="command-chip justify-center"
+            >
+              <span>Reset</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end">
+            <div className="metric-tile">
+              <span>Visible</span>
+              <strong>{visibleTechnologies.length}</strong>
+            </div>
+            <div className="metric-tile">
+              <span>Watchlist</span>
+              <strong>{visibleWatchlist.length}</strong>
+            </div>
+            <div className="metric-tile hidden sm:block">
+              <span>Adopt</span>
+              <strong>{ringCounts.get('adopt') ?? 0}</strong>
+            </div>
+            <div className="metric-tile hidden sm:block">
+              <span>Tools</span>
+              <strong>{quadrantCounts.get('tools') ?? 0}</strong>
             </div>
           </div>
         </section>
+
+        <section className="mb-3 flex flex-col gap-2 rounded-2xl border border-border/60 bg-bg-secondary/70 p-2 sm:flex-row sm:items-center sm:justify-between lg:hidden">
+          <div className="flex min-w-0 gap-1 overflow-x-auto no-scrollbar" aria-label="Quick presets">
+            {QUICK_PRESETS.map((preset) => (
+              <button
+                key={preset.id}
+                type="button"
+                onClick={() => applyPreset(preset.id)}
+                aria-pressed={activePreset === preset.id}
+                className={`command-chip min-w-fit ${activePreset === preset.id ? 'command-chip-active' : ''}`}
+              >
+                <span>{preset.label}</span>
+                <small>{preset.meta}</small>
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="command-chip justify-center sm:min-w-[92px]"
+          >
+            <span>Reset</span>
+          </button>
+        </section>
+
+        <nav className="mb-3 grid grid-cols-4 gap-1 rounded-2xl border border-border/60 bg-bg-secondary/80 p-1 lg:hidden" aria-label="Mobile radar views">
+          {MOBILE_VIEWS.map((view) => (
+            <button
+              key={view.id}
+              type="button"
+              onClick={() => setMobileView(view.id)}
+              aria-pressed={mobileView === view.id}
+              className={`rounded-xl px-2 py-2 text-xs font-semibold transition-colors ${
+                mobileView === view.id
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
+              }`}
+            >
+              {view.label}
+            </button>
+          ))}
+        </nav>
 
         <AnimatePresence mode="wait">
           {contentState ? (
@@ -212,13 +321,13 @@ export function HomeClient({ initialData }: HomeClientProps) {
           ) : (
             <motion.div
               key="content"
-              className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.35fr)_380px]"
+              className="dashboard-content grid grid-cols-1 gap-3"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={SPRING_SMOOTH}
             >
-              <div className="min-w-0 lg:flex lg:flex-col">
-                <div className="bento-card relative flex items-center justify-center p-3 sm:p-4">
+              <div className={`min-w-0 lg:flex lg:min-h-0 lg:flex-col ${mobileView !== 'radar' ? 'hidden lg:flex' : ''}`}>
+                <div className="radar-stage relative flex items-center justify-center lg:h-full lg:min-h-0">
                   <Radar
                     technologies={visibleTechnologies}
                     allTechnologies={technologies}
@@ -232,25 +341,12 @@ export function HomeClient({ initialData }: HomeClientProps) {
                     open={panelOpen}
                     anchor={selectedAnchor}
                     onClose={handleClosePanel}
+                    onExited={handlePanelExited}
                   />
-                </div>
-
-                <div className="lg:hidden">
-                  <WatchlistPanel
-                    watchlist={visibleWatchlist}
-                    totalWatchlistCount={watchlist.length}
-                    meta={initialData.meta}
-                    referenceDate={initialData.updatedAt}
-                    onSelectTechnology={handleSelect}
-                  />
-                </div>
-
-                <div className="lg:hidden">
-                  <Legend />
                 </div>
               </div>
 
-              <div className="lg:sticky lg:top-[100px] lg:max-h-[calc(100dvh-116px)]">
+              <div className={`dashboard-sidebar ${mobileView === 'radar' ? 'hidden lg:block' : ''}`}>
                 <RadarSidebar
                   visibleTechnologies={visibleTechnologies}
                   totalTechnologies={technologies.length}
@@ -267,6 +363,15 @@ export function HomeClient({ initialData }: HomeClientProps) {
                   onResetFilters={resetFilters}
                   onHoverTechnology={setHoveredTechnologyId}
                   onSelectTechnology={handleSelect}
+                  forcedView={
+                    mobileView === 'watchlist'
+                      ? 'watchlist'
+                      : mobileView === 'quality'
+                        ? 'guide'
+                        : mobileView === 'explore'
+                          ? 'technologies'
+                          : undefined
+                  }
                 />
               </div>
             </motion.div>

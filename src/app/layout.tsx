@@ -24,6 +24,9 @@ const monoFont = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Qualtio Tech Radar",
   description: "AI-powered Technology Radar tracking trends from GitHub and Hacker News",
+  other: {
+    "darkreader-lock": "",
+  },
 };
 
 export default function RootLayout({
@@ -32,7 +35,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`dark antialiased ${displayFont.variable} ${bodyFont.variable} ${monoFont.variable}`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`dark antialiased ${displayFont.variable} ${bodyFont.variable} ${monoFont.variable}`}
+    >
       <body className="font-sans bg-[#0a0a0f] text-white overflow-x-hidden">
         <TooltipProvider delayDuration={200}>
           {children}

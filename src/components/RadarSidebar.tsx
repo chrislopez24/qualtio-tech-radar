@@ -34,6 +34,7 @@ interface RadarSidebarProps {
   onResetFilters: () => void;
   onHoverTechnology: (technologyId: string | null) => void;
   onSelectTechnology: (technology: AITechnology) => void;
+  forcedView?: SidebarView;
 }
 
 export function RadarSidebar({
@@ -52,8 +53,10 @@ export function RadarSidebar({
   onResetFilters,
   onHoverTechnology,
   onSelectTechnology,
+  forcedView,
 }: RadarSidebarProps) {
   const [activeView, setActiveView] = useState<SidebarView>('technologies');
+  const currentView = forcedView ?? activeView;
   const hiddenCount = Math.max(0, totalTechnologies - visibleTechnologies.length);
   const totalWatchlistItems = totalWatchlistCount ?? watchlist.length;
   const hasFilteredWatchlist = totalWatchlistItems > watchlist.length;
@@ -120,16 +123,16 @@ export function RadarSidebar({
   const minConfidenceInput = filters.minConfidence === null ? '' : filters.minConfidence.toString();
 
   return (
-    <aside className="bento-card flex h-auto min-h-0 flex-col overflow-hidden p-3 lg:h-full">
+    <aside className="control-panel flex h-auto min-h-0 flex-col overflow-hidden p-3 lg:h-full">
       <div className="grid grid-cols-2 gap-2">
-        <div className="rounded-xl border border-border/60 bg-background/80 p-2">
+        <div className="metric-tile metric-tile-wide">
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Eye className="h-3.5 w-3.5" weight="duotone" />
             Visible
           </div>
           <p className="mt-0.5 text-xl font-semibold tracking-tight">{visibleTechnologies.length}</p>
         </div>
-        <div className="rounded-xl border border-border/60 bg-background/80 p-2">
+        <div className="metric-tile metric-tile-wide">
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Funnel className="h-3.5 w-3.5" weight="duotone" />
             Filtered
@@ -140,7 +143,7 @@ export function RadarSidebar({
 
       <div className="mt-2 grid grid-cols-2 gap-1.5 text-[11px]">
         {RINGS.map((ring) => (
-          <div key={ring.id} className="flex items-center justify-between rounded-md border border-border/55 bg-background/70 px-2 py-1">
+          <div key={ring.id} className="compact-count">
             <span className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full" style={{ backgroundColor: ring.color }} />
               {ring.name}
@@ -152,7 +155,7 @@ export function RadarSidebar({
 
       <div className="mt-1.5 grid grid-cols-2 gap-1.5 text-[11px]">
         {QUADRANTS.map((quadrant) => (
-          <div key={quadrant.id} className="flex items-center justify-between rounded-md border border-border/55 bg-background/70 px-2 py-1">
+          <div key={quadrant.id} className="compact-count">
             <span className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-sm" style={{ backgroundColor: quadrant.color }} />
               {quadrant.name}
@@ -162,7 +165,7 @@ export function RadarSidebar({
         ))}
       </div>
 
-      <div className="mt-2 rounded-xl border border-border/60 bg-background/90 p-2">
+      <div className="mt-2 rounded-xl border border-border/60 bg-background/80 p-3">
         <div className="mb-2 flex items-center justify-between">
           <h4 className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Filters</h4>
           {hiddenCount > 0 ? (
@@ -195,10 +198,11 @@ export function RadarSidebar({
                     key={ring.id}
                     type="button"
                     onClick={() => onToggleRing(ring.id)}
-                    className={`rounded-md border px-1.5 py-0.5 text-[10px] transition-colors ${
+                    aria-pressed={active}
+                    className={`filter-chip ${
                       active
-                        ? 'border-primary/60 bg-primary/10 text-foreground'
-                        : 'border-border/60 bg-background/70 text-muted-foreground hover:text-foreground'
+                        ? 'filter-chip-active'
+                        : ''
                     }`}
                   >
                     {ring.name}
@@ -218,10 +222,11 @@ export function RadarSidebar({
                     key={quadrant.id}
                     type="button"
                     onClick={() => onToggleQuadrant(quadrant.id)}
-                    className={`rounded-md border px-1.5 py-0.5 text-[10px] transition-colors ${
+                    aria-pressed={active}
+                    className={`filter-chip ${
                       active
-                        ? 'border-primary/60 bg-primary/10 text-foreground'
-                        : 'border-border/60 bg-background/70 text-muted-foreground hover:text-foreground'
+                        ? 'filter-chip-active'
+                        : ''
                     }`}
                   >
                     {quadrant.name}
@@ -241,10 +246,11 @@ export function RadarSidebar({
                     key={trend}
                     type="button"
                     onClick={() => onToggleTrend(trend)}
-                    className={`rounded-md border px-1.5 py-0.5 text-[10px] capitalize transition-colors ${
+                    aria-pressed={active}
+                    className={`filter-chip capitalize ${
                       active
-                        ? 'border-primary/60 bg-primary/10 text-foreground'
-                        : 'border-border/60 bg-background/70 text-muted-foreground hover:text-foreground'
+                        ? 'filter-chip-active'
+                        : ''
                     }`}
                   >
                     {trend} ({trendCounts.get(trend) ?? 0})
@@ -284,10 +290,10 @@ export function RadarSidebar({
         </div>
       </div>
 
-      <div className="mt-2 min-h-0 flex-1 overflow-hidden rounded-xl border border-border/60 bg-background/90 p-3">
-        <div className="mb-2 flex items-center gap-1.5">
+      <div className="mt-2 min-h-0 flex-1 overflow-hidden rounded-xl border border-border/60 bg-background/80 p-3">
+        <div className={`mb-2 items-center gap-1.5 ${forcedView ? 'hidden lg:flex' : 'flex'}`}>
           {SIDEBAR_VIEWS.map((view) => {
-                  const active = activeView === view.id;
+                  const active = currentView === view.id;
                   const count = view.id === 'technologies'
                     ? visibleTechnologies.length
                     : view.id === 'watchlist'
@@ -318,7 +324,7 @@ export function RadarSidebar({
         </div>
 
         <div className="h-full overflow-y-auto pr-1">
-          {activeView === 'technologies' ? (
+          {currentView === 'technologies' ? (
             <>
               <div className="mb-2 flex items-center justify-between">
                 <h3 className="text-lg font-semibold tracking-tight">Technologies</h3>
@@ -373,7 +379,7 @@ export function RadarSidebar({
             </>
           ) : null}
 
-          {activeView === 'watchlist' ? (
+          {currentView === 'watchlist' ? (
             <>
               <div className="mb-2 flex items-center justify-between">
                 <h3 className="text-lg font-semibold tracking-tight">Watchlist</h3>
@@ -416,7 +422,7 @@ export function RadarSidebar({
             </>
           ) : null}
 
-          {activeView === 'guide' ? (
+          {currentView === 'guide' ? (
             <div className="space-y-3">
               <section className="rounded-xl border border-border/60 bg-background/70 p-2.5">
                 <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Run summary</h3>

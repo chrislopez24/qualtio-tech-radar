@@ -13,6 +13,7 @@ interface DetailPanelProps {
   open: boolean;
   anchor: { x: number; y: number } | null;
   onClose: () => void;
+  onExited?: () => void;
 }
 
 function getDesktopAnchorStyle(anchor: { x: number; y: number } | null): React.CSSProperties {
@@ -39,7 +40,7 @@ function getDesktopAnchorStyle(anchor: { x: number; y: number } | null): React.C
   };
 }
 
-export function DetailPanel({ technology, open, anchor, onClose }: DetailPanelProps) {
+export function DetailPanel({ technology, open, anchor, onClose, onExited }: DetailPanelProps) {
   const isOpen = open && technology !== null;
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -67,7 +68,7 @@ export function DetailPanel({ technology, open, anchor, onClose }: DetailPanelPr
   const quadrant = getQuadrantById(technology.quadrant);
   const ring = getRingById(technology.ring);
   return (
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={onExited}>
       {isOpen && (
         <>
           <motion.button
