@@ -10,9 +10,10 @@ VALIDATION_RISK_METRICS = {"known_vulnerabilities"}
 VALIDATION_METRICS = VALIDATION_ADOPTION_METRICS | VALIDATION_HEALTH_METRICS | VALIDATION_RISK_METRICS
 UNCORROBORATED_ADOPTION_FACTOR = 0.63
 UNCORROBORATED_MOMENTUM_FACTOR = 0.565
-DISCUSSION_ONLY_SIGNAL_FACTOR = 0.962
+DISCUSSION_SOURCES = {"hackernews"}
+DISCUSSION_ONLY_SIGNAL_FACTOR = 0.70
 VULNERABILITY_PENALTY_THRESHOLD = 60.0
-VULNERABILITY_PENALTY_FACTOR = 0.45
+VULNERABILITY_PENALTY_FACTOR = 0.56
 ANCHOR_MATURITY_TARGET = 95.0
 VALIDATED_NICHE_MATURITY_FLOOR = 75.0
 
@@ -42,7 +43,11 @@ def score_entity(entity: MarketEntity) -> MarketEntity:
     implementation_scope_count = len(set([*entity.implementation_languages, *entity.ecosystems]))
     has_validation = reverse_dependents > 0.0 or default_version_present > 0.0
     is_uncorroborated = bool(legacy_values) and legacy_source_count <= 1 and not has_validation
-    is_discussion_only = is_uncorroborated and implementation_scope_count == 0
+    is_discussion_only = (
+        is_uncorroborated
+        and implementation_scope_count == 0
+        and legacy_sources <= DISCUSSION_SOURCES
+    )
 
     adoption = legacy_average
     if is_uncorroborated:
@@ -73,7 +78,7 @@ def score_entity(entity: MarketEntity) -> MarketEntity:
     risk = min(100.0, base_risk + (vulnerability_pressure * 0.6))
 
     entity.adoption_signals = {
-        "adoption": round(adoption, 2),
+        "adoption": round(min(100.0, adoption), 2),
         "breadth": round(breadth, 2),
     }
     entity.momentum_signals = {
@@ -103,7 +108,7 @@ def market_score(entity: MarketEntity) -> float:
     )
     has_validation = any(str(item.get("metric", "")) in VALIDATION_METRICS for item in entity.source_evidence)
     broad_validated_bonus = 0.0
-    if has_validation and maturity >= 85.0 and momentum <= 60.0 and breadth >= 60.0:
+    if has_validation and maturity >= 80.0 and momentum <= 80.0 and breadth >= 60.0:
         broad_validated_bonus = min(8.0, (breadth - 60.0) * 0.27)
     anchor_maturity_bonus = 0.0
     if has_validation and adoption >= 85.0 and momentum >= 85.0 and 85.0 <= maturity < ANCHOR_MATURITY_TARGET:
