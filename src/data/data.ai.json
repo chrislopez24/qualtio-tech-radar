@@ -1,1476 +1,4151 @@
 {
-  "updatedAt": "2026-04-03T09:59:13.486453+00:00",
+  "updatedAt": "2026-04-27T10:03:52.609116+00:00",
   "technologies": [
-    {
-      "id": "nest-js",
-      "name": "NestJS",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "Node.js framework with TypeScript, gaining traction in enterprise but overlaps significantly with Express. Strong candidates for watchlist if TypeScript-first Node architectures become dominant.",
-      "trend": "new",
-      "confidence": 0.6,
-      "updatedAt": "2026-04-03",
-      "marketScore": 72.0,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "framework",
-      "canonicalId": "nest-js",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "express",
-      "name": "Express",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "Minimalist Node.js framework, foundational but increasingly replaced by full-stack solutions. Consider for watchlist as lightweight backend requirement evolves.",
-      "trend": "new",
-      "confidence": 0.6,
-      "updatedAt": "2026-04-03",
-      "marketScore": 72.0,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "framework",
-      "canonicalId": "express",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "remix",
-      "name": "Remix",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "Full-stack React framework with web standards focus. Promising but Next.js dominance makes it secondary. Strong watchlist candidate for nested routing enthusiasts.",
-      "trend": "new",
-      "confidence": 0.6,
-      "updatedAt": "2026-04-03",
-      "marketScore": 72.0,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "framework",
-      "canonicalId": "remix",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "sveltekit",
-      "name": "SvelteKit",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "Svelte's application framework, excellent performance but smaller ecosystem. Worth watching if Svelte adoption grows significantly.",
-      "trend": "new",
-      "confidence": 0.6,
-      "updatedAt": "2026-04-03",
-      "marketScore": 72.0,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "framework",
-      "canonicalId": "sveltekit",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "nuxt",
-      "name": "Nuxt",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "Vue's meta-framework, strong for Vue teams but Next.js ecosystem dominance limits broad appeal. Watchlist candidate for Vue-centered organizations.",
-      "trend": "new",
-      "confidence": 0.6,
-      "updatedAt": "2026-04-03",
-      "marketScore": 72.0,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "framework",
-      "canonicalId": "nuxt",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "asp-net-core",
-      "name": "ASP.NET Core",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "Microsoft's cross-platform framework, strong in Windows enterprises but limited cross-platform adoption. Watchlist for .NET-heavy environments.",
-      "trend": "new",
-      "confidence": 0.6,
-      "updatedAt": "2026-04-03",
-      "marketScore": 72.0,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "framework",
-      "canonicalId": "asp-net-core",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "ruby-on-rails",
-      "name": "Ruby on Rails",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "Mature MVC framework, stable but declining momentum in modern web development. Watchlist for legacy system maintenance and Rails-specific expertise.",
-      "trend": "new",
-      "confidence": 0.6,
-      "updatedAt": "2026-04-03",
-      "marketScore": 72.0,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "framework",
-      "canonicalId": "ruby-on-rails",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "jenkins",
-      "name": "Jenkins",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "Legacy CI/CD with declining momentum. While still widely deployed, modern alternatives like GitHub Actions and GitLab CI offer better developer experience and lower maintenance burden. Suitable only for teams with existing large Jenkins investments.",
-      "trend": "new",
-      "confidence": 0.6,
-      "updatedAt": "2026-04-03",
-      "marketScore": 72.0,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "tool",
-      "canonicalId": "jenkins",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "haskell",
-      "name": "Haskell",
-      "quadrant": "languages",
-      "ring": "hold",
-      "description": "Academic/functional language with limited industry adoption. Interesting for learning functional concepts but poor practical adoption.",
-      "trend": "new",
-      "confidence": 0.5,
-      "updatedAt": "2026-04-03",
-      "marketScore": 0.86,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "language",
-      "canonicalId": "haskell",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "scala",
-      "name": "Scala",
-      "quadrant": "languages",
-      "ring": "hold",
-      "description": "Niche functional/JVM language with declining momentum. Kotlin and Java have absorbed its modern features. Best watched for specific big data (Spark) use cases.",
-      "trend": "new",
-      "confidence": 0.5,
-      "updatedAt": "2026-04-03",
-      "marketScore": 0.72,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "language",
-      "canonicalId": "scala",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "ruby",
-      "name": "Ruby",
-      "quadrant": "languages",
-      "ring": "hold",
-      "description": "Rails-era popularity has diminished. Python and JavaScript have absorbed its web development niches. Low momentum relative to alternatives.",
-      "trend": "new",
-      "confidence": 0.5,
-      "updatedAt": "2026-04-03",
-      "marketScore": 0.72,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "language",
-      "canonicalId": "ruby",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "php",
-      "name": "PHP",
-      "quadrant": "languages",
-      "ring": "hold",
-      "description": "Legacy web language with declining enterprise mindshare. WordPress keeps it relevant but modern stacks prefer TypeScript/Python alternatives.",
-      "trend": "new",
-      "confidence": 0.5,
-      "updatedAt": "2026-04-03",
-      "marketScore": 0.72,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "language",
-      "canonicalId": "php",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "zig",
-      "name": "Zig",
-      "quadrant": "languages",
-      "ring": "hold",
-      "description": "Emerging systems language with low maturity. Promising for low-level programming but too early for enterprise assessment. Watch for ecosystem maturation.",
-      "trend": "new",
-      "confidence": 0.5,
-      "updatedAt": "2026-04-03",
-      "marketScore": 0.72,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "language",
-      "canonicalId": "zig",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "neon",
-      "name": "Neon",
-      "quadrant": "platforms",
-      "ring": "hold",
-      "description": "Serverless PostgreSQL shows promise but overlaps with Supabase positioning; appropriate for near-term watchlist evaluation",
-      "trend": "new",
-      "confidence": 0.5,
-      "updatedAt": "2026-04-03",
-      "marketScore": 0.72,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "platform",
-      "canonicalId": "neon",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "contract-testing",
-      "name": "Contract Testing",
-      "quadrant": "techniques",
-      "ring": "hold",
-      "description": "Valuable for microservices but less critical in the AI era where API boundaries are more fluid.\u66f4\u9002\u5408\u5728\u5de5\u5177\u5c42\u9762\u800c\u975e\u670d\u52a1\u5c42\u9762\u6d4b\u8bd5\u3002",
-      "trend": "new",
-      "confidence": 0.5,
-      "updatedAt": "2026-04-03",
-      "marketScore": 0.72,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "technique",
-      "canonicalId": "contract-testing",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "feature-flags",
-      "name": "Feature Flags",
-      "quadrant": "techniques",
-      "ring": "hold",
-      "description": "Mature practice seeing declining strategic importance as AI enables dynamic adaptation. Traditional feature management less relevant for agentic systems.",
-      "trend": "new",
-      "confidence": 0.5,
-      "updatedAt": "2026-04-03",
-      "marketScore": 0.72,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "technique",
-      "canonicalId": "feature-flags",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "finops",
-      "name": "FinOps",
-      "quadrant": "techniques",
-      "ring": "hold",
-      "description": "Important operational discipline but not a core technique for the current technology shift.\u66f4\u9002\u5408\u4f5c\u4e3a\u7ec4\u7ec7\u5b9e\u8df5\u800c\u975e\u6280\u672f\u96f7\u8fbe\u9879\u3002",
-      "trend": "new",
-      "confidence": 0.5,
-      "updatedAt": "2026-04-03",
-      "marketScore": 0.72,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "technique",
-      "canonicalId": "finops",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "shift-left-testing",
-      "name": "Shift-Left Testing",
-      "quadrant": "techniques",
-      "ring": "hold",
-      "description": "Established practice being superseded by AI-powered quality assurance. Traditional shift-left less relevant when AI can generate and validate tests dynamically.",
-      "trend": "new",
-      "confidence": 0.5,
-      "updatedAt": "2026-04-03",
-      "marketScore": 0.72,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "technique",
-      "canonicalId": "shift-left-testing",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "trunk-based-development",
-      "name": "Trunk-Based Development",
-      "quadrant": "techniques",
-      "ring": "hold",
-      "description": "Foundation practice but less differentiated in the AI era. AI-assisted development reduces merge conflict concerns that drove trunk-based adoption.",
-      "trend": "new",
-      "confidence": 0.5,
-      "updatedAt": "2026-04-03",
-      "marketScore": 0.72,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "technique",
-      "canonicalId": "trunk-based-development",
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "mongodb",
-      "name": "MongoDB",
-      "quadrant": "platforms",
-      "ring": "hold",
-      "description": "NoSQL document database faces declining relevance as PostgreSQL with JSON capabilities and managed services (Atlas) dominate new projects",
-      "trend": "new",
-      "confidence": 0.5,
-      "updatedAt": "2026-04-03",
-      "marketScore": 0.7,
-      "moved": 0,
-      "whyThisRing": "Promoted during harmonization to preserve lane coverage in the published radar.",
-      "whyNow": "Relevant enough to include once lane balance and overall radar breadth were considered.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "entityType": "platform",
-      "canonicalId": "mongodb",
-      "signals": {},
-      "evidence": []
-    },
     {
       "id": "python",
       "name": "Python",
       "quadrant": "languages",
       "ring": "adopt",
-      "description": "The dominant language for data science, machine learning, and general-purpose scripting. Massive ecosystem and community support make it the default choice for AI/ML workflows.",
+      "description": "General-purpose language with dominant reach across backend, data, and automation.",
       "trend": "up",
-      "confidence": 1.0,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "confidence": 0.94,
+      "updatedAt": "2026-04-27T10:03:52.583946+00:00",
+      "marketScore": 98.42,
       "moved": 0,
-      "whyThisRing": "Python has reached near-universal adoption with maximum maturity scores and minimal risk. Its ecosystem for data science and AI is unmatched.",
-      "whyNow": "With AI/ML adoption accelerating across enterprises, Python's position as the primary tooling language has solidified. No viable competitor for data science workflows exists.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Adopt in languages because the combined market score is 98.4 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "JavaScript",
+        "Go",
+        "Rust"
+      ],
+      "entityType": "language",
+      "canonicalId": "python",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 96.92,
+        "momentum": 100.0,
+        "maturity": 100.0,
+        "risk": 5.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars"
+      ]
     },
     {
       "id": "javascript",
       "name": "JavaScript",
       "quadrant": "languages",
       "ring": "adopt",
-      "description": "The universal language of the web, running on browsers, servers, and increasingly edge and embedded environments. Essential for any digital product.",
-      "trend": "stable",
-      "confidence": 1.0,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Near-universal adoption with maximum maturity. The ecosystem has stabilized around ES6+ and TypeScript integration.",
-      "whyNow": "With web applications becoming the norm and serverless computing rising, JavaScript's ubiquity makes it indispensable.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "typescript",
-      "name": "TypeScript",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": "JavaScript with static typing, now the standard for building scalable web applications. Bridges the gap between JS flexibility and type safety.",
+      "description": "Ubiquitous web language that still anchors browser execution and a large share of server-side tooling.",
       "trend": "up",
-      "confidence": 1.0,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "confidence": 0.94,
+      "updatedAt": "2026-04-27T10:03:52.583946+00:00",
+      "marketScore": 98.22,
       "moved": 0,
-      "whyThisRing": "Maximum maturity combined with strong adoption. Type safety has become a requirement for enterprise web development.",
-      "whyNow": "TypeScript adoption continues accelerating as teams recognize its value in reducing runtime errors and improving maintainability.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "go",
-      "name": "Go",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": "Designed for cloud-native development, Go excels at building scalable backend services, CLI tools, and distributed systems.",
-      "trend": "up",
-      "confidence": 1.0,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Highest maturity alongside strong adoption and low risk. Go's simplicity and concurrency model make it ideal for modern infrastructure.",
-      "whyNow": "Kubernetes, Docker, and cloud-native tooling continue driving Go adoption. Enterprise infrastructure teams standardize on Go.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "java",
-      "name": "Java",
-      "quadrant": "languages",
-      "ring": "adopt",
-      "description": "The enterprise stalwart, powering large-scale systems across banking, insurance, and enterprise applications. Backed by long-term support LTS cycles.",
-      "trend": "stable",
-      "confidence": 1.0,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Despite being older, Java maintains maximum adoption in enterprise environments with strong ecosystem support.",
-      "whyNow": "Java 21 LTS brings modern features while maintaining backward compatibility. Enterprise migration from legacy systems continues.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Adopt in languages because the combined market score is 98.2 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Python",
+        "Go",
+        "Rust"
+      ],
+      "entityType": "language",
+      "canonicalId": "javascript",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 96.35,
+        "momentum": 100.0,
+        "maturity": 100.0,
+        "risk": 5.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars"
+      ]
     },
     {
       "id": "react",
       "name": "React",
       "quadrant": "tools",
       "ring": "adopt",
-      "description": "Facebook's component-based UI library with virtual DOM, enabling declarative and efficient user interface construction.",
-      "trend": "stable",
-      "confidence": 1.0,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "description": "Component model that remains the default reference point for web UI engineering.",
+      "trend": "up",
+      "confidence": 0.94,
+      "updatedAt": "2026-04-27T10:03:52.584196+00:00",
+      "marketScore": 97.79,
       "moved": 0,
-      "whyThisRing": "React maintains dominant market position with highest adoption (93.83%), full maturity (100%), and lowest risk profile (5.0). Its ecosystem dominance is unmatched.",
-      "whyNow": "React Server Components and the broader React 19 ecosystem are redefining server-side rendering and modern frontend architecture. Concurrent features and compiler improvements cement its position as the primary choice for web UI development.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Adopt in frameworks because the combined market score is 97.8 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Next.js",
+        "FastAPI",
+        "Angular"
+      ],
+      "entityType": "framework",
+      "canonicalId": "react",
+      "sourceCoverage": 4,
+      "signals": {
+        "adoption": 96.54,
+        "momentum": 100.0,
+        "maturity": 100.0,
+        "risk": 10.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "deps_dev",
+          "github_trending",
+          "osv",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "default_version",
+          "github_stars",
+          "known_vulnerabilities",
+          "reverse_dependents"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "deps_dev:reverse_dependents",
+        "deps_dev:default_version",
+        "osv:known_vulnerabilities"
+      ]
     },
     {
-      "id": "next-js",
+      "id": "go",
+      "name": "Go",
+      "quadrant": "languages",
+      "ring": "adopt",
+      "description": "Compiled language optimized for cloud services, infrastructure, and operational simplicity.",
+      "trend": "up",
+      "confidence": 0.92,
+      "updatedAt": "2026-04-27T10:03:52.583946+00:00",
+      "marketScore": 94.85,
+      "moved": 0,
+      "whyThisRing": "Adopt in languages because the combined market score is 94.8 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Python",
+        "JavaScript",
+        "Rust"
+      ],
+      "entityType": "language",
+      "canonicalId": "go",
+      "sourceCoverage": 3,
+      "signals": {
+        "adoption": 86.71,
+        "momentum": 100.0,
+        "maturity": 100.0,
+        "risk": 5.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "hackernews",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "discussion_heat",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "hackernews:discussion_heat"
+      ]
+    },
+    {
+      "id": "nextjs",
       "name": "Next.js",
       "quadrant": "tools",
       "ring": "adopt",
-      "description": "React framework providing server-side rendering, routing, and API capabilities for production-grade web applications.",
+      "description": "Full-stack React framework with strong defaults for SSR, routing, and deployment integration.",
       "trend": "up",
-      "confidence": 0.95,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "confidence": 0.91,
+      "updatedAt": "2026-04-27T10:03:52.584196+00:00",
+      "marketScore": 92.76,
       "moved": 0,
-      "whyThisRing": "Next.js pairs React with full-stack capabilities and achieves full maturity (100%) while maintaining strong momentum (100%). It defines the modern React development paradigm.",
-      "whyNow": "The App Router, Server Actions, and partial prerendering are reshaping how teams build hybrid web applications. Vercel's ecosystem dominance makes Next.js the de facto standard for React-based production deployments.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Adopt in frameworks because the combined market score is 92.8 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "React",
+        "FastAPI",
+        "Angular"
+      ],
+      "entityType": "framework",
+      "canonicalId": "nextjs",
+      "sourceCoverage": 5,
+      "signals": {
+        "adoption": 83.59,
+        "momentum": 100.0,
+        "maturity": 100.0,
+        "risk": 15.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "deps_dev",
+          "github_trending",
+          "hackernews",
+          "osv",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "default_version",
+          "discussion_heat",
+          "github_stars",
+          "known_vulnerabilities",
+          "reverse_dependents"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "hackernews:discussion_heat",
+        "deps_dev:reverse_dependents",
+        "deps_dev:default_version",
+        "osv:known_vulnerabilities"
+      ]
     },
     {
-      "id": "vs-code",
-      "name": "VS Code",
+      "id": "fastapi",
+      "name": "FastAPI",
       "quadrant": "tools",
       "ring": "adopt",
-      "description": "Microsoft's free, open-source code editor has become the dominant development environment across virtually all languages and platforms. Its extensibility ecosystem and deep integration with GitHub and Azure make it the default choice for individual developers and enterprises alike.",
-      "trend": "stable",
-      "confidence": 0.95,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "VS Code has reached overwhelming market dominance with the highest momentum score and broad enterprise adoption. The combination of local development, remote development via SSH/containers, and GitHub Codespaces creates a unified workflow that competitors cannot match.",
-      "whyNow": "The recent GPT-4 integration and Copilot Chat features have cemented VS Code as the primary interface for AI-assisted development, making this the optimal time to standardize teams on a single editor platform.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "github-copilot",
-      "name": "GitHub Copilot",
-      "quadrant": "tools",
-      "ring": "adopt",
-      "description": "AI pair programmer that suggests code completions and entire functions in real-time. Trained on billions of lines of public code, it accelerates development across dozens of languages while learning from individual coding patterns.",
+      "description": "Python API framework favored for modern typed services and AI-adjacent backends.",
       "trend": "up",
-      "confidence": 0.95,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "confidence": 0.91,
+      "updatedAt": "2026-04-27T10:03:52.584196+00:00",
+      "marketScore": 92.29,
       "moved": 0,
-      "whyThisRing": "With the highest adoption rate in the tools lane and the lowest risk score, Copilot has proven its value in production environments. The multi-model strategy (GPT-4, Claude) ensures best-in-class suggestions across different code contexts.",
-      "whyNow": "The 2024 additions of Copilot Chat, Copilot Workspace, and enterprise security features have transformed it from a nice-to-have productivity boost into an essential development infrastructure component.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "azure",
-      "name": "Azure",
-      "quadrant": "platforms",
-      "ring": "adopt",
-      "description": "Microsoft's enterprise cloud platform offering comprehensive IaaS, PaaS, and SaaS capabilities with strong hybrid cloud integration and enterprise compliance.",
-      "trend": "stable",
-      "confidence": 0.95,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Azure has reached near-universal enterprise adoption with the highest maturity score (82.2) and lowest risk profile (20.0) among major cloud providers. Its\u6df1\u5ea6\u96c6\u6210\u4f01\u4e1a\u5de5\u5177\u94fe\u4f7f\u5176\u6210\u4e3a\u6570\u5b57\u5316\u8f6c\u578b\u7684\u9996\u9009\u5e73\u53f0\u3002",
-      "whyNow": "Q2 2025\u4f01\u4e1a\u4e91\u652f\u51fa\u6301\u7eed\u589e\u957f\uff0cAzure\u5728\u6df7\u5408\u4e91\u548cAI\u57fa\u7840\u8bbe\u65bd\u65b9\u9762\u7684\u6295\u8d44\u4f7f\u5176\u6210\u4e3aGenAI\u5e94\u7528\u7684\u9996\u9009\u90e8\u7f72\u5e73\u53f0\u3002",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "kubernetes",
-      "name": "Kubernetes",
-      "quadrant": "platforms",
-      "ring": "adopt",
-      "description": "The de facto standard for container orchestration across cloud providers, enabling portable and scalable microservice architectures.",
-      "trend": "stable",
-      "confidence": 0.95,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Kubernetes has achieved universal adoption as the container orchestration standard with the highest momentum score (100.0) and strong maturity (79.4).",
-      "whyNow": "Kubernetes is the foundation for cloud-native strategies, enabling multi-cloud portability and serving as the substrate for platform engineering initiatives.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "model-context-protocol",
-      "name": "Model Context Protocol",
-      "quadrant": "techniques",
-      "ring": "adopt",
-      "description": "Standardized protocol enabling AI models to interact with external tools, data sources, and services through a unified interface. Eliminates point-to-point integrations and enables reusable AI capabilities across organizations.",
-      "trend": "up",
-      "confidence": 0.95,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "MCP demonstrates the highest adoption (75.47), perfect momentum (100), full maturity (100), and lowest risk (10) among all candidates. It has achieved de facto standard status for AI tool interoperability.",
-      "whyNow": "With AI agents becoming production-ready, the need for standardized context and tool access has become critical. MCP provides the foundation for reliable agentic workflows at scale.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Adopt in frameworks because the combined market score is 92.3 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "React",
+        "Next.js",
+        "Angular"
+      ],
+      "entityType": "framework",
+      "canonicalId": "fastapi",
+      "sourceCoverage": 4,
+      "signals": {
+        "adoption": 87.62,
+        "momentum": 97.68,
+        "maturity": 89.28,
+        "risk": 25.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "deps_dev",
+          "github_trending",
+          "osv",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "default_version",
+          "github_stars",
+          "known_vulnerabilities",
+          "reverse_dependents"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars",
+        "deps_dev:reverse_dependents",
+        "deps_dev:default_version",
+        "osv:known_vulnerabilities"
+      ]
     },
     {
       "id": "rust",
       "name": "Rust",
       "quadrant": "languages",
-      "ring": "trial",
-      "description": "Systems programming language offering memory safety without garbage collection. Gaining traction in performance-critical and secure applications.",
+      "ring": "adopt",
+      "description": "Memory-safe systems language increasingly used in infrastructure, tooling, and performance-sensitive services.",
       "trend": "up",
-      "confidence": 0.9,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "confidence": 0.91,
+      "updatedAt": "2026-04-27T10:03:52.583946+00:00",
+      "marketScore": 92.13,
       "moved": 0,
-      "whyThisRing": "Near-maximum adoption with high maturity. Rust fills the gap between C++ performance and memory safety, though with steeper learning curve.",
-      "whyNow": "Major tech companies (Microsoft, Google, Amazon) are investing in Rust for infrastructure code. Memory safety is driving adoption in security-sensitive contexts.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "github-actions",
-      "name": "GitHub Actions",
-      "quadrant": "tools",
-      "ring": "adopt",
-      "description": "Integrated CI/CD platform that automates build, test, and deployment workflows directly from GitHub repositories. Native integration with GitHub's permission model and marketplace of actions makes it the default choice for GitHub-hosted projects.",
-      "trend": "stable",
-      "confidence": 0.9,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Deep platform integration, marketplace ecosystem, and per-minute pricing have made GitHub Actions the dominant CI/CD solution for open-source and cloud-native projects. Its maturity score of 65.8 reflects established production use.",
-      "whyNow": "New workflow templates, larger runners, and improved matrix builds make it competitive with specialized CI/CD platforms for enterprise workloads previously requiring Jenkins or CircleCI.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "aws",
-      "name": "AWS",
-      "quadrant": "platforms",
-      "ring": "adopt",
-      "description": "Amazon Web Services remains the largest public cloud provider with the broadest service portfolio and most mature ecosystem.",
-      "trend": "stable",
-      "confidence": 0.9,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Despite slightly lower adoption than Azure in enterprise settings, AWS maintains the most comprehensive service catalog and strongest market presence overall.",
-      "whyNow": "AWS continues to lead in cloud-native innovations and maintains the largest partner ecosystem for enterprise workloads.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "postgresql",
-      "name": "PostgreSQL",
-      "quadrant": "platforms",
-      "ring": "adopt",
-      "description": "The leading open-source relational database with robust extensibility, JSON support, and strong enterprise feature set.",
-      "trend": "stable",
-      "confidence": 0.9,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "PostgreSQL maintains the highest adoption (75.6) among databases and serves as the default choice for new relational data workloads due to its extensibility.",
-      "whyNow": "PostgreSQL's role as the foundation for modern database services (Neon, Supabase, RDS) and its strong JSON capabilities make it essential for polyglot persistence strategies.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Adopt in languages because the combined market score is 92.1 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Python",
+        "JavaScript",
+        "Go"
+      ],
+      "entityType": "language",
+      "canonicalId": "rust",
+      "sourceCoverage": 3,
+      "signals": {
+        "adoption": 84.81,
+        "momentum": 100.0,
+        "maturity": 95.8,
+        "risk": 15.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "hackernews",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "discussion_heat",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "hackernews:discussion_heat"
+      ]
     },
     {
       "id": "agentic-ai",
       "name": "Agentic AI",
       "quadrant": "techniques",
       "ring": "adopt",
-      "description": "AI systems that autonomously plan, execute, and iterate on multi-step tasks using tools and contextual awareness. Represents a paradigm shift from\u88ab\u52a8 responses to proactive problem-solving.",
+      "description": "Pattern of orchestrating models with tools and multi-step control flow to complete bounded tasks.",
       "trend": "up",
-      "confidence": 0.9,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "confidence": 0.91,
+      "updatedAt": "2026-04-27T10:03:52.584712+00:00",
+      "marketScore": 91.3,
       "moved": 0,
-      "whyThisRing": "Second-highest adoption (68.86), perfect momentum (100), and high maturity (92.2) with low risk (15). Agentic AI is transforming how software gets built and operated.",
-      "whyNow": "Foundation models have reached capability thresholds enabling reliable autonomous task execution. Organizations are deploying AI agents for development, operations, and business processes.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Adopt in techniques because the combined market score is 91.3 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "AI delivery workflows",
+        "Developer enablement"
+      ],
+      "avoidWhen": [
+        "The team has not aligned on operating model changes"
+      ],
+      "alternatives": [
+        "Model Context Protocol",
+        "Prompt Engineering",
+        "Observability"
+      ],
+      "entityType": "technique",
+      "canonicalId": "agentic-ai",
+      "sourceCoverage": 3,
+      "signals": {
+        "adoption": 85.0,
+        "momentum": 100.0,
+        "maturity": 92.2,
+        "risk": 15.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "hackernews",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "discussion_heat",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "hackernews:discussion_heat"
+      ]
     },
     {
       "id": "dart",
       "name": "Dart",
       "quadrant": "languages",
-      "ring": "trial",
-      "description": "Google's language primarily known for Flutter cross-platform UI development. Compiles to native code for mobile, web, and desktop from single codebase.",
+      "ring": "adopt",
+      "description": "Application language primarily relevant through Flutter and cross-platform client development.",
       "trend": "up",
-      "confidence": 0.85,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "confidence": 0.91,
+      "updatedAt": "2026-04-27T10:03:52.583946+00:00",
+      "marketScore": 91.18,
       "moved": 0,
-      "whyThisRing": "High adoption driven by Flutter success, though lower maturity than general-purpose languages. Best choice for cross-platform UI.",
-      "whyNow": "Flutter's market share in cross-platform mobile continues growing. Dart enables single-codebase deployments across all major platforms.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Adopt in languages because the combined market score is 91.2 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Python",
+        "JavaScript",
+        "Go"
+      ],
+      "entityType": "language",
+      "canonicalId": "dart",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 90.67,
+        "momentum": 100.0,
+        "maturity": 85.8,
+        "risk": 20.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars",
+        "github_trending:github_stars"
+      ]
     },
     {
       "id": "angular",
       "name": "Angular",
       "quadrant": "tools",
-      "ring": "trial",
-      "description": "Google's opinionated TypeScript-based framework for building enterprise-scale single-page applications.",
-      "trend": "stable",
-      "confidence": 0.85,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "ring": "adopt",
+      "description": "Opinionated frontend framework with deep enterprise presence and end-to-end conventions.",
+      "trend": "up",
+      "confidence": 0.9,
+      "updatedAt": "2026-04-27T10:03:52.584196+00:00",
+      "marketScore": 89.99,
       "moved": 0,
-      "whyThisRing": "Angular shows strong adoption (87.2%) and momentum (100%) with enterprise-grade maturity (85.8%). Its TypeScript-first approach and built-in tooling differentiate it from lighter alternatives.",
-      "whyNow": "Angular's signals, standalone components, and improved hydration are closing the performance gap with lighter frameworks. The signals primitive provides a modern reactivity model that competes with React's hooks paradigm.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Adopt in frameworks because the combined market score is 90.0 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "React",
+        "Next.js",
+        "FastAPI"
+      ],
+      "entityType": "framework",
+      "canonicalId": "angular",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 87.27,
+        "momentum": 100.0,
+        "maturity": 85.8,
+        "risk": 20.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars",
+        "github_trending:github_stars"
+      ]
     },
     {
-      "id": "django",
-      "name": "Django",
+      "id": "github-copilot",
+      "name": "GitHub Copilot",
       "quadrant": "tools",
-      "ring": "trial",
-      "description": "Python's batteries-included web framework emphasizing rapid development, security, and scalability.",
-      "trend": "stable",
-      "confidence": 0.85,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "ring": "adopt",
+      "description": "Mainstream AI coding assistant that has materially shifted developer workflow expectations.",
+      "trend": "up",
+      "confidence": 0.9,
+      "updatedAt": "2026-04-27T10:03:52.584403+00:00",
+      "marketScore": 89.25,
       "moved": 0,
-      "whyThisRing": "Django demonstrates strong adoption (82.26%) and high maturity (89.16%). Its ORM, admin interface, and security defaults make it ideal for data-driven applications.",
-      "whyNow": "Django 5.x introduces improved async support and modern database features. Its stability and comprehensive ecosystem make it the primary choice for Python web applications requiring rapid development with opinionated defaults.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Adopt in tools because the combined market score is 89.2 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "AI delivery workflows",
+        "Developer enablement"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "VS Code",
+        "Docker",
+        "Playwright"
+      ],
+      "entityType": "tool",
+      "canonicalId": "github-copilot",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 87.71,
+        "momentum": 100.0,
+        "maturity": 82.2,
+        "risk": 20.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars",
+        "github_trending:github_stars"
+      ]
+    },
+    {
+      "id": "kubernetes",
+      "name": "Kubernetes",
+      "quadrant": "platforms",
+      "ring": "adopt",
+      "description": "Container orchestration platform that defines the control plane model for many teams.",
+      "trend": "up",
+      "confidence": 0.89,
+      "updatedAt": "2026-04-27T10:03:52.584562+00:00",
+      "marketScore": 87.88,
+      "moved": 0,
+      "whyThisRing": "Adopt in platforms because the combined market score is 87.9 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Platform standardization",
+        "Operational consolidation"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Supabase",
+        "Vercel",
+        "PostgreSQL"
+      ],
+      "entityType": "platform",
+      "canonicalId": "kubernetes",
+      "sourceCoverage": 3,
+      "signals": {
+        "adoption": 78.67,
+        "momentum": 100.0,
+        "maturity": 89.4,
+        "risk": 20.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "hackernews",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "discussion_heat",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars",
+        "hackernews:discussion_heat"
+      ]
+    },
+    {
+      "id": "model-context-protocol",
+      "name": "Model Context Protocol",
+      "quadrant": "techniques",
+      "ring": "adopt",
+      "description": "Emerging interoperability pattern for connecting models to tools, context sources, and external systems.",
+      "trend": "up",
+      "confidence": 0.89,
+      "updatedAt": "2026-04-27T10:03:52.584712+00:00",
+      "marketScore": 87.39,
+      "moved": 0,
+      "whyThisRing": "Adopt in techniques because the combined market score is 87.4 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "AI delivery workflows",
+        "Developer enablement"
+      ],
+      "avoidWhen": [
+        "The team has not aligned on operating model changes"
+      ],
+      "alternatives": [
+        "Agentic AI",
+        "Prompt Engineering",
+        "Observability"
+      ],
+      "entityType": "technique",
+      "canonicalId": "model-context-protocol",
+      "sourceCoverage": 3,
+      "signals": {
+        "adoption": 65.41,
+        "momentum": 100.0,
+        "maturity": 100.0,
+        "risk": 5.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "hackernews",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "discussion_heat",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "hackernews:discussion_heat"
+      ]
+    },
+    {
+      "id": "java",
+      "name": "Java",
+      "quadrant": "languages",
+      "ring": "adopt",
+      "description": "Enterprise runtime with broad platform support and sustained large-scale adoption.",
+      "trend": "up",
+      "confidence": 0.88,
+      "updatedAt": "2026-04-27T10:03:52.583946+00:00",
+      "marketScore": 86.55,
+      "moved": 0,
+      "whyThisRing": "Adopt in languages because the combined market score is 86.5 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Python",
+        "JavaScript",
+        "Go"
+      ],
+      "entityType": "language",
+      "canonicalId": "java",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 86.0,
+        "momentum": 100.0,
+        "maturity": 75.8,
+        "risk": 25.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars"
+      ]
+    },
+    {
+      "id": "laravel",
+      "name": "Laravel",
+      "quadrant": "tools",
+      "ring": "adopt",
+      "description": "Full-stack PHP framework with durable adoption for business applications and content-heavy products.",
+      "trend": "up",
+      "confidence": 0.88,
+      "updatedAt": "2026-04-27T10:03:52.584196+00:00",
+      "marketScore": 86.55,
+      "moved": 0,
+      "whyThisRing": "Adopt in frameworks because the combined market score is 86.5 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "React",
+        "Next.js",
+        "FastAPI"
+      ],
+      "entityType": "framework",
+      "canonicalId": "laravel",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 86.0,
+        "momentum": 100.0,
+        "maturity": 75.8,
+        "risk": 25.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars"
+      ]
+    },
+    {
+      "id": "vs-code",
+      "name": "VS Code",
+      "quadrant": "tools",
+      "ring": "adopt",
+      "description": "Mainstream development environment that continues to set expectations for editor extensibility and workflow integration.",
+      "trend": "up",
+      "confidence": 0.88,
+      "updatedAt": "2026-04-27T10:03:52.584403+00:00",
+      "marketScore": 86.55,
+      "moved": 0,
+      "whyThisRing": "Adopt in tools because the combined market score is 86.5 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "GitHub Copilot",
+        "Docker",
+        "Playwright"
+      ],
+      "entityType": "tool",
+      "canonicalId": "vs-code",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 86.0,
+        "momentum": 100.0,
+        "maturity": 75.8,
+        "risk": 25.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars"
+      ]
+    },
+    {
+      "id": "supabase",
+      "name": "Supabase",
+      "quadrant": "platforms",
+      "ring": "adopt",
+      "description": "Developer platform centered on hosted Postgres and fast-moving backend capabilities for product teams.",
+      "trend": "up",
+      "confidence": 0.88,
+      "updatedAt": "2026-04-27T10:03:52.584562+00:00",
+      "marketScore": 86.55,
+      "moved": 0,
+      "whyThisRing": "Adopt in platforms because the combined market score is 86.5 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Platform standardization",
+        "Operational consolidation"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Kubernetes",
+        "Vercel",
+        "PostgreSQL"
+      ],
+      "entityType": "platform",
+      "canonicalId": "supabase",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 86.0,
+        "momentum": 100.0,
+        "maturity": 75.8,
+        "risk": 25.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars"
+      ]
+    },
+    {
+      "id": "ruby",
+      "name": "Ruby",
+      "quadrant": "languages",
+      "ring": "adopt",
+      "description": "Developer-friendly language that remains relevant in product teams and automation-heavy workflows.",
+      "trend": "up",
+      "confidence": 0.88,
+      "updatedAt": "2026-04-27T10:03:52.583946+00:00",
+      "marketScore": 85.65,
+      "moved": 0,
+      "whyThisRing": "Adopt in languages because the combined market score is 85.7 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Python",
+        "JavaScript",
+        "Go"
+      ],
+      "entityType": "language",
+      "canonicalId": "ruby",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 86.0,
+        "momentum": 100.0,
+        "maturity": 72.2,
+        "risk": 25.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "hackernews",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "discussion_heat"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "hackernews:discussion_heat"
+      ]
     },
     {
       "id": "docker",
       "name": "Docker",
       "quadrant": "tools",
       "ring": "adopt",
-      "description": "Container runtime that standardized application packaging and distribution. Dockerfiles and Docker Compose define reproducible environments from dev through production, while Docker Desktop provides developer-friendly tooling.",
-      "trend": "stable",
-      "confidence": 0.85,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "description": "Container packaging toolchain that remains foundational to developer workflows.",
+      "trend": "up",
+      "confidence": 0.88,
+      "updatedAt": "2026-04-27T10:03:52.584403+00:00",
+      "marketScore": 85.65,
       "moved": 0,
-      "whyThisRing": "Docker remains the foundational container technology despite ecosystem maturation. Its brand recognition and tooling ecosystem make it the safe default for containerization, while alternatives like Podman serve specific security requirements.",
-      "whyNow": "Docker's acquisition by Mirantis and subsequent community concerns have raised questions about long-term stewardship, but the technology remains essential and no viable replacement has emerged.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Adopt in tools because the combined market score is 85.7 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "GitHub Copilot",
+        "VS Code",
+        "Playwright"
+      ],
+      "entityType": "tool",
+      "canonicalId": "docker",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 86.0,
+        "momentum": 100.0,
+        "maturity": 72.2,
+        "risk": 25.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "hackernews",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "discussion_heat"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "hackernews:discussion_heat"
+      ]
+    },
+    {
+      "id": "vercel",
+      "name": "Vercel",
+      "quadrant": "platforms",
+      "ring": "adopt",
+      "description": "Application delivery platform tightly aligned with modern React and frontend workflows.",
+      "trend": "up",
+      "confidence": 0.88,
+      "updatedAt": "2026-04-27T10:03:52.584562+00:00",
+      "marketScore": 85.65,
+      "moved": 0,
+      "whyThisRing": "Adopt in platforms because the combined market score is 85.7 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Platform standardization",
+        "Operational consolidation"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Kubernetes",
+        "Supabase",
+        "PostgreSQL"
+      ],
+      "entityType": "platform",
+      "canonicalId": "vercel",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 86.0,
+        "momentum": 100.0,
+        "maturity": 72.2,
+        "risk": 25.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "hackernews",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "discussion_heat"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "hackernews:discussion_heat"
+      ]
+    },
+    {
+      "id": "postgresql",
+      "name": "PostgreSQL",
+      "quadrant": "platforms",
+      "ring": "adopt",
+      "description": "Relational data platform with strong extension ecosystem and multi-workload relevance.",
+      "trend": "up",
+      "confidence": 0.88,
+      "updatedAt": "2026-04-27T10:03:52.584562+00:00",
+      "marketScore": 85.65,
+      "moved": 0,
+      "whyThisRing": "Adopt in platforms because the combined market score is 85.7 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Platform standardization",
+        "Operational consolidation"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Kubernetes",
+        "Supabase",
+        "Vercel"
+      ],
+      "entityType": "platform",
+      "canonicalId": "postgresql",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 86.0,
+        "momentum": 100.0,
+        "maturity": 72.2,
+        "risk": 25.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "hackernews",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "discussion_heat"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "hackernews:discussion_heat"
+      ]
+    },
+    {
+      "id": "azure",
+      "name": "Azure",
+      "quadrant": "platforms",
+      "ring": "adopt",
+      "description": "Cloud platform with deep enterprise penetration and strong alignment with Microsoft-centric estates.",
+      "trend": "up",
+      "confidence": 0.88,
+      "updatedAt": "2026-04-27T10:03:52.584562+00:00",
+      "marketScore": 85.65,
+      "moved": 0,
+      "whyThisRing": "Adopt in platforms because the combined market score is 85.7 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Platform standardization",
+        "Operational consolidation"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Kubernetes",
+        "Supabase",
+        "Vercel"
+      ],
+      "entityType": "platform",
+      "canonicalId": "azure",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 86.0,
+        "momentum": 100.0,
+        "maturity": 72.2,
+        "risk": 25.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars"
+      ]
+    },
+    {
+      "id": "typescript",
+      "name": "TypeScript",
+      "quadrant": "languages",
+      "ring": "adopt",
+      "description": "Typed superset of JavaScript that anchors modern frontend and full-stack development.",
+      "trend": "up",
+      "confidence": 0.88,
+      "updatedAt": "2026-04-27T10:03:52.583946+00:00",
+      "marketScore": 85.09,
+      "moved": 0,
+      "whyThisRing": "Adopt in languages because the combined market score is 85.1 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Python",
+        "JavaScript",
+        "Go"
+      ],
+      "entityType": "language",
+      "canonicalId": "typescript",
+      "sourceCoverage": 4,
+      "signals": {
+        "adoption": 63.11,
+        "momentum": 100.0,
+        "maturity": 100.0,
+        "risk": 20.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "deps_dev",
+          "github_trending",
+          "osv",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "default_version",
+          "github_stars",
+          "known_vulnerabilities",
+          "reverse_dependents"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars",
+        "github_trending:github_stars",
+        "deps_dev:reverse_dependents",
+        "deps_dev:default_version",
+        "osv:known_vulnerabilities"
+      ]
+    },
+    {
+      "id": "google-cloud",
+      "name": "Google Cloud",
+      "quadrant": "platforms",
+      "ring": "adopt",
+      "description": "Cloud platform often chosen for data, ML, and Kubernetes-heavy workloads.",
+      "trend": "up",
+      "confidence": 0.87,
+      "updatedAt": "2026-04-27T10:03:52.584562+00:00",
+      "marketScore": 84.75,
+      "moved": 0,
+      "whyThisRing": "Adopt in platforms because the combined market score is 84.8 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Platform standardization",
+        "Operational consolidation"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Kubernetes",
+        "Supabase",
+        "Vercel"
+      ],
+      "entityType": "platform",
+      "canonicalId": "google-cloud",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 86.0,
+        "momentum": 100.0,
+        "maturity": 68.6,
+        "risk": 25.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "hackernews",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "discussion_heat"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "hackernews:discussion_heat"
+      ]
     },
     {
       "id": "playwright",
       "name": "Playwright",
       "quadrant": "tools",
       "ring": "adopt",
-      "description": "Microsoft-authored end-to-end testing framework supporting Chromium, Firefox, and WebKit with a single API. Built-in codegen, tracing, and debugging tools address historical pain points in browser automation.",
+      "description": "End-to-end testing tool with strong browser coverage and modern automation ergonomics.",
       "trend": "up",
-      "confidence": 0.85,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "confidence": 0.87,
+      "updatedAt": "2026-04-27T10:03:52.584403+00:00",
+      "marketScore": 84.39,
       "moved": 0,
-      "whyThisRing": "Playwright's 75.0 maturity score reflects production maturity and enterprise adoption. Its auto-waiting, network interception, and multi-page handling outperform older tools like Selenium in reliability and developer experience.",
-      "whyNow": "Microsoft's continued investment, strong open-source community, and shift toward component-level testing make Playwright the strategic choice for teams standardizing their testing infrastructure.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Adopt in tools because the combined market score is 84.4 with clear editorial relevance.",
+      "whyNow": "Current market chatter and ecosystem pull keep this unusually visible this cycle.",
+      "useCases": [
+        "Delivery safety",
+        "Regression control"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "GitHub Copilot",
+        "VS Code",
+        "Docker"
+      ],
+      "entityType": "tool",
+      "canonicalId": "playwright",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 81.31,
+        "momentum": 90.62,
+        "maturity": 85.0,
+        "risk": 25.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars"
+      ]
     },
     {
-      "id": "redis",
-      "name": "Redis",
-      "quadrant": "platforms",
-      "ring": "adopt",
-      "description": "In-memory data store widely used for caching, session management, real-time analytics, and as a message broker.",
-      "trend": "stable",
-      "confidence": 0.85,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Redis is ubiquitous in modern application architectures for caching and real-time use cases with strong enterprise adoption across industries.",
-      "whyNow": "Redis remains critical for performance-critical applications and has expanded into vector embeddings for AI/ML workloads.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "cloudflare",
-      "name": "Cloudflare",
-      "quadrant": "platforms",
+      "id": "django",
+      "name": "Django",
+      "quadrant": "tools",
       "ring": "trial",
-      "description": "Edge cloud platform providing CDN, security, zero-trust networking, and serverless compute capabilities at the network edge.",
-      "trend": "up",
-      "confidence": 0.85,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Cloudflare has achieved strong adoption (86.0) and momentum (100.0) by expanding beyond CDN into comprehensive edge computing and security platform.",
-      "whyNow": "Cloudflare Workers and Workers KV enable edge-native architectures, while Cloudflare One provides zero-trust access for distributed workforces.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "event-driven-architecture",
-      "name": "Event-Driven Architecture",
-      "quadrant": "techniques",
-      "ring": "trial",
-      "description": "Software architecture pattern where services communicate through asynchronous events rather than synchronous requests. Enables loose coupling, scalability, and real-time responsiveness.",
+      "description": "Mature batteries-included framework for web products and back-office systems.",
       "trend": "stable",
-      "confidence": 0.85,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "confidence": 0.82,
+      "updatedAt": "2026-04-27T10:03:52.584196+00:00",
+      "marketScore": 73.63,
       "moved": 0,
-      "whyThisRing": "Strong adoption (64.12) with solid momentum (72) and proven maturity (68.6). EDA complements agentic AI by providing event backbone for autonomous agent coordination.",
-      "whyNow": "Modern cloud-native applications require real-time data flow and loose coupling that traditional request-response patterns cannot provide.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Trial in frameworks because the combined market score is 73.6 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "React",
+        "Next.js",
+        "FastAPI"
+      ],
+      "entityType": "framework",
+      "canonicalId": "django",
+      "sourceCoverage": 3,
+      "signals": {
+        "adoption": 74.69,
+        "momentum": 72.0,
+        "maturity": 75.56,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "deps_dev",
+          "osv",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "default_version",
+          "known_vulnerabilities",
+          "reverse_dependents"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "deps_dev:reverse_dependents",
+        "deps_dev:default_version",
+        "osv:known_vulnerabilities"
+      ]
     },
     {
-      "id": "kotlin",
-      "name": "Kotlin",
+      "id": "csharp",
+      "name": "C#",
       "quadrant": "languages",
-      "ring": "assess",
-      "description": "Modern JVM language that runs on Java ecosystem, primarily known for Android development. Offers null safety and concise syntax.",
-      "trend": "up",
+      "ring": "trial",
+      "description": "Mature language for business systems, cloud services, and game development on the .NET platform.",
+      "trend": "stable",
       "confidence": 0.8,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "updatedAt": "2026-04-27T10:03:52.583946+00:00",
+      "marketScore": 70.99,
       "moved": 0,
-      "whyThisRing": "Strong adoption for Android but platform-specific. Maturity is solid but not universal across enterprise use cases.",
-      "whyNow": "Kotlin is the recommended Android language, but evaluate based on mobile development needs. Consider for JVM projects where Java verbosity is a pain point.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Trial in languages because the combined market score is 71.0 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Python",
+        "JavaScript",
+        "Go"
+      ],
+      "entityType": "language",
+      "canonicalId": "csharp",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 68.12,
+        "momentum": 72.0,
+        "maturity": 72.2,
+        "risk": 25.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "hackernews",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "discussion_heat"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "hackernews:discussion_heat"
+      ]
     },
     {
-      "id": "swift",
-      "name": "Swift",
+      "id": "prompt-engineering",
+      "name": "Prompt Engineering",
+      "quadrant": "techniques",
+      "ring": "trial",
+      "description": "Pattern of shaping instructions, context, and constraints to improve model behavior for real workflows.",
+      "trend": "stable",
+      "confidence": 0.79,
+      "updatedAt": "2026-04-27T10:03:52.584712+00:00",
+      "marketScore": 68.06,
+      "moved": 0,
+      "whyThisRing": "Trial in techniques because the combined market score is 68.1 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "AI delivery workflows",
+        "Developer enablement"
+      ],
+      "avoidWhen": [
+        "The team has not aligned on operating model changes"
+      ],
+      "alternatives": [
+        "Agentic AI",
+        "Model Context Protocol",
+        "Observability"
+      ],
+      "entityType": "technique",
+      "canonicalId": "prompt-engineering",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 59.75,
+        "momentum": 72.0,
+        "maturity": 72.2,
+        "risk": 25.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars"
+      ]
+    },
+    {
+      "id": "zig",
+      "name": "Zig",
       "quadrant": "languages",
-      "ring": "assess",
-      "description": "Apple's modern language for iOS, macOS, and related ecosystems. Replaced Objective-C as the canonical Apple development language.",
-      "trend": "stable",
-      "confidence": 0.8,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Platform-specific adoption with strong maturity within Apple ecosystem. Evaluate only for Apple-platform development.",
-      "whyNow": "Essential for Apple platform development. Teams with iOS/macOS needs should assess Swift; others can ignore.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "fastapi",
-      "name": "FastAPI",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "Modern Python framework for building APIs with automatic OpenAPI documentation and async support.",
-      "trend": "up",
-      "confidence": 0.8,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "FastAPI shows strong adoption (84.4%) and momentum (96.79%) with maturing ecosystem (75.8%). Its async-first design and automatic documentation appeal to modern API development.",
-      "whyNow": "FastAPI's type safety through Pydantic, native async support, and automatic OpenAPI generation make it ideal for microservices and API-first architectures. Its growing ecosystem warrants assessment for new Python projects.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "terraform",
-      "name": "Terraform",
-      "quadrant": "tools",
       "ring": "trial",
-      "description": "HashiCorp's declarative infrastructure as code tool using HCL to define cloud and on-prem resources. The provider ecosystem covers major clouds, SaaS, and custom infrastructure, making it the most\u901a\u7528 IaC solution.",
+      "description": "Emerging systems language gaining attention as a pragmatic alternative for low-level tooling and infrastructure work.",
       "trend": "stable",
-      "confidence": 0.8,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "confidence": 0.78,
+      "updatedAt": "2026-04-27T10:03:52.583946+00:00",
+      "marketScore": 66.46,
       "moved": 0,
-      "whyThisRing": "Terraform remains the market standard for IaC despite being in the trial ring due to maturity and adoption concerns. The shift to OpenTF and the BSL license controversy have created uncertainty about long-term stewardship.",
-      "whyNow": "Terraform Cloud and Enterprise have improved, but teams should evaluate Pulumi and cloud-native solutions (CDK for Terraform, AWS CDK) alongside pure Terraform adoption for new projects.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "supabase",
-      "name": "Supabase",
-      "quadrant": "platforms",
-      "ring": "trial",
-      "description": "Open-source Firebase alternative built on PostgreSQL providing database, authentication, real-time subscriptions, and edge functions.",
-      "trend": "up",
-      "confidence": 0.8,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Supabase combines the power of PostgreSQL with developer-friendly features, achieving strong adoption (86.0) and momentum (100.0) among modern development teams.",
-      "whyNow": "Supabase addresses the need for rapid backend development with PostgreSQL's robustness, making it ideal for startups and rapid prototyping.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "apache-kafka",
-      "name": "Apache Kafka",
-      "quadrant": "platforms",
-      "ring": "assess",
-      "description": "Distributed event streaming platform providing real-time data pipelines, event sourcing, and stream processing capabilities.",
-      "trend": "stable",
-      "confidence": 0.8,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Kafka is the standard for event streaming with strong enterprise adoption but faces competition from managed alternatives and newer stream processing frameworks.",
-      "whyNow": "Kafka remains critical for event-driven architectures but teams should evaluate managed offerings (Confluent, AWS MSK) and alternatives like Redpanda.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "snowflake",
-      "name": "Snowflake",
-      "quadrant": "platforms",
-      "ring": "assess",
-      "description": "Cloud-native data warehouse providing separation of compute and storage, multi-cluster architecture, and support for diverse data workloads.",
-      "trend": "stable",
-      "confidence": 0.8,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Snowflake has transformed data warehousing but faces increasing competition from Databricks and cloud-native alternatives.",
-      "whyNow": "Snowflake remains strong for traditional data warehousing but organizations should evaluate Databricks for unified analytics and lakehouse architectures.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "databricks",
-      "name": "Databricks",
-      "quadrant": "platforms",
-      "ring": "assess",
-      "description": "Unified analytics platform combining data engineering, ML, and lakehouse architecture on cloud-native infrastructure.",
-      "trend": "up",
-      "confidence": 0.8,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Databricks leads in lakehouse architecture and unified analytics but represents a significant platform commitment with vendor lock-in considerations.",
-      "whyNow": "Databricks is essential for organizations pursuing lakehouse architecture and unified data/ML workflows, competing directly with Snowflake.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "platform-engineering",
-      "name": "Platform Engineering",
-      "quadrant": "techniques",
-      "ring": "trial",
-      "description": "Discipline of building internal developer platforms that provide self-service capabilities, standardized tooling, and streamlined paths to production. Balances developer autonomy with organizational consistency.",
-      "trend": "up",
-      "confidence": 0.8,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "High adoption (72) with established momentum (72). Addresses developer experience friction while maintaining governance. Critical enabler for AI-assisted development workflows.",
-      "whyNow": "Developer productivity gains from platform engineering directly amplify the benefits of AI-assisted development tools. Organizations need robust platforms to safely adopt agentic AI.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "gitops",
-      "name": "GitOps",
-      "quadrant": "techniques",
-      "ring": "trial",
-      "description": "Operational framework using Git repositories as single source of truth for infrastructure and application state. Enables declarative, version-controlled deployment workflows.",
-      "trend": "stable",
-      "confidence": 0.8,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "High adoption (72) with stable momentum (72). GitOps provides the operational foundation for reliable, auditable, and reversible deployments essential for AI systems.",
-      "whyNow": "AI systems require robust deployment governance and the ability to rollback quickly when issues arise. GitOps delivers this with minimal operational overhead.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "laravel",
-      "name": "Laravel",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "Elegant PHP framework with expressive syntax, Eloquent ORM, and comprehensive tooling for web applications.",
-      "trend": "stable",
-      "confidence": 0.75,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Laravel maintains strong adoption (86.0%) and momentum (100%) in the PHP ecosystem. Its developer experience and ecosystem completeness remain strengths.",
-      "whyNow": "Laravel's livewire, Inertia, and Vapor offerings are positioning it for modern full-stack development. Its market position in PHP-heavy enterprises warrants assessment despite ecosystem maturity.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "pulumi",
-      "name": "Pulumi",
-      "quadrant": "tools",
-      "ring": "trial",
-      "description": "Infrastructure as Code platform using familiar programming languages (Python, TypeScript, Go, C#) instead of domain-specific languages. Enables reusable abstractions, testing, and IDE support unavailable in Terraform.",
-      "trend": "up",
-      "confidence": 0.75,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Pulumi's higher maturity score (73.0) compared to Terraform among surveyed candidates reflects growing enterprise acceptance. The ability to use real programming patterns for infrastructure makes it attractive for teams with strong software engineering cultures.",
-      "whyNow": "Pulumi Crosswalk for AWS, Azure, and Kubernetes has matured significantly, reducing the gap between prototype and production infrastructure code. Enterprise features like policy-as-code and audit logging address previous adoption barriers.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "pnpm",
-      "name": "pnpm",
-      "quadrant": "tools",
-      "ring": "trial",
-      "description": "Fast, disk-efficient npm alternative using content-addressable storage to deduplicate packages across projects. The strict node_modules approach improves reliability and reduces disk usage by up to 90% compared to npm.",
-      "trend": "up",
-      "confidence": 0.75,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "pnpm's adoption has grown significantly among modern JavaScript/TypeScript projects. Its strict dependency resolution prevents phantom dependency issues that plague npm, and performance advantages are substantial for monorepo workflows.",
-      "whyNow": "pnpm 8 and 9 have improved compatibility and performance, making it viable for enterprise adoption. The primary barrier is team familiarity, but the benefits justify the migration effort for projects with many dependencies.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "google-cloud",
-      "name": "Google Cloud",
-      "quadrant": "platforms",
-      "ring": "assess",
-      "description": "Google Cloud Platform offering strong data/ML capabilities, Kubernetes heritage (GKE), and enterprise services.",
-      "trend": "stable",
-      "confidence": 0.75,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Google Cloud trails Azure and AWS in overall adoption but leads in data platform and machine learning capabilities with strong Kubernetes integration.",
-      "whyNow": "Google Cloud is essential for organizations prioritizing data analytics, ML/AI workloads, and container-native architectures on GKE.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "clickhouse",
-      "name": "ClickHouse",
-      "quadrant": "platforms",
-      "ring": "assess",
-      "description": "Column-oriented database optimized for analytical queries with exceptional performance for aggregations and time-series data.",
-      "trend": "up",
-      "confidence": 0.75,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "ClickHouse delivers exceptional query performance for analytical workloads but requires operational expertise and faces competition from cloud-native alternatives.",
-      "whyNow": "ClickHouse is valuable for high-volume analytics and observability use cases but teams should evaluate managed offerings and integration complexity.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "vercel",
-      "name": "Vercel",
-      "quadrant": "platforms",
-      "ring": "assess",
-      "description": "Frontend cloud platform specializing in Next.js deployment, edge functions, and developer experience for modern web applications.",
-      "trend": "up",
-      "confidence": 0.75,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Vercel leads in frontend deployment for React/Next.js ecosystems with strong developer experience but limited enterprise features compared to traditional CDNs.",
-      "whyNow": "Vercel is ideal for teams prioritizing developer experience and modern frontend frameworks, particularly for marketing sites and web applications.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "retrieval-augmented-generation",
-      "name": "Retrieval-Augmented Generation",
-      "quadrant": "techniques",
-      "ring": "assess",
-      "description": "Technique combining language model outputs with retrieved external knowledge to improve accuracy and relevance. Grounds AI responses in organizational data and reduces hallucination.",
-      "trend": "stable",
-      "confidence": 0.75,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Strong adoption (72) but moderate momentum (72) and lower maturity (58.6). RAG is foundational for enterprise AI but faces increasing competition from extended context windows.",
-      "whyNow": "Organizations need to leverage proprietary knowledge without fine-tuning. RAG provides the bridge between LLMs and enterprise data with acceptable accuracy trade-offs.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "elixir",
-      "name": "Elixir",
-      "quadrant": "languages",
-      "ring": "assess",
-      "description": "Functional language built on Erlang VM, excelling at distributed, fault-tolerant systems. Strong for real-time applications and telecommunications.",
-      "trend": "stable",
-      "confidence": 0.7,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Moderate adoption with lower maturity but unique strengths. Best for specific use cases rather than general adoption.",
-      "whyNow": "Evaluate for high-concurrency, fault-tolerant systems where Erlang ecosystem benefits apply. Not a general-purpose choice.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "vue-js",
-      "name": "Vue.js",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "Progressive JavaScript framework for building user interfaces, known for its approachable learning curve and flexible ecosystem.",
-      "trend": "stable",
-      "confidence": 0.7,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Vue.js shows solid adoption (72.0%) with moderate maturity (65.8%). Its composition API and single-file components provide a balanced alternative to React.",
-      "whyNow": "Vue's Vapor mode and improved TypeScript support are addressing performance concerns. Its approachability and Pinia state management make it worth assessing for teams seeking an alternative to React's ecosystem.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "spring-boot",
-      "name": "Spring Boot",
-      "quadrant": "tools",
-      "ring": "hold",
-      "description": "Java framework for building production-ready applications with auto-configuration and embedded servers.",
-      "trend": "down",
-      "confidence": 0.7,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Spring Boot has moderate adoption (72.0%) with moderate risk (30.0). Its verbosity and configuration complexity have drawn criticism despite its enterprise reach.",
-      "whyNow": "While Spring remains dominant in enterprise Java, its complexity and the rise of lighter alternatives warrant hold positioning for new projects unless Java ecosystem requirements mandate otherwise.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "gitlab-ci",
-      "name": "GitLab CI",
-      "quadrant": "tools",
-      "ring": "trial",
-      "description": "Integrated CI/CD component of GitLab's DevOps platform. The .gitlab-ci.yml configuration model, auto DevOps, and integrated registry and deployment features provide a unified platform for teams already using GitLab.",
-      "trend": "stable",
-      "confidence": 0.7,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "GitLab CI serves teams with existing GitLab investments well. Its tight integration with GitLab's security scanning, compliance, and project management features makes it a strong choice for organizations committed to the GitLab platform.",
-      "whyNow": "The recent unified CI/CD configuration and improved pipeline efficiency have addressed historical performance concerns. However, the 65.8 maturity score indicates it remains a platform-specific choice rather than a general recommendation.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "argocd",
-      "name": "Argo CD",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "Declarative, GitOps continuous delivery tool for Kubernetes. Application CRDs define desired state, and Argo CD continuously reconciles cluster state with Git repositories using either pull or push models.",
-      "trend": "up",
-      "confidence": 0.7,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Argo CD has emerged as the leading GitOps tool for Kubernetes environments. Its declarative approach, multi-tenancy, and audit logging make it suitable for enterprise deployments, while the CNCF backing provides long-term assurance.",
-      "whyNow": "Argo Rollouts and Argo Workflows expand the platform beyond basic CD into progressive delivery and orchestration. Teams adopting platform engineering practices should evaluate Argo CD as their GitOps backbone.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "helm",
-      "name": "Helm",
-      "quadrant": "tools",
-      "ring": "assess",
-      "description": "Kubernetes package manager using charts to define, install, and upgrade complex applications. The chart repository system and values file approach provide parameterized templates for reusable Kubernetes configurations.",
-      "trend": "stable",
-      "confidence": 0.7,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "Helm remains essential for Kubernetes package management despite newer alternatives. The chart ecosystem covers most major software, and the templating model, while showing age, provides sufficient flexibility for most use cases.",
-      "whyNow": "Helm 3's removal of Tiller improved security significantly. However, the upcoming Helm 4 and the rise of more flexible tools like Carvel and CDK8s suggest teams should assess their long-term packaging strategy rather than assume Helm is permanent.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "ai-assisted-development",
-      "name": "AI-Assisted Development",
-      "quadrant": "techniques",
-      "ring": "assess",
-      "description": "Developer tooling that uses AI to augment coding workflows including code completion, generation, testing, and debugging. Human-AI collaboration rather than full automation.",
-      "trend": "up",
-      "confidence": 0.7,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "High adoption (72) with strong developer sentiment. However, productivity claims vary widely and integration patterns are still maturing.",
-      "whyNow": "Code generation models have reached quality thresholds for meaningful developer assistance. The focus shifts from capability to reliable integration and workflow optimization.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    },
-    {
-      "id": "zero-trust",
-      "name": "Zero Trust",
-      "quadrant": "techniques",
-      "ring": "assess",
-      "description": "Security model assuming no implicit trust based on network location or credentials. Every access request is verified, validated, and least-privilege enforced.",
-      "trend": "up",
-      "confidence": 0.7,
-      "updatedAt": "2025-01-15T00:00:00Z",
-      "moved": 0,
-      "whyThisRing": "High adoption (72) but moderate maturity (58.6). Essential for AI systems that operate across traditional perimeter boundaries, but implementation complexity remains high.",
-      "whyNow": "AI agents require access to multiple systems and data sources. Zero Trust provides the security framework to enable this without unacceptable risk.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Trial in languages because the combined market score is 66.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Python",
+        "JavaScript",
+        "Go"
+      ],
+      "entityType": "language",
+      "canonicalId": "zig",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 57.75,
+        "momentum": 72.0,
+        "maturity": 68.6,
+        "risk": 25.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "hackernews",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "discussion_heat"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "hackernews:discussion_heat"
+      ]
     },
     {
       "id": "observability",
       "name": "Observability",
       "quadrant": "techniques",
       "ring": "assess",
-      "description": "Practice of instrumenting systems to understand internal states through external outputs. Extends traditional monitoring with causality, correlation, and AI-powered analysis.",
-      "trend": "up",
-      "confidence": 0.7,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "description": "Operational practice focused on high-quality telemetry, debugging depth, and fast system understanding.",
+      "trend": "new",
+      "confidence": 0.75,
+      "updatedAt": "2026-04-27T10:03:52.584712+00:00",
+      "marketScore": 60.48,
       "moved": 0,
-      "whyThisRing": "High adoption (72) but the discipline is evolving rapidly with AI-powered analysis. Traditional observability approaches may not scale to agentic AI workloads.",
-      "whyNow": "AI agents introduce new failure modes that require deeper introspection. Observability is essential for debugging autonomous systems and building trust.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Assess in techniques because the combined market score is 60.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "The team has not aligned on operating model changes"
+      ],
+      "alternatives": [
+        "Agentic AI",
+        "Model Context Protocol",
+        "Prompt Engineering"
+      ],
+      "entityType": "technique",
+      "canonicalId": "observability",
+      "sourceCoverage": 2,
+      "signals": {
+        "adoption": 38.1,
+        "momentum": 72.0,
+        "maturity": 72.2,
+        "risk": 25.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "github_trending",
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence",
+          "github_stars"
+        ],
+        "hasExternalAdoption": true,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence",
+        "github_trending:github_stars"
+      ]
     },
     {
-      "id": "cursor",
-      "name": "Cursor",
+      "id": "pulumi",
+      "name": "Pulumi",
       "quadrant": "tools",
       "ring": "assess",
-      "description": "AI-first code editor built on VS Code with deep integration of LLMs into the editing workflow. Features like Cmd+K for inline editing, @Docs for documentation lookup, and agent mode for autonomous code changes push IDE AI integration beyond Copilot.",
-      "trend": "new",
-      "confidence": 0.65,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "description": "Infrastructure as code tool that appeals to teams wanting general-purpose languages over DSLs.",
+      "trend": "stable",
+      "confidence": 0.72,
+      "updatedAt": "2026-04-27T10:03:52.584403+00:00",
+      "marketScore": 53.33,
       "moved": 0,
-      "whyThisRing": "Cursor represents the next evolution of AI-assisted development beyond code completion. Its architectural decisions around AI integration suggest future direction for all IDEs, making it worth assessing even for teams committed to VS Code.",
-      "whyNow": "Cursor's rapid iteration and strong developer feedback suggest it may become a significant alternative to VS Code for AI-intensive workflows. Teams should evaluate whether its AI-forward approach justifies potential stability and ecosystem trade-offs.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Assess in tools because the combined market score is 53.3 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "GitHub Copilot",
+        "VS Code",
+        "Docker"
+      ],
+      "entityType": "tool",
+      "canonicalId": "pulumi",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 73.0,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
     },
     {
-      "id": "secure-by-design",
-      "name": "Secure by Design",
-      "quadrant": "techniques",
-      "ring": "hold",
-      "description": "Security principle embedding protection into systems from inception rather than adding it post-development. Includes threat modeling, secure defaults, and defense-in-depth.",
-      "trend": "up",
-      "confidence": 0.65,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "id": "kotlin",
+      "name": "Kotlin",
+      "quadrant": "languages",
+      "ring": "assess",
+      "description": "JVM language with strong Android reach and steady use for modern backend services.",
+      "trend": "stable",
+      "confidence": 0.71,
+      "updatedAt": "2026-04-27T10:03:52.583946+00:00",
+      "marketScore": 51.53,
       "moved": 0,
-      "whyThisRing": "High adoption aspiration (72) but limited operational maturity. Critical for AI systems where vulnerabilities can be exploited at scale.",
-      "whyNow": "AI systems introduce new attack surfaces that cannot be addressed through traditional security reviews. Secure-by-design is the only viable approach for agentic AI deployment.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Assess in languages because the combined market score is 51.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Python",
+        "JavaScript",
+        "Go"
+      ],
+      "entityType": "language",
+      "canonicalId": "kotlin",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 65.8,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "swift",
+      "name": "Swift",
+      "quadrant": "languages",
+      "ring": "assess",
+      "description": "Primary language for Apple platform development with strong ongoing ecosystem investment.",
+      "trend": "stable",
+      "confidence": 0.71,
+      "updatedAt": "2026-04-27T10:03:52.583946+00:00",
+      "marketScore": 51.53,
+      "moved": 0,
+      "whyThisRing": "Assess in languages because the combined market score is 51.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Python",
+        "JavaScript",
+        "Go"
+      ],
+      "entityType": "language",
+      "canonicalId": "swift",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 65.8,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "scala",
+      "name": "Scala",
+      "quadrant": "languages",
+      "ring": "assess",
+      "description": "JVM language still present in data-intensive systems and functional-leaning backend teams.",
+      "trend": "stable",
+      "confidence": 0.71,
+      "updatedAt": "2026-04-27T10:03:52.583946+00:00",
+      "marketScore": 51.53,
+      "moved": 0,
+      "whyThisRing": "Assess in languages because the combined market score is 51.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Python",
+        "JavaScript",
+        "Go"
+      ],
+      "entityType": "language",
+      "canonicalId": "scala",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 65.8,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "spring-boot",
+      "name": "Spring Boot",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "Default application framework for modern JVM services in large organizations.",
+      "trend": "stable",
+      "confidence": 0.71,
+      "updatedAt": "2026-04-27T10:03:52.584196+00:00",
+      "marketScore": 51.53,
+      "moved": 0,
+      "whyThisRing": "Assess in frameworks because the combined market score is 51.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "React",
+        "Next.js",
+        "FastAPI"
+      ],
+      "entityType": "framework",
+      "canonicalId": "spring-boot",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 65.8,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "vuejs",
+      "name": "Vue.js",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "Frontend framework with a strong ergonomics story for teams that prefer incremental adoption.",
+      "trend": "stable",
+      "confidence": 0.71,
+      "updatedAt": "2026-04-27T10:03:52.584196+00:00",
+      "marketScore": 51.53,
+      "moved": 0,
+      "whyThisRing": "Assess in frameworks because the combined market score is 51.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "React",
+        "Next.js",
+        "FastAPI"
+      ],
+      "entityType": "framework",
+      "canonicalId": "vuejs",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 65.8,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "express",
+      "name": "Express",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "Minimal Node.js web framework that still underpins a large amount of service and middleware code.",
+      "trend": "stable",
+      "confidence": 0.71,
+      "updatedAt": "2026-04-27T10:03:52.584196+00:00",
+      "marketScore": 51.53,
+      "moved": 0,
+      "whyThisRing": "Assess in frameworks because the combined market score is 51.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "React",
+        "Next.js",
+        "FastAPI"
+      ],
+      "entityType": "framework",
+      "canonicalId": "express",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 65.8,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "nestjs",
+      "name": "NestJS",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "Structured TypeScript backend framework popular with teams that want opinionated Node.js service architecture.",
+      "trend": "stable",
+      "confidence": 0.71,
+      "updatedAt": "2026-04-27T10:03:52.584196+00:00",
+      "marketScore": 51.53,
+      "moved": 0,
+      "whyThisRing": "Assess in frameworks because the combined market score is 51.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "React",
+        "Next.js",
+        "FastAPI"
+      ],
+      "entityType": "framework",
+      "canonicalId": "nestjs",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 65.8,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "nuxt",
+      "name": "Nuxt",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "Vue-based full-stack framework with strong adoption in content-heavy and frontend-led web platforms.",
+      "trend": "stable",
+      "confidence": 0.71,
+      "updatedAt": "2026-04-27T10:03:52.584196+00:00",
+      "marketScore": 51.53,
+      "moved": 0,
+      "whyThisRing": "Assess in frameworks because the combined market score is 51.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "React",
+        "Next.js",
+        "FastAPI"
+      ],
+      "entityType": "framework",
+      "canonicalId": "nuxt",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 65.8,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "sveltekit",
+      "name": "SvelteKit",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "Modern web framework built around Svelte with strong developer experience and performance positioning.",
+      "trend": "stable",
+      "confidence": 0.71,
+      "updatedAt": "2026-04-27T10:03:52.584196+00:00",
+      "marketScore": 51.53,
+      "moved": 0,
+      "whyThisRing": "Assess in frameworks because the combined market score is 51.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "React",
+        "Next.js",
+        "FastAPI"
+      ],
+      "entityType": "framework",
+      "canonicalId": "sveltekit",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 65.8,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "remix",
+      "name": "Remix",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "React-based web framework with a strong server-first model and increasingly visible production usage.",
+      "trend": "stable",
+      "confidence": 0.71,
+      "updatedAt": "2026-04-27T10:03:52.584196+00:00",
+      "marketScore": 51.53,
+      "moved": 0,
+      "whyThisRing": "Assess in frameworks because the combined market score is 51.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "React",
+        "Next.js",
+        "FastAPI"
+      ],
+      "entityType": "framework",
+      "canonicalId": "remix",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 65.8,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "github-actions",
+      "name": "GitHub Actions",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "Integrated CI/CD automation layer embedded in mainstream source control workflows.",
+      "trend": "stable",
+      "confidence": 0.71,
+      "updatedAt": "2026-04-27T10:03:52.584403+00:00",
+      "marketScore": 51.53,
+      "moved": 0,
+      "whyThisRing": "Assess in tools because the combined market score is 51.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "GitHub Copilot",
+        "VS Code",
+        "Docker"
+      ],
+      "entityType": "tool",
+      "canonicalId": "github-actions",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 65.8,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "pnpm",
+      "name": "pnpm",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "Package manager chosen for monorepo efficiency, deterministic installs, and workspace ergonomics.",
+      "trend": "stable",
+      "confidence": 0.71,
+      "updatedAt": "2026-04-27T10:03:52.584403+00:00",
+      "marketScore": 51.53,
+      "moved": 0,
+      "whyThisRing": "Assess in tools because the combined market score is 51.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "GitHub Copilot",
+        "VS Code",
+        "Docker"
+      ],
+      "entityType": "tool",
+      "canonicalId": "pnpm",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 65.8,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "gitlab-ci",
+      "name": "GitLab CI",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "Integrated delivery automation stack used by teams that standardize around GitLab as a platform.",
+      "trend": "stable",
+      "confidence": 0.71,
+      "updatedAt": "2026-04-27T10:03:52.584403+00:00",
+      "marketScore": 51.53,
+      "moved": 0,
+      "whyThisRing": "Assess in tools because the combined market score is 51.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "GitHub Copilot",
+        "VS Code",
+        "Docker"
+      ],
+      "entityType": "tool",
+      "canonicalId": "gitlab-ci",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 65.8,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
     },
     {
       "id": "uv",
       "name": "uv",
       "quadrant": "tools",
       "ring": "assess",
-      "description": "Astral's extremely fast Python package manager and resolver written in Rust. Claims 10-100x speed improvements over pip and pip-tools for dependency resolution and installation, with lock file support.",
-      "trend": "new",
-      "confidence": 0.6,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "description": "Fast Python packaging and environment tool that is quickly gaining adoption in modern Python workflows.",
+      "trend": "stable",
+      "confidence": 0.71,
+      "updatedAt": "2026-04-27T10:03:52.584403+00:00",
+      "marketScore": 51.53,
       "moved": 0,
-      "whyThisRing": "uv addresses Python's long-standing dependency management pain points. For teams with large Python codebases or monorepos, the performance improvements can significantly impact developer productivity and CI/CD times.",
-      "whyNow": "uv's maturity has improved with recent stable releases, but it remains early for enterprise adoption. Python teams experiencing dependency resolution pain should assess uv in development workflows while maintaining pip-compatible CI/CD.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
+      "whyThisRing": "Assess in tools because the combined market score is 51.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "GitHub Copilot",
+        "VS Code",
+        "Docker"
+      ],
+      "entityType": "tool",
+      "canonicalId": "uv",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 65.8,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
     },
     {
-      "id": "nix",
-      "name": "Nix",
-      "quadrant": "tools",
-      "ring": "hold",
-      "description": "Declarative package manager and language for reproducible builds and environments. NixOS provides declarative system configuration, while nix-darwin and home-manager extend the approach to macOS and dotfiles.",
+      "id": "kafka",
+      "name": "Apache Kafka",
+      "quadrant": "platforms",
+      "ring": "assess",
+      "description": "Streaming backbone platform frequently used for event pipelines, integration, and real-time data movement.",
       "trend": "stable",
-      "confidence": 0.6,
-      "updatedAt": "2025-01-15T00:00:00Z",
+      "confidence": 0.71,
+      "updatedAt": "2026-04-27T10:03:52.584562+00:00",
+      "marketScore": 51.53,
       "moved": 0,
-      "whyThisRing": "Nix provides the strongest reproducibility guarantees in the tools lane, but its learning curve and operational complexity make it unsuitable for most teams. The 58.6 maturity score reflects both power user adoption and significant barriers.",
-      "whyNow": "Nix's relevance has increased with requirements for deterministic environments, but teams should consider simpler alternatives (Dev Containers, devfile, Earth's dev) unless they have specific reproducibility requirements.",
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": [],
-      "signals": {},
-      "evidence": []
-    }
-  ],
-  "watchlist": [
+      "whyThisRing": "Assess in platforms because the combined market score is 51.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Platform standardization",
+        "Operational consolidation"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Kubernetes",
+        "Supabase",
+        "Vercel"
+      ],
+      "entityType": "platform",
+      "canonicalId": "kafka",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 65.8,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "opensearch",
+      "name": "OpenSearch",
+      "quadrant": "platforms",
+      "ring": "assess",
+      "description": "Search and analytics platform commonly used for logging, observability, and application search use cases.",
+      "trend": "stable",
+      "confidence": 0.71,
+      "updatedAt": "2026-04-27T10:03:52.584562+00:00",
+      "marketScore": 51.53,
+      "moved": 0,
+      "whyThisRing": "Assess in platforms because the combined market score is 51.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Platform standardization",
+        "Operational consolidation"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Kubernetes",
+        "Supabase",
+        "Vercel"
+      ],
+      "entityType": "platform",
+      "canonicalId": "opensearch",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 65.8,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "clickhouse",
+      "name": "ClickHouse",
+      "quadrant": "platforms",
+      "ring": "assess",
+      "description": "High-performance analytics platform increasingly used for product analytics, observability, and real-time reporting.",
+      "trend": "stable",
+      "confidence": 0.71,
+      "updatedAt": "2026-04-27T10:03:52.584562+00:00",
+      "marketScore": 51.53,
+      "moved": 0,
+      "whyThisRing": "Assess in platforms because the combined market score is 51.5 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Platform standardization",
+        "Operational consolidation"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Kubernetes",
+        "Supabase",
+        "Vercel"
+      ],
+      "entityType": "platform",
+      "canonicalId": "clickhouse",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 65.8,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "php",
+      "name": "PHP",
+      "quadrant": "languages",
+      "ring": "assess",
+      "description": "Still-relevant web language with a large installed base across content, commerce, and internal systems.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.583946+00:00",
+      "marketScore": 50.63,
+      "moved": 0,
+      "whyThisRing": "Assess in languages because the combined market score is 50.6 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Python",
+        "JavaScript",
+        "Go"
+      ],
+      "entityType": "language",
+      "canonicalId": "php",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 62.2,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
     {
       "id": "cpp",
       "name": "C++",
       "quadrant": "languages",
       "ring": "assess",
-      "description": "Mature but high-risk systems language. Rust offers safer alternatives for new projects. C++ remains relevant for performance-critical embedded/gaming.",
-      "trend": "new",
-      "confidence": 0.55,
-      "updatedAt": "2026-04-03",
-      "marketScore": 0.69,
-      "whyThisRing": "Watchlist because it is relevant but did not make the lane cut this cycle.",
+      "description": "Systems language with continued importance in performance-critical infrastructure and client software.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.583946+00:00",
+      "marketScore": 50.63,
+      "moved": 0,
+      "whyThisRing": "Assess in languages because the combined market score is 50.6 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Python",
+        "JavaScript",
+        "Go"
+      ],
       "entityType": "language",
       "canonicalId": "cpp",
-      "owner": "Radar editorial review",
-      "nextStep": "Re-check signal breadth and team relevance next quarter.",
-      "nextReviewAt": "2026-07-02",
-      "moved": 0,
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": []
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 62.2,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
     },
     {
-      "id": "c-sharp",
-      "name": "C#",
-      "quadrant": "languages",
+      "id": "rails",
+      "name": "Ruby on Rails",
+      "quadrant": "tools",
       "ring": "assess",
-      "description": "Strong Microsoft ecosystem language but platform-limited. .NET ecosystem solid but less relevant outside Windows-oriented shops.",
-      "trend": "new",
-      "confidence": 0.55,
-      "updatedAt": "2026-04-03",
-      "marketScore": 0.65,
-      "whyThisRing": "Watchlist because it is relevant but did not make the lane cut this cycle.",
-      "entityType": "language",
-      "canonicalId": "c-sharp",
-      "owner": "Radar editorial review",
-      "nextStep": "Re-check signal breadth and team relevance next quarter.",
-      "nextReviewAt": "2026-07-02",
+      "description": "Opinionated web framework that still shapes product delivery patterns and startup engineering defaults.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584196+00:00",
+      "marketScore": 50.63,
       "moved": 0,
-      "useCases": [],
-      "avoidWhen": [],
-      "alternatives": []
+      "whyThisRing": "Assess in frameworks because the combined market score is 50.6 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "React",
+        "Next.js",
+        "FastAPI"
+      ],
+      "entityType": "framework",
+      "canonicalId": "rails",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 62.2,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
     },
     {
       "id": "flask",
       "name": "Flask",
       "quadrant": "tools",
       "ring": "assess",
-      "description": "Lightweight Python WSGI framework, popular for microservices but FastAPI's async advantages make it secondary. Watchlist for simple Flask-based deployments.",
-      "trend": "new",
-      "confidence": 0.55,
-      "updatedAt": "2026-04-03",
-      "marketScore": 72.0,
-      "whyThisRing": "Watchlist because it is relevant but did not make the lane cut this cycle.",
+      "description": "Minimal Python web framework widely used for services, internal tools, and lightweight APIs.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584196+00:00",
+      "marketScore": 50.63,
+      "moved": 0,
+      "whyThisRing": "Assess in frameworks because the combined market score is 50.6 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "React",
+        "Next.js",
+        "FastAPI"
+      ],
       "entityType": "framework",
       "canonicalId": "flask",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 62.2,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "terraform",
+      "name": "Terraform",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "Infrastructure as code tool with broad enterprise footprint across cloud provisioning.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584403+00:00",
+      "marketScore": 50.63,
+      "moved": 0,
+      "whyThisRing": "Assess in tools because the combined market score is 50.6 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "GitHub Copilot",
+        "VS Code",
+        "Docker"
+      ],
+      "entityType": "tool",
+      "canonicalId": "terraform",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 62.2,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "AI-assisted development environment shaping current developer workflow expectations.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584403+00:00",
+      "marketScore": 50.63,
+      "moved": 0,
+      "whyThisRing": "Assess in tools because the combined market score is 50.6 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "AI delivery workflows",
+        "Developer enablement"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "GitHub Copilot",
+        "VS Code",
+        "Docker"
+      ],
+      "entityType": "tool",
+      "canonicalId": "cursor",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 62.2,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "helm",
+      "name": "Helm",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "Kubernetes packaging tool that remains common in platform teams and deployment workflows.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584403+00:00",
+      "marketScore": 50.63,
+      "moved": 0,
+      "whyThisRing": "Assess in tools because the combined market score is 50.6 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "GitHub Copilot",
+        "VS Code",
+        "Docker"
+      ],
+      "entityType": "tool",
+      "canonicalId": "helm",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 62.2,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "jenkins",
+      "name": "Jenkins",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "Long-standing CI automation server that still appears across legacy and enterprise build estates.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584403+00:00",
+      "marketScore": 50.63,
+      "moved": 0,
+      "whyThisRing": "Assess in tools because the combined market score is 50.6 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "GitHub Copilot",
+        "VS Code",
+        "Docker"
+      ],
+      "entityType": "tool",
+      "canonicalId": "jenkins",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 62.2,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "postman",
+      "name": "Postman",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "API development toolchain commonly used for exploration, collaboration, and test workflow handoff.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584403+00:00",
+      "marketScore": 50.63,
+      "moved": 0,
+      "whyThisRing": "Assess in tools because the combined market score is 50.6 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "GitHub Copilot",
+        "VS Code",
+        "Docker"
+      ],
+      "entityType": "tool",
+      "canonicalId": "postman",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 62.2,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "ansible",
+      "name": "Ansible",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "Automation and configuration management tool with enduring use in ops-heavy and hybrid estates.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584403+00:00",
+      "marketScore": 50.63,
+      "moved": 0,
+      "whyThisRing": "Assess in tools because the combined market score is 50.6 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "GitHub Copilot",
+        "VS Code",
+        "Docker"
+      ],
+      "entityType": "tool",
+      "canonicalId": "ansible",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 62.2,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "redis",
+      "name": "Redis",
+      "quadrant": "platforms",
+      "ring": "assess",
+      "description": "In-memory data platform widely used for caching, queues, and low-latency coordination patterns.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584562+00:00",
+      "marketScore": 50.63,
+      "moved": 0,
+      "whyThisRing": "Assess in platforms because the combined market score is 50.6 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Platform standardization",
+        "Operational consolidation"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Kubernetes",
+        "Supabase",
+        "Vercel"
+      ],
+      "entityType": "platform",
+      "canonicalId": "redis",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 62.2,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "snowflake",
+      "name": "Snowflake",
+      "quadrant": "platforms",
+      "ring": "assess",
+      "description": "Cloud data platform with strong adoption for analytics, warehousing, and governed data sharing.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584562+00:00",
+      "marketScore": 50.63,
+      "moved": 0,
+      "whyThisRing": "Assess in platforms because the combined market score is 50.6 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Platform standardization",
+        "Operational consolidation"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Kubernetes",
+        "Supabase",
+        "Vercel"
+      ],
+      "entityType": "platform",
+      "canonicalId": "snowflake",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 62.2,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "mongodb",
+      "name": "MongoDB",
+      "quadrant": "platforms",
+      "ring": "assess",
+      "description": "Document database platform with broad developer adoption for flexible application data models.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584562+00:00",
+      "marketScore": 50.63,
+      "moved": 0,
+      "whyThisRing": "Assess in platforms because the combined market score is 50.6 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Platform standardization",
+        "Operational consolidation"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Kubernetes",
+        "Supabase",
+        "Vercel"
+      ],
+      "entityType": "platform",
+      "canonicalId": "mongodb",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 62.2,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "databricks",
+      "name": "Databricks",
+      "quadrant": "platforms",
+      "ring": "assess",
+      "description": "Lakehouse platform with strong traction in data engineering, analytics, and applied AI workflows.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584562+00:00",
+      "marketScore": 50.63,
+      "moved": 0,
+      "whyThisRing": "Assess in platforms because the combined market score is 50.6 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Platform standardization",
+        "Operational consolidation"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Kubernetes",
+        "Supabase",
+        "Vercel"
+      ],
+      "entityType": "platform",
+      "canonicalId": "databricks",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 62.2,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "netlify",
+      "name": "Netlify",
+      "quadrant": "platforms",
+      "ring": "assess",
+      "description": "Frontend delivery platform still relevant for JAMstack-style workflows and fast web deployment loops.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584562+00:00",
+      "marketScore": 50.63,
+      "moved": 0,
+      "whyThisRing": "Assess in platforms because the combined market score is 50.6 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Platform standardization",
+        "Operational consolidation"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Kubernetes",
+        "Supabase",
+        "Vercel"
+      ],
+      "entityType": "platform",
+      "canonicalId": "netlify",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 62.2,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "neon",
+      "name": "Neon",
+      "quadrant": "platforms",
+      "ring": "assess",
+      "description": "Serverless Postgres platform drawing attention for branchable database workflows and fast developer loops.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584562+00:00",
+      "marketScore": 50.63,
+      "moved": 0,
+      "whyThisRing": "Assess in platforms because the combined market score is 50.6 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Platform standardization",
+        "Operational consolidation"
+      ],
+      "avoidWhen": [
+        "You need a radically different constraint profile than its mainstream fit"
+      ],
+      "alternatives": [
+        "Kubernetes",
+        "Supabase",
+        "Vercel"
+      ],
+      "entityType": "platform",
+      "canonicalId": "neon",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 62.2,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "platform-engineering",
+      "name": "Platform Engineering",
+      "quadrant": "techniques",
+      "ring": "hold",
+      "description": "Product-thinking approach to internal platforms and developer experience.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584712+00:00",
+      "marketScore": 49.73,
+      "moved": 0,
+      "whyThisRing": "Hold in techniques because the combined market score is 49.7 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "The team has not aligned on operating model changes"
+      ],
+      "alternatives": [
+        "Agentic AI",
+        "Model Context Protocol",
+        "Prompt Engineering"
+      ],
+      "entityType": "technique",
+      "canonicalId": "platform-engineering",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 58.6,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "gitops",
+      "name": "GitOps",
+      "quadrant": "techniques",
+      "ring": "hold",
+      "description": "Declarative operations pattern driven by version-controlled desired state.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584712+00:00",
+      "marketScore": 49.73,
+      "moved": 0,
+      "whyThisRing": "Hold in techniques because the combined market score is 49.7 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "The team has not aligned on operating model changes"
+      ],
+      "alternatives": [
+        "Agentic AI",
+        "Model Context Protocol",
+        "Prompt Engineering"
+      ],
+      "entityType": "technique",
+      "canonicalId": "gitops",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 58.6,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "rag",
+      "name": "Retrieval-Augmented Generation",
+      "quadrant": "techniques",
+      "ring": "hold",
+      "description": "Technique for grounding model outputs with retrievable context and data sources.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584712+00:00",
+      "marketScore": 49.73,
+      "moved": 0,
+      "whyThisRing": "Hold in techniques because the combined market score is 49.7 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "AI delivery workflows",
+        "Developer enablement"
+      ],
+      "avoidWhen": [
+        "The team has not aligned on operating model changes"
+      ],
+      "alternatives": [
+        "Agentic AI",
+        "Model Context Protocol",
+        "Prompt Engineering"
+      ],
+      "entityType": "technique",
+      "canonicalId": "rag",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 58.6,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "ai-assisted-development",
+      "name": "AI-Assisted Development",
+      "quadrant": "techniques",
+      "ring": "hold",
+      "description": "Use of generative AI as a first-class collaborator in coding and review loops.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584712+00:00",
+      "marketScore": 49.73,
+      "moved": 0,
+      "whyThisRing": "Hold in techniques because the combined market score is 49.7 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "AI delivery workflows",
+        "Developer enablement"
+      ],
+      "avoidWhen": [
+        "The team has not aligned on operating model changes"
+      ],
+      "alternatives": [
+        "Agentic AI",
+        "Model Context Protocol",
+        "Prompt Engineering"
+      ],
+      "entityType": "technique",
+      "canonicalId": "ai-assisted-development",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 58.6,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "contract-testing",
+      "name": "Contract Testing",
+      "quadrant": "techniques",
+      "ring": "hold",
+      "description": "Verification pattern that stabilizes service boundaries without end-to-end overreach.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584712+00:00",
+      "marketScore": 49.73,
+      "moved": 0,
+      "whyThisRing": "Hold in techniques because the combined market score is 49.7 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Delivery safety",
+        "Regression control"
+      ],
+      "avoidWhen": [
+        "The team has not aligned on operating model changes"
+      ],
+      "alternatives": [
+        "Agentic AI",
+        "Model Context Protocol",
+        "Prompt Engineering"
+      ],
+      "entityType": "technique",
+      "canonicalId": "contract-testing",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 58.6,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "feature-flags",
+      "name": "Feature Flags",
+      "quadrant": "techniques",
+      "ring": "hold",
+      "description": "Release strategy that decouples deployment from exposure and supports safer progressive delivery.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584712+00:00",
+      "marketScore": 49.73,
+      "moved": 0,
+      "whyThisRing": "Hold in techniques because the combined market score is 49.7 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "The team has not aligned on operating model changes"
+      ],
+      "alternatives": [
+        "Agentic AI",
+        "Model Context Protocol",
+        "Prompt Engineering"
+      ],
+      "entityType": "technique",
+      "canonicalId": "feature-flags",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 58.6,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "event-driven-architecture",
+      "name": "Event-Driven Architecture",
+      "quadrant": "techniques",
+      "ring": "hold",
+      "description": "Architectural style centered on asynchronous events, decoupled services, and reactive integration flows.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584712+00:00",
+      "marketScore": 49.73,
+      "moved": 0,
+      "whyThisRing": "Hold in techniques because the combined market score is 49.7 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "The team has not aligned on operating model changes"
+      ],
+      "alternatives": [
+        "Agentic AI",
+        "Model Context Protocol",
+        "Prompt Engineering"
+      ],
+      "entityType": "technique",
+      "canonicalId": "event-driven-architecture",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 58.6,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "finops",
+      "name": "FinOps",
+      "quadrant": "techniques",
+      "ring": "hold",
+      "description": "Operational discipline for making cloud cost decisions visible, shared, and actionable across teams.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584712+00:00",
+      "marketScore": 49.73,
+      "moved": 0,
+      "whyThisRing": "Hold in techniques because the combined market score is 49.7 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "The team has not aligned on operating model changes"
+      ],
+      "alternatives": [
+        "Agentic AI",
+        "Model Context Protocol",
+        "Prompt Engineering"
+      ],
+      "entityType": "technique",
+      "canonicalId": "finops",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 58.6,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "shift-left-testing",
+      "name": "Shift-Left Testing",
+      "quadrant": "techniques",
+      "ring": "hold",
+      "description": "Practice of moving validation earlier into design and development feedback loops.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584712+00:00",
+      "marketScore": 49.73,
+      "moved": 0,
+      "whyThisRing": "Hold in techniques because the combined market score is 49.7 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Delivery safety",
+        "Regression control"
+      ],
+      "avoidWhen": [
+        "The team has not aligned on operating model changes"
+      ],
+      "alternatives": [
+        "Agentic AI",
+        "Model Context Protocol",
+        "Prompt Engineering"
+      ],
+      "entityType": "technique",
+      "canonicalId": "shift-left-testing",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 58.6,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "zero-trust",
+      "name": "Zero Trust",
+      "quadrant": "techniques",
+      "ring": "hold",
+      "description": "Security model based on continuous verification rather than implicit trust from network location.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584712+00:00",
+      "marketScore": 49.73,
+      "moved": 0,
+      "whyThisRing": "Hold in techniques because the combined market score is 49.7 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "The team has not aligned on operating model changes"
+      ],
+      "alternatives": [
+        "Agentic AI",
+        "Model Context Protocol",
+        "Prompt Engineering"
+      ],
+      "entityType": "technique",
+      "canonicalId": "zero-trust",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 58.6,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    },
+    {
+      "id": "trunk-based-development",
+      "name": "Trunk-Based Development",
+      "quadrant": "techniques",
+      "ring": "hold",
+      "description": "Delivery practice that favors short-lived branches and frequent integration to keep change flowing.",
+      "trend": "stable",
+      "confidence": 0.7,
+      "updatedAt": "2026-04-27T10:03:52.584712+00:00",
+      "marketScore": 49.73,
+      "moved": 0,
+      "whyThisRing": "Hold in techniques because the combined market score is 49.7 with clear editorial relevance.",
+      "whyNow": "It remains strategically relevant this quarter because teams keep building around it.",
+      "useCases": [
+        "Core product delivery",
+        "Team standardization"
+      ],
+      "avoidWhen": [
+        "The team has not aligned on operating model changes"
+      ],
+      "alternatives": [
+        "Agentic AI",
+        "Model Context Protocol",
+        "Prompt Engineering"
+      ],
+      "entityType": "technique",
+      "canonicalId": "trunk-based-development",
+      "sourceCoverage": 1,
+      "signals": {
+        "adoption": 45.36,
+        "momentum": 40.68,
+        "maturity": 58.6,
+        "risk": 30.0
+      },
+      "sourceFreshness": {
+        "freshestDays": 1,
+        "stalestDays": 30
+      },
+      "evidenceSummary": {
+        "sources": [
+          "seed_catalog"
+        ],
+        "metrics": [
+          "curated_presence"
+        ],
+        "hasExternalAdoption": false,
+        "githubOnly": false
+      },
+      "evidence": [
+        "seed_catalog:curated_presence"
+      ]
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "elixir",
+      "name": "Elixir",
+      "quadrant": "languages",
+      "ring": "assess",
+      "description": "Below the lane cut after comparing score, breadth, and redundancy.",
+      "trend": "new",
+      "confidence": 0.55,
+      "updatedAt": "2026-04-27",
+      "marketScore": 50.63,
+      "whyThisRing": "Watchlist because it is relevant but did not make the lane cut this cycle.",
+      "entityType": "language",
+      "canonicalId": "elixir",
       "owner": "Radar editorial review",
       "nextStep": "Re-check signal breadth and team relevance next quarter.",
-      "nextReviewAt": "2026-07-02",
+      "nextReviewAt": "2026-07-26",
+      "moved": 0,
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": []
+    },
+    {
+      "id": "haskell",
+      "name": "Haskell",
+      "quadrant": "languages",
+      "ring": "assess",
+      "description": "Below the lane cut after comparing score, breadth, and redundancy.",
+      "trend": "new",
+      "confidence": 0.55,
+      "updatedAt": "2026-04-27",
+      "marketScore": 50.63,
+      "whyThisRing": "Watchlist because it is relevant but did not make the lane cut this cycle.",
+      "entityType": "language",
+      "canonicalId": "haskell",
+      "owner": "Radar editorial review",
+      "nextStep": "Re-check signal breadth and team relevance next quarter.",
+      "nextReviewAt": "2026-07-26",
+      "moved": 0,
+      "useCases": [],
+      "avoidWhen": [],
+      "alternatives": []
+    },
+    {
+      "id": "aspnet-core",
+      "name": "ASP.NET Core",
+      "quadrant": "tools",
+      "ring": "assess",
+      "description": "Below the lane cut after comparing score, breadth, and redundancy.",
+      "trend": "new",
+      "confidence": 0.55,
+      "updatedAt": "2026-04-27",
+      "marketScore": 50.63,
+      "whyThisRing": "Watchlist because it is relevant but did not make the lane cut this cycle.",
+      "entityType": "framework",
+      "canonicalId": "aspnet-core",
+      "owner": "Radar editorial review",
+      "nextStep": "Re-check signal breadth and team relevance next quarter.",
+      "nextReviewAt": "2026-07-26",
       "moved": 0,
       "useCases": [],
       "avoidWhen": [],
@@ -1481,101 +4156,101 @@
       "name": "Phoenix",
       "quadrant": "tools",
       "ring": "assess",
-      "description": "Elixir's web framework, excellent performance but niche ecosystem limits broad applicability. Watchlist for real-time applications in Elixir shops.",
+      "description": "Below the lane cut after comparing score, breadth, and redundancy.",
       "trend": "new",
       "confidence": 0.55,
-      "updatedAt": "2026-04-03",
-      "marketScore": 72.0,
+      "updatedAt": "2026-04-27",
+      "marketScore": 50.63,
       "whyThisRing": "Watchlist because it is relevant but did not make the lane cut this cycle.",
       "entityType": "framework",
       "canonicalId": "phoenix",
       "owner": "Radar editorial review",
       "nextStep": "Re-check signal breadth and team relevance next quarter.",
-      "nextReviewAt": "2026-07-02",
+      "nextReviewAt": "2026-07-26",
       "moved": 0,
       "useCases": [],
       "avoidWhen": [],
       "alternatives": []
     },
     {
-      "id": "ansible",
-      "name": "Ansible",
+      "id": "argo-cd",
+      "name": "Argo CD",
       "quadrant": "tools",
       "ring": "assess",
-      "description": "Traditional configuration management showing limited evolution. Terraform and Pulumi have displaced Ansible for infrastructure provisioning, while container orchestration handles stateless workloads. Consider for ad-hoc operations only.",
+      "description": "Below the lane cut after comparing score, breadth, and redundancy.",
       "trend": "new",
       "confidence": 0.55,
-      "updatedAt": "2026-04-03",
-      "marketScore": 72.0,
+      "updatedAt": "2026-04-27",
+      "marketScore": 50.63,
       "whyThisRing": "Watchlist because it is relevant but did not make the lane cut this cycle.",
       "entityType": "tool",
-      "canonicalId": "ansible",
+      "canonicalId": "argo-cd",
       "owner": "Radar editorial review",
       "nextStep": "Re-check signal breadth and team relevance next quarter.",
-      "nextReviewAt": "2026-07-02",
+      "nextReviewAt": "2026-07-26",
       "moved": 0,
       "useCases": [],
       "avoidWhen": [],
       "alternatives": []
     },
     {
-      "id": "postman",
-      "name": "Postman",
+      "id": "nix",
+      "name": "Nix",
       "quadrant": "tools",
       "ring": "assess",
-      "description": "API testing and documentation tool with stable but flat momentum. Embedded IDE features, alternative browser extensions, and OpenAPI-native tooling reduce the need for a separate Postman installation for many teams.",
+      "description": "Below the lane cut after comparing score, breadth, and redundancy.",
       "trend": "new",
       "confidence": 0.55,
-      "updatedAt": "2026-04-03",
-      "marketScore": 72.0,
+      "updatedAt": "2026-04-27",
+      "marketScore": 49.73,
       "whyThisRing": "Watchlist because it is relevant but did not make the lane cut this cycle.",
       "entityType": "tool",
-      "canonicalId": "postman",
+      "canonicalId": "nix",
       "owner": "Radar editorial review",
       "nextStep": "Re-check signal breadth and team relevance next quarter.",
-      "nextReviewAt": "2026-07-02",
+      "nextReviewAt": "2026-07-26",
       "moved": 0,
       "useCases": [],
       "avoidWhen": [],
       "alternatives": []
     },
     {
-      "id": "mongodbatlas",
-      "name": "MongoDB Atlas",
+      "id": "aws",
+      "name": "AWS",
       "quadrant": "platforms",
       "ring": "assess",
-      "description": "Managed MongoDB service Dupe of MongoDB entry; Atlas-specific positioning unclear versus self-managed",
+      "description": "Below the lane cut after comparing score, breadth, and redundancy.",
       "trend": "new",
       "confidence": 0.55,
-      "updatedAt": "2026-04-03",
-      "marketScore": 0.68,
+      "updatedAt": "2026-04-27",
+      "marketScore": 49.73,
       "whyThisRing": "Watchlist because it is relevant but did not make the lane cut this cycle.",
       "entityType": "platform",
-      "canonicalId": "mongodbatlas",
+      "canonicalId": "aws",
       "owner": "Radar editorial review",
       "nextStep": "Re-check signal breadth and team relevance next quarter.",
-      "nextReviewAt": "2026-07-02",
+      "nextReviewAt": "2026-07-26",
       "moved": 0,
       "useCases": [],
       "avoidWhen": [],
       "alternatives": []
     },
     {
-      "id": "opensearch",
-      "name": "OpenSearch",
+      "id": "cloudflare",
+      "name": "Cloudflare",
       "quadrant": "platforms",
       "ring": "assess",
-      "description": "Search and analytics platform lacks differentiation against Elasticsearch managed services and faces cloud-vendor lock-in concerns",
+      "description": "Below the lane cut after comparing score, breadth, and redundancy.",
       "trend": "new",
       "confidence": 0.55,
-      "updatedAt": "2026-04-03",
-      "marketScore": 0.65,
+      "updatedAt": "2026-04-27",
+      "marketScore": 49.73,
       "whyThisRing": "Watchlist because it is relevant but did not make the lane cut this cycle.",
       "entityType": "platform",
-      "canonicalId": "opensearch",
+      "canonicalId": "cloudflare",
       "owner": "Radar editorial review",
       "nextStep": "Re-check signal breadth and team relevance next quarter.",
-      "nextReviewAt": "2026-07-02",
+      "nextReviewAt": "2026-07-26",
       "moved": 0,
       "useCases": [],
       "avoidWhen": [],
@@ -1584,8 +4259,8 @@
   ],
   "meta": {
     "pipeline": {
-      "collected": 169,
-      "qualified": 55,
+      "collected": 160,
+      "qualified": 75,
       "output": 75,
       "watchlist": 10
     }

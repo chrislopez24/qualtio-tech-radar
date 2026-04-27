@@ -158,3 +158,56 @@ def test_lane_editor_retries_same_synthetic_config_on_invalid_first_response(mon
     assert result is not None
     assert result.included[0].ring == "adopt"
     assert len(calls) == 2
+
+
+def test_lane_editor_enriches_llm_decision_with_scored_entity_fields(monkeypatch):
+    from etl.contracts import LaneEditorialDecision, LaneEditorialInput, EditorialBlip, MarketEntity
+    from etl.editorial_llm import lane_editor
+    from etl.signals.scoring import score_entity
+
+    entity = MarketEntity(
+        canonical_name="React",
+        canonical_slug="react",
+        editorial_kind="framework",
+        topic_family="ui",
+        source_evidence=[
+            {"source": "github_trending", "metric": "github_stars", "normalized_value": 90.0},
+            {"source": "deps_dev", "metric": "reverse_dependents", "normalized_value": 100.0},
+            {"source": "deps_dev", "metric": "default_version", "normalized_value": 100.0},
+        ],
+        implementation_languages=["typescript"],
+        ecosystems=["npm"],
+    )
+    scored_entity = score_entity(entity)
+    lane_input = LaneEditorialInput(lane="frameworks", candidates=[scored_entity])
+    llm_decision = LaneEditorialDecision(
+        lane="frameworks",
+        included=[
+            EditorialBlip(
+                id="react",
+                name="React",
+                quadrant="frameworks",
+                ring="hold",
+                description="LLM description",
+                trend="stable",
+                confidence=0.5,
+                updatedAt="2026-04-01T00:00:00+00:00",
+            )
+        ],
+        excluded=[],
+    )
+    monkeypatch.setattr(lane_editor, "_try_llm_lane_decision", lambda lane_input, max_items: llm_decision)
+
+    decision = lane_editor.decide_lane(lane_input)
+    blip = decision.included[0]
+
+    assert blip.ring == "adopt"
+    assert blip.marketScore == lane_editor.market_score(scored_entity)
+    assert blip.signals["adoption"] == scored_entity.adoption_signals["adoption"]
+    assert blip.evidenceSummary is not None
+    assert blip.evidenceSummary["hasExternalAdoption"] is True
+    assert blip.evidence == [
+        "github_trending:github_stars",
+        "deps_dev:reverse_dependents",
+        "deps_dev:default_version",
+    ]

@@ -31,7 +31,7 @@ def parse_lane_decision_json(payload: str) -> LaneEditorialDecision:
 def decide_lane(lane_input: LaneEditorialInput, max_items: int = 6) -> LaneEditorialDecision:
     llm_decision = _try_llm_lane_decision(lane_input, max_items=max_items)
     if llm_decision is not None:
-        return llm_decision
+        return _enrich_lane_decision(llm_decision, lane_input)
     return _heuristic_lane_decision(lane_input, max_items=max_items)
 
 
@@ -143,6 +143,43 @@ def _slugify(value: str) -> str:
     return "-".join(part for part in value.lower().replace("/", " ").split() if part)
 
 
+def _enrich_lane_decision(decision: LaneEditorialDecision, lane_input: LaneEditorialInput) -> LaneEditorialDecision:
+    candidates_by_id = {entity.canonical_slug: entity for entity in lane_input.candidates}
+    candidates_by_name = {entity.canonical_name.strip().lower(): entity for entity in lane_input.candidates}
+
+    for blip in decision.included:
+        entity = candidates_by_id.get(blip.id) or candidates_by_name.get(blip.name.strip().lower())
+        if entity is None:
+            continue
+        score = market_score(entity)
+        blip.id = entity.canonical_slug
+        blip.name = entity.canonical_name
+        blip.quadrant = lane_input.lane
+        blip.ring = _ring_for_score(score)
+        blip.confidence = round(min(0.99, 0.45 + (score / 200.0)), 2)
+        blip.marketScore = score
+        blip.whyThisRing = _why_this_ring(score, lane_input.lane)
+        blip.entityType = entity.editorial_kind
+        blip.canonicalId = entity.canonical_slug
+        blip.sourceCoverage = len({item.get("source") for item in entity.source_evidence})
+        blip.signals = _public_signals(entity)
+        blip.sourceFreshness = {"freshestDays": 1, "stalestDays": 30}
+        blip.evidenceSummary = _evidence_summary(entity)
+        blip.evidence = _public_evidence(entity)
+        blip.alternatives = lane_input.nearby_alternatives.get(entity.canonical_slug, blip.alternatives)
+
+    for excluded in decision.excluded:
+        entity = candidates_by_id.get(excluded.id) or candidates_by_name.get(excluded.name.strip().lower())
+        if entity is None:
+            continue
+        excluded.id = entity.canonical_slug
+        excluded.name = entity.canonical_name
+        excluded.lane = lane_input.lane
+        excluded.marketScore = market_score(entity)
+
+    return decision
+
+
 def _heuristic_lane_decision(lane_input: LaneEditorialInput, max_items: int = 6) -> LaneEditorialDecision:
     ranked = sorted(lane_input.candidates, key=market_score, reverse=True)
     included: list[EditorialBlip] = []
@@ -171,23 +208,10 @@ def _heuristic_lane_decision(lane_input: LaneEditorialInput, max_items: int = 6)
                     entityType=entity.editorial_kind,
                     canonicalId=entity.canonical_slug,
                     sourceCoverage=len({item.get("source") for item in entity.source_evidence}),
-                    signals={
-                        "adoption": entity.adoption_signals.get("adoption", 0.0),
-                        "momentum": entity.momentum_signals.get("momentum", 0.0),
-                        "maturity": entity.maturity_signals.get("maturity", 0.0),
-                        "risk": entity.risk_signals.get("risk", 0.0),
-                    },
+                    signals=_public_signals(entity),
                     sourceFreshness={"freshestDays": 1, "stalestDays": 30},
-                    evidenceSummary={
-                        "sources": sorted({str(item.get("source", "")) for item in entity.source_evidence if item.get("source")}),
-                        "metrics": sorted({str(item.get("metric", "")) for item in entity.source_evidence if item.get("metric")}),
-                        "hasExternalAdoption": len(entity.source_evidence) > 1,
-                        "githubOnly": {item.get("source") for item in entity.source_evidence} == {"github_trending"},
-                    },
-                    evidence=[
-                        f"{item.get('source', 'unknown')}:{item.get('metric', 'signal')}"
-                        for item in entity.source_evidence
-                    ],
+                    evidenceSummary=_evidence_summary(entity),
+                    evidence=_public_evidence(entity),
                 )
             )
         else:
@@ -202,6 +226,31 @@ def _heuristic_lane_decision(lane_input: LaneEditorialInput, max_items: int = 6)
             )
 
     return LaneEditorialDecision(lane=lane_input.lane, included=included, excluded=excluded, merge_notes=[])
+
+
+def _public_signals(entity) -> dict[str, float]:
+    return {
+        "adoption": entity.adoption_signals.get("adoption", 0.0),
+        "momentum": entity.momentum_signals.get("momentum", 0.0),
+        "maturity": entity.maturity_signals.get("maturity", 0.0),
+        "risk": entity.risk_signals.get("risk", 0.0),
+    }
+
+
+def _evidence_summary(entity) -> dict[str, Any]:
+    return {
+        "sources": sorted({str(item.get("source", "")) for item in entity.source_evidence if item.get("source")}),
+        "metrics": sorted({str(item.get("metric", "")) for item in entity.source_evidence if item.get("metric")}),
+        "hasExternalAdoption": len(entity.source_evidence) > 1,
+        "githubOnly": {item.get("source") for item in entity.source_evidence} == {"github_trending"},
+    }
+
+
+def _public_evidence(entity) -> list[str]:
+    return [
+        f"{item.get('source', 'unknown')}:{item.get('metric', 'signal')}"
+        for item in entity.source_evidence
+    ]
 
 
 def _ring_for_score(score: float) -> str:
